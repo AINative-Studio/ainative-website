@@ -18,7 +18,8 @@ export const appConfig = {
     blog: process.env.NEXT_PUBLIC_BLOG_URL || 'https://blog.ainative.studio',
     linkedin: process.env.NEXT_PUBLIC_LINKEDIN_URL || 'https://www.linkedin.com/company/cody-agent/posts/?feedView=all',
     github: process.env.NEXT_PUBLIC_GITHUB_URL || 'https://github.com/AINative-Studio',
-    zerodb: process.env.NEXT_PUBLIC_ZERODB_URL || 'https://zerodb.ainative.studio'
+    zerodb: process.env.NEXT_PUBLIC_ZERODB_URL || 'https://zerodb.ainative.studio',
+    discord: process.env.NEXT_PUBLIC_DISCORD_URL || 'https://discord.gg/paipalooza'
   },
 
   pricing: {
