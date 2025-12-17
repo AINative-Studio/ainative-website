@@ -10,6 +10,7 @@ import { cn } from '@/lib/utils';
 const navigation = [
   { name: 'Products', path: '/products' },
   { name: 'Pricing', path: '/pricing' },
+  { name: 'Design System', path: '/design-system' },
   { name: 'ZeroDB', path: 'https://zerodb.ainative.studio', external: true },
 ];
 
