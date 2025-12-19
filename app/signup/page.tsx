@@ -2,14 +2,13 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
+import { signIn } from 'next-auth/react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Github, ArrowRight, Check } from 'lucide-react';
 
 export default function SignupPage() {
-  const router = useRouter();
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -22,17 +21,21 @@ export default function SignupPage() {
     setError('');
 
     try {
-      // TODO: Implement actual registration
-      // For now, simulate signup
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      // TODO: Implement actual user registration API call
+      // For now, sign in with credentials after "registration"
+      const result = await signIn('credentials', {
+        email,
+        password,
+        redirect: false,
+        callbackUrl: '/dashboard',
+      });
 
-      // Store auth state
-      localStorage.setItem('authenticated', 'true');
-      localStorage.setItem('user', JSON.stringify({ email, name }));
-
-      // Redirect to dashboard
-      router.push('/dashboard');
-    } catch (err) {
+      if (result?.error) {
+        setError('Failed to create account. Please try again.');
+      } else if (result?.url) {
+        window.location.href = result.url;
+      }
+    } catch {
       setError('Failed to create account. Please try again.');
     } finally {
       setIsLoading(false);
@@ -40,8 +43,7 @@ export default function SignupPage() {
   };
 
   const handleGitHubSignup = () => {
-    // TODO: Implement GitHub OAuth
-    window.location.href = `https://github.com/login/oauth/authorize?client_id=${process.env.NEXT_PUBLIC_GITHUB_CLIENT_ID}&scope=user:email`;
+    signIn('github', { callbackUrl: '/dashboard' });
   };
 
   const benefits = [
@@ -158,7 +160,7 @@ export default function SignupPage() {
 
           {/* Benefits */}
           <div className="mt-6 pt-6 border-t border-[#2D333B]">
-            <p className="text-sm text-gray-400 mb-3">What you'll get:</p>
+            <p className="text-sm text-gray-400 mb-3">What you&apos;ll get:</p>
             <ul className="space-y-2">
               {benefits.map((benefit, index) => (
                 <li key={index} className="flex items-center text-sm text-gray-300">

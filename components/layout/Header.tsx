@@ -1,8 +1,9 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import { useSession, signOut } from 'next-auth/react';
 import { Button } from '@/components/ui/button';
 import { Menu, X } from 'lucide-react';
 import { cn } from '@/lib/utils';
@@ -16,8 +17,7 @@ const navigation = [
 
 export default function Header() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [avatar, setAvatar] = useState<string | null>(null);
+  const { data: session, status } = useSession();
 
   const pathname = usePathname();
   const isDashboard = pathname.startsWith('/dashboard') ||
@@ -32,47 +32,12 @@ export default function Header() {
     pathname.startsWith('/refills') ||
     pathname.startsWith('/developer-settings');
 
-  useEffect(() => {
-    const checkLoginStatus = () => {
-      const userData = localStorage.getItem('user');
-      const authenticated = localStorage.getItem('authenticated');
-      const accessToken = localStorage.getItem('access_token');
-      const githubToken = localStorage.getItem('github_token');
-      const githubCode = localStorage.getItem('github_code');
-
-      const hasAuthToken = !!(authenticated || accessToken || githubToken || githubCode);
-      const isOnDashboardPage = pathname.startsWith('/dashboard') ||
-        pathname.startsWith('/account') ||
-        pathname.startsWith('/plan') ||
-        pathname.startsWith('/billing') ||
-        pathname.startsWith('/purchase-credits') ||
-        pathname.startsWith('/profile') ||
-        pathname.startsWith('/settings') ||
-        pathname.startsWith('/notifications') ||
-        pathname.startsWith('/credit-history') ||
-        pathname.startsWith('/refills') ||
-        pathname.startsWith('/developer-settings');
-
-      setIsLoggedIn(hasAuthToken || isOnDashboardPage);
-
-      if (userData) {
-        try {
-          const user = JSON.parse(userData);
-          setAvatar(user.avatar_url);
-        } catch {
-          // If userData is not valid JSON, ignore
-        }
-      }
-    };
-
-    checkLoginStatus();
-    window.addEventListener('storage', checkLoginStatus);
-    return () => window.removeEventListener('storage', checkLoginStatus);
-  }, [pathname]);
+  const isLoggedIn = status === 'authenticated';
+  const isLoading = status === 'loading';
+  const avatar = session?.user?.image;
 
   const handleLogout = () => {
-    localStorage.clear();
-    window.location.href = '/login';
+    signOut({ callbackUrl: '/login' });
   };
 
   return (
@@ -119,7 +84,9 @@ export default function Header() {
 
         {/* Desktop Actions */}
         <div className="hidden md:flex items-center gap-4">
-          {isDashboard ? (
+          {isLoading ? (
+            <div className="h-10 w-24 animate-pulse bg-muted rounded" />
+          ) : isDashboard ? (
             <>
               {avatar && (
                 <img
@@ -243,9 +210,8 @@ export default function Header() {
                   variant="outline"
                   className="w-full"
                   onClick={() => {
-                    localStorage.clear();
                     setMobileMenuOpen(false);
-                    window.location.href = '/login';
+                    handleLogout();
                   }}
                 >
                   Logout
@@ -262,9 +228,8 @@ export default function Header() {
                   variant="ghost"
                   className="w-full"
                   onClick={() => {
-                    localStorage.clear();
                     setMobileMenuOpen(false);
-                    window.location.href = '/login';
+                    handleLogout();
                   }}
                 >
                   Sign Out
