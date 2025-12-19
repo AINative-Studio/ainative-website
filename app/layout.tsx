@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Script from "next/script";
 import { Geist, Geist_Mono } from "next/font/google";
 import { QueryProvider } from "@/components/providers/QueryProvider";
 import SessionProvider from "@/components/providers/session-provider";
@@ -40,6 +41,29 @@ export default function RootLayout({
             <Footer />
           </QueryProvider>
         </SessionProvider>
+
+        {/* Chatwoot Customer Support Widget */}
+        <Script
+          id="chatwoot-widget"
+          strategy="lazyOnload"
+          dangerouslySetInnerHTML={{
+            __html: `
+              (function(d,t) {
+                var BASE_URL="https://chat.ainative.studio";
+                var g=d.createElement(t),s=d.getElementsByTagName(t)[0];
+                g.src=BASE_URL+"/packs/js/sdk.js";
+                g.async = true;
+                s.parentNode.insertBefore(g,s);
+                g.onload=function(){
+                  window.chatwootSDK.run({
+                    websiteToken: 'XfqwZwqj9pcjyrFe4gsPRCff',
+                    baseUrl: BASE_URL
+                  })
+                }
+              })(document,"script");
+            `,
+          }}
+        />
       </body>
     </html>
   );
