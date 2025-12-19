@@ -14,6 +14,7 @@ import { searchCommunityContent } from '@/src/lib/community/search';
 import {
   Calendar,
   Clock,
+  Eye,
   Search,
   AlertCircle,
   Zap
@@ -427,7 +428,10 @@ export default function BlogListingClient() {
                           <Calendar className="h-4 w-4 mr-1" />
                           {new Date(post.published_date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
                         </div>
-                        <span>{post.view_count.toLocaleString()} views</span>
+                        <div className="flex items-center">
+                          <Eye className="h-4 w-4 mr-1" />
+                          <span>{post.view_count.toLocaleString()} views</span>
+                        </div>
                       </div>
                       {post.tags && post.tags.length > 0 && (
                         <div className="flex flex-wrap gap-1 mt-3">
