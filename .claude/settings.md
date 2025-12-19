@@ -1,108 +1,50 @@
-# Git Commit Rules for AINative Projects
+# Project-Specific Claude Settings
 
-## CRITICAL RULES - NEVER VIOLATE
+## Port Management
 
-### 1. NO ANTHROPIC OR CLAUDE ATTRIBUTION
-**NEVER** include any of the following in git commits, pull requests, or GitHub activity:
+**Assigned Port: 3000**
 
-**FORBIDDEN TEXT:**
-- "Claude"
-- "Anthropic"
-- "claude.com"
-- "Claude Code"
-- "Generated with Claude"
-- "Co-Authored-By: Claude"
-- Any reference to Claude or Anthropic whatsoever
+This project (ainative-nextjs) is registered in `~/.claude/port-registry.json` as:
+- **Port**: 3000
+- **Command**: `npm run dev`
 
-### 2. COMMIT MESSAGE FORMAT
+### Rules for Claude Models
 
-**CORRECT FORMAT:**
-```
-Short descriptive title
+1. **NEVER kill processes on ports without user permission**
+2. **ALWAYS check port availability before starting dev server**:
+   ```bash
+   lsof -i :3000 2>/dev/null | grep LISTEN
+   ```
+3. **If port 3000 is in use**, report the conflict and ask user how to proceed
+4. **Do NOT start background dev servers** unless explicitly requested
+5. When running dev server, use: `npm run dev` (defaults to port 3000)
 
-- Bullet point describing changes
-- Another bullet point
-- Final bullet point
-```
+### Other Project Ports (Do Not Use)
 
-**INCORRECT FORMAT:**
-```
-Short descriptive title
+| Port | Project |
+|------|---------|
+| 3001 | karstenwade.com (Next.js) |
+| 5177 | ainative-website-vite (legacy) |
+| 1337 | karstenwade-strapi (CMS) |
 
-- Changes made
-- More changes
+### Port Conflict Resolution
 
-Generated with Claude Code
-https://claude.com/claude-code
+If you encounter a port conflict:
+1. First check what's using the port: `lsof -i :3000`
+2. Report to user: "Port 3000 is in use by [process]. Options: 1) Stop that process 2) Use alternate port 3) Skip server start"
+3. Wait for user decision - never auto-kill
 
-Co-Authored-By: Claude <noreply@anthropic.com>
-```
+## Git Commit Rules
 
-### 3. PULL REQUEST DESCRIPTIONS
+**CRITICAL**: ZERO TOLERANCE for Claude/Anthropic attribution in commits or PRs.
 
-**CORRECT FORMAT:**
-```markdown
-## Summary
-- Clear description of changes
-- What was fixed or added
-- Why these changes were made
+- NO "Generated with Claude Code" footers
+- NO "Co-Authored-By: Claude" signatures
+- NO references to Claude or Anthropic in commit messages
+- Commits should appear as if written by the developer
 
-## Test Plan
-- How to test the changes
-- Expected results
-```
+## Development Server
 
-**INCORRECT FORMAT:**
-```markdown
-## Summary
-Changes made...
-
-Generated with Claude Code
-
-Co-Authored-By: Claude <noreply@anthropic.com>
-```
-
-### 4. ENFORCEMENT
-
-**These rules apply to:**
-- All commit messages
-- All pull request descriptions
-- All issue comments
-- All GitHub discussions
-- Any public-facing git activity
-
-**Violating these rules will:**
-- Create public attribution that must be avoided
-- Associate our work with third-party tools
-- Compromise the professional appearance of our repositories
-
-### 5. EXAMPLES
-
-#### GOOD COMMIT:
-```
-Add multi-dimension vector support
-
-- Support for 384, 768, 1024, and 1536 dimensions
-- Update validation logic for new dimensions
-- Add comprehensive test coverage
-```
-
-#### BAD COMMIT:
-```
-Add multi-dimension vector support
-
-- Support for 384, 768, 1024, and 1536 dimensions
-- Update validation logic for new dimensions
-- Add comprehensive test coverage
-
-Generated with Claude Code
-https://claude.com/claude-code
-
-Co-Authored-By: Claude <noreply@anthropic.com>
-```
-
----
-
-## REMINDER
-
-This is a **ZERO TOLERANCE** rule. Every commit must be checked before pushing to ensure no Claude/Anthropic attribution exists.
+- Default command: `npm run dev`
+- Port: 3000
+- For production preview: `npm run build && npm run start`

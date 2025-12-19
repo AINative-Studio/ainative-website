@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { useSession } from 'next-auth/react';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
 import { Button } from '@/components/ui/button';
@@ -118,6 +119,7 @@ interface CostData {
 }
 
 export default function DashboardClient() {
+  const { data: session, status } = useSession();
   const [user, setUser] = useState<DashboardUser | null>(null);
   const [usageData, setUsageData] = useState<UsageData | null>(null);
   const [subscriptionPlan, setSubscriptionPlan] = useState<string>('Free');
@@ -189,18 +191,14 @@ export default function DashboardClient() {
       setIsRefreshing(true);
       setApiError(null);
 
-      // Check for auth token
-      const token = typeof window !== 'undefined'
-        ? localStorage.getItem('access_token') || localStorage.getItem('auth_token')
-        : null;
-
-      if (!token) {
-        // For demo purposes, set mock data instead of redirecting
+      // Use NextAuth session for authentication
+      if (session?.user) {
+        // User is authenticated via NextAuth
         setUser({
-          login: 'demo_user',
-          name: 'Demo User',
-          email: 'demo@example.com',
-          avatar_url: generateDefaultAvatar('demo_user')
+          login: session.user.email?.split('@')[0] || 'user',
+          name: session.user.name || 'User',
+          email: session.user.email || undefined,
+          avatar_url: session.user.image || generateDefaultAvatar(session.user.email || 'user')
         });
         setMockUsageData();
         setMockAiMetrics();
@@ -221,20 +219,34 @@ export default function DashboardClient() {
           },
           projected_monthly: 49.99
         });
-        return;
+      } else {
+        // Fallback for demo/unauthenticated users (middleware should redirect, but keep for safety)
+        setUser({
+          login: 'demo_user',
+          name: 'Demo User',
+          email: 'demo@example.com',
+          avatar_url: generateDefaultAvatar('demo_user')
+        });
+        setMockUsageData();
+        setMockAiMetrics();
+        setSubscriptionPlan('Free');
+        setCostData({
+          total_cost: 0,
+          currency: 'USD',
+          period: 'current',
+          breakdown: {
+            base_fee: 0,
+            overage_fees: 0,
+            overage_breakdown: {
+              api_credits: 0,
+              llm_tokens: 0,
+              storage_gb: 0,
+              mcp_hours: 0
+            }
+          },
+          projected_monthly: 0
+        });
       }
-
-      // TODO: Implement actual API calls when services are migrated
-      // For now, use mock data
-      setUser({
-        login: 'authenticated_user',
-        name: 'Authenticated User',
-        email: 'user@example.com',
-        avatar_url: generateDefaultAvatar('authenticated_user')
-      });
-      setMockUsageData();
-      setMockAiMetrics();
-      setSubscriptionPlan('Pro');
 
     } catch (err) {
       console.error('Dashboard data load failed:', err);
@@ -244,7 +256,7 @@ export default function DashboardClient() {
     } finally {
       setIsRefreshing(false);
     }
-  }, [setMockAiMetrics, setMockUsageData]);
+  }, [session, setMockAiMetrics, setMockUsageData]);
 
   useEffect(() => {
     setMockAiMetrics();
@@ -266,12 +278,13 @@ export default function DashboardClient() {
     setApiError(`Export functionality coming soon`);
   };
 
-  if (!user) {
+  // Show loading state while session is loading or user data is being fetched
+  if (status === 'loading' || !user) {
     return (
       <div className="flex items-center justify-center min-h-screen text-white bg-[#0D1117]">
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500 mx-auto mb-4"></div>
-          <p>Loading...</p>
+          <p>Loading dashboard...</p>
         </div>
       </div>
     );
