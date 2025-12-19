@@ -20,7 +20,8 @@ const menuSections = [
   {
     title: 'Developer',
     links: [
-      { name: 'Dashboard', to: '/dashboard', icon: Home },
+      { name: 'Overview', to: '/dashboard', icon: Home },
+      { name: 'Main Dashboard', to: '/dashboard/main', icon: BarChart2 },
       { name: 'Agent Swarm', to: '/dashboard/agent-swarm', icon: GitBranch },
       { name: 'Developer Settings', to: '/developer-settings', icon: Code },
       { name: 'Developer Tools', to: '/developer-tools', icon: Wrench },
