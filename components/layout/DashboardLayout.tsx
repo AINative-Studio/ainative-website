@@ -47,7 +47,8 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
 
   // Get page title from pathname
   const getPageTitle = () => {
-    if (pathname === '/dashboard') return 'Dashboard';
+    if (pathname === '/dashboard') return 'Overview';
+    if (pathname === '/dashboard/main') return 'Main Dashboard';
     if (pathname === '/plan') return 'Plan Management';
     if (pathname === '/billing') return 'Billing';
     if (pathname.includes('agent-swarm')) return 'Agent Swarm';
