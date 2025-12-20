@@ -91,7 +91,36 @@ test/                  # Page-specific test scripts
 
 ---
 
+## Parallel Agent Workflow (REQUIRED)
+
+For PRD-driven, spec-driven, TDD, or BDD projects, **always prefer running multiple agents in parallel**:
+
+1. **Analyze the work** - Identify independent workstreams (frontend, backend, tests, docs)
+2. **Launch agents concurrently** - Use Task tool with multiple agents in a single message
+3. **Track progress** - Each agent displays with distinct color showing its current task
+
+### Example Parallel Launch
+```
+When implementing a feature from a PRD:
+- frontend-dev-specialist → UI components
+- backend-api-architect → API endpoints
+- qa-testing-strategist → Test coverage
+- tech-docs-writer → Documentation updates
+```
+
+### Available Agents (23+)
+Run `/agents` to see all configured agents in `~/.claude/agents/`
+
+Key agents for parallel work:
+- `tdd-software-developer` - Test-first implementation
+- `fullstack-architect` - Cross-layer features
+- `security-engineer` - Security review
+- `devops-infrastructure` - CI/CD and deployment
+
+---
+
 ## Related Memories
 
 - Port 3001 convention for secondary services
 - Original Vite SPA in `/home/quaid/Documents/Projects/ainative-studio/src/AINative-website/`
+- Parallel agent workflow preference stored in ZeroDB
