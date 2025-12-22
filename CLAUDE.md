@@ -1,5 +1,19 @@
 # AINative Studio Next.js - Project Memory
 
+---
+## ⛔ CRITICAL: GIT COMMIT RULES - ZERO TOLERANCE
+
+**READ AND FOLLOW: `.claude/rules/git-rules.md`**
+
+**NEVER include in commits, PRs, or GitHub activity:**
+- "Claude" / "Anthropic" / "claude.com"
+- "Generated with Claude" / "Claude Code"
+- "Co-Authored-By: Claude" or any Claude/Anthropic reference
+
+**EVERY commit must be checked before pushing.** Violations require immediate cleanup with force push.
+
+---
+
 **Project**: AINative Studio Marketing Website (Next.js Migration)
 **Tech Stack**: Next.js 16 + TypeScript + Tailwind CSS + shadcn/ui
 **Repository**: ainative-website-nextjs-staging
