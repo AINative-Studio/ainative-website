@@ -6,7 +6,8 @@ import {
   BarChart2, CreditCard, LogOut, Settings, User,
   Bell, Repeat, FileText, Sliders, X,
   ChevronRight, Database, Zap, Code,
-  Server, Wrench, Home, Network, Package, Users, Receipt, GitBranch
+  Server, Wrench, Home, Network, Package, Users, Receipt, GitBranch,
+  Shield
 } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { useIsAdmin } from '@/components/guards/AdminRouteGuard';
@@ -30,6 +31,13 @@ const menuSections = [
       { name: 'API Sandbox', to: '/dashboard/api-sandbox', icon: Package },
       { name: 'Load Testing', to: '/dashboard/load-testing', icon: Zap },
       { name: 'QNN', to: '/dashboard/qnn', icon: Network }
+    ]
+  },
+  {
+    title: 'Admin',
+    adminOnly: true,
+    links: [
+      { name: 'Admin Dashboard', to: '/admin', icon: Shield },
     ]
   },
   {
@@ -91,7 +99,13 @@ export default function Sidebar({ isMobile = false, onClose }: SidebarProps) {
   const sidebarContent = (
     <div className="flex flex-col justify-between h-full">
       <div className="space-y-8">
-        {menuSections.map((section) => (
+        {menuSections.filter((section) => {
+          // Filter out admin-only sections for non-admin users
+          if (section.adminOnly && !isAdmin) {
+            return false;
+          }
+          return true;
+        }).map((section) => (
           <motion.div
             key={section.title}
             initial="hidden"
