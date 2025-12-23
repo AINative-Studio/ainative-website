@@ -7,7 +7,7 @@ import {
   Bell, Repeat, FileText, Sliders, X,
   ChevronRight, Database, Zap, Code,
   Server, Wrench, Home, Network, Package, Users, Receipt, GitBranch,
-  Shield, Cpu, Activity
+  Shield, Cpu, Activity, Brain
 } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { useIsAdmin } from '@/components/guards/AdminRouteGuard';
@@ -25,6 +25,7 @@ const menuSections = [
       { name: 'Main Dashboard', to: '/dashboard/main', icon: BarChart2 },
       { name: 'AI Models', to: '/dashboard/ai-settings', icon: Cpu },
       { name: 'AI Usage', to: '/dashboard/ai-usage', icon: Activity },
+      { name: 'Sessions', to: '/dashboard/sessions', icon: Brain },
       { name: 'Agent Swarm', to: '/dashboard/agent-swarm', icon: GitBranch },
       { name: 'Developer Settings', to: '/developer-settings', icon: Code },
       { name: 'Developer Tools', to: '/developer-tools', icon: Wrench },
