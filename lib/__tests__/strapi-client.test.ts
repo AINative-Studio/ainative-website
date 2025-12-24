@@ -366,16 +366,24 @@ describe('StrapiClient', () => {
 
   describe('TypeScript Types', () => {
     it('should export proper TypeScript interfaces', async () => {
-      const {
-        StrapiResponse,
-        BlogPost,
-        Video,
-        Tutorial,
-        Webinar,
-      } = await import('../strapi-client');
+      // Import the module to verify it exports the strapiClient singleton
+      const module = await import('../strapi-client');
 
-      // Type checking - these should not throw TypeScript errors
-      const blogPost: BlogPost = {
+      // Verify the strapiClient singleton is exported
+      expect(module.strapiClient).toBeDefined();
+      expect(module.default).toBeDefined();
+
+      // Type checking at compile-time - these interfaces are exported and usable
+      // Note: TypeScript interfaces exist only at compile-time, not runtime
+      // This test verifies the module structure is correct
+      type BlogPostType = import('../strapi-client').BlogPost;
+      type VideoType = import('../strapi-client').Video;
+      type TutorialType = import('../strapi-client').Tutorial;
+      type WebinarType = import('../strapi-client').Webinar;
+      type StrapiResponseType<T> = import('../strapi-client').StrapiResponse<T>;
+
+      // Runtime validation of object shapes that conform to the types
+      const blogPost: BlogPostType = {
         id: 1,
         documentId: 'test',
         title: 'Test',
@@ -384,7 +392,7 @@ describe('StrapiClient', () => {
         published_date: '2025-01-01',
       };
 
-      const video: Video = {
+      const video: VideoType = {
         id: 1,
         documentId: 'test',
         title: 'Test Video',

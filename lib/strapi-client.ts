@@ -480,18 +480,3 @@ export default class StrapiClient {
 
 // Export a singleton instance
 export const strapiClient = new StrapiClient();
-
-// Export types
-export type {
-  StrapiResponse,
-  Author,
-  Tag,
-  Category,
-  BlogPost,
-  Video,
-  Tutorial,
-  Webinar,
-  Showcase,
-  Event,
-  QueryParams,
-};
