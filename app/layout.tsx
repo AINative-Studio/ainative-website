@@ -1,10 +1,12 @@
 import type { Metadata } from "next";
-import Script from "next/script";
 import { Geist, Geist_Mono } from "next/font/google";
 import { QueryProvider } from "@/components/providers/QueryProvider";
 import SessionProvider from "@/components/providers/session-provider";
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
+import GoogleTagManager, { GoogleTagManagerNoscript } from "@/components/analytics/GoogleTagManager";
+import ChatwootWidget from "@/components/support/ChatwootWidget";
+import SpeedInsights from "@/components/analytics/SpeedInsights";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -31,9 +33,16 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
+      <head>
+        {/* Google Tag Manager */}
+        <GoogleTagManager />
+      </head>
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
+        {/* GTM noscript fallback */}
+        <GoogleTagManagerNoscript />
+
         <SessionProvider>
           <QueryProvider>
             <Header />
@@ -42,28 +51,9 @@ export default function RootLayout({
           </QueryProvider>
         </SessionProvider>
 
-        {/* Chatwoot Customer Support Widget */}
-        <Script
-          id="chatwoot-widget"
-          strategy="lazyOnload"
-          dangerouslySetInnerHTML={{
-            __html: `
-              (function(d,t) {
-                var BASE_URL="https://chat.ainative.studio";
-                var g=d.createElement(t),s=d.getElementsByTagName(t)[0];
-                g.src=BASE_URL+"/packs/js/sdk.js";
-                g.async = true;
-                s.parentNode.insertBefore(g,s);
-                g.onload=function(){
-                  window.chatwootSDK.run({
-                    websiteToken: 'XfqwZwqj9pcjyrFe4gsPRCff',
-                    baseUrl: BASE_URL
-                  })
-                }
-              })(document,"script");
-            `,
-          }}
-        />
+        {/* Analytics & Support Widgets */}
+        <ChatwootWidget />
+        <SpeedInsights />
       </body>
     </html>
   );
