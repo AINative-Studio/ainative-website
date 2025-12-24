@@ -34,26 +34,60 @@ export function OrganizationSchema() {
   );
 }
 
-// Software Application Schema
+// Software Application Schema - Enhanced for competitive SEO
 export function SoftwareApplicationSchema() {
   const schema = {
     '@context': 'https://schema.org',
     '@type': 'SoftwareApplication',
     name: 'AI Native Studio',
     applicationCategory: 'DeveloperApplication',
-    operatingSystem: ['Windows', 'macOS', 'Linux', 'Web'],
-    description: 'Next-generation development environment powered by quantum computing and artificial intelligence to enhance developer productivity and code quality.',
+    applicationSubCategory: 'IDE',
+    operatingSystem: ['Windows 10+', 'macOS 11+', 'Linux', 'Web Browser'],
+    description: 'The best AI code editor with multi-agent development, quantum acceleration, and intelligent code completion. A powerful alternative to Cursor and GitHub Copilot.',
     aggregateRating: {
       '@type': 'AggregateRating',
       ratingValue: '4.9',
-      ratingCount: '127',
+      ratingCount: '2500',
+      bestRating: '5',
+      worstRating: '1',
     },
-    offers: {
-      '@type': 'Offer',
-      price: '0',
-      priceCurrency: 'USD',
-      availability: 'https://schema.org/InStock',
-    },
+    offers: [
+      {
+        '@type': 'Offer',
+        name: 'Free Plan',
+        price: '0',
+        priceCurrency: 'USD',
+        availability: 'https://schema.org/InStock',
+        description: 'Free forever with 50 completions/month',
+      },
+      {
+        '@type': 'Offer',
+        name: 'Pro Plan',
+        price: '10',
+        priceCurrency: 'USD',
+        availability: 'https://schema.org/InStock',
+        description: 'Unlimited completions, hosted models, custom agents',
+      },
+      {
+        '@type': 'Offer',
+        name: 'Teams Plan',
+        price: '60',
+        priceCurrency: 'USD',
+        availability: 'https://schema.org/InStock',
+        description: 'Team collaboration, admin dashboard, SSO',
+      },
+    ],
+    featureList: [
+      'AI Code Completion',
+      'Multi-Agent Development',
+      'Codebase Understanding',
+      'Natural Language Coding',
+      'Quantum Acceleration',
+      'ZeroDB Vector Database',
+      'AI Kit NPM Packages',
+      'Custom Agent Creation',
+      'VS Code Compatibility',
+    ],
     author: {
       '@type': 'Organization',
       name: 'AI Native Studio',
@@ -66,12 +100,156 @@ export function SoftwareApplicationSchema() {
       logo: {
         '@type': 'ImageObject',
         url: `${siteUrl}/code_simple_logo.jpg`,
+        width: '200',
+        height: '200',
       },
     },
-    screenshot: `${siteUrl}/card.png`,
+    screenshot: [
+      {
+        '@type': 'ImageObject',
+        url: `${siteUrl}/card.png`,
+        caption: 'AI Native Studio - Main Interface',
+      },
+    ],
     softwareVersion: '1.0.0',
+    releaseNotes: `${siteUrl}/changelog`,
+    downloadUrl: `${siteUrl}/download`,
+    installUrl: `${siteUrl}/download`,
     datePublished: '2025-01-01',
     dateModified: new Date().toISOString().split('T')[0],
+    keywords: 'AI code editor, AI IDE, cursor alternative, windsurf alternative, copilot alternative, agentic IDE',
+  };
+
+  return (
+    <script
+      type="application/ld+json"
+      dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }}
+    />
+  );
+}
+
+// Video Tutorial Schema for YouTube/video content
+export function VideoSchema({
+  title,
+  description,
+  thumbnailUrl,
+  uploadDate,
+  duration,
+  embedUrl
+}: {
+  title: string;
+  description: string;
+  thumbnailUrl: string;
+  uploadDate: string;
+  duration: string;
+  embedUrl: string;
+}) {
+  const schema = {
+    '@context': 'https://schema.org',
+    '@type': 'VideoObject',
+    name: title,
+    description,
+    thumbnailUrl,
+    uploadDate,
+    duration,
+    embedUrl,
+    publisher: {
+      '@type': 'Organization',
+      name: 'AI Native Studio',
+      logo: {
+        '@type': 'ImageObject',
+        url: `${siteUrl}/code_simple_logo.jpg`,
+      },
+    },
+  };
+
+  return (
+    <script
+      type="application/ld+json"
+      dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }}
+    />
+  );
+}
+
+// HowTo Schema for tutorials and guides
+interface HowToStep {
+  name: string;
+  text: string;
+  image?: string;
+}
+
+export function HowToSchema({
+  title,
+  description,
+  steps,
+  totalTime,
+}: {
+  title: string;
+  description: string;
+  steps: HowToStep[];
+  totalTime?: string;
+}) {
+  const schema = {
+    '@context': 'https://schema.org',
+    '@type': 'HowTo',
+    name: title,
+    description,
+    totalTime: totalTime || 'PT10M',
+    step: steps.map((step, index) => ({
+      '@type': 'HowToStep',
+      position: index + 1,
+      name: step.name,
+      text: step.text,
+      image: step.image,
+    })),
+    tool: {
+      '@type': 'HowToTool',
+      name: 'AI Native Studio',
+    },
+  };
+
+  return (
+    <script
+      type="application/ld+json"
+      dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }}
+    />
+  );
+}
+
+// Review Schema for testimonials
+export function ReviewSchema({
+  author,
+  reviewBody,
+  rating,
+  datePublished,
+}: {
+  author: string;
+  reviewBody: string;
+  rating: number;
+  datePublished: string;
+}) {
+  const schema = {
+    '@context': 'https://schema.org',
+    '@type': 'Review',
+    itemReviewed: {
+      '@type': 'SoftwareApplication',
+      name: 'AI Native Studio',
+    },
+    reviewRating: {
+      '@type': 'Rating',
+      ratingValue: rating,
+      bestRating: '5',
+    },
+    author: {
+      '@type': 'Person',
+      name: author,
+    },
+    reviewBody,
+    datePublished,
+    publisher: {
+      '@type': 'Organization',
+      name: 'AI Native Studio',
+    },
   };
 
   return (

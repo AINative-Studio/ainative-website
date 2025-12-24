@@ -2,22 +2,28 @@ import { Metadata } from 'next';
 import AIKitClient from './AIKitClient';
 
 export const metadata: Metadata = {
-  title: 'AI Kit - 14 Production-Ready NPM Packages | AINative Studio',
-  description: 'Build AI applications faster with AI Kit - 14 production-ready NPM packages for React, Vue, Svelte & more. Type-safe, framework-agnostic, with built-in observability & vector storage.',
+  title: 'AI Kit - Build Full-Stack AI Apps in Minutes',
+  description: 'Ship AI applications 10x faster with AI Kit. 14 production-ready NPM packages for React, Vue, Svelte. Type-safe, with built-in vector storage, embeddings, and observability.',
   keywords: [
-    'ai kit',
-    'npm packages',
-    'react ai',
-    'vue ai',
-    'svelte ai',
-    'typescript ai',
-    'ai development',
-    'llm framework',
-    'vector database',
-    'ai observability',
-    'ai safety',
-    'ai authentication',
-    'ai testing',
+    // Competitive keywords
+    'AI SDK',
+    'AI npm packages',
+    'build AI apps',
+    'full-stack AI',
+    'AI development kit',
+    // Framework keywords
+    'react AI components',
+    'vue AI integration',
+    'svelte AI',
+    'typescript AI',
+    'next.js AI',
+    // Feature keywords
+    'vector database SDK',
+    'embeddings API',
+    'LLM framework',
+    'AI observability',
+    'AI authentication',
+    'prompt engineering tools',
   ],
   openGraph: {
     title: 'AI Kit - 14 Production-Ready NPM Packages | AINative Studio',

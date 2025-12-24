@@ -2,16 +2,25 @@ import type { Metadata } from 'next';
 import AboutClient from './AboutClient';
 
 export const metadata: Metadata = {
-  title: 'About Us - Building the Future of AI Infrastructure | AINative Studio',
-  description: 'Learn about AINative Studio mission to democratize AI development with powerful, accessible tools that empower developers worldwide.',
+  title: 'About Us - The Team Behind the Best AI Code Editor',
+  description: 'Meet the team building the future of AI-native development. Learn about our mission to make every developer 10x more productive with quantum-enhanced AI tools.',
   keywords: [
+    // Company keywords
     'about AINative Studio',
+    'AI code editor company',
     'AI infrastructure company',
-    'AI development tools',
-    'developer platform',
-    'AI startup',
-    'ZeroDB',
-    'Agent Swarm',
+    'AI development tools startup',
+    // Mission keywords
+    'developer productivity',
+    'AI for developers',
+    'democratizing AI development',
+    // Product keywords
+    'ZeroDB creators',
+    'Agent Swarm developers',
+    'AI Kit maintainers',
+    // Team keywords
+    'AI startup team',
+    'developer tools company',
   ],
   openGraph: {
     title: 'About Us | AINative Studio',

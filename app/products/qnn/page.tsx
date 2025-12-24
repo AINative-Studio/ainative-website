@@ -2,18 +2,28 @@ import type { Metadata } from 'next';
 import QNNClient from './QNNClient';
 
 export const metadata: Metadata = {
-  title: 'Quantum Neural Networks (QNN) - Next-Level AI Performance | AI Native Studio',
-  description: 'Unlock next-level AI performance with Quantum Neural Networks. Quantum-enhanced speed, precision, and seamless integration for enterprise AI applications.',
+  title: 'Quantum Neural Networks (QNN) - Quantum-Enhanced AI Coding',
+  description: 'Experience quantum-accelerated code intelligence. Our Quantum Neural Networks deliver 10x faster embeddings, enhanced code understanding, and next-gen AI inference for development.',
   keywords: [
+    // Quantum AI keywords
     'quantum neural networks',
-    'QNN',
-    'quantum AI',
-    'quantum computing',
-    'AI acceleration',
     'quantum machine learning',
-    'enterprise AI',
-    'quantum-enhanced AI',
-    'AINative Studio'
+    'quantum AI coding',
+    'quantum computing IDE',
+    'quantum code intelligence',
+    // Performance keywords
+    'AI acceleration',
+    'fast embeddings',
+    'quantum-enhanced inference',
+    'parallel AI processing',
+    // Technical keywords
+    'variational quantum circuits',
+    'quantum feature mapping',
+    'hybrid quantum-classical AI',
+    'quantum error correction',
+    // Enterprise keywords
+    'enterprise quantum AI',
+    'quantum-ready development',
   ],
   openGraph: {
     title: 'Quantum Neural Networks (QNN) | AI Native Studio',

@@ -2,19 +2,32 @@ import type { Metadata } from 'next';
 import ZeroDBClient from './ZeroDBClient';
 
 export const metadata: Metadata = {
-  title: 'ZeroDB - AI-Native Vector Database | AINative Studio',
-  description: 'High-performance vector database built for AI applications. Semantic search, embeddings storage, and real-time similarity matching with enterprise-grade security.',
+  title: 'ZeroDB - Vector Database for AI Apps | Pinecone Alternative',
+  description: 'High-performance vector database built for AI applications. Store embeddings, build RAG apps, and run semantic search at scale. Free tier with 100K vectors.',
   keywords: [
+    // Competitive vector database keywords
     'vector database',
-    'ZeroDB',
-    'semantic search',
-    'embeddings',
-    'AI database',
+    'pinecone alternative',
+    'weaviate alternative',
+    'qdrant alternative',
+    'chromadb alternative',
+    'milvus alternative',
+    // Feature keywords
+    'semantic search database',
+    'embeddings storage',
     'similarity search',
-    'vector storage',
     'RAG database',
     'AI-native database',
-    'AINative Studio',
+    'vector embeddings API',
+    // Use case keywords
+    'LLM memory storage',
+    'AI application database',
+    'machine learning database',
+    'neural search engine',
+    // Technical keywords
+    'real-time vector search',
+    'hybrid search database',
+    'multi-tenant vector DB',
   ],
   openGraph: {
     title: 'ZeroDB - AI-Native Vector Database | AINative Studio',

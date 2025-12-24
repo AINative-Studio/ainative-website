@@ -2,16 +2,25 @@ import { Metadata } from 'next';
 import PricingClient from './PricingClient';
 
 export const metadata: Metadata = {
-  title: 'Pricing - Simple, Transparent Pricing | AINative Studio',
-  description: 'Choose a plan tailored for your team size and development stage. From free tier for hobbyists to enterprise solutions for large organizations.',
+  title: 'Pricing - Free AI Code Editor & Pro Plans',
+  description: 'Start free with AI Native Studio. Get unlimited AI code completions, multi-agent development, and quantum-enhanced features. Pro from $10/mo, Teams from $60/mo.',
   keywords: [
-    'pricing',
-    'AI development pricing',
+    // Competitive pricing keywords
+    'AI code editor pricing',
+    'free AI coding assistant',
     'AI IDE pricing',
-    'developer tools pricing',
-    'AI Native Studio plans',
+    'cursor alternative pricing',
+    'windsurf alternative',
+    'AI development tools pricing',
+    // Plan keywords
     'free AI tools',
+    'pro AI coding plan',
     'enterprise AI solutions',
+    'team AI development',
+    // Feature keywords
+    'unlimited code completions',
+    'AI agent pricing',
+    'quantum IDE pricing',
   ],
   openGraph: {
     title: 'Pricing - Simple, Transparent Pricing | AINative Studio',

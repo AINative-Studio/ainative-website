@@ -2,9 +2,25 @@ import { Metadata } from 'next';
 import DocsClient from './DocsClient';
 
 export const metadata: Metadata = {
-  title: 'Documentation | AINative Studio',
-  description: 'Complete documentation for AINative Studio. Getting started guides, API reference, tutorials, and CLI documentation for AI-powered development tools.',
-  keywords: ['documentation', 'docs', 'API', 'tutorials', 'getting started', 'CLI', 'AINative Studio'],
+  title: 'Documentation - AI Code Editor Guides & API Reference',
+  description: 'Complete documentation for AI Native Studio. Getting started in 5 minutes, API reference, tutorials, SDK guides, and CLI documentation for the best AI coding platform.',
+  keywords: [
+    // Documentation keywords
+    'AI code editor documentation',
+    'AI IDE docs',
+    'API reference',
+    'SDK documentation',
+    // Getting started keywords
+    'getting started AI coding',
+    'AI IDE tutorial',
+    'code completion setup',
+    'AI coding quickstart',
+    // Technical docs
+    'ZeroDB API docs',
+    'AI Kit documentation',
+    'CLI reference',
+    'integration guides',
+  ],
   openGraph: {
     title: 'Documentation | AINative Studio',
     description: 'Complete documentation for AINative Studio. Getting started guides, API reference, tutorials, and CLI documentation.',

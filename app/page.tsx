@@ -2,20 +2,36 @@ import { Metadata } from 'next';
 import HomeClient from './HomeClient';
 
 export const metadata: Metadata = {
-  title: 'AI Native Studio - AI-Powered Development Platform for Founders, Developers & Builders',
-  description: 'Empower your team with memory-powered agents, blazing-fast infrastructure, and a quantum-accelerated IDE experience. Build AI applications with ZeroDB, AI Kit NPM packages, and enterprise-grade tools.',
+  title: 'AI Native Studio - The Best AI Code Editor | Cursor & Windsurf Alternative',
+  description: 'The AI-native IDE with multi-agent development, quantum acceleration, and memory-powered coding. Free forever. Build 10x faster with intelligent code completion, codebase understanding, and agentic workflows.',
   keywords: [
-    'AI development platform',
-    'AI Native Studio',
-    'AI IDE',
-    'vector database',
-    'ZeroDB',
-    'AI Kit',
-    'NPM packages',
-    'embeddings API',
-    'AI agents',
-    'quantum computing',
-    'developer tools',
+    // Primary competitive keywords
+    'AI code editor',
+    'best AI IDE',
+    'cursor alternative',
+    'windsurf alternative',
+    'github copilot alternative',
+    'codeium alternative',
+    // Action keywords
+    'AI coding assistant',
+    'AI pair programming',
+    'code completion AI',
+    'intelligent code generation',
+    'prompt to code',
+    'natural language coding',
+    // Feature keywords
+    'agentic IDE',
+    'multi-agent development',
+    'AI agent swarm',
+    'codebase understanding',
+    'context-aware coding',
+    // Product keywords
+    'ZeroDB vector database',
+    'AI Kit NPM packages',
+    'quantum-enhanced IDE',
+    // Free/pricing keywords
+    'free AI code editor',
+    'AI IDE free tier',
   ],
   openGraph: {
     title: 'AI Native Studio - The AI-Powered Development Platform',

@@ -2,19 +2,31 @@ import type { Metadata } from 'next';
 import EnterpriseClient from './EnterpriseClient';
 
 export const metadata: Metadata = {
-  title: 'Enterprise AI Development Platform | AI Native Studio',
-  description: 'Quantum-enabled AI for enterprise teams. Accelerate software delivery with secure, memory-native AI that works across your SDLC. Self-hosted, compliant, and built for scale.',
+  title: 'Enterprise AI Development Platform - Secure AI Code Editor for Teams',
+  description: 'Enterprise-grade AI development platform with SOC2 compliance, SSO, and on-premise deployment. Accelerate software delivery with secure, memory-native AI across your SDLC.',
   keywords: [
-    'enterprise AI',
+    // Competitive enterprise keywords
+    'enterprise AI development',
+    'enterprise AI code editor',
+    'secure AI coding platform',
     'AI development platform',
-    'enterprise software development',
-    'quantum AI',
-    'secure AI',
+    'enterprise code completion',
+    // Security & compliance
+    'SOC2 compliant AI',
+    'on-premise AI IDE',
+    'self-hosted AI coding',
+    'enterprise SSO integration',
+    'air-gapped AI development',
+    // Feature keywords
     'SDLC automation',
     'code review automation',
     'enterprise compliance',
-    'self-hosted AI',
-    'AINative Studio'
+    'team AI coding',
+    'private cloud AI',
+    // Competitive alternatives
+    'cursor enterprise alternative',
+    'github copilot enterprise',
+    'enterprise codeium alternative',
   ],
   openGraph: {
     title: 'Enterprise AI Development Platform | AI Native Studio',
