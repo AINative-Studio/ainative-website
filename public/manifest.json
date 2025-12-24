@@ -1,0 +1,26 @@
+{
+  "name": "AI Native Studio",
+  "short_name": "AI Native",
+  "description": "Quantum-Enhanced Development Environment for Modern Developers",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0a0a0a",
+  "theme_color": "#4B6FED",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "/code_simple_logo.jpg",
+      "sizes": "192x192",
+      "type": "image/jpeg"
+    },
+    {
+      "src": "/code_simple_logo.jpg",
+      "sizes": "512x512",
+      "type": "image/jpeg"
+    }
+  ],
+  "categories": ["developer tools", "productivity", "utilities"],
+  "lang": "en-US",
+  "scope": "/",
+  "prefer_related_applications": false
+}

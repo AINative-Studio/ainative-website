@@ -1,7 +1,7 @@
 # AINative Studio Next.js - Project Memory
 
 ---
-## ⛔ CRITICAL: GIT COMMIT RULES - ZERO TOLERANCE
+## CRITICAL: GIT COMMIT RULES - ZERO TOLERANCE
 
 **READ AND FOLLOW: `.claude/rules/git-rules.md`**
 
@@ -17,7 +17,86 @@
 **Project**: AINative Studio Marketing Website (Next.js Migration)
 **Tech Stack**: Next.js 16 + TypeScript + Tailwind CSS + shadcn/ui
 **Repository**: ainative-website-nextjs-staging
-**Last Updated**: 2025-12-09
+**Last Updated**: 2025-12-24
+
+---
+
+## MCP Servers (Required for Development)
+
+This project uses the following MCP servers configured in `~/.claude/settings.json`:
+
+### ZeroDB MCP Server
+- **Purpose**: Vector database, embeddings, agent memory, RLHF
+- **Package**: `ainative-zerodb-mcp-server`
+- **Key Tools**:
+  - `zerodb_semantic_search` - Search vectors
+  - `zerodb_store_memory` - Persist agent context
+  - `zerodb_embed_and_store` - Store embeddings
+
+### GitHub MCP Server
+- **Purpose**: GitHub API integration for issues, PRs, commits
+- **Package**: `@modelcontextprotocol/server-github`
+
+### Sequential Thinking MCP Server
+- **Purpose**: Complex multi-step reasoning
+- **Package**: `@modelcontextprotocol/server-sequential-thinking`
+
+### Memory MCP Server
+- **Purpose**: Persistent knowledge graph
+- **Package**: `@modelcontextprotocol/server-memory`
+
+### Filesystem MCP Server
+- **Purpose**: Extended file access
+- **Package**: `@modelcontextprotocol/server-filesystem`
+
+---
+
+## Project Agents (`.claude/agents/`)
+
+Specialized agents available for parallel work:
+
+| Agent | Purpose | Color |
+|-------|---------|-------|
+| `frontend-ux-architect` | UI/UX design and implementation | cyan |
+| `frontend-ui-builder` | Component building | - |
+| `backend-api-architect` | API design and TDD | - |
+| `devops-orchestrator` | CI/CD and deployment | - |
+| `qa-bug-hunter` | QA testing and bug detection | - |
+| `test-automation-specialist` | Test coverage and TDD | - |
+| `playwright-frontend-qa` | E2E browser testing | - |
+| `system-architect` | System design | - |
+| `quantum-computing-expert` | Quantum algorithms | - |
+| `ux-research-investigator` | User research | - |
+
+---
+
+## SEO Implementation (SSR-Enabled)
+
+### Root Layout (`app/layout.tsx`)
+- Comprehensive `metadata` export with Open Graph, Twitter Cards
+- Structured Data via `components/seo/StructuredData.tsx`
+- JSON-LD schemas: Organization, SoftwareApplication, WebSite
+
+### Per-Page Metadata Pattern
+```tsx
+// app/[page]/page.tsx
+export const metadata: Metadata = {
+  title: 'Page Title', // Uses template: '%s | AI Native Studio'
+  description: 'Page description',
+  openGraph: { ... },
+  twitter: { ... },
+};
+```
+
+### SEO Assets (`public/`)
+- `card.png` - OG/Twitter share image (1200x630)
+- `code_simple_logo.jpg` - Favicon and app icon
+- `manifest.json` - PWA manifest
+
+### Structured Data Components
+```tsx
+import { BreadcrumbSchema, FAQSchema, ProductSchema, ArticleSchema } from '@/components/seo/StructuredData';
+```
 
 ---
 
@@ -30,7 +109,7 @@
   - Always maintain port 3000 during development sessions
   - Run: `pkill -f "next" && npm run dev` to reclaim the port
 
-- **Port 3001**: Reserved for other local services (see related conventions)
+- **Port 3001**: Reserved for other local services
 
 ### Local Development Workflow
 
@@ -43,6 +122,9 @@ npm run dev
 
 # Build verification before commit
 npm run lint && npm run type-check && npm run build
+
+# Run tests
+npm test
 ```
 
 ### Pre-Commit Checklist
@@ -50,7 +132,7 @@ npm run lint && npm run type-check && npm run build
 1. Run `npm run lint` - must pass (warnings OK, no errors)
 2. Run `npm run type-check` - must pass
 3. Run `npm run build` - must succeed
-4. Run page-specific test script if exists (e.g., `./test/issue-92-agent-swarm.test.sh`)
+4. Run `npm test` - all tests must pass
 
 ---
 
@@ -83,16 +165,33 @@ When migrating pages from the original Vite SPA:
 
 ```
 app/                    # Next.js App Router pages
+  layout.tsx           # Root layout with SEO metadata
+  sitemap.ts           # Dynamic sitemap generation
+  robots.ts            # Robots.txt configuration
 components/
   layout/              # Header, Footer, navigation
   ui/                  # shadcn/ui components
+  seo/                 # SEO components (StructuredData)
 lib/
   config/app.ts        # Centralized app configuration
   api-client.ts        # HTTP client for API calls
   env.ts               # Environment variable validation
 services/
   pricingService.ts    # Stripe checkout integration
+  apiKeyService.ts     # API key management
+  creditService.ts     # Credit system
+  usageService.ts      # Usage tracking
+  subscriptionService.ts # Subscription management
+  userSettingsService.ts # User settings
+  billingService.ts    # Billing operations
 test/                  # Page-specific test scripts
+public/
+  card.png             # OG share image
+  code_simple_logo.jpg # Logo/favicon
+  manifest.json        # PWA manifest
+.claude/
+  agents/              # Specialized agent definitions
+  rules/               # Git and project rules
 ```
 
 ---
@@ -116,25 +215,16 @@ For PRD-driven, spec-driven, TDD, or BDD projects, **always prefer running multi
 ### Example Parallel Launch
 ```
 When implementing a feature from a PRD:
-- frontend-dev-specialist → UI components
+- frontend-ux-architect → UI components
 - backend-api-architect → API endpoints
-- qa-testing-strategist → Test coverage
-- tech-docs-writer → Documentation updates
+- test-automation-specialist → Test coverage
+- devops-orchestrator → Deployment config
 ```
-
-### Available Agents (23+)
-Run `/agents` to see all configured agents in `~/.claude/agents/`
-
-Key agents for parallel work:
-- `tdd-software-developer` - Test-first implementation
-- `fullstack-architect` - Cross-layer features
-- `security-engineer` - Security review
-- `devops-infrastructure` - CI/CD and deployment
 
 ---
 
-## Related Memories
+## Original Site Reference
 
-- Port 3001 convention for secondary services
-- Original Vite SPA in `/home/quaid/Documents/Projects/ainative-studio/src/AINative-website/`
-- Parallel agent workflow preference stored in ZeroDB
+- **Location**: `/Users/tobymorning/Desktop/AINative-website-main/`
+- **SEO Reference**: `index.html` contains full OG/Twitter/Schema markup
+- **Assets**: `public/` folder has `card.png`, `code_simple_logo.jpg`
