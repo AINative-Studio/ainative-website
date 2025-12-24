@@ -5,6 +5,7 @@ import SessionProvider from "@/components/providers/session-provider";
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
 import GoogleTagManager, { GoogleTagManagerNoscript } from "@/components/analytics/GoogleTagManager";
+import GoogleAnalytics from "@/components/analytics/GoogleAnalytics";
 import ChatwootWidget from "@/components/support/ChatwootWidget";
 import SpeedInsights from "@/components/analytics/SpeedInsights";
 import StructuredData from "@/components/seo/StructuredData";
@@ -118,7 +119,9 @@ export default function RootLayout({
   return (
     <html lang="en">
       <head>
-        {/* Google Tag Manager */}
+        {/* Google Analytics 4 (GA4) - Primary Analytics */}
+        <GoogleAnalytics />
+        {/* Google Tag Manager - For additional tag management */}
         <GoogleTagManager />
         {/* JSON-LD Structured Data for SEO */}
         <StructuredData />
