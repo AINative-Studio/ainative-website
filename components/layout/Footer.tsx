@@ -8,10 +8,10 @@ const Footer = () => {
     <footer className="bg-[#0B0F1A] py-12">
       <div className="container max-w-7xl mx-auto px-4">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
-          <div>
+          {/* Brand Section - spans 2 columns like original */}
+          <div className="col-span-1 md:col-span-2">
             <span className="text-2xl font-bold text-white mb-4 block">
-              <span className="text-[#FF6B00]">AI</span>
-              <span className="text-primary">Native</span>
+              <span className="text-[#FF6B00]">⚡</span>AI<span className="text-primary">Native</span>
             </span>
             <p className="text-gray-400 text-sm mb-6 max-w-md">
               Build the future with AI-native development tools powered by quantum neural networks.
@@ -42,6 +42,7 @@ const Footer = () => {
             </div>
           </div>
 
+          {/* PRODUCT Section - matches original */}
           <div>
             <h3 className="text-sm font-semibold text-white uppercase tracking-wider mb-4">PRODUCT</h3>
             <ul className="space-y-3">
@@ -61,8 +62,8 @@ const Footer = () => {
                 </a>
               </li>
               <li>
-                <Link href="/agent-swarm" className="text-gray-400 hover:text-primary text-sm transition-colors">
-                  Agent Swarm
+                <Link href="/enterprise" className="text-gray-400 hover:text-primary text-sm transition-colors">
+                  Enterprise
                 </Link>
               </li>
               <li>
@@ -70,51 +71,21 @@ const Footer = () => {
                   Pricing
                 </Link>
               </li>
-            </ul>
-          </div>
-
-          <div>
-            <h3 className="text-sm font-semibold text-white uppercase tracking-wider mb-4">COMMUNITY</h3>
-            <ul className="space-y-3">
               <li>
-                <Link href="/tutorials" className="text-gray-400 hover:text-primary text-sm transition-colors">
-                  Tutorials
-                </Link>
-              </li>
-              <li>
-                <Link href="/blog" className="text-gray-400 hover:text-primary text-sm transition-colors">
-                  Blog
-                </Link>
-              </li>
-              <li>
-                <Link href="/webinars" className="text-gray-400 hover:text-primary text-sm transition-colors">
-                  Webinars
-                </Link>
-              </li>
-              <li>
-                <Link href="/showcases" className="text-gray-400 hover:text-primary text-sm transition-colors">
-                  Showcases
-                </Link>
-              </li>
-              <li>
-                <Link href="/community/videos" className="text-gray-400 hover:text-primary text-sm transition-colors">
-                  Community Videos
+                <Link href="/dev-resources" className="text-gray-400 hover:text-primary text-sm transition-colors">
+                  Developer Resources
                 </Link>
               </li>
             </ul>
           </div>
 
+          {/* COMPANY Section - matches original */}
           <div>
             <h3 className="text-sm font-semibold text-white uppercase tracking-wider mb-4">COMPANY</h3>
             <ul className="space-y-3">
               <li>
                 <Link href="/about" className="text-gray-400 hover:text-primary text-sm transition-colors">
                   About
-                </Link>
-              </li>
-              <li>
-                <Link href="/enterprise" className="text-gray-400 hover:text-primary text-sm transition-colors">
-                  Enterprise
                 </Link>
               </li>
               <li>

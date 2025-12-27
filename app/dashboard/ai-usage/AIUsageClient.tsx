@@ -7,9 +7,9 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
-import { aiRegistryService } from '@/lib/ai-registry-service';
+import { aiRegistryService, type ExportUsageParams, type UsageQueryParams, type ProviderUsage, type ModelUsage, type DailyUsageEntry } from '@/lib/ai-registry-service';
 import { BarChart, Bar, LineChart, Line, PieChart, Pie, Cell, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
-import { Activity, TrendingUp, DollarSign, Zap, Download, Calendar, Brain } from 'lucide-react';
+import { Activity, DollarSign, Zap, Download, Calendar, Brain } from 'lucide-react';
 
 const fadeUp = {
   hidden: { opacity: 0, y: 20 },
@@ -53,14 +53,14 @@ export default function AIUsageClient() {
 
   // Export mutation
   const exportMutation = useMutation({
-    mutationFn: (params: any) => aiRegistryService.exportUsageData(params),
+    mutationFn: (params: ExportUsageParams) => aiRegistryService.exportUsageData(params),
     onSuccess: (data) => {
       window.open(data.download_url, '_blank');
     },
   });
 
   const handleDateRangeChange = () => {
-    const params: any = {};
+    const params: UsageQueryParams = {};
     if (startDate) params.start_date = startDate;
     if (endDate) params.end_date = endDate;
     setDateRange(params);
@@ -89,21 +89,21 @@ export default function AIUsageClient() {
   const dailyUsage = dailyData?.daily_usage || [];
 
   // Format data for charts
-  const providerChartData = summary.by_provider.map((p: any) => ({
+  const providerChartData = summary.by_provider.map((p: ProviderUsage) => ({
     name: p.provider,
     requests: p.requests,
     tokens: p.tokens,
     cost: p.cost,
   }));
 
-  const modelChartData = modelUsage.map((m: any) => ({
+  const modelChartData = modelUsage.map((m: ModelUsage) => ({
     name: m.model_name,
     requests: m.requests,
     tokens: m.tokens,
     cost: m.cost,
   }));
 
-  const dailyChartData = dailyUsage.map((d: any) => ({
+  const dailyChartData = dailyUsage.map((d: DailyUsageEntry) => ({
     date: new Date(d.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }),
     requests: d.requests,
     tokens: d.tokens,
@@ -261,7 +261,7 @@ export default function AIUsageClient() {
                     fill="#8884d8"
                     dataKey="requests"
                   >
-                    {providerChartData.map((entry: any, index: number) => (
+                    {providerChartData.map((_entry, index: number) => (
                       <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                     ))}
                   </Pie>
@@ -383,7 +383,7 @@ export default function AIUsageClient() {
                   </tr>
                 </thead>
                 <tbody>
-                  {modelUsage.map((model: any) => (
+                  {modelUsage.map((model: ModelUsage) => (
                     <tr key={model.model_id} className="border-b hover:bg-muted/50">
                       <td className="py-3 px-4 font-medium">{model.model_name}</td>
                       <td className="py-3 px-4">

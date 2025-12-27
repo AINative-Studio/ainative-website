@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion } from 'framer-motion';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -25,8 +25,6 @@ import {
   TrendingUp,
 } from 'lucide-react';
 import {
-  LineChart,
-  Line,
   XAxis,
   YAxis,
   CartesianGrid,
@@ -120,14 +118,17 @@ export default function EmailManagementClient() {
   // Update form when settings are loaded
   useEffect(() => {
     if (settings) {
-      setSettingsForm({
-        smtpHost: settings.smtpHost,
-        smtpPort: settings.smtpPort,
-        smtpUser: settings.smtpUser,
-        smtpPassword: '',
-        smtpSecure: settings.smtpSecure,
-        fromEmail: settings.fromEmail,
-        fromName: settings.fromName,
+      // Use microtask to avoid setState during render
+      Promise.resolve().then(() => {
+        setSettingsForm({
+          smtpHost: settings.smtpHost,
+          smtpPort: settings.smtpPort,
+          smtpUser: settings.smtpUser,
+          smtpPassword: '',
+          smtpSecure: settings.smtpSecure,
+          fromEmail: settings.fromEmail,
+          fromName: settings.fromName,
+        });
       });
     }
   }, [settings]);

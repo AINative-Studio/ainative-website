@@ -32,106 +32,50 @@ interface TrustSignalsProps {
   className?: string;
 }
 
+const containerVariants = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: {
+      staggerChildren: 0.1,
+    },
+  },
+};
+
+const itemVariants = {
+  hidden: { opacity: 0, y: 20 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: { duration: 0.5 },
+  },
+};
+
 export default function TrustSignals({ variant = 'full', className = '' }: TrustSignalsProps) {
-  const containerVariants = {
-    hidden: { opacity: 0 },
-    visible: {
-      opacity: 1,
-      transition: {
-        staggerChildren: 0.1,
-      },
-    },
-  };
-
-  const itemVariants = {
-    hidden: { opacity: 0, y: 20 },
-    visible: {
-      opacity: 1,
-      y: 0,
-      transition: { duration: 0.5 },
-    },
-  };
-
-  // Stats Section
-  const StatsSection = () => (
-    <motion.div
-      variants={containerVariants}
-      initial="hidden"
-      whileInView="visible"
-      viewport={{ once: true }}
-      className="grid grid-cols-2 md:grid-cols-4 gap-8"
-    >
-      {stats.map((stat, index) => (
-        <motion.div
-          key={index}
-          variants={itemVariants}
-          className="text-center"
-        >
-          <div className="text-4xl md:text-5xl font-bold bg-gradient-to-r from-purple-400 to-blue-500 bg-clip-text text-transparent">
-            {stat.value}
-          </div>
-          <div className="text-white font-semibold mt-2">{stat.label}</div>
-          <div className="text-gray-400 text-sm">{stat.description}</div>
-        </motion.div>
-      ))}
-    </motion.div>
-  );
-
-  // Trusted By Section
-  const TrustedBySection = () => (
-    <motion.div
-      variants={containerVariants}
-      initial="hidden"
-      whileInView="visible"
-      viewport={{ once: true }}
-      className="text-center"
-    >
-      <motion.p variants={itemVariants} className="text-gray-400 text-sm uppercase tracking-wider mb-6">
-        Backed by & Featured in
-      </motion.p>
-      <motion.div
-        variants={containerVariants}
-        className="flex flex-wrap justify-center items-center gap-8 md:gap-12"
-      >
-        {trustedBy.map((company, index) => (
-          <motion.div
-            key={index}
-            variants={itemVariants}
-            className="text-gray-500 hover:text-gray-300 transition-colors text-lg font-medium"
-          >
-            {company}
-          </motion.div>
-        ))}
-      </motion.div>
-    </motion.div>
-  );
-
-  // Trust Badges Section
-  const TrustBadgesSection = () => (
-    <motion.div
-      variants={containerVariants}
-      initial="hidden"
-      whileInView="visible"
-      viewport={{ once: true }}
-      className="flex flex-wrap justify-center gap-4 md:gap-8"
-    >
-      {trustBadges.map((badge, index) => (
-        <motion.div
-          key={index}
-          variants={itemVariants}
-          className="flex items-center gap-2 bg-gray-800/50 rounded-full px-4 py-2 border border-gray-700"
-        >
-          <span className="text-xl">{badge.icon}</span>
-          <span className="text-gray-300 text-sm font-medium">{badge.label}</span>
-        </motion.div>
-      ))}
-    </motion.div>
-  );
-
   if (variant === 'stats-only') {
     return (
       <div className={`py-12 ${className}`}>
-        <StatsSection />
+        <motion.div
+          variants={containerVariants}
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true }}
+          className="grid grid-cols-2 md:grid-cols-4 gap-8"
+        >
+          {stats.map((stat) => (
+            <motion.div
+              key={stat.label}
+              variants={itemVariants}
+              className="text-center"
+            >
+              <div className="text-4xl md:text-5xl font-bold bg-gradient-to-r from-purple-400 to-blue-500 bg-clip-text text-transparent">
+                {stat.value}
+              </div>
+              <div className="text-white font-semibold mt-2">{stat.label}</div>
+              <div className="text-gray-400 text-sm">{stat.description}</div>
+            </motion.div>
+          ))}
+        </motion.div>
       </div>
     );
   }
@@ -139,7 +83,31 @@ export default function TrustSignals({ variant = 'full', className = '' }: Trust
   if (variant === 'logos-only') {
     return (
       <div className={`py-12 ${className}`}>
-        <TrustedBySection />
+        <motion.div
+          variants={containerVariants}
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true }}
+          className="text-center"
+        >
+          <motion.p variants={itemVariants} className="text-gray-400 text-sm uppercase tracking-wider mb-6">
+            Backed by & Featured in
+          </motion.p>
+          <motion.div
+            variants={containerVariants}
+            className="flex flex-wrap justify-center items-center gap-8 md:gap-12"
+          >
+            {trustedBy.map((company) => (
+              <motion.div
+                key={company}
+                variants={itemVariants}
+                className="text-gray-500 hover:text-gray-300 transition-colors text-lg font-medium"
+              >
+                {company}
+              </motion.div>
+            ))}
+          </motion.div>
+        </motion.div>
       </div>
     );
   }
@@ -148,8 +116,8 @@ export default function TrustSignals({ variant = 'full', className = '' }: Trust
     return (
       <div className={`py-8 ${className}`}>
         <div className="flex flex-wrap justify-center gap-6 text-gray-400 text-sm">
-          {stats.map((stat, index) => (
-            <div key={index} className="flex items-center gap-2">
+          {stats.map((stat) => (
+            <div key={stat.label} className="flex items-center gap-2">
               <span className="text-white font-bold">{stat.value}</span>
               <span>{stat.label}</span>
             </div>
@@ -164,16 +132,77 @@ export default function TrustSignals({ variant = 'full', className = '' }: Trust
     <section className={`py-16 md:py-24 ${className}`}>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-16">
         {/* Stats */}
-        <StatsSection />
+        <motion.div
+          variants={containerVariants}
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true }}
+          className="grid grid-cols-2 md:grid-cols-4 gap-8"
+        >
+          {stats.map((stat) => (
+            <motion.div
+              key={stat.label}
+              variants={itemVariants}
+              className="text-center"
+            >
+              <div className="text-4xl md:text-5xl font-bold bg-gradient-to-r from-purple-400 to-blue-500 bg-clip-text text-transparent">
+                {stat.value}
+              </div>
+              <div className="text-white font-semibold mt-2">{stat.label}</div>
+              <div className="text-gray-400 text-sm">{stat.description}</div>
+            </motion.div>
+          ))}
+        </motion.div>
 
         {/* Divider */}
         <div className="border-t border-gray-800" />
 
         {/* Trusted By */}
-        <TrustedBySection />
+        <motion.div
+          variants={containerVariants}
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true }}
+          className="text-center"
+        >
+          <motion.p variants={itemVariants} className="text-gray-400 text-sm uppercase tracking-wider mb-6">
+            Backed by & Featured in
+          </motion.p>
+          <motion.div
+            variants={containerVariants}
+            className="flex flex-wrap justify-center items-center gap-8 md:gap-12"
+          >
+            {trustedBy.map((company) => (
+              <motion.div
+                key={company}
+                variants={itemVariants}
+                className="text-gray-500 hover:text-gray-300 transition-colors text-lg font-medium"
+              >
+                {company}
+              </motion.div>
+            ))}
+          </motion.div>
+        </motion.div>
 
         {/* Trust Badges */}
-        <TrustBadgesSection />
+        <motion.div
+          variants={containerVariants}
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true }}
+          className="flex flex-wrap justify-center gap-4 md:gap-8"
+        >
+          {trustBadges.map((badge) => (
+            <motion.div
+              key={badge.label}
+              variants={itemVariants}
+              className="flex items-center gap-2 bg-gray-800/50 rounded-full px-4 py-2 border border-gray-700"
+            >
+              <span className="text-xl">{badge.icon}</span>
+              <span className="text-gray-300 text-sm font-medium">{badge.label}</span>
+            </motion.div>
+          ))}
+        </motion.div>
       </div>
     </section>
   );
@@ -273,7 +302,7 @@ export function RatingBadge({
     >
       <div className="flex">
         {stars.map((filled, i) => (
-          <span key={i} className={filled ? 'text-yellow-400' : 'text-gray-600'}>
+          <span key={`star-${i}`} className={filled ? 'text-yellow-400' : 'text-gray-600'}>
             ★
           </span>
         ))}

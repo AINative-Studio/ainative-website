@@ -1,0 +1,12 @@
+<svg width="100" height="100" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Chat bubble outline -->
+  <path d="M20 25C20 21.6863 22.6863 19 26 19H64C67.3137 19 70 21.6863 70 25V55C70 58.3137 67.3137 61 64 61H35L20 71V25Z" stroke="white" stroke-width="3" stroke-linejoin="round"/>
+
+  <!-- Code brackets -->
+  <path d="M35 35L28 45L35 55" stroke="#7B9BFF" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M55 35L62 45L55 55" stroke="#7B9BFF" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+
+  <!-- Dots -->
+  <circle cx="45" cy="42" r="2" fill="#7B9BFF"/>
+  <circle cx="45" cy="48" r="2" fill="#7B9BFF"/>
+</svg>

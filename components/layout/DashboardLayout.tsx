@@ -30,14 +30,20 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
 
   // Auto-close sidebar on route change in mobile view
   useEffect(() => {
-    if (isMobile) setSidebarOpen(false);
+    if (isMobile) {
+      setSidebarOpen(false);
+    }
+  // Intentionally calling setState on route/mobile changes
+  // eslint-disable-next-line react-hooks/set-state-in-effect
   }, [pathname, isMobile]);
 
   // Close if clicking outside on mobile
   useEffect(() => {
+    if (!isMobile || !sidebarOpen) return;
+
     const handleClickOutside = (e: MouseEvent) => {
       const target = e.target as HTMLElement;
-      if (isMobile && sidebarOpen && !target.closest('.sidebar-container')) {
+      if (!target.closest('.sidebar-container')) {
         setSidebarOpen(false);
       }
     };

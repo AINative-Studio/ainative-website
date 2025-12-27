@@ -65,13 +65,13 @@ export interface VectorQuery {
   vector: number[];
   top_k: number;
   include_metadata?: boolean;
-  filter?: Record<string, any>;
+  filter?: Record<string, unknown>;
 }
 
 export interface QueryResult {
   id: string;
   score: number;
-  metadata?: Record<string, any>;
+  metadata?: Record<string, unknown>;
   vector?: number[];
 }
 

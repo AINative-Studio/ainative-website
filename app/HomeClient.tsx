@@ -96,7 +96,10 @@ export default function HomeClient() {
 
   // Ensure client-side only scroll animations
   useEffect(() => {
-    setIsMounted(true);
+    // Use a microtask to avoid setState during render
+    Promise.resolve().then(() => {
+      setIsMounted(true);
+    });
   }, []);
 
   const { scrollYProgress } = useScroll({
