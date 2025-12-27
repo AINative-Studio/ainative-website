@@ -111,7 +111,7 @@ export interface ExportResponse {
 export interface ContextQuery {
   query: string;
   max_results: number;
-  filters?: Record<string, any>;
+  filters?: Record<string, unknown>;
 }
 
 export interface ContextResult {

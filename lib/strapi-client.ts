@@ -31,7 +31,7 @@ export interface Author {
   name: string;
   slug: string;
   bio?: string;
-  avatar?: any;
+  avatar?: unknown;
 }
 
 /**
@@ -125,8 +125,8 @@ export interface Webinar {
   duration?: number;
   speaker?: Author;
   co_speakers?: Author[];
-  video?: any;
-  thumbnail?: any;
+  video?: unknown;
+  thumbnail?: unknown;
   tags?: Tag[];
   category?: Category;
   views?: number;
@@ -174,7 +174,7 @@ export interface Event {
  */
 export interface QueryParams {
   populate?: string | string[];
-  filters?: Record<string, any>;
+  filters?: Record<string, unknown>;
   sort?: string | string[];
   pagination?: {
     page?: number;
@@ -465,7 +465,7 @@ export default class StrapiClient {
   /**
    * Subscribe to newsletter
    */
-  async subscribeNewsletter(email: string): Promise<any> {
+  async subscribeNewsletter(email: string): Promise<unknown> {
     try {
       const { data } = await this.client.post('/newsletters', {
         data: { email },

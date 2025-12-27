@@ -39,7 +39,7 @@ export interface WebhookDelivery {
   id: string;
   webhook_id: string;
   event_type: string;
-  payload: any;
+  payload: Record<string, unknown>;
   status_code: number;
   response_time_ms: number;
   success: boolean;

@@ -5,6 +5,12 @@ import { useRouter } from 'next/navigation';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Shield } from 'lucide-react';
 
+interface UserData {
+  role?: string;
+  roles?: string[];
+  is_superuser?: boolean;
+}
+
 interface AdminRouteGuardProps {
   children: React.ReactNode;
 }
@@ -22,6 +28,8 @@ export function AdminRouteGuard({ children }: AdminRouteGuardProps) {
 
   useEffect(() => {
     checkAdminStatus();
+    // checkAdminStatus is intentionally not included in deps - only runs on mount
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const checkAdminStatus = () => {
@@ -34,7 +42,7 @@ export function AdminRouteGuard({ children }: AdminRouteGuardProps) {
         return;
       }
 
-      const user = JSON.parse(userStr);
+      const user: UserData = JSON.parse(userStr);
 
       // Check if user has admin role
       // Roles can be in different formats depending on API response:
@@ -90,24 +98,21 @@ export function AdminRouteGuard({ children }: AdminRouteGuardProps) {
  * Can be used in any component to conditionally render admin-only features
  */
 export function useIsAdmin(): boolean {
-  const [isAdmin, setIsAdmin] = useState(false);
-
-  useEffect(() => {
+  const [isAdmin] = useState(() => {
     try {
       const userStr = localStorage.getItem('user');
       if (!userStr) {
-        return;
+        return false;
       }
 
-      const user = JSON.parse(userStr);
+      const user: UserData = JSON.parse(userStr);
       const userRole = user.role || (user.roles && user.roles[0]);
-      const isUserAdmin = userRole === 'ADMIN' || userRole === 'SUPERUSER' || user.is_superuser === true;
-
-      setIsAdmin(isUserAdmin);
+      return userRole === 'ADMIN' || userRole === 'SUPERUSER' || user.is_superuser === true;
     } catch (error) {
       console.error('Error checking admin status:', error);
+      return false;
     }
-  }, []);
+  });
 
   return isAdmin;
 }

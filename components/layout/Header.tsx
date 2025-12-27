@@ -8,11 +8,12 @@ import { Button } from '@/components/ui/button';
 import { Menu, X } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
-const navigation = [
+const navigation: { name: string; path: string; external?: boolean }[] = [
   { name: 'Products', path: '/products' },
   { name: 'Pricing', path: '/pricing' },
-  { name: 'Design System', path: '/design-system' },
-  { name: 'ZeroDB', path: 'https://zerodb.ainative.studio', external: true },
+  { name: 'Enterprise', path: '/enterprise' },
+  { name: 'Developer Resources', path: '/dev-resources' },
+  { name: 'Download', path: '/download' },
 ];
 
 export default function Header() {
@@ -52,7 +53,7 @@ export default function Header() {
         {/* Logo */}
         <div className="flex items-center gap-3">
           <Link href="/" className="text-xl md:text-2xl font-bold tracking-tight text-foreground flex items-center gap-1">
-            <span className="text-[#FF6B00]">AI</span>
+            <span className="text-[#FF6B00]">⚡</span>AI
             <span className="text-primary">Native</span>
           </Link>
         </div>
@@ -158,7 +159,7 @@ export default function Header() {
         <div className="fixed inset-0 z-40 bg-background animate-in slide-in-from-top p-6 flex flex-col gap-6 md:hidden">
           <div className="flex justify-between items-center">
             <Link href="/" className="text-xl font-bold tracking-tight text-foreground" onClick={() => setMobileMenuOpen(false)}>
-              <span className="text-[#FF6B00]">AI</span>
+              <span className="text-[#FF6B00]">⚡</span>AI
               <span className="text-primary">Native</span>
             </Link>
             <button

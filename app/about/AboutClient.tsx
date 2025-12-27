@@ -2,16 +2,7 @@
 
 import { motion, Variants } from 'framer-motion';
 import Link from 'next/link';
-import {
-  Rocket,
-  Shield,
-  Users,
-  Code,
-  Lightbulb,
-  Cloud,
-  Cpu,
-  Layers,
-} from 'lucide-react';
+import { Rocket, Shield, Users, Code, Lightbulb, Cloud, Cpu, Layers } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
 // Animation variants

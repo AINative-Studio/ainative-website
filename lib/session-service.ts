@@ -53,7 +53,7 @@ export interface MemoryEntry {
   role: 'user' | 'assistant' | 'system';
   timestamp: string;
   relevance_score?: number;
-  metadata?: Record<string, any>;
+  metadata?: Record<string, unknown>;
 }
 
 export interface MemoryContextResponse {
@@ -72,7 +72,7 @@ export interface StoreMemoryData {
   session_id: string;
   content: string;
   role: 'user' | 'assistant' | 'system';
-  metadata?: Record<string, any>;
+  metadata?: Record<string, unknown>;
 }
 
 export interface StoredMemory {
@@ -81,7 +81,7 @@ export interface StoredMemory {
   content: string;
   role: string;
   timestamp: string;
-  metadata?: Record<string, any>;
+  metadata?: Record<string, unknown>;
 }
 
 export interface MemorySearchParams {
