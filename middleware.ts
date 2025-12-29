@@ -1,6 +1,8 @@
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
-import { getToken } from 'next-auth/jwt';
+
+// Cookie name for SSO token (must match authCookies.ts)
+const AUTH_COOKIE_NAME = 'ainative_access_token';
 
 // Routes that require authentication
 const protectedRoutes = [
@@ -20,7 +22,7 @@ const protectedRoutes = [
 // Routes that should redirect to dashboard if already authenticated
 const authRoutes = ['/login', '/signup'];
 
-export async function middleware(request: NextRequest) {
+export function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
   // Check if the path is a protected route
@@ -33,11 +35,8 @@ export async function middleware(request: NextRequest) {
     pathname.startsWith(route)
   );
 
-  // Get the session token
-  const token = await getToken({
-    req: request,
-    secret: process.env.NEXTAUTH_SECRET,
-  });
+  // Get the auth token from our custom SSO cookie
+  const token = request.cookies.get(AUTH_COOKIE_NAME)?.value;
 
   // Redirect unauthenticated users from protected routes to login
   if (isProtectedRoute && !token) {

@@ -89,7 +89,7 @@ export default function AIUsageClient() {
   const dailyUsage = dailyData?.daily_usage || [];
 
   // Format data for charts
-  const providerChartData = summary.by_provider.map((p: ProviderUsage) => ({
+  const providerChartData = (summary.by_provider || []).map((p: ProviderUsage) => ({
     name: p.provider,
     requests: p.requests,
     tokens: p.tokens,

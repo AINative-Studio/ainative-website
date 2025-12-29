@@ -20,33 +20,15 @@ import {
 } from 'lucide-react';
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
 import { vscDarkPlus } from 'react-syntax-highlighter/dist/esm/styles/prism';
-import { getTutorial } from '@/src/lib/strapi';
+import { strapiClient, Tutorial as StrapiTutorial } from '@/lib/strapi-client';
 import { getUnsplashImageUrl } from '@/src/lib/unsplash';
 
-interface TutorialTag {
-  name: string;
-}
-
-interface TutorialCategory {
-  name: string;
-  slug?: string;
-}
-
-interface TutorialData {
-  id: number;
-  documentId: string;
-  title: string;
-  description: string;
-  difficulty: string;
-  estimated_time: number;
-  prerequisites: string;
+// Extended Tutorial type with additional fields that may come from Strapi
+interface TutorialData extends StrapiTutorial {
   learning_objectives?: string[];
   github_repo?: string;
   demo_url?: string;
-  category?: TutorialCategory;
-  tags?: TutorialTag[];
-  slug: string;
-  content: string;
+  prerequisites?: string;
 }
 
 interface TutorialDetailClientProps {
@@ -75,7 +57,7 @@ export default function TutorialDetailClient({ slug }: TutorialDetailClientProps
     try {
       setLoading(true);
       setError(null);
-      const data = await getTutorial(slug);
+      const data = await strapiClient.getTutorial(slug);
       if (data) {
         setTutorial(data);
       } else {
@@ -91,10 +73,10 @@ export default function TutorialDetailClient({ slug }: TutorialDetailClientProps
 
   const getDifficultyColor = (difficulty: string) => {
     switch (difficulty) {
-      case 'beginner': return 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400';
-      case 'intermediate': return 'bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-400';
-      case 'advanced': return 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400';
-      default: return 'bg-gray-100 text-gray-700 dark:bg-gray-900/30 dark:text-gray-400';
+      case 'beginner': return 'bg-green-900/30 text-green-400';
+      case 'intermediate': return 'bg-yellow-900/30 text-yellow-400';
+      case 'advanced': return 'bg-red-900/30 text-red-400';
+      default: return 'bg-[#2D333B] text-gray-400';
     }
   };
 
@@ -152,17 +134,17 @@ export default function TutorialDetailClient({ slug }: TutorialDetailClientProps
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-blue-50 dark:from-gray-900 dark:via-gray-900 dark:to-gray-900">
+      <div className="min-h-screen bg-[#0D1117]">
         <main className="container mx-auto px-4 py-20 mt-16">
           <Link href="/tutorials">
-            <Button variant="ghost" className="mb-6">
+            <Button variant="ghost" className="mb-6 text-gray-400 hover:text-white">
               <ArrowLeft className="h-4 w-4 mr-2" />Back to Tutorials
             </Button>
           </Link>
 
           <div className="grid lg:grid-cols-3 gap-8">
             <div className="lg:col-span-2 space-y-6">
-              <Skeleton className="aspect-video w-full rounded-lg" />
+              <Skeleton className="aspect-video w-full rounded-lg bg-[#161B22]" />
               <div>
                 <div className="flex flex-wrap items-center gap-2 mb-4">
                   <Skeleton className="h-5 w-20" />
@@ -209,35 +191,35 @@ export default function TutorialDetailClient({ slug }: TutorialDetailClientProps
 
   if (error || !tutorial) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-blue-50 dark:from-gray-900 dark:via-gray-900 dark:to-gray-900">
+      <div className="min-h-screen bg-[#0D1117]">
         <main className="container mx-auto px-4 py-20 mt-16">
           <Link href="/tutorials">
-            <Button variant="ghost" className="mb-6">
+            <Button variant="ghost" className="mb-6 text-gray-400 hover:text-white">
               <ArrowLeft className="h-4 w-4 mr-2" />Back to Tutorials
             </Button>
           </Link>
 
           <div className="max-w-2xl mx-auto">
-            <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg p-8 text-center">
-              <AlertCircle className="h-12 w-12 text-red-600 dark:text-red-400 mx-auto mb-4" />
-              <h3 className="text-lg font-semibold text-red-800 dark:text-red-300 mb-2">
+            <div className="bg-red-900/20 border border-red-800 rounded-lg p-8 text-center">
+              <AlertCircle className="h-12 w-12 text-red-400 mx-auto mb-4" />
+              <h3 className="text-lg font-semibold text-red-300 mb-2">
                 {error === 'Tutorial not found' ? 'Tutorial Not Found' : 'Error Loading Tutorial'}
               </h3>
-              <p className="text-red-700 dark:text-red-400 mb-6">
+              <p className="text-red-400 mb-6">
                 {error || 'The tutorial you are looking for could not be loaded.'}
               </p>
               <div className="flex gap-3 justify-center">
                 <Button
                   variant="outline"
                   onClick={() => router.back()}
-                  className="border-red-300 dark:border-red-700"
+                  className="border-[#2D333B] text-gray-300"
                 >
                   Go Back
                 </Button>
                 {error !== 'Tutorial not found' && (
                   <Button
                     onClick={fetchTutorial}
-                    className="bg-red-600 hover:bg-red-700"
+                    className="bg-[#4B6FED] hover:bg-[#4B6FED]/80 text-white"
                   >
                     Try Again
                   </Button>
@@ -251,10 +233,10 @@ export default function TutorialDetailClient({ slug }: TutorialDetailClientProps
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-blue-50 dark:from-gray-900 dark:via-gray-900 dark:to-gray-900">
+    <div className="min-h-screen bg-[#0D1117]">
       <main className="container mx-auto px-4 py-20 mt-16">
         <Link href="/tutorials">
-          <Button variant="ghost" className="mb-6">
+          <Button variant="ghost" className="mb-6 text-gray-400 hover:text-white">
             <ArrowLeft className="h-4 w-4 mr-2" />Back to Tutorials
           </Button>
         </Link>
@@ -263,7 +245,7 @@ export default function TutorialDetailClient({ slug }: TutorialDetailClientProps
           <div className="lg:col-span-2">
             <motion.article initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }}>
               {/* Hero Image */}
-              <div className="aspect-video bg-gradient-to-br from-primary/20 to-blue-500/20 overflow-hidden rounded-lg mb-8">
+              <div className="aspect-video bg-gradient-to-br from-[#4B6FED]/20 to-[#8A63F4]/20 overflow-hidden rounded-lg mb-8 border border-[#2D333B]">
                 <img
                   src={getUnsplashImageUrl(tutorial.id, 1200, 600)}
                   alt={tutorial.title}
@@ -274,32 +256,32 @@ export default function TutorialDetailClient({ slug }: TutorialDetailClientProps
 
               <div className="mb-8">
                 <div className="flex flex-wrap items-center gap-2 mb-4">
-                  <Badge className={getDifficultyColor(tutorial.difficulty)}>{tutorial.difficulty}</Badge>
-                  {tutorial.tags && tutorial.tags.map((tag, i) => <Badge key={i} variant="outline">{tag.name}</Badge>)}
+                  {tutorial.difficulty && <Badge className={getDifficultyColor(tutorial.difficulty)}>{tutorial.difficulty}</Badge>}
+                  {tutorial.tags && tutorial.tags.map((tag, i) => <Badge key={i} variant="outline" className="border-[#2D333B] text-gray-300">{tag.name}</Badge>)}
                 </div>
-                <h1 className="text-4xl md:text-5xl font-extrabold tracking-tight mb-4">{tutorial.title}</h1>
-                <div className="flex flex-wrap items-center gap-4 text-muted-foreground">
-                  <div className="flex items-center"><Clock className="h-4 w-4 mr-1" />{tutorial.estimated_time} minutes</div>
+                <h1 className="text-4xl md:text-5xl font-extrabold tracking-tight mb-4 text-white">{tutorial.title}</h1>
+                <div className="flex flex-wrap items-center gap-4 text-gray-400">
+                  <div className="flex items-center"><Clock className="h-4 w-4 mr-1" />{tutorial.duration || 30} minutes</div>
                   {tutorial.github_repo && (
-                    <a href={tutorial.github_repo} target="_blank" rel="noopener noreferrer" className="flex items-center hover:text-primary transition-colors">
+                    <a href={tutorial.github_repo} target="_blank" rel="noopener noreferrer" className="flex items-center hover:text-[#8AB4FF] transition-colors">
                       <Github className="h-4 w-4 mr-1" />Code Repository
                     </a>
                   )}
                   {tutorial.demo_url && (
-                    <a href={tutorial.demo_url} target="_blank" rel="noopener noreferrer" className="flex items-center hover:text-primary transition-colors">
+                    <a href={tutorial.demo_url} target="_blank" rel="noopener noreferrer" className="flex items-center hover:text-[#8AB4FF] transition-colors">
                       <ExternalLink className="h-4 w-4 mr-1" />Live Demo
                     </a>
                   )}
                 </div>
               </div>
 
-              <div className="prose prose-lg dark:prose-invert max-w-none">{renderContent(tutorial.content)}</div>
+              <div className="prose prose-lg prose-invert max-w-none">{renderContent(tutorial.content)}</div>
 
-              <Separator className="my-8" />
+              <Separator className="my-8 bg-[#2D333B]" />
 
               <div className="flex items-center justify-between">
-                <span className="text-sm text-muted-foreground">Tutorial completed?</span>
-                <Button onClick={() => setProgress(100)} disabled={progress === 100}>
+                <span className="text-sm text-gray-400">Tutorial completed?</span>
+                <Button onClick={() => setProgress(100)} disabled={progress === 100} className="bg-[#4B6FED] hover:bg-[#4B6FED]/80 text-white">
                   <CheckCircle className="h-4 w-4 mr-2" />
                   {progress === 100 ? 'Completed!' : 'Mark as Complete'}
                 </Button>
@@ -309,29 +291,31 @@ export default function TutorialDetailClient({ slug }: TutorialDetailClientProps
 
           <div className="space-y-6">
             {tutorial.learning_objectives && tutorial.learning_objectives.length > 0 && (
-              <Card>
-                <CardHeader><CardTitle className="text-base">Learning Objectives</CardTitle></CardHeader>
+              <Card className="bg-[#161B22] border-[#2D333B]">
+                <CardHeader><CardTitle className="text-base text-white">Learning Objectives</CardTitle></CardHeader>
                 <CardContent className="space-y-2">
                   {tutorial.learning_objectives.map((objective, i) => (
                     <div key={i} className="flex items-start gap-2">
-                      <CheckCircle className="h-4 w-4 mt-0.5 text-primary flex-shrink-0" />
-                      <span className="text-sm">{objective}</span>
+                      <CheckCircle className="h-4 w-4 mt-0.5 text-[#4B6FED] flex-shrink-0" />
+                      <span className="text-sm text-gray-300">{objective}</span>
                     </div>
                   ))}
                 </CardContent>
               </Card>
             )}
 
-            <Card>
-              <CardHeader><CardTitle className="text-base">Prerequisites</CardTitle></CardHeader>
-              <CardContent><p className="text-sm text-muted-foreground">{tutorial.prerequisites}</p></CardContent>
-            </Card>
+            {tutorial.prerequisites && (
+              <Card className="bg-[#161B22] border-[#2D333B]">
+                <CardHeader><CardTitle className="text-base text-white">Prerequisites</CardTitle></CardHeader>
+                <CardContent><p className="text-sm text-gray-400">{tutorial.prerequisites}</p></CardContent>
+              </Card>
+            )}
 
             {tutorial.category && (
-              <Card>
-                <CardHeader><CardTitle className="text-base">Category</CardTitle></CardHeader>
+              <Card className="bg-[#161B22] border-[#2D333B]">
+                <CardHeader><CardTitle className="text-base text-white">Category</CardTitle></CardHeader>
                 <CardContent>
-                  <Badge variant="outline" className="text-sm">{tutorial.category.name}</Badge>
+                  <Badge variant="outline" className="text-sm border-[#2D333B] text-gray-300">{tutorial.category.name}</Badge>
                 </CardContent>
               </Card>
             )}

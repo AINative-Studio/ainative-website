@@ -2,15 +2,16 @@
 
 import { Suspense, useState } from 'react';
 import Link from 'next/link';
-import { signIn } from 'next-auth/react';
-import { useSearchParams } from 'next/navigation';
+import { useSearchParams, useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Github, ArrowRight } from 'lucide-react';
+import { authService } from '@/services/AuthService';
 
 function LoginForm() {
   const searchParams = useSearchParams();
+  const router = useRouter();
   const callbackUrl = searchParams.get('callbackUrl') || '/dashboard';
   const authError = searchParams.get('error');
 
@@ -25,38 +26,44 @@ function LoginForm() {
     setError('');
 
     try {
-      const result = await signIn('credentials', {
-        email,
-        password,
-        redirect: false,
-        callbackUrl,
-      });
+      const result = await authService.login(email, password);
 
-      if (result?.error) {
+      if (result.access_token) {
+        // Successful login - redirect to dashboard or callback URL
+        router.push(callbackUrl);
+      } else {
         setError('Invalid email or password');
-      } else if (result?.url) {
-        window.location.href = result.url;
       }
-    } catch {
-      setError('An error occurred. Please try again.');
+    } catch (err) {
+      console.error('Login error:', err);
+      const errorMessage = err instanceof Error ? err.message : 'An error occurred. Please try again.';
+      setError(errorMessage);
     } finally {
       setIsLoading(false);
     }
   };
 
   const handleGitHubLogin = () => {
-    signIn('github', { callbackUrl });
+    // Redirect to GitHub OAuth
+    const githubUrl = authService.getGitHubAuthUrl();
+    // Store callback URL for after OAuth
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('oauth_callback_url', callbackUrl);
+    }
+    window.location.href = githubUrl;
   };
 
   return (
     <div className="w-full max-w-md">
       {/* Header */}
       <div className="text-center mb-8">
-        <Link href="/" className="inline-block text-3xl font-bold mb-4">
-          <span className="text-[#FF6B00]">AI</span>
-          <span className="text-primary">Native</span>
+        <Link href="/" className="inline-flex items-center justify-center gap-3 mb-6">
+          <img src="/ainative-icon.svg" alt="AINative Studio" className="h-12 w-auto" />
+          <span className="text-2xl font-bold uppercase">
+            <span className="text-white">AI</span><span className="text-[#5867EF]">NATIVE</span>
+          </span>
         </Link>
-        <h1 className="text-2xl font-bold mb-2">Welcome back</h1>
+        <h1 className="text-2xl font-bold mb-2 text-white">Welcome back</h1>
         <p className="text-gray-400">Sign in to your account to continue</p>
       </div>
 
@@ -161,11 +168,13 @@ function LoginFormFallback() {
   return (
     <div className="w-full max-w-md">
       <div className="text-center mb-8">
-        <div className="inline-block text-3xl font-bold mb-4">
-          <span className="text-[#FF6B00]">AI</span>
-          <span className="text-primary">Native</span>
+        <div className="inline-flex items-center justify-center gap-3 mb-6">
+          <img src="/ainative-icon.svg" alt="AINative Studio" className="h-12 w-auto" />
+          <span className="text-2xl font-bold uppercase">
+            <span className="text-white">AI</span><span className="text-[#5867EF]">NATIVE</span>
+          </span>
         </div>
-        <h1 className="text-2xl font-bold mb-2">Welcome back</h1>
+        <h1 className="text-2xl font-bold mb-2 text-white">Welcome back</h1>
         <p className="text-gray-400">Sign in to your account to continue</p>
       </div>
       <div className="bg-[#161B22] rounded-2xl p-8 border border-[#2D333B]/50">

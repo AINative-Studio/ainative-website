@@ -16,29 +16,11 @@ import {
   AlertCircle,
   Sparkles
 } from 'lucide-react';
-import { getTutorials } from '@/src/lib/strapi';
+import { strapiClient, Tutorial as StrapiTutorial } from '@/lib/strapi-client';
 import { getUnsplashImageUrl } from '@/src/lib/unsplash';
 import { searchCommunityContent } from '@/src/lib/community/search';
 
-interface TutorialTag {
-  name: string;
-}
-
-interface TutorialCategory {
-  name: string;
-  slug: string;
-}
-
-interface Tutorial {
-  id: number;
-  title: string;
-  description: string;
-  difficulty: string;
-  estimated_time: number;
-  prerequisites: string;
-  category?: TutorialCategory;
-  tags?: TutorialTag[];
-  slug: string;
+interface Tutorial extends StrapiTutorial {
   _similarity?: number;
 }
 
@@ -66,11 +48,10 @@ export default function TutorialListingClient() {
     try {
       setLoading(true);
       setError(null);
-      const response = await getTutorials({
-        sort: 'createdAt:desc',
-        pagination: { pageSize: 100 }
-      });
-      setTutorials(response.data || []);
+      const response = await strapiClient.getTutorials();
+      // Strapi v5 uses 'results', v4 uses 'data'
+      const tutorialsData = response?.results || response?.data || [];
+      setTutorials(Array.isArray(tutorialsData) ? tutorialsData : []);
     } catch (err) {
       console.error('Failed to fetch tutorials:', err);
       setError('Failed to load tutorials. Please try again later.');
@@ -111,13 +92,13 @@ export default function TutorialListingClient() {
   const getDifficultyColor = (difficulty: string) => {
     switch (difficulty) {
       case 'beginner':
-        return 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400';
+        return 'bg-green-900/30 text-green-400';
       case 'intermediate':
-        return 'bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-400';
+        return 'bg-yellow-900/30 text-yellow-400';
       case 'advanced':
-        return 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400';
+        return 'bg-red-900/30 text-red-400';
       default:
-        return 'bg-gray-100 text-gray-700 dark:bg-gray-900/30 dark:text-gray-400';
+        return 'bg-[#2D333B] text-gray-400';
     }
   };
 
@@ -135,7 +116,7 @@ export default function TutorialListingClient() {
     } else if (searchMode === 'exact' && searchQuery.trim()) {
       results = results.filter(tutorial =>
         tutorial.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        tutorial.description.toLowerCase().includes(searchQuery.toLowerCase())
+        (tutorial.description?.toLowerCase().includes(searchQuery.toLowerCase()) ?? false)
       );
     }
 
@@ -147,7 +128,7 @@ export default function TutorialListingClient() {
   })();
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-blue-50 dark:from-gray-900 dark:via-gray-900 dark:to-gray-900">
+    <div className="min-h-screen bg-[#0D1117]">
       <main className="container mx-auto px-4 py-20 mt-16">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -155,14 +136,14 @@ export default function TutorialListingClient() {
           transition={{ duration: 0.5 }}
           className="text-center mb-12"
         >
-          <div className="inline-flex items-center justify-center px-4 py-2 rounded-full bg-primary/10 text-primary text-sm font-medium mb-4">
+          <div className="inline-flex items-center justify-center px-4 py-2 rounded-full bg-[#4B6FED]/10 text-[#4B6FED] text-sm font-medium mb-4">
             <BookOpen className="h-4 w-4 mr-2" />
             Tutorials
           </div>
-          <h1 className="text-4xl md:text-5xl font-extrabold tracking-tight mb-4 bg-clip-text text-transparent bg-gradient-to-r from-primary to-blue-600">
+          <h1 className="text-4xl md:text-5xl font-extrabold tracking-tight mb-4 bg-clip-text text-transparent bg-gradient-to-r from-[#4B6FED] to-[#8AB4FF]">
             Learn by Doing
           </h1>
-          <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
+          <p className="text-xl text-gray-400 max-w-3xl mx-auto">
             Step-by-step tutorials to master AINative platform
           </p>
         </motion.div>
@@ -170,7 +151,7 @@ export default function TutorialListingClient() {
         <div className="mb-8 space-y-4">
           <div className="flex flex-col sm:flex-row gap-4">
             <div className="relative flex-1">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
               <Input
                 type="text"
                 placeholder={
@@ -180,12 +161,12 @@ export default function TutorialListingClient() {
                 }
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="pl-10"
+                className="pl-10 bg-[#161B22] border-[#2D333B] text-white placeholder:text-gray-500"
                 disabled={searchingSemantics}
               />
               {searchingSemantics && (
                 <div className="absolute right-3 top-1/2 transform -translate-y-1/2">
-                  <div className="animate-spin h-4 w-4 border-2 border-primary border-t-transparent rounded-full" />
+                  <div className="animate-spin h-4 w-4 border-2 border-[#4B6FED] border-t-transparent rounded-full" />
                 </div>
               )}
             </div>
@@ -194,7 +175,7 @@ export default function TutorialListingClient() {
                 variant={searchMode === 'exact' ? 'default' : 'outline'}
                 size="sm"
                 onClick={() => setSearchMode('exact')}
-                className="whitespace-nowrap"
+                className={searchMode === 'exact' ? 'bg-[#4B6FED] text-white' : 'border-[#2D333B] text-gray-300 hover:bg-[#2D333B]'}
               >
                 <Search className="h-4 w-4 mr-2" />
                 Exact Match
@@ -203,7 +184,7 @@ export default function TutorialListingClient() {
                 variant={searchMode === 'semantic' ? 'default' : 'outline'}
                 size="sm"
                 onClick={() => setSearchMode('semantic')}
-                className="whitespace-nowrap"
+                className={searchMode === 'semantic' ? 'bg-[#4B6FED] text-white' : 'border-[#2D333B] text-gray-300 hover:bg-[#2D333B]'}
               >
                 <Sparkles className="h-4 w-4 mr-2" />
                 Semantic
@@ -212,7 +193,7 @@ export default function TutorialListingClient() {
           </div>
 
           <div className="flex flex-wrap gap-2">
-            <span className="flex items-center text-sm font-medium mr-2">
+            <span className="flex items-center text-sm font-medium mr-2 text-gray-300">
               <Filter className="h-4 w-4 mr-1" />
               Difficulty:
             </span>
@@ -222,7 +203,7 @@ export default function TutorialListingClient() {
                 variant={selectedDifficulty === difficulty ? 'default' : 'outline'}
                 size="sm"
                 onClick={() => setSelectedDifficulty(difficulty)}
-                className="capitalize"
+                className={selectedDifficulty === difficulty ? 'bg-[#4B6FED] text-white capitalize' : 'border-[#2D333B] text-gray-300 hover:bg-[#2D333B] capitalize'}
               >
                 {difficulty}
               </Button>
@@ -231,19 +212,19 @@ export default function TutorialListingClient() {
         </div>
 
         {error && (
-          <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg p-6 mb-8">
+          <div className="bg-red-900/20 border border-red-800 rounded-lg p-6 mb-8">
             <div className="flex items-start gap-3">
-              <AlertCircle className="h-5 w-5 text-red-600 dark:text-red-400 flex-shrink-0 mt-0.5" />
+              <AlertCircle className="h-5 w-5 text-red-400 flex-shrink-0 mt-0.5" />
               <div className="flex-1">
-                <h3 className="text-sm font-semibold text-red-800 dark:text-red-300 mb-1">
+                <h3 className="text-sm font-semibold text-red-300 mb-1">
                   Error Loading Tutorials
                 </h3>
-                <p className="text-sm text-red-700 dark:text-red-400 mb-3">{error}</p>
+                <p className="text-sm text-red-400 mb-3">{error}</p>
                 <Button
                   variant="outline"
                   size="sm"
                   onClick={fetchTutorials}
-                  className="border-red-300 dark:border-red-700"
+                  className="border-[#2D333B] text-gray-300 hover:bg-[#2D333B]"
                 >
                   Try Again
                 </Button>
@@ -255,23 +236,23 @@ export default function TutorialListingClient() {
         {loading && (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {[...Array(6)].map((_, index) => (
-              <Card key={index} className="h-full flex flex-col">
-                <Skeleton className="aspect-video w-full" />
+              <Card key={index} className="h-full flex flex-col bg-[#161B22] border-[#2D333B]">
+                <Skeleton className="aspect-video w-full bg-[#2D333B]" />
                 <CardHeader className="flex-1">
                   <div className="flex items-center gap-2 mb-2">
-                    <Skeleton className="h-5 w-20" />
-                    <Skeleton className="h-4 w-16" />
+                    <Skeleton className="h-5 w-20 bg-[#2D333B]" />
+                    <Skeleton className="h-4 w-16 bg-[#2D333B]" />
                   </div>
-                  <Skeleton className="h-6 w-full mb-2" />
-                  <Skeleton className="h-4 w-full" />
-                  <Skeleton className="h-4 w-3/4" />
+                  <Skeleton className="h-6 w-full mb-2 bg-[#2D333B]" />
+                  <Skeleton className="h-4 w-full bg-[#2D333B]" />
+                  <Skeleton className="h-4 w-3/4 bg-[#2D333B]" />
                 </CardHeader>
                 <CardContent>
-                  <Skeleton className="h-12 w-full mb-3" />
+                  <Skeleton className="h-12 w-full mb-3 bg-[#2D333B]" />
                   <div className="flex flex-wrap gap-1">
-                    <Skeleton className="h-5 w-12" />
-                    <Skeleton className="h-5 w-16" />
-                    <Skeleton className="h-5 w-14" />
+                    <Skeleton className="h-5 w-12 bg-[#2D333B]" />
+                    <Skeleton className="h-5 w-16 bg-[#2D333B]" />
+                    <Skeleton className="h-5 w-14 bg-[#2D333B]" />
                   </div>
                 </CardContent>
               </Card>
@@ -289,8 +270,8 @@ export default function TutorialListingClient() {
                 transition={{ duration: 0.3, delay: index * 0.1 }}
               >
                 <Link href={`/tutorials/${tutorial.slug}`}>
-                  <Card className="h-full hover:shadow-lg transition-shadow duration-200 flex flex-col">
-                    <div className="aspect-video bg-gradient-to-br from-primary/20 to-blue-500/20 overflow-hidden">
+                  <Card className="h-full hover:border-[#4B6FED]/50 transition-all duration-200 flex flex-col bg-[#161B22] border-[#2D333B]">
+                    <div className="aspect-video bg-gradient-to-br from-[#4B6FED]/20 to-[#8A63F4]/20 overflow-hidden">
                       <img
                         src={getUnsplashImageUrl(tutorial.id, 600, 338)}
                         alt={tutorial.title}
@@ -300,26 +281,26 @@ export default function TutorialListingClient() {
                     </div>
                     <CardHeader className="flex-1">
                       <div className="flex items-center gap-2 mb-2">
-                        <Badge className={getDifficultyColor(tutorial.difficulty)}>
-                          {tutorial.difficulty}
-                        </Badge>
-                        <div className="flex items-center text-xs text-muted-foreground">
-                          <Clock className="h-3 w-3 mr-1" />
-                          {tutorial.estimated_time} min
-                        </div>
+                        {tutorial.difficulty && (
+                          <Badge className={getDifficultyColor(tutorial.difficulty)}>
+                            {tutorial.difficulty}
+                          </Badge>
+                        )}
+                        {tutorial.duration && (
+                          <div className="flex items-center text-xs text-gray-400">
+                            <Clock className="h-3 w-3 mr-1" />
+                            {tutorial.duration} min
+                          </div>
+                        )}
                       </div>
-                      <CardTitle className="line-clamp-2 mb-2">{tutorial.title}</CardTitle>
-                      <CardDescription className="line-clamp-3">{tutorial.description}</CardDescription>
+                      <CardTitle className="line-clamp-2 mb-2 text-white">{tutorial.title}</CardTitle>
+                      <CardDescription className="line-clamp-3 text-gray-400">{tutorial.description || ''}</CardDescription>
                     </CardHeader>
                     <CardContent>
-                      <div className="mb-3">
-                        <span className="text-xs font-medium text-muted-foreground">Prerequisites:</span>
-                        <p className="text-xs text-muted-foreground mt-1 line-clamp-2">{tutorial.prerequisites}</p>
-                      </div>
                       {tutorial.tags && tutorial.tags.length > 0 && (
                         <div className="flex flex-wrap gap-1">
                           {tutorial.tags.map((tag, idx) => (
-                            <Badge key={idx} variant="outline" className="text-xs">
+                            <Badge key={idx} variant="outline" className="text-xs border-[#2D333B] text-gray-400">
                               {tag.name}
                             </Badge>
                           ))}
@@ -335,9 +316,9 @@ export default function TutorialListingClient() {
 
         {!loading && !error && filteredTutorials.length === 0 && (
           <div className="text-center py-12">
-            <Search className="h-12 w-12 mx-auto mb-4 text-muted-foreground" />
-            <h3 className="text-lg font-medium mb-2">No tutorials found</h3>
-            <p className="text-muted-foreground mb-4">
+            <Search className="h-12 w-12 mx-auto mb-4 text-gray-500" />
+            <h3 className="text-lg font-medium mb-2 text-white">No tutorials found</h3>
+            <p className="text-gray-400 mb-4">
               {tutorials.length === 0
                 ? 'No tutorials are available at the moment. Check back soon!'
                 : 'Try adjusting your search or filter criteria'}
@@ -349,6 +330,7 @@ export default function TutorialListingClient() {
                   setSearchQuery('');
                   setSelectedDifficulty('All Levels');
                 }}
+                className="border-[#2D333B] text-gray-300 hover:bg-[#2D333B]"
               >
                 Clear Filters
               </Button>

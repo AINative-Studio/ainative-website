@@ -5,9 +5,11 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { Loader2 } from 'lucide-react';
 import { toast } from 'sonner';
 import { authService } from '@/services/AuthService';
+import { setAuthUser } from '@/utils/authCookies';
 
 // Real GitHub OAuth implementation integrated with AINative API
 // Exchanges authorization code for JWT tokens via our backend
+// Supports cross-subdomain SSO with state-based redirect
 
 export default function OAuthCallbackClient() {
   const [status, setStatus] = useState('Processing login...');
@@ -25,11 +27,16 @@ export default function OAuthCallbackClient() {
         const errorDescription = searchParams.get('error_description');
         const state = searchParams.get('state');
 
+        // Get stored callback URL from login page
+        const storedCallbackUrl = typeof window !== 'undefined'
+          ? localStorage.getItem('oauth_callback_url') || '/dashboard'
+          : '/dashboard';
+
         // Handle errors from GitHub
         if (error) {
           console.error('GitHub OAuth error:', error, errorDescription);
           toast.error(`GitHub OAuth error: ${errorDescription || error}`);
-          router.push('/login');
+          router.push('/login?error=' + encodeURIComponent(error));
           return;
         }
 
@@ -37,7 +44,7 @@ export default function OAuthCallbackClient() {
         if (!code) {
           console.error('No authorization code received from GitHub');
           toast.error('No authorization code received from GitHub');
-          router.push('/login');
+          router.push('/login?error=no_code');
           return;
         }
 
@@ -55,12 +62,22 @@ export default function OAuthCallbackClient() {
             const userProfile = await authService.getCurrentUser();
             console.log('User profile loaded:', userProfile);
 
-            setStatus('Login successful! Redirecting to dashboard...');
+            // Store user in cookies for SSO
+            if (userProfile) {
+              setAuthUser(userProfile as unknown as Record<string, unknown>);
+            }
+
+            setStatus('Login successful! Redirecting...');
             toast.success('Successfully authenticated with GitHub!');
 
-            // Redirect to dashboard
+            // Clear stored callback URL
+            if (typeof window !== 'undefined') {
+              localStorage.removeItem('oauth_callback_url');
+            }
+
+            // Redirect to stored callback URL or dashboard
             setTimeout(() => {
-              router.push('/dashboard');
+              router.push(storedCallbackUrl);
             }, 1000);
 
           } else {
@@ -70,39 +87,23 @@ export default function OAuthCallbackClient() {
         } catch (authError: unknown) {
           console.error('GitHub OAuth exchange failed:', authError);
 
-          const error = authError as { response?: { status?: number; data?: { detail?: string } }; status?: number; message?: string };
+          const errorMessage = authError instanceof Error
+            ? authError.message
+            : 'GitHub authentication failed';
 
-          // Check if it's a specific API error
-          if (error.response?.status === 404 || error.status === 404) {
-            // GitHub OAuth endpoint not implemented yet, fall back to mock flow
-            console.warn('GitHub OAuth endpoint not found, using fallback authentication');
-            setStatus('GitHub OAuth not yet implemented, using test authentication...');
+          toast.error(errorMessage);
+          setStatus(`GitHub OAuth failed: ${errorMessage}`);
 
-            // Use test login as fallback
-            await authService.testLogin('test@test.com', 'test123');
-
-            setStatus('Fallback authentication successful! Redirecting...');
-            toast.success('Authenticated successfully (using test credentials)');
-
-            setTimeout(() => {
-              router.push('/dashboard');
-            }, 1000);
-
-          } else {
-            // Real authentication error
-            const errorMessage = error.response?.data?.detail ||
-                                error.message ||
-                                'GitHub authentication failed';
-            toast.error(errorMessage);
-            router.push('/login');
-          }
+          setTimeout(() => {
+            router.push('/login?error=' + encodeURIComponent(errorMessage));
+          }, 2000);
         }
 
       } catch (err: unknown) {
         console.error('OAuth callback error:', err);
         const errorMessage = err instanceof Error ? err.message : 'Unknown error';
         toast.error('Authentication failed: ' + errorMessage);
-        router.push('/login');
+        router.push('/login?error=' + encodeURIComponent(errorMessage));
       }
     };
 
