@@ -1,9 +1,8 @@
 'use client';
 
-import { useState } from 'react';
-import { useSession } from 'next-auth/react';
+import { useState, useEffect } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion } from 'framer-motion';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
@@ -19,8 +18,6 @@ import {
 import {
   Play,
   Trash2,
-  Plus,
-  AlertCircle,
   CheckCircle,
   XCircle,
   Loader2,
@@ -32,7 +29,6 @@ import {
   Send,
   Copy,
   FileJson,
-  List,
   Settings,
 } from 'lucide-react';
 import sandboxService, {
@@ -162,13 +158,26 @@ fn main() {
 const httpMethods = ['GET', 'POST', 'PUT', 'PATCH', 'DELETE'];
 
 export default function APISandboxClient() {
-  const { data: session } = useSession();
   const queryClient = useQueryClient();
+  const [userEmail, setUserEmail] = useState<string>('anonymous');
 
   const [selectedEnvironment, setSelectedEnvironment] = useState<string>('python-3.11');
   const [currentSandbox, setCurrentSandbox] = useState<Sandbox | null>(null);
   const [code, setCode] = useState<string>(sampleCode['python-3.11']);
   const [executionResults, setExecutionResults] = useState<ExecutionResult[]>([]);
+
+  // Get user email from localStorage after mount
+  useEffect(() => {
+    try {
+      const userStr = localStorage.getItem('user');
+      if (userStr) {
+        const user = JSON.parse(userStr);
+        setUserEmail(user.email || 'anonymous');
+      }
+    } catch {
+      // Ignore parse errors
+    }
+  }, []);
 
   // Request builder state
   const [httpMethod, setHttpMethod] = useState<string>('POST');
@@ -205,7 +214,7 @@ export default function APISandboxClient() {
           status: 'ready' as const,
           createdAt: new Date().toISOString(),
           updatedAt: new Date().toISOString(),
-          createdBy: session?.user?.email || 'anonymous',
+          createdBy: userEmail,
         };
       }
     },
