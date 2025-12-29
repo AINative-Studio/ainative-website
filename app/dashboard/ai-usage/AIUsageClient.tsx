@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useQuery, useMutation } from '@tanstack/react-query';
 import { motion } from 'framer-motion';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
@@ -29,9 +29,15 @@ const stagger = {
 const COLORS = ['#8b5cf6', '#3b82f6', '#10b981', '#f59e0b', '#ef4444', '#ec4899'];
 
 export default function AIUsageClient() {
+  const [mounted, setMounted] = useState(false);
   const [startDate, setStartDate] = useState('');
   const [endDate, setEndDate] = useState('');
   const [dateRange, setDateRange] = useState({});
+
+  // Prevent hydration mismatch by only rendering after mount
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   // Fetch usage summary
   const { data: summaryData, isLoading: summaryLoading } = useQuery({
@@ -74,7 +80,7 @@ export default function AIUsageClient() {
     });
   };
 
-  const isLoading = summaryLoading || modelLoading || dailyLoading;
+  const isLoading = !mounted || summaryLoading || modelLoading || dailyLoading;
 
   if (isLoading) {
     return (
@@ -84,7 +90,12 @@ export default function AIUsageClient() {
     );
   }
 
-  const summary = summaryData || { total_requests: 0, total_tokens: 0, total_cost: 0, by_provider: [] };
+  const summary = {
+    total_requests: summaryData?.total_requests ?? 0,
+    total_tokens: summaryData?.total_tokens ?? 0,
+    total_cost: summaryData?.total_cost ?? 0,
+    by_provider: summaryData?.by_provider ?? [],
+  };
   const modelUsage = byModelData?.usage || [];
   const dailyUsage = dailyData?.daily_usage || [];
 
@@ -103,12 +114,18 @@ export default function AIUsageClient() {
     cost: m.cost,
   }));
 
-  const dailyChartData = dailyUsage.map((d: DailyUsageEntry) => ({
-    date: new Date(d.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }),
-    requests: d.requests,
-    tokens: d.tokens,
-    cost: d.cost,
-  }));
+  const dailyChartData = dailyUsage.map((d: DailyUsageEntry) => {
+    // Use consistent date format to avoid hydration mismatch
+    const date = new Date(d.date);
+    const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+    const formattedDate = `${months[date.getMonth()]} ${date.getDate()}`;
+    return {
+      date: formattedDate,
+      requests: d.requests,
+      tokens: d.tokens,
+      cost: d.cost,
+    };
+  });
 
   return (
     <div className="space-y-8 p-8">

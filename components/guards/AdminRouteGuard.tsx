@@ -96,23 +96,27 @@ export function AdminRouteGuard({ children }: AdminRouteGuardProps) {
 /**
  * Hook to check if current user is admin
  * Can be used in any component to conditionally render admin-only features
+ * Returns false during SSR and initial render to avoid hydration mismatch
  */
 export function useIsAdmin(): boolean {
-  const [isAdmin] = useState(() => {
+  const [isAdmin, setIsAdmin] = useState(false);
+
+  useEffect(() => {
     try {
       const userStr = localStorage.getItem('user');
       if (!userStr) {
-        return false;
+        setIsAdmin(false);
+        return;
       }
 
       const user: UserData = JSON.parse(userStr);
       const userRole = user.role || (user.roles && user.roles[0]);
-      return userRole === 'ADMIN' || userRole === 'SUPERUSER' || user.is_superuser === true;
+      setIsAdmin(userRole === 'ADMIN' || userRole === 'SUPERUSER' || user.is_superuser === true);
     } catch (error) {
       console.error('Error checking admin status:', error);
-      return false;
+      setIsAdmin(false);
     }
-  });
+  }, []);
 
   return isAdmin;
 }
