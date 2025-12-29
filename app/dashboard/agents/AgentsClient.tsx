@@ -1,7 +1,6 @@
 'use client';
 
 import { useState } from 'react';
-import { useSession } from 'next-auth/react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
@@ -281,7 +280,6 @@ const mockLogs: AgentLog[] = [
 ];
 
 export default function AgentsClient() {
-  const { data: session } = useSession();
   const queryClient = useQueryClient();
   const [selectedAgent, setSelectedAgent] = useState<Agent | null>(null);
   const [selectedRun, setSelectedRun] = useState<AgentRun | null>(null);

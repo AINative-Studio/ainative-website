@@ -1,7 +1,6 @@
 'use client';
 
-import { useState, useCallback, useRef } from 'react';
-import { useSession } from 'next-auth/react';
+import { useState, useCallback, useRef, useEffect } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { motion } from 'framer-motion';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
@@ -37,8 +36,8 @@ const mockVideos: VideoType[] = [
 ];
 
 export default function VideoProcessingClient() {
-  const { data: session } = useSession();
   const queryClient = useQueryClient();
+  const [mounted, setMounted] = useState(false);
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
   const [selectedVideo, setSelectedVideo] = useState<VideoType | null>(null);
   const [isUploading, setIsUploading] = useState(false);
@@ -52,6 +51,10 @@ export default function VideoProcessingClient() {
     thumbnailTimestamp: 5, quality: 'high', codec: 'h264',
   });
 
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
   const { data: videoLibrary, isLoading } = useQuery({
     queryKey: ['videos'],
     queryFn: async () => {
@@ -61,7 +64,7 @@ export default function VideoProcessingClient() {
         return { videos: mockVideos, total: mockVideos.length, page: 1, pageSize: 20 };
       }
     },
-    enabled: !!session,
+    enabled: mounted,
   });
 
   const uploadMutation = useMutation({

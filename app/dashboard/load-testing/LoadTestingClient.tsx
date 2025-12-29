@@ -1,7 +1,6 @@
 'use client';
 
-import { useState } from 'react';
-import { useSession } from 'next-auth/react';
+import { useState, useEffect } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -445,10 +444,14 @@ function MetricsPanel({
 }
 
 export default function LoadTestingClient() {
-  const { status } = useSession();
   const queryClient = useQueryClient();
+  const [mounted, setMounted] = useState(false);
   const [activeTab, setActiveTab] = useState<'tests' | 'scenarios'>('tests');
   const [selectedMetrics, setSelectedMetrics] = useState<string | null>(null);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   // Fetch scenarios
   const { data: scenarios, isLoading: scenariosLoading } = useQuery({
@@ -537,7 +540,7 @@ export default function LoadTestingClient() {
     setActiveTab('tests');
   };
 
-  if (status === 'loading') {
+  if (!mounted) {
     return (
       <div className="flex items-center justify-center min-h-[400px] text-white">
         <div className="text-center">

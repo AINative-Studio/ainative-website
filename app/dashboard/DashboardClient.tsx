@@ -2,7 +2,6 @@
 
 import { useCallback, useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { useSession } from 'next-auth/react';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
 import { Button } from '@/components/ui/button';
@@ -119,7 +118,8 @@ interface CostData {
 }
 
 export default function DashboardClient() {
-  const { data: session, status } = useSession();
+  const [mounted, setMounted] = useState(false);
+  const [sessionUser, setSessionUser] = useState<{ email?: string; name?: string } | null>(null);
   const [user, setUser] = useState<DashboardUser | null>(null);
   const [usageData, setUsageData] = useState<UsageData | null>(null);
   const [subscriptionPlan, setSubscriptionPlan] = useState<string>('Free');
@@ -128,6 +128,20 @@ export default function DashboardClient() {
   const [costData, setCostData] = useState<CostData | null>(null);
   const [apiError, setApiError] = useState<string | null>(null);
   const router = useRouter();
+
+  // Load session from localStorage on mount
+  useEffect(() => {
+    setMounted(true);
+    try {
+      const userStr = localStorage.getItem('user');
+      if (userStr) {
+        const userData = JSON.parse(userStr);
+        setSessionUser({ email: userData.email, name: userData.name });
+      }
+    } catch {
+      // Ignore parse errors
+    }
+  }, []);
 
   // Set mock AI metrics data
   const setMockAiMetrics = useCallback(() => {
@@ -191,14 +205,14 @@ export default function DashboardClient() {
       setIsRefreshing(true);
       setApiError(null);
 
-      // Use NextAuth session for authentication
-      if (session?.user) {
-        // User is authenticated via NextAuth
+      // Use localStorage session for authentication
+      if (sessionUser) {
+        // User is authenticated
         setUser({
-          login: session.user.email?.split('@')[0] || 'user',
-          name: session.user.name || 'User',
-          email: session.user.email || undefined,
-          avatar_url: session.user.image || generateDefaultAvatar(session.user.email || 'user')
+          login: sessionUser.email?.split('@')[0] || 'user',
+          name: sessionUser.name || 'User',
+          email: sessionUser.email || undefined,
+          avatar_url: generateDefaultAvatar(sessionUser.email || 'user')
         });
         setMockUsageData();
         setMockAiMetrics();
@@ -256,7 +270,7 @@ export default function DashboardClient() {
     } finally {
       setIsRefreshing(false);
     }
-  }, [session, setMockAiMetrics, setMockUsageData]);
+  }, [sessionUser, setMockAiMetrics, setMockUsageData]);
 
   useEffect(() => {
     setMockAiMetrics();
@@ -278,8 +292,8 @@ export default function DashboardClient() {
     setApiError(`Export functionality coming soon`);
   };
 
-  // Show loading state while session is loading or user data is being fetched
-  if (status === 'loading' || !user) {
+  // Show loading state while mounted or user data is being fetched
+  if (!mounted || !user) {
     return (
       <div className="flex items-center justify-center min-h-screen text-white bg-[#0D1117]">
         <div className="text-center">

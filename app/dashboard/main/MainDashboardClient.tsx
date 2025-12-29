@@ -1,6 +1,6 @@
 'use client';
 
-import { useSession } from 'next-auth/react';
+import { useState, useEffect } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { motion } from 'framer-motion';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -405,7 +405,21 @@ function PerformanceChart({ data, isLoading }: { data?: PerformanceData[]; isLoa
 }
 
 export default function MainDashboardClient() {
-  const { data: session, status } = useSession();
+  const [mounted, setMounted] = useState(false);
+  const [userName, setUserName] = useState<string | null>(null);
+
+  useEffect(() => {
+    setMounted(true);
+    try {
+      const userStr = localStorage.getItem('user');
+      if (userStr) {
+        const user = JSON.parse(userStr);
+        setUserName(user.name || user.email || null);
+      }
+    } catch {
+      // Ignore parse errors
+    }
+  }, []);
 
   const {
     data: stats,
@@ -465,7 +479,7 @@ export default function MainDashboardClient() {
     refetchPerformance();
   };
 
-  if (status === 'loading') {
+  if (!mounted) {
     return (
       <div className="flex items-center justify-center min-h-[400px] text-white">
         <div className="text-center">
@@ -492,7 +506,7 @@ export default function MainDashboardClient() {
               Main Dashboard
             </h1>
             <p className="text-gray-400 mt-1">
-              Welcome back{session?.user?.name ? `, ${session.user.name}` : ''}! Here's your AI development overview.
+              Welcome back{userName ? `, ${userName}` : ''}! Here's your AI development overview.
             </p>
           </div>
           <Button

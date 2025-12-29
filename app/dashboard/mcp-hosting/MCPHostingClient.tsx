@@ -1,7 +1,6 @@
 'use client';
 
-import { useState } from 'react';
-import { useSession } from 'next-auth/react';
+import { useState, useEffect } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -328,10 +327,14 @@ function LogsPanel({ logs, onClose }: { logs: MCPServerLog[]; onClose: () => voi
 }
 
 export default function MCPHostingClient() {
-  const { status } = useSession();
   const queryClient = useQueryClient();
+  const [mounted, setMounted] = useState(false);
   const [activeTab, setActiveTab] = useState<'instances' | 'catalog'>('instances');
   const [selectedLogs, setSelectedLogs] = useState<string | null>(null);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   // Fetch catalog
   const {
@@ -437,7 +440,7 @@ export default function MCPHostingClient() {
     setActiveTab('instances');
   };
 
-  if (status === 'loading') {
+  if (!mounted) {
     return (
       <div className="flex items-center justify-center min-h-[400px] text-white">
         <div className="text-center">
