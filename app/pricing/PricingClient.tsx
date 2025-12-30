@@ -1,12 +1,14 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { motion, Variants } from 'framer-motion';
 import { Cpu, Shield, Users, Zap, Check } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { pricingService, type PricingPlan } from '@/services/pricingService';
+import { appConfig } from '@/lib/config/app';
 
 // Types
-type PlanLevel = 'start' | 'pro' | 'teams' | 'enterprise';
+type PlanLevel = 'start' | 'pro' | 'teams' | 'enterprise' | 'free' | 'scale' | 'individual' | 'hobbyist' | 'zerodb_free' | 'zerodb_pro' | 'zerodb_scale' | 'cody' | 'swarm';
 
 interface Plan {
   id: string;
@@ -16,7 +18,9 @@ interface Plan {
   sub?: string;
   buttonText: string;
   description: string;
+  subtitle?: string;
   features: string[];
+  use_cases?: string;
   level: PlanLevel;
   highlight: boolean;
   url?: string;
@@ -36,15 +40,9 @@ const fadeIn: Variants = {
   }),
 };
 
-// Stripe price IDs from environment
-const STRIPE_PRICE_IDS = {
-  pro: process.env.NEXT_PUBLIC_STRIPE_PRO_PRICE_ID || 'price_pro',
-  teams: process.env.NEXT_PUBLIC_STRIPE_TEAMS_PRICE_ID || 'price_teams',
-};
+const CALENDLY_URL = appConfig.links.calendly;
 
-const CALENDLY_URL = 'https://calendly.com/ainative-studio/enterprise';
-
-const plans: Plan[] = [
+const fallbackPlans: Plan[] = [
   {
     id: 'hobbyist',
     name: 'Start',
@@ -56,7 +54,7 @@ const plans: Plan[] = [
     features: [
       '50 completions/month',
       'Community support',
-      'Basic AI assistance',
+      'Basic AI assistance'
     ],
     level: 'start',
     highlight: true,
@@ -76,11 +74,11 @@ const plans: Plan[] = [
       '5 custom agents',
       'Semantic code context',
       'Quantum Boost add-on',
-      'Priority support',
+      'Priority support'
     ],
     level: 'pro',
     highlight: false,
-    priceId: STRIPE_PRICE_IDS.pro,
+    priceId: appConfig.pricing.stripeKeys.pro,
   },
   {
     id: 'teams',
@@ -96,11 +94,11 @@ const plans: Plan[] = [
       'Usage analytics',
       'Private VPC hosting',
       'SSO integration',
-      'Team collaboration tools',
+      'Team collaboration tools'
     ],
     level: 'teams',
     highlight: false,
-    priceId: STRIPE_PRICE_IDS.teams,
+    priceId: appConfig.pricing.stripeKeys.teams,
   },
   {
     id: 'enterprise',
@@ -117,7 +115,7 @@ const plans: Plan[] = [
       'Access to QNN APIs',
       'Custom training',
       'Volume pricing',
-      'Dedicated support',
+      'Dedicated support'
     ],
     level: 'enterprise',
     highlight: false,
@@ -125,8 +123,87 @@ const plans: Plan[] = [
   },
 ];
 
+// Helper function to get icon for plan name
+const getIconForPlan = (planName: string) => {
+  const name = planName.toLowerCase();
+  if (name.includes('hobbyist') || name.includes('free') || name.includes('start')) return Cpu;
+  if (name.includes('individual') || name.includes('pro')) return Zap;
+  if (name.includes('dev teams') || name.includes('teams')) return Users;
+  if (name.includes('zerodb') || name.includes('enterprise')) return Shield;
+  if (name.includes('cody')) return Cpu;
+  if (name.includes('swarm')) return Zap;
+  return Cpu;
+};
+
 export default function PricingClient() {
-  const [isLoading, setIsLoading] = useState<string | null>(null);
+  const [plans, setPlans] = useState<Plan[]>(fallbackPlans);
+  const [isLoadingPricing, setIsLoadingPricing] = useState(true);
+  const [pricingError, setPricingError] = useState<string | null>(null);
+  const [isCheckoutLoading, setIsCheckoutLoading] = useState<string | null>(null);
+
+  // Fetch pricing plans from API
+  const fetchPricingPlans = async () => {
+    setIsLoadingPricing(true);
+    setPricingError(null);
+    try {
+      const pricingPlans = await pricingService.getPricingPlansWithFallback();
+
+      // Show exactly 7 plans: 5 dev plans + 2 paid ZeroDB subscriptions (Pro and Scale)
+      // Exclude: zerodb_free and zerodb_enterprise
+      const filteredPlans = pricingPlans.filter((plan: PricingPlan) => {
+        const planId = plan.id.toLowerCase();
+        // Exclude ZeroDB Free and Enterprise - only show Pro and Scale
+        if (planId === 'zerodb_free' || planId === 'zerodb_enterprise') {
+          return false;
+        }
+        return true;
+      });
+
+      // Map API response to Plan format
+      const apiPlans: Plan[] = filteredPlans.map((plan: PricingPlan) => ({
+        id: plan.id,
+        name: plan.name,
+        icon: getIconForPlan(plan.name),
+        price: plan.price === 0 ? 'Free' : plan.price === null ? 'Custom' : `$${plan.price}`,
+        sub: plan.billing_period ? `/${plan.billing_period}` : '',
+        buttonText: plan.button_text,
+        description: plan.description,
+        subtitle: plan.subtitle,
+        features: plan.features || [],
+        use_cases: plan.use_cases,
+        level: plan.level,
+        highlight: plan.highlighted,
+        priceId: plan.stripe_price_id,
+        url: plan.url,
+      }));
+
+      setPlans(apiPlans);
+    } catch (error) {
+      console.error('Error fetching pricing plans:', error);
+      setPricingError('Failed to load current pricing. Please refresh or contact support.');
+      // Keep fallback plans on error
+    } finally {
+      setIsLoadingPricing(false);
+    }
+  };
+
+  // Load pricing on component mount
+  useEffect(() => {
+    fetchPricingPlans();
+
+    // Re-fetch when storage changes (login/logout)
+    const handleStorageChange = (e: StorageEvent) => {
+      if (e.key === 'access_token') {
+        fetchPricingPlans();
+      }
+    };
+
+    window.addEventListener('storage', handleStorageChange);
+
+    return () => {
+      window.removeEventListener('storage', handleStorageChange);
+    };
+  }, []);
 
   const handlePlanClick = async (plan: Plan) => {
     if (plan.url) {
@@ -139,36 +216,32 @@ export default function PricingClient() {
     }
 
     if (plan.priceId && plan.id !== 'hobbyist') {
-      setIsLoading(plan.id);
+      setIsCheckoutLoading(plan.id);
       try {
-        // Create checkout session via API route
-        const response = await fetch('/api/checkout', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            planId: plan.id,
-            priceId: plan.priceId,
-            successUrl: `${window.location.origin}/billing/success`,
-            cancelUrl: `${window.location.origin}/pricing`,
-          }),
+        console.log(`Creating checkout session for plan: ${plan.name} (ID: ${plan.id}, Price: ${plan.priceId})`);
+
+        const checkoutSession = await pricingService.createCheckoutSession(plan.id, {
+          successUrl: `${window.location.origin}/billing/success`,
+          cancelUrl: `${window.location.origin}/pricing`,
+          metadata: {
+            plan_name: plan.name,
+            plan_id: plan.id
+          }
         });
 
-        if (!response.ok) {
-          throw new Error('Failed to create checkout session');
-        }
+        console.log('Checkout session created:', checkoutSession.sessionId);
 
-        const { url } = await response.json();
-        if (url) {
-          window.location.href = url;
-        }
+        // Redirect to Stripe checkout
+        window.location.href = checkoutSession.sessionUrl;
       } catch (error) {
         console.error('Error creating checkout session:', error);
-        alert('Unable to start subscription checkout. Please try again or contact support.');
+        const errorMessage = error instanceof Error ? error.message : 'Failed to create checkout session';
+        alert(`Unable to start subscription checkout: ${errorMessage}\n\nPlease try again or contact support if the issue persists.`);
       } finally {
-        setIsLoading(null);
+        setIsCheckoutLoading(null);
       }
+    } else if (plan.id !== 'hobbyist') {
+      alert('This plan is not available for online purchase. Please contact support.');
     }
   };
 
@@ -193,80 +266,105 @@ export default function PricingClient() {
           </p>
         </motion.header>
 
-        {/* Pricing Cards */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
-          {plans.map((plan, i) => (
-            <motion.article
-              key={plan.name}
-              custom={i}
-              initial="hidden"
-              whileInView="visible"
-              viewport={{ once: true, amount: 0.1 }}
-              variants={fadeIn}
-              className={`
-                rounded-2xl relative overflow-hidden p-6 h-full flex flex-col
-                ${
-                  plan.highlight
-                    ? 'border-2 border-[#4B6FED] shadow-lg bg-[#1D2230]'
-                    : 'border border-white/10 bg-[#1C2128]'
-                }
-                transition-all duration-300 hover:scale-[1.02] hover:shadow-xl
-              `}
+        {/* Error Banner */}
+        {pricingError && (
+          <div className="bg-red-900/20 border border-red-800 rounded-lg p-4 text-center">
+            <p className="text-red-400 mb-2">{pricingError}</p>
+            <Button
+              onClick={fetchPricingPlans}
+              variant="outline"
+              size="sm"
+              className="border-red-700 text-red-400 hover:bg-red-900/30"
             >
-              {plan.highlight && (
-                <div className="absolute top-0 right-0 bg-[#4B6FED] text-white text-xs font-semibold px-3 py-1 rounded-bl-md shadow-md">
-                  POPULAR
-                </div>
-              )}
-              <plan.icon className="h-6 w-6 text-[#4B6FED] mb-4" />
-              <h3 className="text-xl font-bold text-white mb-2">{plan.name}</h3>
-              <p className="text-gray-400 mb-4 h-12">{plan.description}</p>
+              Retry Loading Pricing
+            </Button>
+          </div>
+        )}
 
-              <div className="mb-6">
-                <div className="flex items-baseline">
-                  <span className="text-4xl font-bold">{plan.price}</span>
-                  {plan.sub && (
-                    <span className="ml-2 text-sm text-gray-400">{plan.sub}</span>
-                  )}
-                </div>
-              </div>
+        {/* Loading State */}
+        {isLoadingPricing && (
+          <div className="text-center py-12">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#4B6FED] mx-auto mb-4"></div>
+            <p className="text-gray-400">Loading current pricing...</p>
+          </div>
+        )}
 
-              <div className="space-y-3 mt-6 flex-1">
-                {plan.features.map((feature, index) => (
-                  <div
-                    key={`${plan.name}-${index}`}
-                    className="flex items-start group"
-                  >
-                    <Check className="h-5 w-5 text-[#4B6FED] mt-0.5 mr-2 transition-transform duration-200 group-hover:scale-110" />
-                    <span className="text-sm text-white">{feature}</span>
-                  </div>
-                ))}
-              </div>
-
-              {/* CTA Button */}
-              <div className="mt-8">
-                <Button
-                  onClick={() => handlePlanClick(plan)}
-                  disabled={isLoading === plan.id}
-                  className={`w-full ${
+        {/* Pricing Cards */}
+        {!isLoadingPricing && (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+            {plans.map((plan, i) => (
+              <motion.article
+                key={plan.name}
+                custom={i}
+                initial="hidden"
+                whileInView="visible"
+                viewport={{ once: true, amount: 0.1 }}
+                variants={fadeIn}
+                className={`
+                  rounded-2xl relative overflow-hidden p-6 h-full flex flex-col
+                  ${
                     plan.highlight
-                      ? 'bg-gradient-to-r from-[#4B6FED] to-[#8A63F5] text-white hover:opacity-90'
-                      : 'bg-white/5 text-white hover:bg-white/10'
-                  }`}
-                >
-                  {isLoading === plan.id ? (
-                    <span className="flex items-center gap-2">
-                      <span className="animate-spin h-4 w-4 border-2 border-white border-t-transparent rounded-full" />
-                      Processing...
-                    </span>
-                  ) : (
-                    plan.buttonText
-                  )}
-                </Button>
-              </div>
-            </motion.article>
-          ))}
-        </div>
+                      ? 'border-2 border-[#4B6FED] shadow-lg bg-[#1D2230]'
+                      : 'border border-white/10 bg-[#1C2128]'
+                  }
+                  transition-all duration-300 hover:scale-[1.02] hover:shadow-xl
+                `}
+              >
+                {plan.highlight && (
+                  <div className="absolute top-0 right-0 bg-[#4B6FED] text-white text-xs font-semibold px-3 py-1 rounded-bl-md shadow-md">
+                    POPULAR
+                  </div>
+                )}
+                <plan.icon className="h-6 w-6 text-[#4B6FED] mb-4" />
+                <h3 className="text-xl font-bold text-white mb-2">{plan.name}</h3>
+                <p className="text-gray-400 mb-4 h-12">{plan.description}</p>
+
+                <div className="mb-6">
+                  <div className="flex items-baseline">
+                    <span className="text-4xl font-bold">{plan.price}</span>
+                    {plan.sub && (
+                      <span className="ml-2 text-sm text-gray-400">{plan.sub}</span>
+                    )}
+                  </div>
+                </div>
+
+                <div className="space-y-3 mt-6 flex-1">
+                  {plan.features.map((feature, index) => (
+                    <div
+                      key={`${plan.name}-${index}`}
+                      className="flex items-start group"
+                    >
+                      <Check className="h-5 w-5 text-[#4B6FED] mt-0.5 mr-2 transition-transform duration-200 group-hover:scale-110" />
+                      <span className="text-sm text-white">{feature}</span>
+                    </div>
+                  ))}
+                </div>
+
+                {/* CTA Button */}
+                <div className="mt-8">
+                  <Button
+                    onClick={() => handlePlanClick(plan)}
+                    disabled={isCheckoutLoading === plan.id}
+                    className={`w-full ${
+                      plan.highlight
+                        ? 'bg-gradient-to-r from-[#4B6FED] to-[#8A63F5] text-white hover:opacity-90'
+                        : 'bg-white/5 text-white hover:bg-white/10'
+                    }`}
+                  >
+                    {isCheckoutLoading === plan.id ? (
+                      <span className="flex items-center gap-2">
+                        <span className="animate-spin h-4 w-4 border-2 border-white border-t-transparent rounded-full" />
+                        Processing...
+                      </span>
+                    ) : (
+                      plan.buttonText
+                    )}
+                  </Button>
+                </div>
+              </motion.article>
+            ))}
+          </div>
+        )}
 
         {/* FAQ Section */}
         <motion.section

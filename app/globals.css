@@ -60,27 +60,43 @@
   -moz-osx-font-smoothing: grayscale;
 }
 
-/* Dark mode */
+/* Dark mode - Aligned with Vite design system */
 .dark {
-  --background: 222.2 84% 4.9%;
+  /* Background: #0D1117 -> HSL(215, 28%, 7%) */
+  --background: 215 28% 7%;
   --foreground: 210 40% 98%;
-  --card: 222.2 84% 4.9%;
+  /* Card/Surface: #161B22 -> HSL(215, 19%, 11%) */
+  --card: 215 19% 11%;
   --card-foreground: 210 40% 98%;
-  --popover: 222.2 84% 4.9%;
+  --popover: 215 19% 11%;
   --popover-foreground: 210 40% 98%;
-  --primary: 217.2 91.2% 59.8%;
-  --primary-foreground: 222.2 47.4% 11.2%;
-  --secondary: 217.2 32.6% 17.5%;
-  --secondary-foreground: 210 40% 98%;
-  --muted: 217.2 32.6% 17.5%;
-  --muted-foreground: 215 20.2% 65.1%;
-  --accent: 217.2 32.6% 17.5%;
-  --accent-foreground: 210 40% 98%;
+  /* Primary: #4B6FED -> HSL(225, 82%, 61%) */
+  --primary: 225 82% 61%;
+  --primary-foreground: 0 0% 100%;
+  /* Secondary: #8A63F4 -> HSL(261, 87%, 67%) */
+  --secondary: 261 87% 67%;
+  --secondary-foreground: 0 0% 100%;
+  /* Muted: #2D333B -> HSL(214, 13%, 20%) */
+  --muted: 214 13% 20%;
+  --muted-foreground: 215 20% 65%;
+  /* Accent: #5867EF -> HSL(234, 82%, 64%) */
+  --accent: 234 82% 64%;
+  --accent-foreground: 0 0% 100%;
   --destructive: 0 62.8% 30.6%;
   --destructive-foreground: 210 40% 98%;
-  --border: 217.2 32.6% 17.5%;
-  --input: 217.2 32.6% 17.5%;
-  --ring: 224.3 76.3% 48%;
+  /* Border: #2D333B -> HSL(214, 13%, 20%) */
+  --border: 214 13% 20%;
+  --input: 214 13% 20%;
+  /* Ring: #4B6FED */
+  --ring: 225 82% 61%;
+
+  /* Vite-specific colors */
+  --vite-bg: #0D1117;
+  --vite-surface: #161B22;
+  --vite-border: #2D333B;
+  --vite-border-hover: #4B6FED;
+  --vite-primary: #4B6FED;
+  --vite-primary-hover: #3A56D3;
 }
 
 /* Base styles */
@@ -96,15 +112,10 @@ body {
   min-height: 100vh;
 }
 
-/* Link styles */
+/* Link styles - removed global color override to allow Tailwind classes to work */
 a {
   font-weight: 500;
-  color: var(--ainative-primary);
   text-decoration: inherit;
-}
-
-a:hover {
-  color: var(--ainative-primary-dark);
 }
 
 /* ============================================
@@ -252,6 +263,61 @@ a:hover {
 }
 
 /* ============================================
+   Vite-Aligned Card & Gradient Styles
+   ============================================ */
+
+/* Card styles matching Vite design */
+.card-vite {
+  background-color: #161B22;
+  border-radius: 0.75rem;
+  padding: 1.5rem;
+  border: 1px solid rgba(45, 51, 59, 0.5);
+  transition: all 0.3s ease;
+}
+
+.card-vite:hover {
+  border-color: rgba(75, 111, 237, 0.3);
+}
+
+/* Gradient backgrounds matching Vite */
+.bg-gradient-vite {
+  background: linear-gradient(135deg, #0D1117 0%, #161B22 50%, #1a1f2e 100%);
+}
+
+.bg-gradient-primary {
+  background: linear-gradient(135deg, #4B6FED 0%, #8A63F4 100%);
+}
+
+.bg-gradient-accent {
+  background: linear-gradient(135deg, #8A63F4 0%, #D04BF4 100%);
+}
+
+/* Glow effects matching Vite */
+.glow-primary {
+  box-shadow: 0 0 20px rgba(75, 111, 237, 0.3);
+}
+
+.glow-primary-hover:hover {
+  box-shadow: 0 0 30px rgba(75, 111, 237, 0.5);
+}
+
+/* Text gradients */
+.text-gradient-primary {
+  background: linear-gradient(135deg, #4B6FED 0%, #8A63F4 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* text-gradient - Exact match from Vite App.css */
+.text-gradient {
+  background: linear-gradient(90deg, #4B6FED 0%, #22BCDE 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* ============================================
    Utility Classes
    ============================================ */
 
@@ -303,6 +369,30 @@ a:hover {
   scrollbar-width: none;  /* Firefox */
 }
 
+/* Container-custom - matches Vite project */
+.container-custom {
+  width: 100%;
+  max-width: 1280px;
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: 1rem;
+  padding-right: 1rem;
+}
+
+@media (min-width: 640px) {
+  .container-custom {
+    padding-left: 1.5rem;
+    padding-right: 1.5rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  .container-custom {
+    padding-left: 2rem;
+    padding-right: 2rem;
+  }
+}
+
 /* ============================================
    Theme Configuration for Tailwind v4
    ============================================ */
@@ -345,6 +435,16 @@ a:hover {
   --color-surface-primary: #131726;
   --color-surface-secondary: #22263c;
   --color-surface-accent: #31395a;
+
+  /* Vite Design System Colors */
+  --color-vite-bg: #0D1117;
+  --color-vite-surface: #161B22;
+  --color-vite-border: #2D333B;
+  --color-vite-border-hover: #4B6FED;
+  --color-vite-primary: #4B6FED;
+  --color-vite-primary-hover: #3A56D3;
+  --color-vite-secondary: #8A63F4;
+  --color-vite-tertiary: #D04BF4;
 
   /* Neutral color scale */
   --color-neutral: #374151;

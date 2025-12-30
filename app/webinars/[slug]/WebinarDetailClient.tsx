@@ -22,7 +22,7 @@ import {
   Share2,
   Copy
 } from 'lucide-react';
-import { getWebinar } from '@/src/lib/strapi';
+import { strapiClient, type Webinar as StrapiWebinar } from '@/lib/strapi-client';
 import { getUnsplashImageUrl } from '@/src/lib/unsplash';
 
 interface WebinarTag {
@@ -94,9 +94,58 @@ export default function WebinarDetailClient({ slug }: WebinarDetailClientProps) 
       setIsLoading(true);
       setError(null);
       try {
-        const data = await getWebinar(slug);
+        const data = await strapiClient.getWebinar(slug);
         if (data) {
-          setWebinar(data);
+          // Transform Strapi response to WebinarData format
+          const now = new Date();
+          const webinarDate = new Date(data.date);
+          let status: 'upcoming' | 'live' | 'completed' = 'completed';
+          if (webinarDate > now) {
+            status = 'upcoming';
+          } else if (webinarDate.toDateString() === now.toDateString()) {
+            status = 'live';
+          }
+
+          // Handle Strapi media URL
+          const STRAPI_BASE_URL = 'https://ainative-community-production.up.railway.app';
+          const getMediaUrl = (media: unknown): string | undefined => {
+            if (!media) return undefined;
+            const m = media as { url?: string; data?: { attributes?: { url?: string } } };
+            if (m.url) return m.url.startsWith('http') ? m.url : `${STRAPI_BASE_URL}${m.url}`;
+            if (m.data?.attributes?.url) {
+              const relUrl = m.data.attributes.url;
+              return relUrl.startsWith('http') ? relUrl : `${STRAPI_BASE_URL}${relUrl}`;
+            }
+            return undefined;
+          };
+
+          const webinarData: WebinarData = {
+            id: data.id,
+            title: data.title,
+            description: data.description || '',
+            slug: data.slug,
+            date: data.date,
+            duration: data.duration || 60,
+            status,
+            speaker: data.speaker ? {
+              name: data.speaker.name,
+              bio: data.speaker.bio,
+              avatar: data.speaker.avatar ? { url: getMediaUrl(data.speaker.avatar) || '' } : undefined,
+            } : undefined,
+            co_speakers: data.co_speakers?.map((s) => ({
+              name: s.name,
+              bio: s.bio,
+              avatar: s.avatar ? { url: getMediaUrl(s.avatar) || '' } : undefined,
+            })),
+            tags: data.tags,
+            thumbnail: data.thumbnail ? { url: getMediaUrl(data.thumbnail) || '' } : undefined,
+            video: data.video as { video_url?: string; poster_url?: string } | undefined,
+            current_attendees: data.current_attendees || 0,
+            max_attendees: data.max_attendees || 0,
+            views: data.views,
+            category: data.category,
+          };
+          setWebinar(webinarData);
         } else {
           setError('Webinar not found');
         }
@@ -133,10 +182,10 @@ export default function WebinarDetailClient({ slug }: WebinarDetailClientProps) 
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-blue-50 dark:from-gray-900 dark:via-gray-900 dark:to-gray-900">
-        <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm border-b border-gray-200 dark:border-gray-700">
+      <div className="min-h-screen bg-[#0D1117]">
+        <div className="bg-[#161B22] backdrop-blur-sm border-b border-[#2D333B]">
           <div className="container mx-auto px-4 py-4">
-            <Link href="/webinars" className="inline-flex items-center text-sm text-muted-foreground hover:text-primary transition-colors">
+            <Link href="/webinars" className="inline-flex items-center text-sm text-gray-400 hover:text-[#4B6FED] transition-colors">
               <ChevronLeft className="w-4 h-4 mr-1" />
               Back to all webinars
             </Link>
@@ -145,24 +194,24 @@ export default function WebinarDetailClient({ slug }: WebinarDetailClientProps) 
         <div className="container mx-auto px-4 py-8">
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
             <div className="lg:col-span-2 space-y-8">
-              <Skeleton className="aspect-video w-full rounded-lg" />
+              <Skeleton className="aspect-video w-full rounded-lg bg-[#21262D]" />
               <div>
                 <div className="flex gap-2 mb-4">
-                  <Skeleton className="h-6 w-24" />
-                  <Skeleton className="h-6 w-20" />
+                  <Skeleton className="h-6 w-24 bg-[#21262D]" />
+                  <Skeleton className="h-6 w-20 bg-[#21262D]" />
                 </div>
-                <Skeleton className="h-12 w-full mb-4" />
-                <Skeleton className="h-8 w-3/4 mb-4" />
+                <Skeleton className="h-12 w-full mb-4 bg-[#21262D]" />
+                <Skeleton className="h-8 w-3/4 mb-4 bg-[#21262D]" />
                 <div className="flex gap-4">
-                  <Skeleton className="h-5 w-32" />
-                  <Skeleton className="h-5 w-24" />
+                  <Skeleton className="h-5 w-32 bg-[#21262D]" />
+                  <Skeleton className="h-5 w-24 bg-[#21262D]" />
                 </div>
               </div>
             </div>
             <div className="space-y-6">
-              <Card>
-                <CardHeader><Skeleton className="h-6 w-32" /></CardHeader>
-                <CardContent><Skeleton className="h-10 w-full" /></CardContent>
+              <Card className="bg-[#161B22] border-[#2D333B]">
+                <CardHeader><Skeleton className="h-6 w-32 bg-[#21262D]" /></CardHeader>
+                <CardContent><Skeleton className="h-10 w-full bg-[#21262D]" /></CardContent>
               </Card>
             </div>
           </div>
@@ -173,15 +222,15 @@ export default function WebinarDetailClient({ slug }: WebinarDetailClientProps) 
 
   if (error || !webinar) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-blue-50 dark:from-gray-900 dark:via-gray-900 dark:to-gray-900">
+      <div className="min-h-screen bg-[#0D1117]">
         <div className="container mx-auto px-4 py-16 text-center">
-          <Video className="h-16 w-16 mx-auto mb-4 text-muted-foreground" />
-          <h1 className="text-2xl font-bold mb-4">{error === 'Webinar not found' ? 'Webinar Not Found' : 'Error Loading Webinar'}</h1>
-          <p className="text-muted-foreground mb-6">{error || 'The webinar could not be loaded.'}</p>
+          <Video className="h-16 w-16 mx-auto mb-4 text-gray-500" />
+          <h1 className="text-2xl font-bold mb-4 text-white">{error === 'Webinar not found' ? 'Webinar Not Found' : 'Error Loading Webinar'}</h1>
+          <p className="text-gray-400 mb-6">{error || 'The webinar could not be loaded.'}</p>
           <div className="flex gap-3 justify-center">
-            <Button variant="outline" onClick={() => router.back()}>Go Back</Button>
+            <Button variant="outline" className="border-[#2D333B] text-gray-400 hover:bg-[#161B22]" onClick={() => router.back()}>Go Back</Button>
             <Link href="/webinars">
-              <Button>
+              <Button className="bg-[#4B6FED] hover:bg-[#3A56D3] text-white">
                 <ChevronLeft className="w-4 h-4 mr-2" />
                 All Webinars
               </Button>
@@ -198,10 +247,10 @@ export default function WebinarDetailClient({ slug }: WebinarDetailClientProps) 
   const isFull = webinar.max_attendees > 0 && webinar.current_attendees >= webinar.max_attendees;
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-blue-50 dark:from-gray-900 dark:via-gray-900 dark:to-gray-900">
-      <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm border-b border-gray-200 dark:border-gray-700">
+    <div className="min-h-screen bg-[#0D1117]">
+      <div className="bg-[#161B22] backdrop-blur-sm border-b border-[#2D333B]">
         <div className="container mx-auto px-4 py-4">
-          <Link href="/webinars" className="inline-flex items-center text-sm text-muted-foreground hover:text-primary transition-colors">
+          <Link href="/webinars" className="inline-flex items-center text-sm text-gray-400 hover:text-[#4B6FED] transition-colors">
             <ChevronLeft className="w-4 h-4 mr-1" />
             Back to all webinars
           </Link>
@@ -212,8 +261,8 @@ export default function WebinarDetailClient({ slug }: WebinarDetailClientProps) 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           <div className="lg:col-span-2 space-y-8">
             <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
-              <Card className="overflow-hidden shadow-xl">
-                <div className="relative aspect-video bg-gray-900">
+              <Card className="overflow-hidden shadow-xl bg-[#161B22] border-[#2D333B]">
+                <div className="relative aspect-video bg-[#0D1117]">
                   {isPast && webinar.video?.video_url ? (
                     <video
                       ref={videoRef}
@@ -261,28 +310,28 @@ export default function WebinarDetailClient({ slug }: WebinarDetailClientProps) 
                 {webinar.category && <Badge variant="secondary">{webinar.category.name}</Badge>}
               </div>
 
-              <h1 className="text-3xl md:text-4xl font-extrabold tracking-tight mb-4 bg-clip-text text-transparent bg-gradient-to-r from-primary to-blue-600">
+              <h1 className="text-3xl md:text-4xl font-extrabold tracking-tight mb-4 bg-clip-text text-transparent bg-gradient-to-r from-[#4B6FED] to-[#8A63F4]">
                 {webinar.title}
               </h1>
 
-              <div className="flex flex-wrap gap-4 text-muted-foreground mb-6">
+              <div className="flex flex-wrap gap-4 text-gray-400 mb-6">
                 <div className="flex items-center gap-2">
-                  <Calendar className="w-5 h-5" />
+                  <Calendar className="w-5 h-5 text-[#4B6FED]" />
                   <span>{formatDate(webinar.date)}</span>
                 </div>
                 <div className="flex items-center gap-2">
-                  <Clock className="w-5 h-5" />
+                  <Clock className="w-5 h-5 text-[#4B6FED]" />
                   <span>{webinar.duration} minutes</span>
                 </div>
                 {isPast && webinar.views && (
                   <div className="flex items-center gap-2">
-                    <Play className="w-5 h-5" />
+                    <Play className="w-5 h-5 text-[#4B6FED]" />
                     <span>{webinar.views.toLocaleString()} views</span>
                   </div>
                 )}
                 {(isUpcoming || isLive) && (
                   <div className="flex items-center gap-2">
-                    <Users className="w-5 h-5" />
+                    <Users className="w-5 h-5 text-[#4B6FED]" />
                     <span>
                       {webinar.current_attendees} registered
                       {webinar.max_attendees > 0 && ` / ${webinar.max_attendees} max`}
@@ -308,36 +357,36 @@ export default function WebinarDetailClient({ slug }: WebinarDetailClientProps) 
             </motion.div>
 
             <Tabs defaultValue="overview" className="w-full">
-              <TabsList className="w-full justify-start">
-                <TabsTrigger value="overview">Overview</TabsTrigger>
+              <TabsList className="w-full justify-start bg-[#161B22] border border-[#2D333B]">
+                <TabsTrigger value="overview" className="data-[state=active]:bg-[#4B6FED] data-[state=active]:text-white text-gray-400">Overview</TabsTrigger>
                 {webinar.resources && webinar.resources.length > 0 && (
-                  <TabsTrigger value="resources">Resources ({webinar.resources.length})</TabsTrigger>
+                  <TabsTrigger value="resources" className="data-[state=active]:bg-[#4B6FED] data-[state=active]:text-white text-gray-400">Resources ({webinar.resources.length})</TabsTrigger>
                 )}
               </TabsList>
 
               <TabsContent value="overview" className="space-y-6">
-                <Card>
+                <Card className="bg-[#161B22] border-[#2D333B]">
                   <CardHeader>
-                    <CardTitle>About this Webinar</CardTitle>
+                    <CardTitle className="text-white">About this Webinar</CardTitle>
                   </CardHeader>
-                  <CardContent className="prose max-w-none dark:prose-invert">
-                    <p className="text-muted-foreground whitespace-pre-line">{webinar.description}</p>
+                  <CardContent className="prose max-w-none prose-invert">
+                    <p className="text-gray-400 whitespace-pre-line">{webinar.description}</p>
 
                     {webinar.prerequisites && (
                       <div className="mt-6">
-                        <h3 className="text-lg font-semibold mb-2">Prerequisites</h3>
-                        <p className="text-muted-foreground">{webinar.prerequisites}</p>
+                        <h3 className="text-lg font-semibold mb-2 text-white">Prerequisites</h3>
+                        <p className="text-gray-400">{webinar.prerequisites}</p>
                       </div>
                     )}
 
                     {webinar.learning_outcomes && webinar.learning_outcomes.length > 0 && (
                       <div className="mt-6">
-                        <h3 className="text-lg font-semibold mb-3">What You'll Learn</h3>
+                        <h3 className="text-lg font-semibold mb-3 text-white">What You&apos;ll Learn</h3>
                         <ul className="space-y-2">
                           {webinar.learning_outcomes.map((outcome, index) => (
                             <li key={index} className="flex items-start gap-2">
-                              <CheckCircle className="w-5 h-5 text-green-600 mt-0.5 flex-shrink-0" />
-                              <span className="text-muted-foreground">{outcome}</span>
+                              <CheckCircle className="w-5 h-5 text-green-500 mt-0.5 flex-shrink-0" />
+                              <span className="text-gray-400">{outcome}</span>
                             </li>
                           ))}
                         </ul>
@@ -347,22 +396,22 @@ export default function WebinarDetailClient({ slug }: WebinarDetailClientProps) 
                 </Card>
 
                 {webinar.speaker?.bio && (
-                  <Card>
+                  <Card className="bg-[#161B22] border-[#2D333B]">
                     <CardHeader>
-                      <CardTitle>About the Speaker</CardTitle>
+                      <CardTitle className="text-white">About the Speaker</CardTitle>
                     </CardHeader>
                     <CardContent>
                       <div className="flex items-start gap-4">
                         <Avatar className="h-16 w-16">
                           <AvatarImage src={webinar.speaker.avatar?.url} alt={webinar.speaker.name} />
-                          <AvatarFallback className="text-xl">{webinar.speaker.name.charAt(0)}</AvatarFallback>
+                          <AvatarFallback className="text-xl bg-[#4B6FED] text-white">{webinar.speaker.name.charAt(0)}</AvatarFallback>
                         </Avatar>
                         <div>
-                          <p className="font-semibold text-lg">{webinar.speaker.name}</p>
+                          <p className="font-semibold text-lg text-white">{webinar.speaker.name}</p>
                           {webinar.speaker.title && (
-                            <p className="text-sm text-muted-foreground mb-2">{webinar.speaker.title}</p>
+                            <p className="text-sm text-gray-500 mb-2">{webinar.speaker.title}</p>
                           )}
-                          <p className="text-muted-foreground">{webinar.speaker.bio}</p>
+                          <p className="text-gray-400">{webinar.speaker.bio}</p>
                         </div>
                       </div>
                     </CardContent>
@@ -372,10 +421,10 @@ export default function WebinarDetailClient({ slug }: WebinarDetailClientProps) 
 
               {webinar.resources && webinar.resources.length > 0 && (
                 <TabsContent value="resources">
-                  <Card>
+                  <Card className="bg-[#161B22] border-[#2D333B]">
                     <CardHeader>
-                      <CardTitle>Resources</CardTitle>
-                      <CardDescription>Download materials and resources from this webinar</CardDescription>
+                      <CardTitle className="text-white">Resources</CardTitle>
+                      <CardDescription className="text-gray-400">Download materials and resources from this webinar</CardDescription>
                     </CardHeader>
                     <CardContent>
                       <ul className="space-y-3">
@@ -385,12 +434,12 @@ export default function WebinarDetailClient({ slug }: WebinarDetailClientProps) 
                               href={resource.url}
                               target="_blank"
                               rel="noopener noreferrer"
-                              className="flex items-center gap-3 p-3 rounded-lg border hover:bg-muted/50 transition-colors"
+                              className="flex items-center gap-3 p-3 rounded-lg border border-[#2D333B] hover:bg-[#21262D] transition-colors"
                             >
-                              <ExternalLink className="h-5 w-5 text-muted-foreground" />
+                              <ExternalLink className="h-5 w-5 text-[#4B6FED]" />
                               <div>
-                                <p className="font-medium">{resource.title}</p>
-                                <p className="text-xs text-muted-foreground uppercase">{resource.type}</p>
+                                <p className="font-medium text-white">{resource.title}</p>
+                                <p className="text-xs text-gray-500 uppercase">{resource.type}</p>
                               </div>
                             </a>
                           </li>
@@ -405,16 +454,16 @@ export default function WebinarDetailClient({ slug }: WebinarDetailClientProps) 
 
           <div className="space-y-6">
             {isUpcoming && (
-              <Card>
+              <Card className="bg-[#161B22] border-[#2D333B]">
                 <CardHeader>
-                  <CardTitle>Reserve Your Spot</CardTitle>
-                  <CardDescription>
+                  <CardTitle className="text-white">Reserve Your Spot</CardTitle>
+                  <CardDescription className="text-gray-400">
                     {isFull ? 'This webinar is currently full' : 'Register now to join this live webinar'}
                   </CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-3">
                   {!isFull && (
-                    <Button className="w-full" size="lg">
+                    <Button className="w-full bg-[#4B6FED] hover:bg-[#3A56D3] text-white" size="lg">
                       Register Now
                     </Button>
                   )}
@@ -423,12 +472,12 @@ export default function WebinarDetailClient({ slug }: WebinarDetailClientProps) 
             )}
 
             {isLive && webinar.meeting_url && (
-              <Card className="border-red-200 bg-red-50 dark:bg-red-900/20">
+              <Card className="border-red-800 bg-red-900/20">
                 <CardHeader>
-                  <CardTitle className="text-red-800 dark:text-red-300">Join Live Now</CardTitle>
+                  <CardTitle className="text-red-300">Join Live Now</CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <Button className="w-full" size="lg" asChild>
+                  <Button className="w-full bg-red-600 hover:bg-red-700 text-white" size="lg" asChild>
                     <a href={webinar.meeting_url} target="_blank" rel="noopener noreferrer">
                       <ExternalLink className="w-4 h-4 mr-2" />
                       Join Webinar
@@ -439,14 +488,14 @@ export default function WebinarDetailClient({ slug }: WebinarDetailClientProps) 
             )}
 
             {webinar.tags && webinar.tags.length > 0 && (
-              <Card>
+              <Card className="bg-[#161B22] border-[#2D333B]">
                 <CardHeader>
-                  <CardTitle>Topics</CardTitle>
+                  <CardTitle className="text-white">Topics</CardTitle>
                 </CardHeader>
                 <CardContent>
                   <div className="flex flex-wrap gap-2">
                     {webinar.tags.map((tag) => (
-                      <Badge key={tag.id} variant="secondary">
+                      <Badge key={tag.id} variant="secondary" className="bg-[#4B6FED]/10 text-[#8AB4FF] border-[#4B6FED]/30">
                         {tag.name}
                       </Badge>
                     ))}
@@ -455,12 +504,12 @@ export default function WebinarDetailClient({ slug }: WebinarDetailClientProps) 
               </Card>
             )}
 
-            <Card>
+            <Card className="bg-[#161B22] border-[#2D333B]">
               <CardHeader>
-                <CardTitle>Share This Webinar</CardTitle>
+                <CardTitle className="text-white">Share This Webinar</CardTitle>
               </CardHeader>
               <CardContent>
-                <Button variant="outline" size="sm" onClick={copyToClipboard}>
+                <Button variant="outline" size="sm" onClick={copyToClipboard} className="border-[#2D333B] text-gray-400 hover:bg-[#21262D] hover:text-white">
                   <Copy className="h-4 w-4 mr-2" />
                   {copied ? 'Copied!' : 'Copy Link'}
                 </Button>

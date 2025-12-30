@@ -72,7 +72,7 @@ const CardTitle = ({ className, ...props }: CardTitleProps) => (
 );
 
 const CardDescription = ({ className, ...props }: React.HTMLAttributes<HTMLParagraphElement>) => (
-  <p className={`text-sm text-gray-600 dark:text-gray-400 leading-relaxed ${className || ''}`} {...props} />
+  <p className={`text-sm text-gray-400 leading-relaxed ${className || ''}`} {...props} />
 );
 
 const ApiSection = ({ title, icon: Icon, description, endpoints }: ApiSectionProps) => {
@@ -86,21 +86,21 @@ const ApiSection = ({ title, icon: Icon, description, endpoints }: ApiSectionPro
       transition={{ duration: 0.3 }}
       className="relative group h-full"
     >
-      <Card className="h-full transition-all duration-300 hover:shadow-2xl hover:-translate-y-0.5 hover:border-primary/20 dark:hover:border-primary/30 bg-white/90 dark:bg-gray-800/90 backdrop-blur-sm overflow-hidden group-hover:shadow-primary/20 group-hover:shadow-xl relative before:absolute before:inset-0 before:bg-gradient-to-br before:from-primary/5 before:to-transparent before:opacity-0 hover:before:opacity-100 before:transition-all before:duration-500 border border-gray-100 dark:border-gray-700/50">
+      <Card className="h-full transition-all duration-300 hover:shadow-2xl hover:-translate-y-0.5 hover:border-[#4B6FED]/30 bg-[#161B22] backdrop-blur-sm overflow-hidden group-hover:shadow-[#4B6FED]/20 group-hover:shadow-xl relative before:absolute before:inset-0 before:bg-gradient-to-br before:from-[#4B6FED]/5 before:to-transparent before:opacity-0 hover:before:opacity-100 before:transition-all before:duration-500 border border-[#2D333B]">
         {/* Animated gradient border */}
-        <div className="absolute inset-0 p-px rounded-xl bg-gradient-to-br from-primary/20 via-blue-500/30 to-cyan-400/20 opacity-0 group-hover:opacity-100 transition-all duration-500">
-          <div className="absolute inset-0.5 bg-white dark:bg-gray-900/95 rounded-[11px]" />
+        <div className="absolute inset-0 p-px rounded-xl bg-gradient-to-br from-[#4B6FED]/20 via-[#8A63F4]/30 to-[#8AB4FF]/20 opacity-0 group-hover:opacity-100 transition-all duration-500">
+          <div className="absolute inset-0.5 bg-[#0D1117] rounded-[11px]" />
         </div>
 
         <div className="relative z-10 h-full flex flex-col">
           <CardHeader className="pb-4 px-6 pt-6">
             <div className="flex items-start justify-between">
               <div className="flex items-center gap-3">
-                <div className="p-2.5 bg-gradient-to-br from-primary/10 to-primary/5 rounded-xl shadow-inner border border-white/20 dark:border-white/5 flex-shrink-0">
-                  <Icon className="h-5 w-5 text-primary flex-shrink-0" />
+                <div className="p-2.5 bg-gradient-to-br from-[#4B6FED]/10 to-[#4B6FED]/5 rounded-xl shadow-inner border border-white/5 flex-shrink-0">
+                  <Icon className="h-5 w-5 text-[#4B6FED] flex-shrink-0" />
                 </div>
                 <div className="min-w-0">
-                  <CardTitle className="bg-clip-text bg-gradient-to-r from-gray-900 to-gray-700 dark:from-white dark:to-gray-200">
+                  <CardTitle className="text-white bg-clip-text bg-gradient-to-r from-white to-gray-200">
                     {title}
                   </CardTitle>
                   <CardDescription className="mt-1">
@@ -108,7 +108,7 @@ const ApiSection = ({ title, icon: Icon, description, endpoints }: ApiSectionPro
                   </CardDescription>
                 </div>
               </div>
-              <div className="flex items-center text-sm font-medium text-gray-600 dark:text-gray-400 bg-gray-50 dark:bg-gray-800/60 px-3 py-1 rounded-full border border-gray-200 dark:border-gray-700/50">
+              <div className="flex items-center text-sm font-medium text-gray-400 bg-[#1C2128] px-3 py-1 rounded-full border border-[#2D333B]">
                 <span className="relative flex h-2 w-2 mr-2">
                   <span className="absolute inline-flex h-2 w-2 rounded-full bg-green-500 opacity-75"></span>
                 </span>
@@ -124,24 +124,24 @@ const ApiSection = ({ title, icon: Icon, description, endpoints }: ApiSectionPro
                 initial={{ opacity: 0, x: -10 }}
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ delay: index * 0.05, duration: 0.2, ease: "easeOut" }}
-                className="p-4 bg-white/70 dark:bg-gray-800/50 rounded-xl border border-gray-100/90 dark:border-gray-700/60 hover:bg-white dark:hover:bg-gray-800/70 transition-all duration-200 backdrop-blur-sm relative overflow-hidden hover:shadow-md hover:border-gray-200 dark:hover:border-gray-600/70 hover:-translate-y-0.5"
+                className="p-4 bg-[#1C2128] rounded-xl border border-[#2D333B] hover:bg-[#21262D] transition-all duration-200 backdrop-blur-sm relative overflow-hidden hover:shadow-md hover:border-[#4B6FED]/30 hover:-translate-y-0.5"
                 whileHover={{ scale: 1.01 }}
               >
 
                 <div className="flex items-center gap-2 mb-2">
                   <span className={`text-xs font-medium px-2 py-1 rounded-full ${
-                    endpoint.method === 'GET' ? 'bg-blue-100 text-blue-700 dark:bg-blue-900/50 dark:text-blue-300' :
-                    endpoint.method === 'POST' ? 'bg-green-100 text-green-700 dark:bg-green-900/50 dark:text-green-300' :
-                    endpoint.method === 'PUT' ? 'bg-yellow-100 text-yellow-700 dark:bg-yellow-900/50 dark:text-yellow-300' :
-                    'bg-red-100 text-red-700 dark:bg-red-900/50 dark:text-red-300'
+                    endpoint.method === 'GET' ? 'bg-blue-900/50 text-blue-300' :
+                    endpoint.method === 'POST' ? 'bg-green-900/50 text-green-300' :
+                    endpoint.method === 'PUT' ? 'bg-yellow-900/50 text-yellow-300' :
+                    'bg-red-900/50 text-red-300'
                   }`}>
                     {endpoint.method}
                   </span>
-                  <code className="text-xs font-mono bg-gray-100 dark:bg-gray-700/50 px-2 py-1 rounded">
+                  <code className="text-xs font-mono bg-[#0D1117] text-[#8AB4FF] px-2 py-1 rounded">
                     {endpoint.path}
                   </code>
                 </div>
-                <p className="text-sm text-gray-600 dark:text-gray-300 line-clamp-2 leading-relaxed">
+                <p className="text-sm text-gray-300 line-clamp-2 leading-relaxed">
                   {endpoint.description}
                 </p>
               </motion.div>
@@ -150,7 +150,7 @@ const ApiSection = ({ title, icon: Icon, description, endpoints }: ApiSectionPro
               <Button
                 variant="ghost"
                 size="sm"
-                className="w-full mt-2 text-primary hover:bg-primary/10"
+                className="w-full mt-2 text-[#8AB4FF] hover:bg-[#4B6FED]/10"
                 onClick={() => setExpanded(!expanded)}
               >
                 {expanded ? 'Show less' : `Show ${endpoints.length - 3} more`}
@@ -755,13 +755,13 @@ interface ApiKeyModalProps {
 }
 
 const ApiKeyModal = ({ onClose }: ApiKeyModalProps) => (
-  <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-    <div className="bg-white dark:bg-gray-800 rounded-lg p-6 w-full max-w-md">
+  <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50 p-4">
+    <div className="bg-[#161B22] rounded-lg p-6 w-full max-w-md border border-[#2D333B]">
       <div className="flex justify-between items-center mb-4">
-        <h3 className="text-lg font-semibold">Get Your API Key</h3>
+        <h3 className="text-lg font-semibold text-white">Get Your API Key</h3>
         <button
           onClick={onClose}
-          className="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
+          className="text-gray-400 hover:text-gray-200"
         >
           <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -769,17 +769,17 @@ const ApiKeyModal = ({ onClose }: ApiKeyModalProps) => (
         </button>
       </div>
       <div className="space-y-4">
-        <p className="text-sm text-gray-600 dark:text-gray-300">
+        <p className="text-sm text-gray-300">
           Sign up or log in to generate your API key and start integrating with our platform.
         </p>
         <div className="flex flex-col space-y-2">
           <Link href="/signup">
-            <Button className="bg-primary text-white hover:bg-primary/90 w-full">
+            <Button className="bg-gradient-to-r from-[#4B6FED] to-[#8A63F4] text-white hover:opacity-90 w-full">
               Sign Up
             </Button>
           </Link>
           <Link href="/login">
-            <Button variant="outline" className="w-full">
+            <Button variant="outline" className="w-full border-[#2D333B] text-white hover:bg-[#1C2128]">
               Log In
             </Button>
           </Link>
@@ -843,9 +843,9 @@ export default function DevResourcesClient() {
   );
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-blue-50 dark:from-gray-900 dark:via-gray-900 dark:to-gray-900">
+    <div className="min-h-screen bg-[#0D1117] text-white">
       {/* Search Bar */}
-      <header className="sticky top-20 z-10 bg-white/80 dark:bg-gray-900/80 backdrop-blur-lg border-b border-gray-100 dark:border-gray-800 transition-all duration-300 shadow-sm">
+      <header className="sticky top-20 z-10 bg-[#0D1117]/80 backdrop-blur-lg border-b border-[#2D333B] transition-all duration-300 shadow-sm">
         <div className="container mx-auto px-4 py-3">
           <div className="relative max-w-2xl mx-auto">
             <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -854,7 +854,7 @@ export default function DevResourcesClient() {
             <Input
               type="text"
               placeholder="Search APIs, components, or resources..."
-              className="pl-10 w-full bg-white/80 dark:bg-gray-800/80 border-gray-200 dark:border-gray-700 focus:ring-2 focus:ring-primary/20 focus:border-primary/50 transition-all duration-200 text-sm h-10"
+              className="pl-10 w-full bg-[#161B22] border-[#2D333B] focus:ring-2 focus:ring-[#4B6FED]/20 focus:border-[#4B6FED]/50 transition-all duration-200 text-sm h-10 text-white"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
             />
@@ -863,7 +863,7 @@ export default function DevResourcesClient() {
                 onClick={() => setSearchQuery('')}
                 className="absolute inset-y-0 right-0 pr-3 flex items-center"
               >
-                <svg className="h-3.5 w-3.5 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <svg className="h-3.5 w-3.5 text-gray-400 hover:text-gray-300 transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
                 </svg>
               </button>
@@ -879,44 +879,44 @@ export default function DevResourcesClient() {
           transition={{ duration: 0.5 }}
           className="mb-12 text-center"
         >
-          <div className="inline-flex items-center justify-center px-4 py-2 rounded-full bg-primary/10 text-primary text-sm font-medium mb-4">
+          <div className="inline-flex items-center justify-center px-4 py-2 rounded-full bg-[#4B6FED]/10 text-[#8AB4FF] text-sm font-medium mb-4">
             <Zap className="h-4 w-4 mr-2" />
             Developer Resources
           </div>
-          <h1 className="text-4xl md:text-5xl font-extrabold tracking-tight mb-4 bg-clip-text text-transparent bg-gradient-to-r from-primary to-blue-600">
+          <h1 className="text-4xl md:text-5xl font-extrabold tracking-tight mb-4 bg-clip-text text-transparent bg-gradient-to-r from-[#4B6FED] to-[#8A63F4]">
             Build with Confidence
           </h1>
-          <p className="text-xl text-gray-600 dark:text-gray-300 max-w-3xl mx-auto">
+          <p className="text-xl text-gray-300 max-w-3xl mx-auto">
             Everything you need to integrate with our platform and build amazing applications
           </p>
         </motion.div>
 
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
           <div className="flex flex-col sm:flex-row justify-between items-center mb-8 gap-4">
-            <TabsList className="grid w-full sm:w-auto grid-cols-2 mb-4 sm:mb-0">
-              <TabsTrigger value="api" className="flex items-center gap-2">
+            <TabsList className="grid w-full sm:w-auto grid-cols-3 mb-4 sm:mb-0 bg-[#161B22] border border-[#2D333B]">
+              <TabsTrigger value="api" className="flex items-center gap-2 data-[state=active]:bg-[#4B6FED] data-[state=active]:text-white text-gray-400">
                 <Code className="h-4 w-4" />
                 API Reference
-                <Badge variant="secondary" className="ml-1 px-1.5 py-0.5 text-xs">
+                <Badge variant="secondary" className="ml-1 px-1.5 py-0.5 text-xs bg-[#1C2128]">
                   {Object.keys(apiEndpoints).length}
                 </Badge>
               </TabsTrigger>
-              <TabsTrigger value="ui" className="flex items-center gap-2">
+              <TabsTrigger value="ui" className="flex items-center gap-2 data-[state=active]:bg-[#4B6FED] data-[state=active]:text-white text-gray-400">
                 <Code2 className="h-4 w-4" />
                 UI Design
-                <Badge variant="secondary" className="ml-1 px-1.5 py-0.5 text-xs">
+                <Badge variant="secondary" className="ml-1 px-1.5 py-0.5 text-xs bg-[#1C2128]">
                   {Object.keys(uiDesignResources).length}
                 </Badge>
               </TabsTrigger>
-              <TabsTrigger value="tools" className="flex items-center gap-2">
+              <TabsTrigger value="tools" className="flex items-center gap-2 data-[state=active]:bg-[#4B6FED] data-[state=active]:text-white text-gray-400">
                 <TerminalIcon className="h-4 w-4" />
                 Developer Tools
-                <Badge variant="secondary" className="ml-1 px-1.5 py-0.5 text-xs">
+                <Badge variant="secondary" className="ml-1 px-1.5 py-0.5 text-xs bg-[#1C2128]">
                   {developerTools.length}
                 </Badge>
               </TabsTrigger>
             </TabsList>
-            <div className="flex items-center gap-2 text-sm text-muted-foreground">
+            <div className="flex items-center gap-2 text-sm text-gray-400">
               <Zap className="h-4 w-4 text-yellow-500" />
               <span>Powered by AINative</span>
             </div>
@@ -938,16 +938,16 @@ export default function DevResourcesClient() {
                   </div>
                 ) : (
                   <div className="text-center py-12">
-                    <div className="mx-auto w-16 h-16 flex items-center justify-center rounded-full bg-gray-100 dark:bg-gray-800 mb-4">
+                    <div className="mx-auto w-16 h-16 flex items-center justify-center rounded-full bg-[#161B22] mb-4">
                       <Search className="h-8 w-8 text-gray-400" />
                     </div>
-                    <h3 className="text-lg font-medium text-foreground">No results found</h3>
-                    <p className="mt-1 text-muted-foreground">
+                    <h3 className="text-lg font-medium text-white">No results found</h3>
+                    <p className="mt-1 text-gray-400">
                       We couldn&apos;t find any API endpoints matching your search.
                     </p>
                     <Button
                       variant="outline"
-                      className="mt-4"
+                      className="mt-4 border-[#2D333B] text-white hover:bg-[#1C2128]"
                       onClick={() => setSearchQuery('')}
                     >
                       Clear search
@@ -978,21 +978,21 @@ export default function DevResourcesClient() {
                   transition={{ delay: 0.2 }}
                   className="mt-12"
                 >
-                  <div className="bg-gradient-to-r from-primary/5 to-primary/10 border border-primary/20 rounded-2xl p-8 text-center">
+                  <div className="bg-gradient-to-r from-[#4B6FED]/10 to-[#8A63F4]/10 border border-[#4B6FED]/20 rounded-2xl p-8 text-center">
                     <div className="max-w-2xl mx-auto">
-                      <div className="inline-flex items-center justify-center p-3 bg-primary/10 rounded-full mb-4">
-                        <Sparkles className="h-6 w-6 text-primary" />
+                      <div className="inline-flex items-center justify-center p-3 bg-[#4B6FED]/10 rounded-full mb-4">
+                        <Sparkles className="h-6 w-6 text-[#4B6FED]" />
                       </div>
-                      <h3 className="text-2xl font-bold mb-3">Need help with implementation?</h3>
-                      <p className="text-muted-foreground mb-6">
+                      <h3 className="text-2xl font-bold mb-3 text-white">Need help with implementation?</h3>
+                      <p className="text-gray-400 mb-6">
                         Our developer support team is here to help you integrate our components and APIs into your project.
                       </p>
                       <div className="flex flex-col sm:flex-row gap-3 justify-center">
-                        <Button className="gap-2">
+                        <Button className="gap-2 bg-gradient-to-r from-[#4B6FED] to-[#8A63F4] text-white hover:opacity-90">
                           <MessageSquare className="h-4 w-4" />
                           Contact Support
                         </Button>
-                        <Button variant="outline" className="gap-2">
+                        <Button variant="outline" className="gap-2 border-[#2D333B] text-white hover:bg-[#1C2128]">
                           <FileText className="h-4 w-4" />
                           View Documentation
                         </Button>
@@ -1006,8 +1006,8 @@ export default function DevResourcesClient() {
 
           <TabsContent value="tools" className="space-y-8">
             <div className="text-center mb-12">
-              <h2 className="text-3xl font-bold tracking-tight mb-4">Developer Tools</h2>
-              <p className="text-lg text-muted-foreground max-w-3xl mx-auto">
+              <h2 className="text-3xl font-bold tracking-tight mb-4 text-white">Developer Tools</h2>
+              <p className="text-lg text-gray-400 max-w-3xl mx-auto">
                 Essential tools and resources to help you build with our platform
               </p>
             </div>
@@ -1017,22 +1017,22 @@ export default function DevResourcesClient() {
                 {filteredTools.map((tool, index) => {
                   const Icon = tool.icon;
                   return (
-                    <Card key={index} className="hover:shadow-lg transition-shadow duration-200 h-full flex flex-col">
+                    <Card key={index} className="hover:shadow-lg transition-shadow duration-200 h-full flex flex-col bg-[#161B22] border-[#2D333B]">
                       <CardHeader className="pb-3">
                         <div className="flex items-center space-x-3">
-                          <div className="p-2 rounded-lg bg-primary/10 text-primary">
+                          <div className="p-2 rounded-lg bg-[#4B6FED]/10 text-[#4B6FED]">
                             <Icon className="h-5 w-5" />
                           </div>
-                          <h3 className="font-semibold text-lg">{tool.name}</h3>
+                          <h3 className="font-semibold text-lg text-white">{tool.name}</h3>
                         </div>
-                        <Badge variant="outline" className="mt-2 w-fit">
+                        <Badge variant="outline" className="mt-2 w-fit border-[#2D333B] text-gray-400">
                           {tool.category}
                         </Badge>
                       </CardHeader>
                       <CardContent className="flex-1 flex flex-col">
-                        <p className="text-muted-foreground mb-4 flex-1">{tool.description}</p>
+                        <p className="text-gray-400 mb-4 flex-1">{tool.description}</p>
                         <Link href={tool.link} target="_blank" rel="noopener noreferrer">
-                          <Button variant="outline" className="w-full mt-auto">
+                          <Button variant="outline" className="w-full mt-auto border-[#2D333B] text-white hover:bg-[#1C2128]">
                             Learn more <ArrowRight className="ml-2 h-4 w-4" />
                           </Button>
                         </Link>
@@ -1043,16 +1043,16 @@ export default function DevResourcesClient() {
               </div>
             ) : (
               <div className="text-center py-12">
-                <div className="mx-auto w-16 h-16 flex items-center justify-center rounded-full bg-gray-100 dark:bg-gray-800 mb-4">
+                <div className="mx-auto w-16 h-16 flex items-center justify-center rounded-full bg-[#161B22] mb-4">
                   <Search className="h-8 w-8 text-gray-400" />
                 </div>
-                <h3 className="text-lg font-medium">No tools found</h3>
-                <p className="mt-1 text-muted-foreground">
+                <h3 className="text-lg font-medium text-white">No tools found</h3>
+                <p className="mt-1 text-gray-400">
                   We couldn&apos;t find any tools matching your search.
                 </p>
                 <Button
                   variant="outline"
-                  className="mt-4"
+                  className="mt-4 border-[#2D333B] text-white hover:bg-[#1C2128]"
                   onClick={() => setSearchQuery('')}
                 >
                   Clear search
@@ -1063,25 +1063,25 @@ export default function DevResourcesClient() {
         </Tabs>
 
         {/* API Key CTA Section */}
-        <div className="mt-16 p-8 rounded-xl bg-gradient-to-r from-primary/5 to-blue-50 dark:from-primary/10 dark:to-gray-800/50 border border-primary/20">
+        <div className="mt-16 p-8 rounded-xl bg-gradient-to-r from-[#4B6FED]/10 to-[#8A63F4]/10 border border-[#4B6FED]/20">
           <div className="max-w-4xl mx-auto text-center">
-            <div className="inline-flex items-center justify-center p-3 rounded-full bg-primary/10 text-primary mb-4">
+            <div className="inline-flex items-center justify-center p-3 rounded-full bg-[#4B6FED]/10 text-[#4B6FED] mb-4">
               <KeyIcon className="h-6 w-6" />
             </div>
-            <h2 className="text-2xl font-bold tracking-tight mb-4">Ready to start building?</h2>
-            <p className="text-lg text-muted-foreground mb-8 max-w-2xl mx-auto">
+            <h2 className="text-2xl font-bold tracking-tight mb-4 text-white">Ready to start building?</h2>
+            <p className="text-lg text-gray-400 mb-8 max-w-2xl mx-auto">
               Get your API key and start integrating our powerful AI capabilities into your applications today.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Button
                 size="lg"
-                className="px-8"
+                className="px-8 bg-gradient-to-r from-[#4B6FED] to-[#8A63F4] text-white hover:opacity-90"
                 onClick={() => setShowApiKeyModal(true)}
               >
                 Get Your API Key
               </Button>
               <Link href="/docs" target="_blank" rel="noopener noreferrer">
-                <Button variant="outline" size="lg" className="px-8">
+                <Button variant="outline" size="lg" className="px-8 border-[#2D333B] text-white hover:bg-[#1C2128]">
                   View Documentation
                 </Button>
               </Link>

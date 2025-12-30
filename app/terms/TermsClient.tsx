@@ -43,10 +43,10 @@ const stagger = {
 const TermCard: React.FC<TermCardProps> = ({ icon, title, children }) => (
   <motion.div
     variants={fadeInUp}
-    className="p-6 rounded-xl border border-gray-800/50 bg-gray-900/50 backdrop-blur-sm hover:border-primary/30 transition-all duration-300"
+    className="p-6 rounded-xl border border-[#2D333B] bg-[#161B22] backdrop-blur-sm hover:border-[#4B6FED]/30 transition-all duration-300"
   >
     <div className="flex items-start space-x-4">
-      <div className="p-2 rounded-lg bg-primary/10 text-primary">{icon}</div>
+      <div className="p-2 rounded-lg bg-[#4B6FED]/10 text-[#4B6FED]">{icon}</div>
       <div>
         <h3 className="text-xl font-semibold text-white mb-2">{title}</h3>
         <div className="text-gray-300">{children}</div>
@@ -57,23 +57,23 @@ const TermCard: React.FC<TermCardProps> = ({ icon, title, children }) => (
 
 export default function TermsClient() {
   return (
-    <div className="min-h-screen bg-gradient-to-br from-[#0A0F1A] to-[#0F172A] text-white">
+    <div className="min-h-screen bg-[#0D1117] text-white">
       <div className="container mx-auto px-4 py-16 max-w-6xl">
         <motion.div
           initial="hidden"
           animate="visible"
           variants={stagger}
-          className="bg-gray-900/30 backdrop-blur-sm rounded-2xl p-8 md:p-12 border border-gray-800/50 shadow-2xl"
+          className="bg-[#161B22] backdrop-blur-sm rounded-2xl p-8 md:p-12 border border-[#2D333B] shadow-2xl"
         >
           <motion.div variants={fadeInUp} className="text-center mb-16">
-            <span className="inline-block px-4 py-2 rounded-full bg-primary/10 text-primary text-sm font-medium mb-4">
+            <span className="inline-block px-4 py-2 rounded-full bg-[#4B6FED]/10 text-[#8AB4FF] text-sm font-medium mb-4">
               Legal Information
             </span>
-            <h1 className="text-4xl md:text-6xl font-bold mb-4 bg-clip-text text-transparent bg-gradient-to-r from-primary via-[#FF8A3D] to-[#FF6B6B] inline-block">
+            <h1 className="text-4xl md:text-6xl font-bold mb-4 bg-clip-text text-transparent bg-gradient-to-r from-[#4B6FED] via-[#8A63F4] to-[#8AB4FF] inline-block">
               Terms of Service
             </h1>
             <p className="text-gray-400 max-w-3xl mx-auto text-lg">
-              Last updated: <span className="text-primary">January 1, 2025</span> - Version 2.0.1
+              Last updated: <span className="text-[#4B6FED]">January 1, 2025</span> - Version 2.0.1
             </p>
           </motion.div>
 
@@ -81,13 +81,13 @@ export default function TermsClient() {
             {/* Acceptance of Terms */}
             <motion.section
               variants={fadeInUp}
-              className="bg-gray-900/50 p-8 rounded-2xl border border-gray-800/50 backdrop-blur-sm"
+              className="bg-[#161B22] p-8 rounded-2xl border border-[#2D333B] backdrop-blur-sm"
             >
               <div className="flex items-center mb-8">
-                <div className="p-3 bg-primary/10 rounded-xl mr-4">
-                  <CheckCircle className="w-6 h-6 text-primary" />
+                <div className="p-3 bg-[#4B6FED]/10 rounded-xl mr-4">
+                  <CheckCircle className="w-6 h-6 text-[#4B6FED]" />
                 </div>
-                <h2 className="text-3xl font-bold bg-gradient-to-r from-primary to-[#FF8A3D] bg-clip-text text-transparent">
+                <h2 className="text-3xl font-bold bg-gradient-to-r from-[#4B6FED] to-[#8A63F4] bg-clip-text text-transparent">
                   Acceptance of Terms
                 </h2>
               </div>
@@ -113,7 +113,7 @@ export default function TermsClient() {
             {/* Use License & Restrictions */}
             <motion.section
               variants={fadeInUp}
-              className="bg-gray-900/50 p-8 rounded-2xl border border-gray-800/50 backdrop-blur-sm"
+              className="bg-[#161B22] p-8 rounded-2xl border border-[#2D333B] backdrop-blur-sm"
             >
               <div className="flex items-center mb-8">
                 <div className="p-3 bg-yellow-500/10 rounded-xl mr-4">
@@ -198,7 +198,7 @@ export default function TermsClient() {
             {/* User Accounts */}
             <motion.section
               variants={fadeInUp}
-              className="bg-gray-900/50 p-8 rounded-2xl border border-gray-800/50 backdrop-blur-sm"
+              className="bg-[#161B22] p-8 rounded-2xl border border-[#2D333B] backdrop-blur-sm"
             >
               <div className="flex items-center mb-8">
                 <div className="p-3 bg-purple-500/10 rounded-xl mr-4">
@@ -230,7 +230,7 @@ export default function TermsClient() {
                     You must provide accurate and complete information when creating your account and
                     keep it updated.
                   </p>
-                  <div className="mt-3 p-3 bg-gray-800/30 rounded-lg">
+                  <div className="mt-3 p-3 bg-[#1C2128] rounded-lg">
                     <p className="text-xs text-gray-400">
                       We reserve the right to suspend or terminate accounts that provide false
                       information or violate our terms.
@@ -243,7 +243,7 @@ export default function TermsClient() {
             {/* Intellectual Property */}
             <motion.section
               variants={fadeInUp}
-              className="bg-gray-900/50 p-8 rounded-2xl border border-gray-800/50 backdrop-blur-sm"
+              className="bg-[#161B22] p-8 rounded-2xl border border-[#2D333B] backdrop-blur-sm"
             >
               <div className="flex items-center mb-8">
                 <div className="p-3 bg-blue-500/10 rounded-xl mr-4">
@@ -262,17 +262,17 @@ export default function TermsClient() {
                 </p>
 
                 <div className="grid md:grid-cols-3 gap-4">
-                  <div className="p-4 bg-gray-800/30 rounded-lg border-l-4 border-blue-500">
+                  <div className="p-4 bg-[#1C2128] rounded-lg border-l-4 border-blue-500">
                     <h4 className="font-semibold text-white mb-2">Copyrights</h4>
                     <p className="text-sm text-gray-400">
                       All content is protected by copyright laws.
                     </p>
                   </div>
-                  <div className="p-4 bg-gray-800/30 rounded-lg border-l-4 border-purple-500">
+                  <div className="p-4 bg-[#1C2128] rounded-lg border-l-4 border-[#8A63F4]">
                     <h4 className="font-semibold text-white mb-2">Trademarks</h4>
                     <p className="text-sm text-gray-400">Our name and logos are our trademarks.</p>
                   </div>
-                  <div className="p-4 bg-gray-800/30 rounded-lg border-l-4 border-green-500">
+                  <div className="p-4 bg-[#1C2128] rounded-lg border-l-4 border-green-500">
                     <h4 className="font-semibold text-white mb-2">License</h4>
                     <p className="text-sm text-gray-400">
                       Limited license for personal, non-commercial use.
@@ -293,7 +293,7 @@ export default function TermsClient() {
             {/* Limitation of Liability */}
             <motion.section
               variants={fadeInUp}
-              className="bg-gray-900/50 p-8 rounded-2xl border border-gray-800/50 backdrop-blur-sm"
+              className="bg-[#161B22] p-8 rounded-2xl border border-[#2D333B] backdrop-blur-sm"
             >
               <div className="flex items-center mb-8">
                 <div className="p-3 bg-red-500/10 rounded-xl mr-4">
@@ -348,7 +348,7 @@ export default function TermsClient() {
             {/* Changes to Terms */}
             <motion.section
               variants={fadeInUp}
-              className="bg-gray-900/50 p-8 rounded-2xl border border-gray-800/50 backdrop-blur-sm"
+              className="bg-[#161B22] p-8 rounded-2xl border border-[#2D333B] backdrop-blur-sm"
             >
               <div className="flex items-center mb-8">
                 <div className="p-3 bg-purple-500/10 rounded-xl mr-4">
@@ -360,9 +360,9 @@ export default function TermsClient() {
               </div>
 
               <div className="space-y-6">
-                <div className="flex items-start p-4 bg-gray-800/30 rounded-lg border-l-4 border-purple-500">
+                <div className="flex items-start p-4 bg-[#1C2128] rounded-lg border-l-4 border-[#8A63F4]">
                   <div className="flex-shrink-0 mt-1">
-                    <div className="w-2 h-2 rounded-full bg-purple-400 mt-2"></div>
+                    <div className="w-2 h-2 rounded-full bg-[#8A63F4] mt-2"></div>
                   </div>
                   <div className="ml-4">
                     <h4 className="font-semibold text-white">We May Update These Terms</h4>
@@ -405,7 +405,7 @@ export default function TermsClient() {
             {/* Contact Us */}
             <motion.section
               variants={fadeInUp}
-              className="bg-gray-900/50 p-8 rounded-2xl border border-gray-800/50 backdrop-blur-sm"
+              className="bg-[#161B22] p-8 rounded-2xl border border-[#2D333B] backdrop-blur-sm"
             >
               <div className="flex items-center mb-8">
                 <div className="p-3 bg-blue-500/10 rounded-xl mr-4">
@@ -423,7 +423,7 @@ export default function TermsClient() {
                 </p>
 
                 <div className="grid md:grid-cols-2 gap-6">
-                  <div className="p-6 bg-gray-800/30 rounded-xl border border-gray-700/50">
+                  <div className="p-6 bg-[#1C2128] rounded-xl border border-[#2D333B]">
                     <h3 className="font-semibold text-white mb-4">Get in Touch</h3>
                     <ul className="space-y-4">
                       <li className="flex items-start space-x-3">
@@ -473,7 +473,7 @@ export default function TermsClient() {
 
           <motion.div
             variants={fadeInUp}
-            className="mt-16 text-center border-t border-gray-800/50 pt-12"
+            className="mt-16 text-center border-t border-[#2D333B] pt-12"
           >
             <div className="max-w-2xl mx-auto">
               <h3 className="text-xl font-bold text-white mb-4">Thank You for Choosing AINative</h3>
@@ -484,7 +484,7 @@ export default function TermsClient() {
               <div className="flex flex-wrap justify-center gap-4">
                 <Link
                   href="/privacy"
-                  className="px-6 py-2.5 text-sm font-medium rounded-lg border border-gray-700 hover:bg-gray-800/50 transition-colors"
+                  className="px-6 py-2.5 text-sm font-medium rounded-lg border border-[#2D333B] hover:bg-[#1C2128] transition-colors"
                 >
                   Privacy Policy
                 </Link>
@@ -499,8 +499,8 @@ export default function TermsClient() {
 
       {/* Background elements */}
       <div className="fixed inset-0 -z-10 overflow-hidden">
-        <div className="absolute top-0 right-0 w-96 h-96 bg-primary/5 rounded-full filter blur-3xl -mr-48 -mt-48"></div>
-        <div className="absolute bottom-0 left-0 w-96 h-96 bg-[#FF8A3D]/5 rounded-full filter blur-3xl -ml-48 -mb-48"></div>
+        <div className="absolute top-0 right-0 w-96 h-96 bg-[#4B6FED]/5 rounded-full filter blur-3xl -mr-48 -mt-48"></div>
+        <div className="absolute bottom-0 left-0 w-96 h-96 bg-[#8A63F4]/5 rounded-full filter blur-3xl -ml-48 -mb-48"></div>
       </div>
     </div>
   );

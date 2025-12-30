@@ -90,7 +90,7 @@ const techStack = [
 
 export default function AboutClient() {
   return (
-    <div className="min-h-screen bg-[#0A0F1A] text-white">
+    <div className="min-h-screen bg-[#0D1117] text-white">
       {/* Hero Section */}
       <div className="relative overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-b from-[#4B6FED]/10 to-transparent -z-10" />
@@ -101,7 +101,7 @@ export default function AboutClient() {
             variants={fadeIn}
             className="text-center max-w-4xl mx-auto"
           >
-            <h1 className="text-4xl md:text-6xl font-bold mb-6 bg-clip-text text-transparent bg-gradient-to-r from-[#4B6FED] to-[#FF8A3D]">
+            <h1 className="text-4xl md:text-6xl font-bold mb-6 bg-clip-text text-transparent bg-gradient-to-r from-[#4B6FED] to-[#8A63F4]">
               Building the Future of AI Infrastructure
             </h1>
             <p className="text-xl text-gray-300 mb-8 max-w-3xl mx-auto">
@@ -112,14 +112,14 @@ export default function AboutClient() {
             <div className="flex flex-wrap justify-center gap-4">
               <Button
                 asChild
-                className="bg-gradient-to-r from-[#4B6FED] to-[#FF8A3D] text-white hover:opacity-90"
+                className="bg-gradient-to-r from-[#4B6FED] to-[#8A63F4] text-white hover:opacity-90"
               >
                 <Link href="/contact">Get in Touch</Link>
               </Button>
               <Button
                 asChild
                 variant="outline"
-                className="border-gray-700 hover:bg-gray-800/50"
+                className="border-[#2D333B] text-white hover:bg-[#1C2128]"
               >
                 <Link href="/docs">View Documentation</Link>
               </Button>
@@ -132,7 +132,7 @@ export default function AboutClient() {
       <div className="container mx-auto px-4 py-16 max-w-4xl">
         <div className="text-center mb-16">
           <h2 className="text-3xl font-bold mb-4">Our Mission</h2>
-          <div className="h-1 w-24 bg-gradient-to-r from-[#4B6FED] to-[#FF8A3D] mx-auto mb-8" />
+          <div className="h-1 w-24 bg-gradient-to-r from-[#4B6FED] to-[#8A63F4] mx-auto mb-8" />
           <p className="text-xl text-gray-300">
             We&apos;re building the most intuitive and powerful AI
             infrastructure to help developers create the next generation of
@@ -151,10 +151,10 @@ export default function AboutClient() {
               viewport={{ once: true }}
               variants={fadeIn}
               custom={index}
-              className="bg-gray-900/50 p-6 rounded-xl hover:bg-gray-800/50 transition-colors"
+              className="bg-[#161B22] p-6 rounded-xl border border-[#2D333B] hover:border-[#4B6FED]/30 transition-colors"
             >
               <div className="flex items-start space-x-4">
-                <div className="p-2 bg-gray-800 rounded-lg">
+                <div className="p-2 bg-[#1C2128] rounded-lg">
                   <value.icon className="w-8 h-8 text-[#4B6FED]" />
                 </div>
                 <div>
@@ -212,7 +212,7 @@ export default function AboutClient() {
                 variants={fadeIn}
                 custom={index}
                 whileHover={{ y: -5 }}
-                className="bg-gray-900/50 p-6 rounded-xl border border-gray-800 hover:border-[#4B6FED]/30 transition-colors"
+                className="bg-[#161B22] p-6 rounded-xl border border-[#2D333B] hover:border-[#4B6FED]/30 transition-colors"
               >
                 <div className="flex items-center mb-4">
                   <div
@@ -238,7 +238,7 @@ export default function AboutClient() {
         </div>
 
         {/* Join Community Section */}
-        <div className="mb-20 bg-gradient-to-br from-gray-900/50 to-gray-800/30 p-8 rounded-2xl border border-gray-800">
+        <div className="mb-20 bg-gradient-to-br from-[#161B22] to-[#1C2128] p-8 rounded-2xl border border-[#2D333B]">
           <div className="max-w-3xl mx-auto text-center">
             <h2 className="text-3xl font-bold mb-4">
               Join Our Growing Community
@@ -252,7 +252,7 @@ export default function AboutClient() {
                 href="https://github.com/AINative-Studio"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="px-6 py-3 bg-gray-800 hover:bg-gray-700 text-white rounded-lg font-medium flex items-center gap-2 transition-colors"
+                className="px-6 py-3 bg-[#1C2128] hover:bg-[#21262D] text-white rounded-lg font-medium flex items-center gap-2 transition-colors border border-[#2D333B]"
               >
                 <svg
                   className="w-5 h-5"
@@ -310,17 +310,17 @@ export default function AboutClient() {
           whileInView="visible"
           viewport={{ once: true }}
           variants={fadeIn}
-          className="bg-gradient-to-r from-[#4B6FED]/10 to-[#FF8A3D]/10 p-8 rounded-2xl text-center border border-[#4B6FED]/20"
+          className="bg-gradient-to-r from-[#4B6FED]/10 to-[#8A63F4]/10 p-8 rounded-2xl text-center border border-[#4B6FED]/20"
         >
           <Lightbulb className="w-12 h-12 text-[#4B6FED] mx-auto mb-4" />
-          <h2 className="text-2xl font-bold mb-4">Ready to get started?</h2>
-          <p className="text-gray-300 mb-6 max-w-2xl mx-auto">
+          <h2 className="text-2xl font-bold mb-4 text-white">Ready to get started?</h2>
+          <p className="text-gray-400 mb-6 max-w-2xl mx-auto">
             Join thousands of developers who are already building the future
             with AINative.
           </p>
           <Button
             asChild
-            className="bg-gradient-to-r from-[#4B6FED] to-[#FF8A3D] text-white hover:opacity-90"
+            className="bg-gradient-to-r from-[#4B6FED] to-[#8A63F4] text-white hover:opacity-90"
           >
             <Link href="/signup">Start Building for Free</Link>
           </Button>

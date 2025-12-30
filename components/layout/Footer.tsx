@@ -6,13 +6,16 @@ import { cn } from '@/lib/utils';
 const Footer = () => {
   return (
     <footer className="bg-[#0B0F1A] py-12">
-      <div className="container max-w-7xl mx-auto px-4">
+      <div className="container-custom">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
-          {/* Brand Section - spans 2 columns like original */}
-          <div className="col-span-1 md:col-span-2">
-            <span className="text-2xl font-bold text-white mb-4 block">
-              <span className="text-[#FF6B00]">⚡</span>AI<span className="text-primary">Native</span>
-            </span>
+          {/* Brand Section */}
+          <div>
+            <Link href="/" className="flex items-center gap-3 mb-4">
+              <img src="/ainative-icon.svg" alt="AINative Studio" className="h-12 w-auto" />
+              <span className="text-2xl font-bold uppercase">
+                <span className="text-white">AI</span><span className="text-[#5867EF]">NATIVE</span>
+              </span>
+            </Link>
             <p className="text-gray-400 text-sm mb-6 max-w-md">
               Build the future with AI-native development tools powered by quantum neural networks.
             </p>
@@ -21,7 +24,7 @@ const Footer = () => {
                 href="https://www.linkedin.com/company/cody-agent/posts/?feedView=all"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-gray-400 hover:text-primary transition-colors"
+                className="text-gray-400 hover:text-white transition-colors"
                 aria-label="LinkedIn"
               >
                 <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
@@ -32,7 +35,7 @@ const Footer = () => {
                 href="https://github.com/AINative-Studio"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-gray-400 hover:text-primary transition-colors"
+                className="text-gray-400 hover:text-white transition-colors"
                 aria-label="GitHub"
               >
                 <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
@@ -42,64 +45,111 @@ const Footer = () => {
             </div>
           </div>
 
-          {/* PRODUCT Section - matches original */}
+          {/* PRODUCT Section */}
           <div>
             <h3 className="text-sm font-semibold text-white uppercase tracking-wider mb-4">PRODUCT</h3>
             <ul className="space-y-3">
               <li>
-                <Link href="/products" className="text-gray-400 hover:text-primary text-sm transition-colors">
+                <Link href="/products" className="text-gray-400 hover:text-white text-sm transition-colors">
                   AI Native Studio IDE
                 </Link>
               </li>
               <li>
-                <Link href="/products/qnn" className="text-gray-400 hover:text-primary text-sm transition-colors">
+                <Link href="/products/qnn" className="text-gray-400 hover:text-white text-sm transition-colors">
                   Quantum Neural Network
                 </Link>
               </li>
               <li>
-                <a href="https://zerodb.ainative.studio" target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-primary text-sm transition-colors">
+                <a href="https://zerodb.ainative.studio" target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-white text-sm transition-colors">
                   ZeroDB
                 </a>
               </li>
               <li>
-                <Link href="/enterprise" className="text-gray-400 hover:text-primary text-sm transition-colors">
-                  Enterprise
+                <Link href="/agent-swarm" className="text-gray-400 hover:text-white text-sm transition-colors">
+                  Agent Swarm
                 </Link>
               </li>
               <li>
-                <Link href="/pricing" className="text-gray-400 hover:text-primary text-sm transition-colors">
+                <Link href="/pricing" className="text-gray-400 hover:text-white text-sm transition-colors">
                   Pricing
-                </Link>
-              </li>
-              <li>
-                <Link href="/dev-resources" className="text-gray-400 hover:text-primary text-sm transition-colors">
-                  Developer Resources
                 </Link>
               </li>
             </ul>
           </div>
 
-          {/* COMPANY Section - matches original */}
+          {/* RESOURCES Section */}
+          <div>
+            <h3 className="text-sm font-semibold text-white uppercase tracking-wider mb-4">RESOURCES</h3>
+            <ul className="space-y-3">
+              <li>
+                <Link href="/docs" className="text-gray-400 hover:text-white text-sm transition-colors">
+                  Documentation
+                </Link>
+              </li>
+              <li>
+                <Link href="/enterprise" className="text-gray-400 hover:text-white text-sm transition-colors">
+                  Enterprise
+                </Link>
+              </li>
+              <li>
+                <Link href="/dev-resources" className="text-gray-400 hover:text-white text-sm transition-colors">
+                  Developer Resources
+                </Link>
+              </li>
+              <li>
+                <Link href="/tutorials" className="text-gray-400 hover:text-white text-sm transition-colors">
+                  Tutorials
+                </Link>
+              </li>
+              <li>
+                <Link href="/community" className="text-gray-400 hover:text-white text-sm transition-colors">
+                  Community
+                </Link>
+              </li>
+              <li>
+                <Link href="/webinars" className="text-gray-400 hover:text-white text-sm transition-colors">
+                  Webinars
+                </Link>
+              </li>
+              <li>
+                <Link href="/events" className="text-gray-400 hover:text-white text-sm transition-colors">
+                  Events
+                </Link>
+              </li>
+              <li>
+                <Link href="/blog" className="text-gray-400 hover:text-white text-sm transition-colors">
+                  Blog
+                </Link>
+              </li>
+              <li>
+                <Link href="/download" className="text-gray-400 hover:text-white text-sm transition-colors">
+                  Download
+                </Link>
+              </li>
+            </ul>
+          </div>
+
+          {/* COMPANY Section */}
           <div>
             <h3 className="text-sm font-semibold text-white uppercase tracking-wider mb-4">COMPANY</h3>
             <ul className="space-y-3">
               <li>
-                <Link href="/about" className="text-gray-400 hover:text-primary text-sm transition-colors">
+                <Link href="/about" className="text-gray-400 hover:text-white text-sm transition-colors">
                   About
                 </Link>
               </li>
               <li>
-                <Link href="/privacy" className="text-gray-400 hover:text-primary text-sm transition-colors">
+                <Link href="/privacy" className="text-gray-400 hover:text-white text-sm transition-colors">
                   Privacy
                 </Link>
               </li>
               <li>
-                <Link href="/terms" className="text-gray-400 hover:text-primary text-sm transition-colors">
+                <Link href="/terms" className="text-gray-400 hover:text-white text-sm transition-colors">
                   Terms
                 </Link>
               </li>
               <li>
-                <Link href="/contact" className="text-gray-400 hover:text-primary text-sm transition-colors">
+                <Link href="/contact" className="text-gray-400 hover:text-white text-sm transition-colors">
                   Contact
                 </Link>
               </li>

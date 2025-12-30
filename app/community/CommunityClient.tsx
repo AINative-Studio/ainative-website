@@ -1,11 +1,13 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import { Skeleton } from '@/components/ui/skeleton';
+import { getBlogPosts, getTutorials } from '@/src/lib/strapi';
 import {
   BookOpen,
   Calendar,
@@ -18,34 +20,50 @@ import {
   Mail,
   Video,
   Play,
-  Monitor,
-  ExternalLink,
 } from 'lucide-react';
 
-// Mock data for blog posts
-const mockBlogPosts = [
+interface BlogPost {
+  id: number;
+  title: string;
+  excerpt: string;
+  published_date: string;
+  category?: { name: string };
+  reading_time?: number;
+  slug: string;
+}
+
+interface Tutorial {
+  id: number;
+  title: string;
+  description?: string;
+  difficulty?: string;
+  estimated_time?: number;
+  slug: string;
+}
+
+// Fallback data if API fails
+const fallbackBlogPosts: BlogPost[] = [
   {
     id: 1,
-    title: 'Introducing AI Kit 2.0: The Future of AI Development',
-    excerpt: 'Discover the new features and improvements in AI Kit 2.0 that make building AI applications easier than ever.',
+    title: 'Introducing AINative AI Kit for React',
+    excerpt: 'Discover our new React toolkit for building AI-powered applications.',
     published_date: '2025-01-15',
     category: { name: 'Product' },
     reading_time: 5,
-    slug: 'introducing-ai-kit-2',
+    slug: 'introducing-ainative-aikit-react',
   },
   {
     id: 2,
-    title: 'Building Production-Ready AI Agents with AINative',
-    excerpt: 'Learn best practices for deploying AI agents at scale using our battle-tested infrastructure.',
+    title: 'ZeroDB: High-Performance Vector Database',
+    excerpt: 'Learn about our vector database optimized for AI applications.',
     published_date: '2025-01-10',
     category: { name: 'Engineering' },
     reading_time: 8,
-    slug: 'production-ready-ai-agents',
+    slug: 'zerodb-high-performance-vector-database-for-ai-applications',
   },
 ];
 
-// Mock data for tutorials
-const mockTutorials = [
+const fallbackTutorials: Tutorial[] = [
   {
     id: 1,
     title: 'Getting Started with ZeroDB Vector Search',
@@ -64,28 +82,8 @@ const mockTutorials = [
   },
 ];
 
-// Mock data for events
-const mockEvents = [
-  {
-    api_id: 'evt-1',
-    title: 'AINative Developer Conference 2025',
-    event_type: 'in-person',
-    start_date: '2025-03-15T10:00:00Z',
-    url: 'https://events.ainative.studio/devcon-2025',
-    cover_url: '/images/events/devcon.jpg',
-  },
-  {
-    api_id: 'evt-2',
-    title: 'Building with AI Kit: Live Coding Session',
-    event_type: 'online',
-    start_date: '2025-02-01T18:00:00Z',
-    url: 'https://events.ainative.studio/live-coding',
-    cover_url: '/images/events/live-coding.jpg',
-  },
-];
-
-// Mock data for showcases
-const mockShowcases = [
+// Static data for showcases (not in Strapi)
+const staticShowcases = [
   {
     id: 1,
     title: 'AI-Powered Customer Support Platform',
@@ -102,8 +100,8 @@ const mockShowcases = [
   },
 ];
 
-// Mock data for videos
-const mockVideos = [
+// Static data for videos (not in Strapi)
+const staticVideos = [
   {
     id: 1,
     title: 'AI Kit Deep Dive: Building Your First Agent',
@@ -129,19 +127,64 @@ const mockVideos = [
 const getDifficultyColor = (difficulty: string) => {
   switch (difficulty) {
     case 'beginner':
-      return 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400';
+      return 'bg-green-900/30 text-green-400 border-green-500/30';
     case 'intermediate':
-      return 'bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-400';
+      return 'bg-yellow-900/30 text-yellow-400 border-yellow-500/30';
     case 'advanced':
-      return 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400';
+      return 'bg-red-900/30 text-red-400 border-red-500/30';
     default:
-      return 'bg-gray-100 text-gray-700 dark:bg-gray-900/30 dark:text-gray-400';
+      return 'bg-gray-900/30 text-gray-400 border-gray-500/30';
   }
 };
 
 export default function CommunityClient() {
   const [email, setEmail] = useState('');
   const [isSubscribing, setIsSubscribing] = useState(false);
+  const [blogPosts, setBlogPosts] = useState<BlogPost[]>(fallbackBlogPosts);
+  const [tutorials, setTutorials] = useState<Tutorial[]>(fallbackTutorials);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        setLoading(true);
+        const [blogResponse, tutorialResponse] = await Promise.all([
+          getBlogPosts({ pagination: { limit: 2 } }),
+          getTutorials({ pagination: { limit: 2 } }),
+        ]);
+
+        if (blogResponse?.data?.length > 0) {
+          setBlogPosts(blogResponse.data.slice(0, 2).map((post: BlogPost) => ({
+            id: post.id,
+            title: post.title,
+            excerpt: post.excerpt || '',
+            published_date: post.published_date,
+            category: post.category || { name: 'General' },
+            reading_time: post.reading_time || 5,
+            slug: post.slug,
+          })));
+        }
+
+        if (tutorialResponse?.data?.length > 0) {
+          setTutorials(tutorialResponse.data.slice(0, 2).map((tutorial: Tutorial) => ({
+            id: tutorial.id,
+            title: tutorial.title,
+            description: tutorial.description || '',
+            difficulty: tutorial.difficulty || 'beginner',
+            estimated_time: tutorial.estimated_time || 15,
+            slug: tutorial.slug,
+          })));
+        }
+      } catch (error) {
+        console.error('Error fetching community data:', error);
+        // Keep fallback data on error
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchData();
+  }, []);
 
   const handleNewsletterSubscribe = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -154,7 +197,18 @@ export default function CommunityClient() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-blue-50 dark:from-gray-900 dark:via-gray-900 dark:to-gray-900">
+    <div className="min-h-screen bg-[#0D1117] text-white">
+      {/* Animated Background - matching Vite design */}
+      <div className="fixed inset-0 -z-10">
+        <div className="absolute inset-0 bg-gradient-to-br from-[#0D1117] via-[#0D1117] to-[#1A1B2E]" />
+        <div className="absolute inset-0 opacity-30" style={{
+          backgroundImage: 'radial-gradient(circle at 30% 20%, rgba(75, 111, 237, 0.2) 0%, transparent 30%), radial-gradient(circle at 70% 80%, rgba(138, 99, 244, 0.2) 0%, transparent 30%)',
+        }} />
+        <div className="absolute inset-0 opacity-5" style={{
+          backgroundImage: 'linear-gradient(rgba(255, 255, 255, 0.3) 1px, transparent 1px), linear-gradient(90deg, rgba(255, 255, 255, 0.3) 1px, transparent 1px)',
+          backgroundSize: '40px 40px',
+        }} />
+      </div>
       <main className="container mx-auto px-4 py-20 mt-16">
         {/* Hero Section */}
         <motion.div
@@ -163,14 +217,14 @@ export default function CommunityClient() {
           transition={{ duration: 0.5 }}
           className="text-center mb-16"
         >
-          <div className="inline-flex items-center justify-center px-4 py-2 rounded-full bg-primary/10 text-primary text-sm font-medium mb-4">
+          <div className="inline-flex items-center justify-center px-4 py-2 rounded-full bg-[#4B6FED]/10 border border-[#4B6FED]/30 text-[#8AB4FF] text-sm font-medium mb-4">
             <Users className="h-4 w-4 mr-2" />
             AINative Community
           </div>
-          <h1 className="text-4xl md:text-5xl font-extrabold tracking-tight mb-4 bg-clip-text text-transparent bg-gradient-to-r from-primary to-blue-600">
+          <h1 className="text-4xl md:text-5xl font-extrabold tracking-tight mb-4 bg-clip-text text-transparent bg-gradient-to-r from-[#4B6FED] to-[#8A63F4]">
             Build Together, Grow Together
           </h1>
-          <p className="text-xl text-gray-600 dark:text-gray-300 max-w-3xl mx-auto">
+          <p className="text-xl text-gray-300 max-w-3xl mx-auto">
             Join thousands of developers building the future of AI-powered applications
           </p>
         </motion.div>
@@ -178,8 +232,8 @@ export default function CommunityClient() {
         {/* Latest Blog Posts */}
         <section className="mb-16">
           <div className="flex items-center justify-between mb-6">
-            <h2 className="text-2xl font-bold flex items-center gap-2">
-              <FileText className="h-6 w-6 text-primary" />
+            <h2 className="text-2xl font-bold flex items-center gap-2 text-white">
+              <FileText className="h-6 w-6 text-[#4B6FED]" />
               Latest from the Blog
             </h2>
             <Link href="/blog">
@@ -190,38 +244,63 @@ export default function CommunityClient() {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {mockBlogPosts.map((post) => (
-              <Link key={post.id} href={`/blog/${post.slug}`}>
-                <Card className="h-full hover:shadow-lg transition-shadow duration-200">
+            {loading ? (
+              <>
+                <Card className="h-full bg-[#161B22] border-[#2D333B]">
                   <CardHeader>
-                    <div className="flex items-center gap-2 mb-2">
-                      <Badge variant="secondary">{post.category.name}</Badge>
-                      <span className="text-xs text-gray-500 dark:text-gray-400">
-                        {post.reading_time} min read
-                      </span>
-                    </div>
-                    <CardTitle>{post.title}</CardTitle>
-                    <CardDescription className="mt-2">{post.excerpt}</CardDescription>
+                    <Skeleton className="h-5 w-20 bg-[#1C2128] mb-2" />
+                    <Skeleton className="h-6 w-full bg-[#1C2128] mb-2" />
+                    <Skeleton className="h-16 w-full bg-[#1C2128]" />
                   </CardHeader>
                   <CardContent>
-                    <div className="flex items-center text-sm text-gray-500 dark:text-gray-400">
-                      <Calendar className="h-4 w-4 mr-1" />
-                      {new Date(post.published_date).toLocaleDateString()}
-                    </div>
+                    <Skeleton className="h-4 w-24 bg-[#1C2128]" />
                   </CardContent>
                 </Card>
-              </Link>
-            ))}
+                <Card className="h-full bg-[#161B22] border-[#2D333B]">
+                  <CardHeader>
+                    <Skeleton className="h-5 w-20 bg-[#1C2128] mb-2" />
+                    <Skeleton className="h-6 w-full bg-[#1C2128] mb-2" />
+                    <Skeleton className="h-16 w-full bg-[#1C2128]" />
+                  </CardHeader>
+                  <CardContent>
+                    <Skeleton className="h-4 w-24 bg-[#1C2128]" />
+                  </CardContent>
+                </Card>
+              </>
+            ) : (
+              blogPosts.map((post) => (
+                <Link key={post.id} href={`/blog/${post.slug}`}>
+                  <Card className="h-full hover:shadow-lg hover:shadow-[#4B6FED]/10 transition-all duration-200 bg-[#161B22] border-[#2D333B] hover:border-[#4B6FED]/40">
+                    <CardHeader>
+                      <div className="flex items-center gap-2 mb-2">
+                        <Badge className="bg-[#4B6FED]/20 text-[#8AB4FF] border-[#4B6FED]/30">{post.category?.name || 'General'}</Badge>
+                        <span className="text-xs text-gray-400">
+                          {post.reading_time || 5} min read
+                        </span>
+                      </div>
+                      <CardTitle className="text-white">{post.title}</CardTitle>
+                      <CardDescription className="mt-2 text-gray-400">{post.excerpt}</CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                      <div className="flex items-center text-sm text-gray-400">
+                        <Calendar className="h-4 w-4 mr-1" />
+                        {new Date(post.published_date).toLocaleDateString()}
+                      </div>
+                    </CardContent>
+                  </Card>
+                </Link>
+              ))
+            )}
           </div>
         </section>
 
-        <hr className="my-12 border-gray-200 dark:border-gray-700" />
+        <hr className="my-12 border-[#2D333B]" />
 
         {/* Featured Tutorials */}
         <section className="mb-16">
           <div className="flex items-center justify-between mb-6">
-            <h2 className="text-2xl font-bold flex items-center gap-2">
-              <BookOpen className="h-6 w-6 text-primary" />
+            <h2 className="text-2xl font-bold flex items-center gap-2 text-white">
+              <BookOpen className="h-6 w-6 text-[#4B6FED]" />
               Featured Tutorials
             </h2>
             <Link href="/tutorials">
@@ -232,34 +311,53 @@ export default function CommunityClient() {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {mockTutorials.map((tutorial) => (
-              <Link key={tutorial.id} href={`/tutorials/${tutorial.slug}`}>
-                <Card className="h-full hover:shadow-lg transition-shadow duration-200">
+            {loading ? (
+              <>
+                <Card className="h-full bg-[#161B22] border-[#2D333B]">
                   <CardHeader>
-                    <div className="flex items-center gap-2 mb-2">
-                      <Badge className={getDifficultyColor(tutorial.difficulty)}>
-                        {tutorial.difficulty}
-                      </Badge>
-                      <span className="text-xs text-gray-500 dark:text-gray-400">
-                        {tutorial.estimated_time} min
-                      </span>
-                    </div>
-                    <CardTitle>{tutorial.title}</CardTitle>
-                    <CardDescription className="mt-2">{tutorial.description}</CardDescription>
+                    <Skeleton className="h-5 w-20 bg-[#1C2128] mb-2" />
+                    <Skeleton className="h-6 w-full bg-[#1C2128] mb-2" />
+                    <Skeleton className="h-16 w-full bg-[#1C2128]" />
                   </CardHeader>
                 </Card>
-              </Link>
-            ))}
+                <Card className="h-full bg-[#161B22] border-[#2D333B]">
+                  <CardHeader>
+                    <Skeleton className="h-5 w-20 bg-[#1C2128] mb-2" />
+                    <Skeleton className="h-6 w-full bg-[#1C2128] mb-2" />
+                    <Skeleton className="h-16 w-full bg-[#1C2128]" />
+                  </CardHeader>
+                </Card>
+              </>
+            ) : (
+              tutorials.map((tutorial) => (
+                <Link key={tutorial.id} href={`/tutorials/${tutorial.slug}`}>
+                  <Card className="h-full hover:shadow-lg hover:shadow-[#4B6FED]/10 transition-all duration-200 bg-[#161B22] border-[#2D333B] hover:border-[#4B6FED]/40">
+                    <CardHeader>
+                      <div className="flex items-center gap-2 mb-2">
+                        <Badge className={getDifficultyColor(tutorial.difficulty || 'beginner')}>
+                          {tutorial.difficulty || 'beginner'}
+                        </Badge>
+                        <span className="text-xs text-gray-400">
+                          {tutorial.estimated_time || 15} min
+                        </span>
+                      </div>
+                      <CardTitle className="text-white">{tutorial.title}</CardTitle>
+                      <CardDescription className="mt-2 text-gray-400">{tutorial.description}</CardDescription>
+                    </CardHeader>
+                  </Card>
+                </Link>
+              ))
+            )}
           </div>
         </section>
 
-        <hr className="my-12 border-gray-200 dark:border-gray-700" />
+        <hr className="my-12 border-[#2D333B]" />
 
         {/* Upcoming Events */}
         <section className="mb-16">
           <div className="flex items-center justify-between mb-6">
-            <h2 className="text-2xl font-bold flex items-center gap-2">
-              <Calendar className="h-6 w-6 text-primary" />
+            <h2 className="text-2xl font-bold flex items-center gap-2 text-white">
+              <Calendar className="h-6 w-6 text-[#4B6FED]" />
               Upcoming Events
             </h2>
             <Link href="/events">
@@ -270,65 +368,52 @@ export default function CommunityClient() {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {mockEvents.map((event) => (
-              <Card
-                key={event.api_id}
-                className="hover:shadow-lg transition-shadow duration-200 overflow-hidden"
-              >
-                <div className="w-full h-40 bg-gradient-to-r from-primary/20 to-blue-500/20 flex items-center justify-center">
-                  <Calendar className="h-16 w-16 text-primary/50" />
-                </div>
-                <CardHeader>
-                  <div className="flex items-center gap-2 mb-2">
-                    <Badge
-                      variant="outline"
-                      className={
-                        event.event_type === 'online'
-                          ? 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400'
-                          : 'bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-400'
-                      }
-                    >
-                      {event.event_type === 'online' ? 'Online' : 'In-Person'}
-                    </Badge>
-                  </div>
-                  <CardTitle className="line-clamp-2">{event.title}</CardTitle>
-                  <CardDescription className="mt-2">
-                    <div className="flex items-center gap-1">
-                      <Calendar className="h-4 w-4" />
-                      <span>
-                        {new Date(event.start_date).toLocaleDateString('en-US', {
-                          weekday: 'short',
-                          month: 'short',
-                          day: 'numeric',
-                        })}{' '}
-                        at{' '}
-                        {new Date(event.start_date).toLocaleTimeString([], {
-                          hour: '2-digit',
-                          minute: '2-digit',
-                        })}
-                      </span>
-                    </div>
-                  </CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <Button className="w-full" asChild>
-                    <a href={event.url} target="_blank" rel="noopener noreferrer">
-                      Register Now <ExternalLink className="ml-2 h-4 w-4" />
-                    </a>
+            <Card className="hover:shadow-lg hover:shadow-[#4B6FED]/10 transition-all duration-200 overflow-hidden bg-[#161B22] border-[#2D333B] hover:border-[#4B6FED]/40">
+              <div className="w-full h-40 bg-gradient-to-r from-[#4B6FED]/20 to-[#8A63F4]/20 flex items-center justify-center">
+                <Calendar className="h-16 w-16 text-[#4B6FED]/50" />
+              </div>
+              <CardHeader>
+                <CardTitle className="text-white">Upcoming Events</CardTitle>
+                <CardDescription className="mt-2 text-gray-400">
+                  Join our workshops, webinars, and community meetups
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <Link href="/events">
+                  <Button className="w-full bg-[#4B6FED] hover:bg-[#3A56D3] text-white">
+                    View All Events <ArrowRight className="ml-2 h-4 w-4" />
                   </Button>
-                </CardContent>
-              </Card>
-            ))}
+                </Link>
+              </CardContent>
+            </Card>
+            <Card className="hover:shadow-lg hover:shadow-[#4B6FED]/10 transition-all duration-200 overflow-hidden bg-[#161B22] border-[#2D333B] hover:border-[#4B6FED]/40">
+              <div className="w-full h-40 bg-gradient-to-r from-[#8A63F4]/20 to-[#4B6FED]/20 flex items-center justify-center">
+                <Video className="h-16 w-16 text-[#8A63F4]/50" />
+              </div>
+              <CardHeader>
+                <CardTitle className="text-white">Webinars & Training</CardTitle>
+                <CardDescription className="mt-2 text-gray-400">
+                  Live coding sessions, demos, and deep dives
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <Link href="/webinars">
+                  <Button className="w-full bg-[#8A63F4] hover:bg-[#7851E0] text-white">
+                    View Webinars <ArrowRight className="ml-2 h-4 w-4" />
+                  </Button>
+                </Link>
+              </CardContent>
+            </Card>
           </div>
         </section>
 
-        <hr className="my-12 border-gray-200 dark:border-gray-700" />
+        <hr className="my-12 border-[#2D333B]" />
 
         {/* Community Showcase */}
         <section className="mb-16">
           <div className="flex items-center justify-between mb-6">
-            <h2 className="text-2xl font-bold flex items-center gap-2">
-              <Rocket className="h-6 w-6 text-primary" />
+            <h2 className="text-2xl font-bold flex items-center gap-2 text-white">
+              <Rocket className="h-6 w-6 text-[#4B6FED]" />
               Community Showcase
             </h2>
             <Link href="/showcases">
@@ -339,16 +424,16 @@ export default function CommunityClient() {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {mockShowcases.map((showcase) => (
+            {staticShowcases.map((showcase) => (
               <Link key={showcase.id} href={`/showcases/${showcase.slug}`}>
-                <Card className="hover:shadow-lg transition-shadow duration-200">
+                <Card className="hover:shadow-lg hover:shadow-[#4B6FED]/10 transition-all duration-200 bg-[#161B22] border-[#2D333B] hover:border-[#4B6FED]/40">
                   <CardHeader>
                     <div className="flex items-center gap-2 mb-2">
                       <Sparkles className="h-4 w-4 text-yellow-500" />
-                      <span className="text-sm font-medium">{showcase.company_name}</span>
+                      <span className="text-sm font-medium text-gray-300">{showcase.company_name}</span>
                     </div>
-                    <CardTitle>{showcase.title}</CardTitle>
-                    <CardDescription className="mt-2">{showcase.description}</CardDescription>
+                    <CardTitle className="text-white">{showcase.title}</CardTitle>
+                    <CardDescription className="mt-2 text-gray-400">{showcase.description}</CardDescription>
                   </CardHeader>
                 </Card>
               </Link>
@@ -356,13 +441,13 @@ export default function CommunityClient() {
           </div>
         </section>
 
-        <hr className="my-12 border-gray-200 dark:border-gray-700" />
+        <hr className="my-12 border-[#2D333B]" />
 
         {/* Latest Videos */}
         <section className="mb-16">
           <div className="flex items-center justify-between mb-6">
-            <h2 className="text-2xl font-bold flex items-center gap-2">
-              <Video className="h-6 w-6 text-primary" />
+            <h2 className="text-2xl font-bold flex items-center gap-2 text-white">
+              <Video className="h-6 w-6 text-[#4B6FED]" />
               Latest Videos
             </h2>
             <Link href="/community/videos">
@@ -373,25 +458,25 @@ export default function CommunityClient() {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {mockVideos.map((video) => (
+            {staticVideos.map((video) => (
               <Link key={video.id} href={`/community/videos/${video.slug}`}>
-                <Card className="hover:shadow-lg transition-shadow duration-200 overflow-hidden">
+                <Card className="hover:shadow-lg hover:shadow-[#4B6FED]/10 transition-all duration-200 overflow-hidden bg-[#161B22] border-[#2D333B] hover:border-[#4B6FED]/40">
                   <div className="relative">
-                    <div className="w-full h-48 bg-gradient-to-br from-gray-700 to-gray-900 flex items-center justify-center">
-                      <Play className="h-16 w-16 text-white/50" />
+                    <div className="w-full h-48 bg-gradient-to-br from-[#1C2128] to-[#0D1117] flex items-center justify-center">
+                      <Play className="h-16 w-16 text-[#4B6FED]/50" />
                     </div>
-                    <Badge className="absolute top-2 right-2">{video.category}</Badge>
+                    <Badge className="absolute top-2 right-2 bg-[#4B6FED]/20 text-[#8AB4FF]">{video.category}</Badge>
                     <div className="absolute bottom-2 right-2 bg-black/75 text-white px-2 py-1 rounded text-xs">
                       {Math.floor(video.duration / 60)}:
                       {String(video.duration % 60).padStart(2, '0')}
                     </div>
                   </div>
                   <CardContent className="p-4">
-                    <h3 className="font-semibold mb-2 line-clamp-2">{video.title}</h3>
-                    <p className="text-sm text-gray-600 dark:text-gray-400 line-clamp-2 mb-2">
+                    <h3 className="font-semibold mb-2 line-clamp-2 text-white">{video.title}</h3>
+                    <p className="text-sm text-gray-400 line-clamp-2 mb-2">
                       {video.description}
                     </p>
-                    <div className="flex items-center gap-4 text-xs text-gray-500 dark:text-gray-400">
+                    <div className="flex items-center gap-4 text-xs text-gray-400">
                       <span>{video.views.toLocaleString()} views</span>
                     </div>
                   </CardContent>
@@ -401,40 +486,40 @@ export default function CommunityClient() {
           </div>
         </section>
 
-        <hr className="my-12 border-gray-200 dark:border-gray-700" />
+        <hr className="my-12 border-[#2D333B]" />
 
         {/* Quick Links */}
         <section className="mb-16">
-          <h2 className="text-2xl font-bold mb-6 text-center">Developer Resources</h2>
+          <h2 className="text-2xl font-bold mb-6 text-center text-white">Developer Resources</h2>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             <Link href="/dev-resources">
-              <Card className="text-center hover:shadow-lg transition-shadow duration-200">
+              <Card className="text-center hover:shadow-lg hover:shadow-[#4B6FED]/10 transition-all duration-200">
                 <CardHeader>
-                  <Code className="h-12 w-12 mx-auto mb-4 text-primary" />
-                  <CardTitle>SDKs & APIs</CardTitle>
-                  <CardDescription className="mt-2">
+                  <Code className="h-12 w-12 mx-auto mb-4 text-[#4B6FED]" />
+                  <CardTitle className="text-white">SDKs & APIs</CardTitle>
+                  <CardDescription className="mt-2 text-gray-400">
                     Official SDKs for Python, JavaScript, and Go
                   </CardDescription>
                 </CardHeader>
               </Card>
             </Link>
             <Link href="/api-reference">
-              <Card className="text-center hover:shadow-lg transition-shadow duration-200">
+              <Card className="text-center hover:shadow-lg hover:shadow-[#4B6FED]/10 transition-all duration-200">
                 <CardHeader>
-                  <FileText className="h-12 w-12 mx-auto mb-4 text-primary" />
-                  <CardTitle>API Reference</CardTitle>
-                  <CardDescription className="mt-2">
+                  <FileText className="h-12 w-12 mx-auto mb-4 text-[#4B6FED]" />
+                  <CardTitle className="text-white">API Reference</CardTitle>
+                  <CardDescription className="mt-2 text-gray-400">
                     Complete API documentation and examples
                   </CardDescription>
                 </CardHeader>
               </Card>
             </Link>
             <Link href="/resources">
-              <Card className="text-center hover:shadow-lg transition-shadow duration-200">
+              <Card className="text-center hover:shadow-lg hover:shadow-[#4B6FED]/10 transition-all duration-200">
                 <CardHeader>
-                  <Rocket className="h-12 w-12 mx-auto mb-4 text-primary" />
-                  <CardTitle>Resources</CardTitle>
-                  <CardDescription className="mt-2">
+                  <Rocket className="h-12 w-12 mx-auto mb-4 text-[#4B6FED]" />
+                  <CardTitle className="text-white">Resources</CardTitle>
+                  <CardDescription className="mt-2 text-gray-400">
                     Tools, templates, and code examples
                   </CardDescription>
                 </CardHeader>
@@ -445,13 +530,13 @@ export default function CommunityClient() {
 
         {/* Newsletter Signup */}
         <section>
-          <Card className="bg-gradient-to-r from-primary/5 to-blue-50 dark:from-primary/10 dark:to-gray-800/50 border-primary/20">
+          <Card className="bg-gradient-to-r from-[#4B6FED]/10 to-[#161B22] border-[#4B6FED]/20">
             <CardHeader className="text-center">
-              <div className="inline-flex items-center justify-center p-3 rounded-full bg-primary/10 text-primary mb-4 mx-auto">
+              <div className="inline-flex items-center justify-center p-3 rounded-full bg-[#4B6FED]/10 text-[#4B6FED] mb-4 mx-auto">
                 <Mail className="h-6 w-6" />
               </div>
-              <CardTitle className="text-2xl">Stay Updated</CardTitle>
-              <CardDescription className="text-base mt-2">
+              <CardTitle className="text-2xl text-white">Stay Updated</CardTitle>
+              <CardDescription className="text-base mt-2 text-gray-400">
                 Get the latest tutorials, product updates, and developer news delivered to your
                 inbox
               </CardDescription>
@@ -467,9 +552,9 @@ export default function CommunityClient() {
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   required
-                  className="flex-1 px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
+                  className="flex-1 px-4 py-2 border border-[#2D333B] rounded-md bg-[#161B22] text-white placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-[#4B6FED] focus:border-transparent"
                 />
-                <Button type="submit" disabled={isSubscribing}>
+                <Button type="submit" disabled={isSubscribing} className="bg-[#4B6FED] hover:bg-[#3A56D3] text-white">
                   {isSubscribing ? 'Subscribing...' : 'Subscribe'}
                 </Button>
               </form>

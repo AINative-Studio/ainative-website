@@ -23,7 +23,7 @@ import {
 } from 'lucide-react';
 import { getUnsplashImageUrl } from '@/src/lib/unsplash';
 import { searchCommunityContent } from '@/src/lib/community/search';
-import { getWebinars } from '@/src/lib/strapi';
+import { strapiClient, type Webinar as StrapiWebinar } from '@/lib/strapi-client';
 
 interface WebinarTag {
   id: number;
@@ -60,19 +60,19 @@ const CardDescription = ({ children, className = '' }: { children: React.ReactNo
 );
 
 const WebinarSkeleton = () => (
-  <Card className="h-full">
-    <div className="aspect-video bg-gradient-to-br from-gray-100 to-gray-200 dark:from-gray-800 dark:to-gray-700" />
+  <Card className="h-full bg-[#161B22] border-[#2D333B]">
+    <div className="aspect-video bg-gradient-to-br from-[#4B6FED]/10 to-[#8A63F4]/10 rounded-t-lg" />
     <CardHeader className="flex-1">
-      <Skeleton className="h-4 w-32 mb-2" />
-      <Skeleton className="h-6 w-full mb-2" />
-      <Skeleton className="h-16 w-full mb-4" />
+      <Skeleton className="h-4 w-32 mb-2 bg-[#2D333B]" />
+      <Skeleton className="h-6 w-full mb-2 bg-[#2D333B]" />
+      <Skeleton className="h-16 w-full mb-4 bg-[#2D333B]" />
       <div className="flex gap-2 mb-3">
-        <Skeleton className="h-5 w-20" />
-        <Skeleton className="h-5 w-24" />
+        <Skeleton className="h-5 w-20 bg-[#2D333B]" />
+        <Skeleton className="h-5 w-24 bg-[#2D333B]" />
       </div>
     </CardHeader>
     <CardContent className="pt-0">
-      <Skeleton className="h-9 w-full" />
+      <Skeleton className="h-9 w-full bg-[#2D333B]" />
     </CardContent>
   </Card>
 );
@@ -94,11 +94,42 @@ export default function WebinarListingClient() {
       setError(null);
 
       try {
-        const response = await getWebinars({
+        const response = await strapiClient.getWebinars({
           sort: 'date:desc',
           pagination: { pageSize: 100 }
         });
-        setWebinars(response.data || []);
+        // Map Strapi webinars to local Webinar interface
+        // Strapi v5 uses 'results' instead of 'data' for collections
+        const rawWebinars = response.results || response.data || [];
+        const STRAPI_BASE_URL = 'https://ainative-community-production.up.railway.app';
+        const webinarData = rawWebinars.map((w: StrapiWebinar) => {
+          // Handle thumbnail - Strapi v5 media can have different structures
+          let thumbnailUrl: string | undefined;
+          if (w.thumbnail) {
+            const thumb = w.thumbnail as { url?: string; data?: { attributes?: { url?: string } } };
+            if (thumb.url) {
+              thumbnailUrl = thumb.url.startsWith('http') ? thumb.url : `${STRAPI_BASE_URL}${thumb.url}`;
+            } else if (thumb.data?.attributes?.url) {
+              const relUrl = thumb.data.attributes.url;
+              thumbnailUrl = relUrl.startsWith('http') ? relUrl : `${STRAPI_BASE_URL}${relUrl}`;
+            }
+          }
+          return {
+            id: w.id,
+            title: w.title,
+            description: w.description || '',
+            slug: w.slug,
+            date: w.date,
+            duration: w.duration || 60,
+            status: (new Date(w.date) > new Date() ? 'upcoming' : 'completed') as 'upcoming' | 'live' | 'completed',
+            speaker: w.speaker ? { name: w.speaker.name, title: w.speaker.bio } : undefined,
+            tags: w.tags?.map(t => ({ id: t.id, name: t.name })) || [],
+            thumbnail: thumbnailUrl ? { url: thumbnailUrl } : undefined,
+            current_attendees: w.current_attendees || 0,
+            max_attendees: w.max_attendees || 100,
+          };
+        });
+        setWebinars(webinarData);
       } catch (err) {
         console.error('Failed to fetch webinars:', err);
         setError('Failed to load webinars. Please try again later.');
@@ -185,11 +216,11 @@ export default function WebinarListingClient() {
   const getStatusBadge = (status: string) => {
     switch (status) {
       case 'live':
-        return <Badge className="bg-red-500"><span className="animate-pulse mr-1">●</span>LIVE</Badge>;
+        return <Badge className="bg-red-500 text-white"><span className="animate-pulse">● </span>LIVE</Badge>;
       case 'upcoming':
-        return <Badge variant="secondary"><Calendar className="h-3 w-3 mr-1" />Upcoming</Badge>;
+        return <Badge className="bg-[#4B6FED]/20 text-[#4B6FED] border-[#4B6FED]/50"><Calendar className="h-3 w-3 mr-1" />Upcoming</Badge>;
       case 'completed':
-        return <Badge variant="outline"><Video className="h-3 w-3 mr-1" />Recording</Badge>;
+        return <Badge variant="outline" className="border-[#2D333B] text-gray-300"><Video className="h-3 w-3 mr-1" />Recording</Badge>;
       default:
         return null;
     }
@@ -199,17 +230,17 @@ export default function WebinarListingClient() {
   const pastCount = filteredWebinars.filter(w => w.status === 'completed').length;
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-blue-50 dark:from-gray-900 dark:via-gray-900 dark:to-gray-900">
+    <div className="min-h-screen bg-[#0D1117]">
       <main className="container mx-auto px-4 py-20 mt-16">
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="text-center mb-12">
-          <div className="inline-flex items-center justify-center px-4 py-2 rounded-full bg-primary/10 text-primary text-sm font-medium mb-4">
+          <div className="inline-flex items-center justify-center px-4 py-2 rounded-full bg-[#4B6FED]/10 text-[#4B6FED] text-sm font-medium mb-4">
             <Sparkles className="h-4 w-4 mr-2" />
             Webinars & Events
           </div>
-          <h1 className="text-4xl md:text-5xl font-extrabold tracking-tight mb-4 bg-clip-text text-transparent bg-gradient-to-r from-primary to-blue-600">
+          <h1 className="text-4xl md:text-5xl font-extrabold tracking-tight mb-4 text-gradient">
             Learn from the Experts
           </h1>
-          <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
+          <p className="text-xl text-gray-400 max-w-3xl mx-auto">
             Join live webinars or watch recordings to master AI/ML, quantum computing, and cutting-edge technology
           </p>
         </motion.div>
@@ -239,7 +270,7 @@ export default function WebinarListingClient() {
           <div className="mb-8 space-y-4">
             <div className="flex flex-col sm:flex-row gap-4">
               <div className="relative flex-1">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
                 <Input
                   type="text"
                   placeholder={
@@ -249,12 +280,12 @@ export default function WebinarListingClient() {
                   }
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="pl-10"
+                  className="pl-10 bg-[#161B22] border-[#2D333B] text-white placeholder:text-gray-500 focus:border-[#4B6FED]"
                   disabled={isLoading || searchingSemantics}
                 />
                 {searchingSemantics && (
                   <div className="absolute right-3 top-1/2 transform -translate-y-1/2">
-                    <div className="animate-spin h-4 w-4 border-2 border-primary border-t-transparent rounded-full" />
+                    <div className="animate-spin h-4 w-4 border-2 border-[#4B6FED] border-t-transparent rounded-full" />
                   </div>
                 )}
               </div>
@@ -263,7 +294,7 @@ export default function WebinarListingClient() {
                   variant={searchMode === 'exact' ? 'default' : 'outline'}
                   size="sm"
                   onClick={() => setSearchMode('exact')}
-                  className="whitespace-nowrap"
+                  className={`whitespace-nowrap ${searchMode === 'exact' ? 'bg-[#4B6FED] hover:bg-[#3A56D3] text-white' : 'border-[#2D333B] text-gray-300 hover:border-[#4B6FED]'}`}
                 >
                   <Search className="h-4 w-4 mr-2" />
                   Exact Match
@@ -272,7 +303,7 @@ export default function WebinarListingClient() {
                   variant={searchMode === 'semantic' ? 'default' : 'outline'}
                   size="sm"
                   onClick={() => setSearchMode('semantic')}
-                  className="whitespace-nowrap"
+                  className={`whitespace-nowrap ${searchMode === 'semantic' ? 'bg-[#4B6FED] hover:bg-[#3A56D3] text-white' : 'border-[#2D333B] text-gray-300 hover:border-[#4B6FED]'}`}
                 >
                   <Zap className="h-4 w-4 mr-2" />
                   Semantic
@@ -281,7 +312,7 @@ export default function WebinarListingClient() {
             </div>
 
             <div className="flex flex-wrap items-center gap-2">
-              <span className="text-sm font-medium mr-2 flex items-center">
+              <span className="text-sm font-medium mr-2 flex items-center text-gray-300">
                 <Filter className="h-4 w-4 mr-1" />
                 Topics:
               </span>
@@ -290,6 +321,7 @@ export default function WebinarListingClient() {
                 size="sm"
                 onClick={() => setSelectedTopic('all')}
                 disabled={isLoading}
+                className={selectedTopic === 'all' ? 'bg-[#4B6FED] hover:bg-[#3A56D3] text-white' : 'border-[#2D333B] text-gray-300 hover:border-[#4B6FED]'}
               >
                 All Topics
               </Button>
@@ -300,6 +332,7 @@ export default function WebinarListingClient() {
                   size="sm"
                   onClick={() => setSelectedTopic(topic)}
                   disabled={isLoading}
+                  className={selectedTopic === topic ? 'bg-[#4B6FED] hover:bg-[#3A56D3] text-white' : 'border-[#2D333B] text-gray-300 hover:border-[#4B6FED]'}
                 >
                   {topic}
                 </Button>
@@ -325,15 +358,15 @@ export default function WebinarListingClient() {
 
         {!isLoading && !error && (
           <Tabs value={dateFilter} onValueChange={(value) => setDateFilter(value as 'all' | 'upcoming' | 'past')} className="w-full">
-            <TabsList className="mb-6">
-              <TabsTrigger value="all">
+            <TabsList className="mb-6 bg-[#161B22] border border-[#2D333B] p-1">
+              <TabsTrigger value="all" className="data-[state=active]:bg-[#4B6FED] data-[state=active]:text-white text-gray-400">
                 All Webinars ({filteredWebinars.length})
               </TabsTrigger>
-              <TabsTrigger value="upcoming">
+              <TabsTrigger value="upcoming" className="data-[state=active]:bg-[#4B6FED] data-[state=active]:text-white text-gray-400">
                 <Calendar className="w-4 h-4 mr-2" />
                 Upcoming ({upcomingCount})
               </TabsTrigger>
-              <TabsTrigger value="past">
+              <TabsTrigger value="past" className="data-[state=active]:bg-[#4B6FED] data-[state=active]:text-white text-gray-400">
                 <Video className="w-4 h-4 mr-2" />
                 Recordings ({pastCount})
               </TabsTrigger>
@@ -342,10 +375,10 @@ export default function WebinarListingClient() {
             <TabsContent value={dateFilter}>
               {filteredWebinars.length === 0 ? (
                 <div className="text-center py-16">
-                  <Video className="h-12 w-12 mx-auto mb-4 text-muted-foreground" />
-                  <h3 className="text-lg font-medium mb-2">No webinars found</h3>
-                  <p className="text-muted-foreground mb-4">Try adjusting your search or filters</p>
-                  <Button variant="outline" onClick={() => { setSearchQuery(''); setSelectedTopic('all'); }}>
+                  <Video className="h-12 w-12 mx-auto mb-4 text-gray-500" />
+                  <h3 className="text-lg font-medium mb-2 text-white">No webinars found</h3>
+                  <p className="text-gray-400 mb-4">Try adjusting your search or filters</p>
+                  <Button variant="outline" onClick={() => { setSearchQuery(''); setSelectedTopic('all'); }} className="border-[#2D333B] text-gray-300 hover:border-[#4B6FED] hover:bg-[#4B6FED]/10">
                     Clear Filters
                   </Button>
                 </div>
@@ -359,43 +392,43 @@ export default function WebinarListingClient() {
                       transition={{ delay: index * 0.1 }}
                     >
                       <Link href={`/webinars/${webinar.slug || webinar.id}`} className="block h-full">
-                        <Card className="h-full hover:shadow-lg transition-shadow flex flex-col cursor-pointer">
-                          <div className="aspect-video relative overflow-hidden bg-gradient-to-br from-primary/10 to-blue-500/10">
+                        <Card className="h-full bg-[#161B22] border-[#2D333B] hover:border-[#4B6FED]/50 transition-all flex flex-col cursor-pointer group">
+                          <div className="aspect-video relative overflow-hidden bg-gradient-to-br from-[#4B6FED]/10 to-[#8A63F4]/10 rounded-t-lg">
                             <img
                               src={webinar.thumbnail?.url || getUnsplashImageUrl(webinar.id, 800, 450)}
                               alt={webinar.title}
-                              className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
+                              className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                               loading="lazy"
                             />
                             <div className="absolute top-2 right-2 z-10">
                               {getStatusBadge(webinar.status)}
                             </div>
                             {webinar.status === 'completed' && (
-                              <div className="absolute inset-0 flex items-center justify-center bg-black/30 opacity-0 hover:opacity-100 transition-opacity">
-                                <div className="bg-white/90 dark:bg-black/90 rounded-full p-4">
-                                  <Play className="h-8 w-8 text-primary" />
+                              <div className="absolute inset-0 flex items-center justify-center bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity">
+                                <div className="bg-[#4B6FED] rounded-full p-4">
+                                  <Play className="h-8 w-8 text-white" />
                                 </div>
                               </div>
                             )}
                           </div>
                           <CardHeader className="flex-1">
                             <div className="flex items-center justify-between mb-2">
-                              <div className="text-sm text-muted-foreground flex items-center">
+                              <div className="text-sm text-gray-400 flex items-center">
                                 <Calendar className="h-3 w-3 mr-1" />
                                 {formatDate(webinar.date)}
                               </div>
                               {searchMode === 'semantic' && webinar._similarity && (
-                                <Badge variant="outline" className="text-xs">
+                                <Badge variant="outline" className="text-xs border-[#4B6FED] text-[#4B6FED]">
                                   <Zap className="h-3 w-3 mr-1" />
                                   {Math.round(webinar._similarity * 100)}%
                                 </Badge>
                               )}
                             </div>
-                            <CardTitle className="mb-2 line-clamp-2">{webinar.title}</CardTitle>
-                            <CardDescription className="mb-4 line-clamp-3">{webinar.description}</CardDescription>
+                            <CardTitle className="mb-2 line-clamp-2 text-white">{webinar.title}</CardTitle>
+                            <CardDescription className="mb-4 line-clamp-3 text-gray-400">{webinar.description}</CardDescription>
 
                             {webinar.speaker && (
-                              <div className="flex items-center gap-2 text-sm text-muted-foreground mb-3">
+                              <div className="flex items-center gap-2 text-sm text-gray-400 mb-3">
                                 <Users className="h-3 w-3" />
                                 <span>{webinar.speaker.name}</span>
                               </div>
@@ -404,13 +437,13 @@ export default function WebinarListingClient() {
                             {webinar.tags && webinar.tags.length > 0 && (
                               <div className="flex flex-wrap gap-1 mb-3">
                                 {webinar.tags.slice(0, 3).map((tag) => (
-                                  <Badge key={tag.id} variant="outline" className="text-xs">{tag.name}</Badge>
+                                  <Badge key={tag.id} variant="outline" className="text-xs border-[#2D333B] text-gray-300 hover:border-[#4B6FED]">{tag.name}</Badge>
                                 ))}
                               </div>
                             )}
                           </CardHeader>
                           <CardContent className="pt-0">
-                            <div className="flex items-center justify-between text-sm text-muted-foreground">
+                            <div className="flex items-center justify-between text-sm text-gray-400">
                               <div className="flex items-center">
                                 <Clock className="h-4 w-4 mr-1" />
                                 {webinar.duration || 60} min
@@ -435,9 +468,9 @@ export default function WebinarListingClient() {
 
         {!isLoading && !error && webinars.length === 0 && (
           <div className="text-center py-12">
-            <Sparkles className="h-12 w-12 mx-auto mb-4 text-muted-foreground" />
-            <h3 className="text-lg font-medium mb-2">No webinars yet</h3>
-            <p className="text-muted-foreground mb-4">Check back soon for upcoming events!</p>
+            <Sparkles className="h-12 w-12 mx-auto mb-4 text-[#4B6FED]" />
+            <h3 className="text-lg font-medium mb-2 text-white">No webinars yet</h3>
+            <p className="text-gray-400 mb-4">Check back soon for upcoming events!</p>
           </div>
         )}
       </main>

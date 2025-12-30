@@ -318,7 +318,7 @@ export default function VideoDetailClient({ slug }: VideoDetailClientProps) {
           <h1 className="text-2xl text-white mb-4">Video not found</h1>
           <Link
             href="/community/videos"
-            className="text-cyan-400 hover:text-cyan-300"
+            className="text-[#8AB4FF] hover:text-[#4B6FED]"
           >
             Back to videos
           </Link>
@@ -328,7 +328,7 @@ export default function VideoDetailClient({ slug }: VideoDetailClientProps) {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900">
+    <div className="min-h-screen bg-[#0D1117]">
       <div className="max-w-7xl mx-auto px-4 py-8">
         {/* Back Button */}
         <Link
@@ -349,10 +349,10 @@ export default function VideoDetailClient({ slug }: VideoDetailClientProps) {
               transition={{ duration: 0.5 }}
               className="mb-6"
             >
-              <div className="relative aspect-video bg-gray-900 rounded-lg overflow-hidden">
+              <div className="relative aspect-video bg-[#161B22] rounded-lg overflow-hidden border border-[#2D333B]">
                 {/* Video placeholder - in production would use actual video */}
-                <div className="absolute inset-0 bg-gradient-to-br from-cyan-900/30 to-purple-900/30 flex items-center justify-center">
-                  <VideoIcon className="w-24 h-24 text-cyan-400/50" />
+                <div className="absolute inset-0 bg-gradient-to-br from-[#4B6FED]/20 to-[#8A63F4]/20 flex items-center justify-center">
+                  <VideoIcon className="w-24 h-24 text-[#4B6FED]/50" />
                 </div>
 
                 {/* Play overlay */}
@@ -360,7 +360,7 @@ export default function VideoDetailClient({ slug }: VideoDetailClientProps) {
                   onClick={togglePlay}
                   className="absolute inset-0 flex items-center justify-center group"
                 >
-                  <div className="w-20 h-20 rounded-full bg-cyan-500/80 flex items-center justify-center group-hover:bg-cyan-500 transition-colors">
+                  <div className="w-20 h-20 rounded-full bg-[#4B6FED]/80 flex items-center justify-center group-hover:bg-[#4B6FED] transition-colors">
                     {isPlaying ? (
                       <Pause className="w-10 h-10 text-white" />
                     ) : (
@@ -372,9 +372,9 @@ export default function VideoDetailClient({ slug }: VideoDetailClientProps) {
                 {/* Controls bar */}
                 <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 to-transparent p-4">
                   {/* Progress bar */}
-                  <div className="w-full h-1 bg-gray-700 rounded-full mb-3">
+                  <div className="w-full h-1 bg-[#2D333B] rounded-full mb-3">
                     <div
-                      className="h-full bg-cyan-500 rounded-full"
+                      className="h-full bg-[#4B6FED] rounded-full"
                       style={{ width: `${progress}%` }}
                     />
                   </div>
@@ -383,7 +383,7 @@ export default function VideoDetailClient({ slug }: VideoDetailClientProps) {
                     <div className="flex items-center gap-3">
                       <button
                         onClick={togglePlay}
-                        className="text-white hover:text-cyan-400"
+                        className="text-white hover:text-[#8AB4FF]"
                       >
                         {isPlaying ? (
                           <Pause className="w-5 h-5" />
@@ -393,7 +393,7 @@ export default function VideoDetailClient({ slug }: VideoDetailClientProps) {
                       </button>
                       <button
                         onClick={toggleMute}
-                        className="text-white hover:text-cyan-400"
+                        className="text-white hover:text-[#8AB4FF]"
                       >
                         {isMuted ? (
                           <VolumeX className="w-5 h-5" />
@@ -407,7 +407,7 @@ export default function VideoDetailClient({ slug }: VideoDetailClientProps) {
                     </div>
                     <button
                       onClick={handleFullscreen}
-                      className="text-white hover:text-cyan-400"
+                      className="text-white hover:text-[#8AB4FF]"
                     >
                       <Maximize className="w-5 h-5" />
                     </button>
@@ -421,7 +421,7 @@ export default function VideoDetailClient({ slug }: VideoDetailClientProps) {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: 0.1 }}
-              className="bg-gray-800/50 backdrop-blur-sm rounded-lg p-6 border border-gray-700 mb-6"
+              className="bg-[#161B22] backdrop-blur-sm rounded-lg p-6 border border-[#2D333B] mb-6"
             >
               <h1 className="text-3xl font-bold text-white mb-4">
                 {video.title}
@@ -441,7 +441,7 @@ export default function VideoDetailClient({ slug }: VideoDetailClientProps) {
                   <Clock className="w-4 h-4 mr-1" />
                   <span>{formatDuration(video.duration)}</span>
                 </div>
-                <span className="px-3 py-1 bg-gray-700/50 rounded-full capitalize">
+                <span className="px-3 py-1 bg-[#2D333B] rounded-full capitalize">
                   {video.category}
                 </span>
               </div>
@@ -452,8 +452,8 @@ export default function VideoDetailClient({ slug }: VideoDetailClientProps) {
                   onClick={handleLike}
                   className={`flex items-center px-4 py-2 rounded-lg transition-all ${
                     liked
-                      ? 'bg-cyan-500 text-white'
-                      : 'bg-gray-700/50 text-gray-300 hover:bg-gray-700'
+                      ? 'bg-[#4B6FED] text-white'
+                      : 'bg-[#2D333B] text-gray-300 hover:bg-[#3D434B]'
                   }`}
                 >
                   <Heart
@@ -463,7 +463,7 @@ export default function VideoDetailClient({ slug }: VideoDetailClientProps) {
                 </button>
                 <button
                   onClick={handleShare}
-                  className="flex items-center px-4 py-2 bg-gray-700/50 text-gray-300 rounded-lg hover:bg-gray-700 transition-colors"
+                  className="flex items-center px-4 py-2 bg-[#2D333B] text-gray-300 rounded-lg hover:bg-[#3D434B] transition-colors"
                 >
                   <Share2 className="w-4 h-4 mr-2" />
                   Share
@@ -472,8 +472,8 @@ export default function VideoDetailClient({ slug }: VideoDetailClientProps) {
                   onClick={() => setBookmarked(!bookmarked)}
                   className={`flex items-center px-4 py-2 rounded-lg transition-all ${
                     bookmarked
-                      ? 'bg-purple-500 text-white'
-                      : 'bg-gray-700/50 text-gray-300 hover:bg-gray-700'
+                      ? 'bg-[#8A63F4] text-white'
+                      : 'bg-[#2D333B] text-gray-300 hover:bg-[#3D434B]'
                   }`}
                 >
                   <BookmarkPlus className="w-4 h-4 mr-2" />
@@ -505,7 +505,7 @@ export default function VideoDetailClient({ slug }: VideoDetailClientProps) {
                       <Link
                         key={tag.id}
                         href={`/community/videos?tag=${tag.slug}`}
-                        className="px-3 py-1 bg-gray-700/50 text-gray-300 rounded-full text-sm hover:bg-gray-700 transition-colors"
+                        className="px-3 py-1 bg-[#2D333B] text-gray-300 rounded-full text-sm hover:bg-[#3D434B] transition-colors"
                       >
                         {tag.name}
                       </Link>
@@ -516,15 +516,15 @@ export default function VideoDetailClient({ slug }: VideoDetailClientProps) {
 
               {/* Author */}
               {video.author && (
-                <div className="border-t border-gray-700 pt-6">
+                <div className="border-t border-[#2D333B] pt-6">
                   <div className="flex items-start space-x-4">
-                    <div className="w-12 h-12 rounded-full bg-gray-700 flex items-center justify-center">
+                    <div className="w-12 h-12 rounded-full bg-[#2D333B] flex items-center justify-center">
                       <User className="w-6 h-6 text-gray-400" />
                     </div>
                     <div>
                       <Link
                         href={`/community/authors/${video.author.slug}`}
-                        className="text-lg font-semibold text-white hover:text-cyan-400 transition-colors"
+                        className="text-lg font-semibold text-white hover:text-[#8AB4FF] transition-colors"
                       >
                         {video.author.name}
                       </Link>
@@ -544,7 +544,7 @@ export default function VideoDetailClient({ slug }: VideoDetailClientProps) {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: 0.2 }}
-              className="bg-gray-800/50 backdrop-blur-sm rounded-lg p-6 border border-gray-700"
+              className="bg-[#161B22] backdrop-blur-sm rounded-lg p-6 border border-[#2D333B]"
             >
               <h3 className="text-xl font-semibold text-white mb-4 flex items-center">
                 <MessageSquare className="w-5 h-5 mr-2" />
@@ -571,11 +571,11 @@ export default function VideoDetailClient({ slug }: VideoDetailClientProps) {
                     href={`/community/videos/${relatedVideo.slug}`}
                     className="block group"
                   >
-                    <div className="bg-gray-800/50 backdrop-blur-sm rounded-lg overflow-hidden border border-gray-700 hover:border-cyan-500 transition-all duration-200">
+                    <div className="bg-[#161B22] backdrop-blur-sm rounded-lg overflow-hidden border border-[#2D333B] hover:border-[#4B6FED] transition-all duration-200">
                       <div className="flex gap-3">
-                        <div className="w-40 h-24 flex-shrink-0 relative bg-gray-900">
-                          <div className="w-full h-full bg-gradient-to-br from-cyan-900/20 to-purple-900/20 flex items-center justify-center">
-                            <VideoIcon className="w-8 h-8 text-cyan-400/50" />
+                        <div className="w-40 h-24 flex-shrink-0 relative bg-[#0D1117]">
+                          <div className="w-full h-full bg-gradient-to-br from-[#4B6FED]/20 to-[#8A63F4]/20 flex items-center justify-center">
+                            <VideoIcon className="w-8 h-8 text-[#4B6FED]/50" />
                           </div>
                           {relatedVideo.duration > 0 && (
                             <div className="absolute bottom-1 right-1 px-1 py-0.5 bg-black bg-opacity-75 rounded text-white text-xs">
@@ -584,7 +584,7 @@ export default function VideoDetailClient({ slug }: VideoDetailClientProps) {
                           )}
                         </div>
                         <div className="flex-1 p-3 min-w-0">
-                          <h4 className="text-sm font-semibold text-white line-clamp-2 group-hover:text-cyan-400 transition-colors mb-1">
+                          <h4 className="text-sm font-semibold text-white line-clamp-2 group-hover:text-[#8AB4FF] transition-colors mb-1">
                             {relatedVideo.title}
                           </h4>
                           {relatedVideo.author && (

@@ -9,10 +9,12 @@ const DEFAULT_STRAPI_URL = 'https://ainative-community-production.up.railway.app
 const DEFAULT_TIMEOUT = 30000; // 30 seconds
 
 /**
- * Strapi Response Wrapper
+ * Strapi v5 Response Wrapper
+ * Note: Strapi v5 uses 'results' instead of 'data' for collection types
  */
 export interface StrapiResponse<T> {
   data: T;
+  results?: T;
   meta?: {
     pagination?: {
       page: number;
@@ -20,6 +22,12 @@ export interface StrapiResponse<T> {
       pageCount: number;
       total: number;
     };
+  };
+  pagination?: {
+    page: number;
+    pageSize: number;
+    pageCount: number;
+    total: number;
   };
 }
 
@@ -230,7 +238,9 @@ export default class StrapiClient {
           populate: '*',
         },
       });
-      return data.data[0] || null;
+      // Strapi v5 uses 'results' instead of 'data'
+      const posts = data.results || data.data || [];
+      return posts[0] || null;
     } catch (error) {
       console.error('Error fetching blog post:', error);
       throw error;
@@ -263,7 +273,9 @@ export default class StrapiClient {
           populate: '*',
         },
       });
-      return data.data[0] || null;
+      // Strapi v5 uses 'results' instead of 'data'
+      const tutorials = data.results || data.data || [];
+      return tutorials[0] || null;
     } catch (error) {
       console.error('Error fetching tutorial:', error);
       throw error;
@@ -296,7 +308,9 @@ export default class StrapiClient {
           populate: '*',
         },
       });
-      return data.data[0] || null;
+      // Strapi v5 uses 'results' instead of 'data'
+      const showcases = data.results || data.data || [];
+      return showcases[0] || null;
     } catch (error) {
       console.error('Error fetching showcase:', error);
       throw error;
@@ -352,7 +366,9 @@ export default class StrapiClient {
           populate: '*',
         },
       });
-      return data.data[0] || null;
+      // Strapi v5 uses 'results' instead of 'data'
+      const videos = data.results || data.data || [];
+      return videos[0] || null;
     } catch (error) {
       console.error('Error fetching video:', error);
       throw error;
@@ -419,7 +435,9 @@ export default class StrapiClient {
           populate: ['speaker', 'co_speakers', 'video', 'thumbnail', 'tags', 'category'],
         },
       });
-      return data.data[0] || null;
+      // Strapi v5 uses 'results' instead of 'data'
+      const webinars = data.results || data.data || [];
+      return webinars[0] || null;
     } catch (error) {
       console.error('Error fetching webinar:', error);
       throw error;

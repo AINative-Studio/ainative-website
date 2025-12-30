@@ -4,16 +4,15 @@ import { useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useSession, signOut } from 'next-auth/react';
-import { Button } from '@/components/ui/button';
+import { ButtonCustom } from '@/components/ui/button-custom';
 import { Menu, X } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 const navigation: { name: string; path: string; external?: boolean }[] = [
   { name: 'Products', path: '/products' },
   { name: 'Pricing', path: '/pricing' },
-  { name: 'Enterprise', path: '/enterprise' },
-  { name: 'Developer Resources', path: '/dev-resources' },
-  { name: 'Download', path: '/download' },
+  { name: 'Docs', path: '/docs' },
+  { name: 'ZeroDB', path: 'https://zerodb.ainative.studio', external: true },
 ];
 
 export default function Header() {
@@ -45,16 +44,17 @@ export default function Header() {
     <header
       className={cn(
         'fixed top-0 left-0 right-0 z-50 transition-all duration-300 border-b',
-        'bg-background dark:bg-background shadow-sm border-border',
-        'bg-opacity-100 dark:bg-opacity-100'
+        'bg-[#0D1117] shadow-sm border-[#2D333B]'
       )}
     >
-      <div className="container flex items-center justify-between py-4 px-4 md:px-6 mx-auto max-w-7xl">
+      <div className="container-custom flex items-center justify-between py-4 px-4 md:px-6">
         {/* Logo */}
         <div className="flex items-center gap-3">
-          <Link href="/" className="text-xl md:text-2xl font-bold tracking-tight text-foreground flex items-center gap-1">
-            <span className="text-[#FF6B00]">⚡</span>AI
-            <span className="text-primary">Native</span>
+          <Link href="/" className="flex items-center gap-3">
+            <img src="/ainative-icon.svg" alt="AINative Studio" className="h-12 w-auto" />
+            <span className="text-2xl md:text-3xl font-bold tracking-tight uppercase flex items-center gap-1">
+              <span className="text-white">AI</span><span className="text-[#5867EF]">NATIVE</span>
+            </span>
           </Link>
         </div>
 
@@ -67,7 +67,7 @@ export default function Header() {
                 href={item.path}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
+                className="text-sm font-medium text-gray-400 hover:text-white transition-colors"
               >
                 {item.name}
               </a>
@@ -75,7 +75,7 @@ export default function Header() {
               <Link
                 key={item.name}
                 href={item.path}
-                className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
+                className="text-sm font-medium text-gray-400 hover:text-white transition-colors"
               >
                 {item.name}
               </Link>
@@ -86,7 +86,7 @@ export default function Header() {
         {/* Desktop Actions */}
         <div className="hidden md:flex items-center gap-4">
           {isLoading ? (
-            <div className="h-10 w-24 animate-pulse bg-muted rounded" />
+            <div className="h-10 w-24 animate-pulse bg-[#2D333B] rounded" />
           ) : isDashboard ? (
             <>
               {avatar && (
@@ -96,47 +96,47 @@ export default function Header() {
                   className="w-8 h-8 rounded-full border border-[#4B6FED]"
                 />
               )}
-              <Button
+              <ButtonCustom
                 variant="outline"
                 onClick={handleLogout}
               >
                 Logout
-              </Button>
+              </ButtonCustom>
             </>
           ) : ['/login', '/signup'].includes(pathname) ? (
             <Link href="/">
-              <Button>Back to Home</Button>
+              <ButtonCustom variant="primary">Back to Home</ButtonCustom>
             </Link>
           ) : isLoggedIn ? (
             <>
               <Link href="/dashboard">
-                <Button variant="outline">Dashboard</Button>
+                <ButtonCustom variant="outline">Dashboard</ButtonCustom>
               </Link>
-              <Button
+              <ButtonCustom
                 variant="ghost"
                 onClick={handleLogout}
               >
                 Sign Out
-              </Button>
+              </ButtonCustom>
               <a
                 href="https://calendly.com/seedlingstudio/"
                 target="_blank"
                 rel="noopener noreferrer"
               >
-                <Button>Book a Call</Button>
+                <ButtonCustom variant="primary">Book a Call</ButtonCustom>
               </a>
             </>
           ) : (
             <>
               <Link href="/login">
-                <Button variant="outline">Sign In</Button>
+                <ButtonCustom variant="outline">Sign In</ButtonCustom>
               </Link>
               <a
                 href="https://calendly.com/seedlingstudio/"
                 target="_blank"
                 rel="noopener noreferrer"
               >
-                <Button>Book a Call</Button>
+                <ButtonCustom variant="primary">Book a Call</ButtonCustom>
               </a>
             </>
           )}
@@ -156,14 +156,16 @@ export default function Header() {
 
       {/* Mobile Menu Sheet */}
       {mobileMenuOpen && (
-        <div className="fixed inset-0 z-40 bg-background animate-in slide-in-from-top p-6 flex flex-col gap-6 md:hidden">
+        <div className="fixed inset-0 z-40 bg-[#0D1117] animate-in slide-in-from-top p-6 flex flex-col gap-6 md:hidden">
           <div className="flex justify-between items-center">
-            <Link href="/" className="text-xl font-bold tracking-tight text-foreground" onClick={() => setMobileMenuOpen(false)}>
-              <span className="text-[#FF6B00]">⚡</span>AI
-              <span className="text-primary">Native</span>
+            <Link href="/" className="flex items-center gap-3" onClick={() => setMobileMenuOpen(false)}>
+              <img src="/ainative-icon.svg" alt="AINative Studio" className="h-10 w-auto" />
+              <span className="text-xl font-bold tracking-tight uppercase flex items-center gap-1">
+                <span className="text-white">AI</span><span className="text-[#5867EF]">NATIVE</span>
+              </span>
             </Link>
             <button
-              className="text-muted-foreground hover:text-foreground"
+              className="text-gray-400 hover:text-white"
               onClick={() => setMobileMenuOpen(false)}
               aria-label="Close mobile menu"
             >
@@ -179,7 +181,7 @@ export default function Header() {
                   href={item.path}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-base font-medium text-muted-foreground hover:text-primary"
+                  className="text-base font-medium text-gray-400 hover:text-white transition-colors"
                   onClick={() => setMobileMenuOpen(false)}
                 >
                   {item.name}
@@ -188,7 +190,7 @@ export default function Header() {
                 <Link
                   key={item.name}
                   href={item.path}
-                  className="text-base font-medium text-muted-foreground hover:text-primary"
+                  className="text-base font-medium text-gray-400 hover:text-white transition-colors"
                   onClick={() => setMobileMenuOpen(false)}
                 >
                   {item.name}
@@ -207,7 +209,7 @@ export default function Header() {
                     className="w-8 h-8 rounded-full border border-[#4B6FED] mx-auto mb-2"
                   />
                 )}
-                <Button
+                <ButtonCustom
                   variant="outline"
                   className="w-full"
                   onClick={() => {
@@ -216,16 +218,16 @@ export default function Header() {
                   }}
                 >
                   Logout
-                </Button>
+                </ButtonCustom>
               </>
             ) : isLoggedIn ? (
               <>
                 <Link href="/dashboard" onClick={() => setMobileMenuOpen(false)}>
-                  <Button variant="outline" className="w-full">
+                  <ButtonCustom variant="outline" className="w-full">
                     Dashboard
-                  </Button>
+                  </ButtonCustom>
                 </Link>
-                <Button
+                <ButtonCustom
                   variant="ghost"
                   className="w-full"
                   onClick={() => {
@@ -234,24 +236,24 @@ export default function Header() {
                   }}
                 >
                   Sign Out
-                </Button>
+                </ButtonCustom>
                 <a
                   href="https://calendly.com/seedlingstudio/"
                   target="_blank"
                   rel="noopener noreferrer"
                   onClick={() => setMobileMenuOpen(false)}
                 >
-                  <Button className="w-full">
+                  <ButtonCustom variant="primary" className="w-full">
                     Book a Call
-                  </Button>
+                  </ButtonCustom>
                 </a>
               </>
             ) : (
               <>
                 <Link href="/login" onClick={() => setMobileMenuOpen(false)}>
-                  <Button variant="outline" className="w-full">
+                  <ButtonCustom variant="outline" className="w-full">
                     Sign In
-                  </Button>
+                  </ButtonCustom>
                 </Link>
                 <a
                   href="https://calendly.com/seedlingstudio/"
@@ -259,9 +261,9 @@ export default function Header() {
                   rel="noopener noreferrer"
                   onClick={() => setMobileMenuOpen(false)}
                 >
-                  <Button className="w-full">
+                  <ButtonCustom variant="primary" className="w-full">
                     Book a Call
-                  </Button>
+                  </ButtonCustom>
                 </a>
               </>
             )}

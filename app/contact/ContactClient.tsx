@@ -26,23 +26,23 @@ interface ContactCardProps {
 }
 
 const ContactCard = ({ icon: Icon, title, content, link = '' }: ContactCardProps) => (
-  <Card className="border border-primary/20 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm hover:border-primary/40 transition-colors">
+  <Card className="border border-[#2D333B] bg-[#161B22] backdrop-blur-sm hover:border-[#4B6FED]/40 transition-colors">
     <CardHeader>
       <div className="flex items-center gap-3">
-        <div className="p-2 rounded-lg bg-primary/10">
-          <Icon className="h-5 w-5 text-primary" />
+        <div className="p-2 rounded-lg bg-[#4B6FED]/10">
+          <Icon className="h-5 w-5 text-[#4B6FED]" />
         </div>
         <div>
-          <CardTitle className="text-lg">{title}</CardTitle>
+          <CardTitle className="text-lg text-white">{title}</CardTitle>
           {link ? (
             <a
               href={link}
-              className="text-sm text-gray-600 dark:text-gray-300 hover:text-primary dark:hover:text-primary transition-colors"
+              className="text-sm text-gray-400 hover:text-[#8AB4FF] transition-colors"
             >
               {content}
             </a>
           ) : (
-            <CardDescription>{content}</CardDescription>
+            <CardDescription className="text-gray-400">{content}</CardDescription>
           )}
         </div>
       </div>
@@ -91,8 +91,8 @@ export default function ContactClient() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-white to-gray-50 dark:from-gray-900 dark:to-gray-800">
-      <div className="container mx-auto px-4 py-16">
+    <div className="min-h-screen bg-[#0D1117] text-white">
+      <div className="container mx-auto px-4 py-20 mt-16">
         <div className="max-w-6xl mx-auto">
           {/* Hero Section */}
           <motion.div
@@ -101,10 +101,10 @@ export default function ContactClient() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6 }}
           >
-            <h1 className="text-4xl md:text-5xl font-bold text-gray-800 dark:text-white mb-4">
+            <h1 className="text-4xl md:text-5xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-[#4B6FED] to-[#8A63F4] mb-4">
               Get in Touch
             </h1>
-            <p className="text-xl text-gray-600 dark:text-gray-300 max-w-2xl mx-auto">
+            <p className="text-xl text-gray-400 max-w-2xl mx-auto">
               We&apos;re here to help with any questions about our products, services, or enterprise
               solutions.
             </p>
@@ -117,7 +117,7 @@ export default function ContactClient() {
               {...fadeInUp}
               transition={{ delay: 0.1 }}
             >
-              <h2 className="text-2xl font-bold text-gray-800 dark:text-white mb-6">
+              <h2 className="text-2xl font-bold text-white mb-6">
                 Contact Information
               </h2>
               <div className="grid gap-6">
@@ -151,10 +151,10 @@ export default function ContactClient() {
               {...fadeInUp}
               transition={{ delay: 0.2 }}
             >
-              <Card className="border-0 shadow-lg">
+              <Card className="border border-[#2D333B] bg-[#161B22] shadow-lg">
                 <CardHeader>
-                  <CardTitle>Send us a Message</CardTitle>
-                  <CardDescription>
+                  <CardTitle className="text-white">Send us a Message</CardTitle>
+                  <CardDescription className="text-gray-400">
                     Fill out the form below and we&apos;ll get back to you as soon as possible.
                   </CardDescription>
                 </CardHeader>
@@ -166,10 +166,10 @@ export default function ContactClient() {
                       animate={{ opacity: 1, scale: 1 }}
                     >
                       <CheckCircle className="h-16 w-16 text-green-500 mb-4" />
-                      <h3 className="text-xl font-semibold text-gray-800 dark:text-white mb-2">
+                      <h3 className="text-xl font-semibold text-white mb-2">
                         Message Sent!
                       </h3>
-                      <p className="text-gray-600 dark:text-gray-300">
+                      <p className="text-gray-400">
                         We&apos;ll get back to you within 24 hours.
                       </p>
                     </motion.div>
@@ -177,7 +177,7 @@ export default function ContactClient() {
                     <form onSubmit={handleSubmit} className="space-y-6">
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div className="space-y-2">
-                          <Label htmlFor="name">Name</Label>
+                          <Label htmlFor="name" className="text-gray-300">Name</Label>
                           <Input
                             id="name"
                             placeholder="Your name"
@@ -186,10 +186,11 @@ export default function ContactClient() {
                               setFormData({ ...formData, name: e.target.value })
                             }
                             required
+                            className="bg-[#1C2128] border-[#2D333B] focus:border-[#4B6FED] text-white placeholder:text-gray-500"
                           />
                         </div>
                         <div className="space-y-2">
-                          <Label htmlFor="email">Email</Label>
+                          <Label htmlFor="email" className="text-gray-300">Email</Label>
                           <Input
                             id="email"
                             type="email"
@@ -199,34 +200,35 @@ export default function ContactClient() {
                               setFormData({ ...formData, email: e.target.value })
                             }
                             required
+                            className="bg-[#1C2128] border-[#2D333B] focus:border-[#4B6FED] text-white placeholder:text-gray-500"
                           />
                         </div>
                       </div>
 
                       <div className="space-y-2">
-                        <Label htmlFor="inquiry-type">Inquiry Type</Label>
+                        <Label htmlFor="inquiry-type" className="text-gray-300">Inquiry Type</Label>
                         <Select
                           value={formData.inquiryType}
                           onValueChange={(value) =>
                             setFormData({ ...formData, inquiryType: value })
                           }
                         >
-                          <SelectTrigger>
+                          <SelectTrigger className="bg-[#1C2128] border-[#2D333B] focus:border-[#4B6FED] text-white">
                             <SelectValue placeholder="Select inquiry type" />
                           </SelectTrigger>
-                          <SelectContent>
-                            <SelectItem value="support">Technical Support</SelectItem>
-                            <SelectItem value="sales">Sales Inquiry</SelectItem>
-                            <SelectItem value="partnership">Partnership</SelectItem>
-                            <SelectItem value="enterprise">Enterprise Sales</SelectItem>
-                            <SelectItem value="billing">Billing Question</SelectItem>
-                            <SelectItem value="other">Other</SelectItem>
+                          <SelectContent className="bg-[#161B22] border-[#2D333B]">
+                            <SelectItem value="support" className="text-gray-300 focus:bg-[#1C2128] focus:text-white">Technical Support</SelectItem>
+                            <SelectItem value="sales" className="text-gray-300 focus:bg-[#1C2128] focus:text-white">Sales Inquiry</SelectItem>
+                            <SelectItem value="partnership" className="text-gray-300 focus:bg-[#1C2128] focus:text-white">Partnership</SelectItem>
+                            <SelectItem value="enterprise" className="text-gray-300 focus:bg-[#1C2128] focus:text-white">Enterprise Sales</SelectItem>
+                            <SelectItem value="billing" className="text-gray-300 focus:bg-[#1C2128] focus:text-white">Billing Question</SelectItem>
+                            <SelectItem value="other" className="text-gray-300 focus:bg-[#1C2128] focus:text-white">Other</SelectItem>
                           </SelectContent>
                         </Select>
                       </div>
 
                       <div className="space-y-2">
-                        <Label htmlFor="subject">Subject</Label>
+                        <Label htmlFor="subject" className="text-gray-300">Subject</Label>
                         <Input
                           id="subject"
                           placeholder="Brief description of your inquiry"
@@ -235,15 +237,16 @@ export default function ContactClient() {
                             setFormData({ ...formData, subject: e.target.value })
                           }
                           required
+                          className="bg-[#1C2128] border-[#2D333B] focus:border-[#4B6FED] text-white placeholder:text-gray-500"
                         />
                       </div>
 
                       <div className="space-y-2">
-                        <Label htmlFor="message">Message</Label>
+                        <Label htmlFor="message" className="text-gray-300">Message</Label>
                         <Textarea
                           id="message"
                           placeholder="Please provide details about your inquiry"
-                          className="min-h-[150px]"
+                          className="min-h-[150px] bg-[#1C2128] border-[#2D333B] focus:border-[#4B6FED] text-white placeholder:text-gray-500"
                           value={formData.message}
                           onChange={(e) =>
                             setFormData({ ...formData, message: e.target.value })
@@ -254,7 +257,7 @@ export default function ContactClient() {
 
                       <Button
                         type="submit"
-                        className="w-full"
+                        className="w-full bg-gradient-to-r from-[#4B6FED] to-[#8A63F4] hover:opacity-90 text-white"
                         disabled={isSubmitting}
                       >
                         {isSubmitting ? (
@@ -281,27 +284,27 @@ export default function ContactClient() {
             {...fadeInUp}
             transition={{ delay: 0.3 }}
           >
-            <Card className="border border-primary/20 bg-gradient-to-br from-primary/5 to-primary/10 backdrop-blur-sm">
+            <Card className="border border-[#2D333B] bg-gradient-to-br from-[#4B6FED]/10 to-[#8A63F4]/10 backdrop-blur-sm">
               <CardHeader>
                 <div className="flex items-center gap-3 mb-4">
-                  <div className="p-2 rounded-lg bg-primary/20">
-                    <Building2 className="h-6 w-6 text-primary" />
+                  <div className="p-2 rounded-lg bg-[#4B6FED]/20">
+                    <Building2 className="h-6 w-6 text-[#4B6FED]" />
                   </div>
-                  <CardTitle className="text-2xl">Enterprise Support</CardTitle>
+                  <CardTitle className="text-2xl text-white">Enterprise Support</CardTitle>
                 </div>
-                <CardDescription className="text-lg">
+                <CardDescription className="text-lg text-gray-400">
                   Looking for enterprise-grade support? Our dedicated enterprise team is ready to
                   help with custom solutions, deployment options, and premium support packages.
                 </CardDescription>
               </CardHeader>
               <CardContent className="flex flex-col sm:flex-row gap-4">
                 <Link href={appConfig.links.calendly} target="_blank" rel="noopener noreferrer">
-                  <Button className="bg-primary hover:bg-primary/90 text-white">
+                  <Button className="bg-gradient-to-r from-[#4B6FED] to-[#8A63F4] hover:opacity-90 text-white">
                     Contact Enterprise Sales
                   </Button>
                 </Link>
                 <Link href="/pricing">
-                  <Button variant="outline">
+                  <Button variant="outline" className="border-[#2D333B] text-white hover:bg-[#1C2128]">
                     View Enterprise Plans
                   </Button>
                 </Link>
@@ -315,21 +318,21 @@ export default function ContactClient() {
             {...fadeInUp}
             transition={{ delay: 0.4 }}
           >
-            <h3 className="text-xl font-semibold text-gray-800 dark:text-white mb-4">
+            <h3 className="text-xl font-semibold text-white mb-4">
               Need Immediate Help?
             </h3>
-            <p className="text-gray-600 dark:text-gray-300 mb-6">
+            <p className="text-gray-400 mb-6">
               Check out our documentation and community resources for quick answers.
             </p>
             <div className="flex flex-wrap justify-center gap-4">
               <Link href="/docs">
-                <Button variant="outline">Documentation</Button>
+                <Button variant="outline" className="border-[#2D333B] text-white hover:bg-[#1C2128]">Documentation</Button>
               </Link>
               <Link href={appConfig.links.discord} target="_blank" rel="noopener noreferrer">
-                <Button variant="outline">Join Discord</Button>
+                <Button variant="outline" className="border-[#2D333B] text-white hover:bg-[#1C2128]">Join Discord</Button>
               </Link>
               <Link href={appConfig.links.github} target="_blank" rel="noopener noreferrer">
-                <Button variant="outline">GitHub</Button>
+                <Button variant="outline" className="border-[#2D333B] text-white hover:bg-[#1C2128]">GitHub</Button>
               </Link>
             </div>
           </motion.div>

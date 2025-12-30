@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Geist, Geist_Mono, Poppins } from "next/font/google";
 import { QueryProvider } from "@/components/providers/QueryProvider";
 import SessionProvider from "@/components/providers/session-provider";
 import Header from "@/components/layout/Header";
@@ -11,16 +11,24 @@ import SpeedInsights from "@/components/analytics/SpeedInsights";
 import StructuredData from "@/components/seo/StructuredData";
 import "./globals.css";
 
+// Poppins - Primary font matching Vite design system
+const poppins = Poppins({
+  variable: "--font-poppins",
+  subsets: ["latin"],
+  weight: ["400", "500", "600", "700"],
+  display: "swap",
+});
+
 const geistSans = Geist({
   variable: "--font-geist-sans",
   subsets: ["latin"],
-  display: "swap", // Optimize font loading - show fallback immediately, swap when loaded
+  display: "swap",
 });
 
 const geistMono = Geist_Mono({
   variable: "--font-geist-mono",
   subsets: ["latin"],
-  display: "swap", // Optimize font loading - show fallback immediately, swap when loaded
+  display: "swap",
 });
 
 const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://www.ainative.studio';
@@ -131,7 +139,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="en" className="dark">
       <head>
         {/* Google Analytics 4 (GA4) - Primary Analytics */}
         <GoogleAnalytics />
@@ -141,7 +149,7 @@ export default function RootLayout({
         <StructuredData />
       </head>
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+        className={`${poppins.variable} ${geistSans.variable} ${geistMono.variable} font-sans antialiased bg-[#0D1117] text-white`}
       >
         {/* GTM noscript fallback */}
         <GoogleTagManagerNoscript />

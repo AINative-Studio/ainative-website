@@ -45,44 +45,44 @@ const categories = [
 ];
 
 const BlogCardSkeleton = () => (
-  <Card className="h-full flex flex-col">
-    <Skeleton className="aspect-video w-full" />
+  <Card className="h-full flex flex-col bg-[#161B22] border-[#2D333B]">
+    <Skeleton className="aspect-video w-full bg-[#1C2128]" />
     <CardHeader className="flex-1">
       <div className="flex items-center gap-2 mb-2">
-        <Skeleton className="h-5 w-20" />
-        <Skeleton className="h-4 w-12" />
+        <Skeleton className="h-5 w-20 bg-[#1C2128]" />
+        <Skeleton className="h-4 w-12 bg-[#1C2128]" />
       </div>
-      <Skeleton className="h-6 w-full mb-2" />
-      <Skeleton className="h-6 w-3/4 mb-2" />
-      <Skeleton className="h-16 w-full" />
+      <Skeleton className="h-6 w-full mb-2 bg-[#1C2128]" />
+      <Skeleton className="h-6 w-3/4 mb-2 bg-[#1C2128]" />
+      <Skeleton className="h-16 w-full bg-[#1C2128]" />
     </CardHeader>
     <CardContent>
       <div className="flex items-center justify-between">
-        <Skeleton className="h-4 w-24" />
-        <Skeleton className="h-4 w-20" />
+        <Skeleton className="h-4 w-24 bg-[#1C2128]" />
+        <Skeleton className="h-4 w-20 bg-[#1C2128]" />
       </div>
       <div className="flex gap-1 mt-3">
-        <Skeleton className="h-5 w-16" />
-        <Skeleton className="h-5 w-16" />
-        <Skeleton className="h-5 w-16" />
+        <Skeleton className="h-5 w-16 bg-[#1C2128]" />
+        <Skeleton className="h-5 w-16 bg-[#1C2128]" />
+        <Skeleton className="h-5 w-16 bg-[#1C2128]" />
       </div>
     </CardContent>
   </Card>
 );
 
 const FeaturedPostSkeleton = () => (
-  <Card className="overflow-hidden">
+  <Card className="overflow-hidden bg-[#161B22] border-[#2D333B]">
     <div className="grid md:grid-cols-2 gap-6">
-      <Skeleton className="aspect-video w-full" />
+      <Skeleton className="aspect-video w-full bg-[#1C2128]" />
       <CardHeader className="flex flex-col justify-center">
-        <Skeleton className="h-5 w-20 mb-2" />
-        <Skeleton className="h-8 w-full mb-2" />
-        <Skeleton className="h-8 w-3/4 mb-4" />
-        <Skeleton className="h-20 w-full mb-4" />
+        <Skeleton className="h-5 w-20 mb-2 bg-[#1C2128]" />
+        <Skeleton className="h-8 w-full mb-2 bg-[#1C2128]" />
+        <Skeleton className="h-8 w-3/4 mb-4 bg-[#1C2128]" />
+        <Skeleton className="h-20 w-full mb-4 bg-[#1C2128]" />
         <div className="flex gap-4">
-          <Skeleton className="h-4 w-28" />
-          <Skeleton className="h-4 w-24" />
-          <Skeleton className="h-5 w-20" />
+          <Skeleton className="h-4 w-28 bg-[#1C2128]" />
+          <Skeleton className="h-4 w-24 bg-[#1C2128]" />
+          <Skeleton className="h-5 w-20 bg-[#1C2128]" />
         </div>
       </CardHeader>
     </div>
@@ -90,11 +90,11 @@ const FeaturedPostSkeleton = () => (
 );
 
 const CardTitle = ({ children, className = '' }: { children: React.ReactNode; className?: string }) => (
-  <h3 className={`text-lg font-semibold ${className}`}>{children}</h3>
+  <h3 className={`text-lg font-semibold text-white ${className}`}>{children}</h3>
 );
 
 const CardDescription = ({ children, className = '' }: { children: React.ReactNode; className?: string }) => (
-  <p className={`text-sm text-muted-foreground ${className}`}>{children}</p>
+  <p className={`text-sm text-gray-400 ${className}`}>{children}</p>
 );
 
 interface TransformedPost {
@@ -219,7 +219,7 @@ export default function BlogListingClient() {
   const featuredPost = transformedPosts[0];
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-blue-50 dark:from-gray-900 dark:via-gray-900 dark:to-gray-900">
+    <div className="min-h-screen bg-[#0D1117] text-white">
       <main className="container mx-auto px-4 py-20 mt-16">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -227,10 +227,10 @@ export default function BlogListingClient() {
           transition={{ duration: 0.5 }}
           className="text-center mb-12"
         >
-          <h1 className="text-4xl md:text-5xl font-extrabold tracking-tight mb-4 bg-clip-text text-transparent bg-gradient-to-r from-primary to-blue-600">
+          <h1 className="text-4xl md:text-5xl font-extrabold tracking-tight mb-4 bg-clip-text text-transparent bg-gradient-to-r from-[#4B6FED] to-[#8A63F4]">
             AINative Blog
           </h1>
-          <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
+          <p className="text-xl text-gray-400 max-w-3xl mx-auto">
             Insights, tutorials, and updates from the AINative team
           </p>
         </motion.div>
@@ -241,13 +241,13 @@ export default function BlogListingClient() {
             animate={{ opacity: 1, y: 0 }}
             className="mb-12"
           >
-            <Card className="border-destructive/50 bg-destructive/5">
+            <Card className="border-red-500/50 bg-red-500/10">
               <CardHeader>
                 <div className="flex items-center gap-3">
-                  <AlertCircle className="h-5 w-5 text-destructive" />
+                  <AlertCircle className="h-5 w-5 text-red-400" />
                   <div>
-                    <CardTitle className="text-destructive">Error Loading Blog Posts</CardTitle>
-                    <CardDescription className="mt-1">{error}</CardDescription>
+                    <CardTitle className="text-red-400">Error Loading Blog Posts</CardTitle>
+                    <CardDescription className="mt-1 text-red-300">{error}</CardDescription>
                   </div>
                 </div>
               </CardHeader>
@@ -255,6 +255,7 @@ export default function BlogListingClient() {
                 <Button
                   onClick={() => window.location.reload()}
                   variant="outline"
+                  className="border-[#2D333B] text-white hover:bg-[#1C2128]"
                 >
                   Try Again
                 </Button>
@@ -281,9 +282,9 @@ export default function BlogListingClient() {
               className="mb-12"
             >
               <Link href={`/blog/${featuredPost.slug}`}>
-                <Card className="overflow-hidden hover:shadow-2xl transition-all duration-300 border-primary/20">
+                <Card className="overflow-hidden hover:shadow-2xl transition-all duration-300 border-[#2D333B] bg-[#161B22] hover:border-[#4B6FED]/40">
                   <div className="grid md:grid-cols-2 gap-6">
-                    <div className="aspect-video bg-gradient-to-br from-primary/20 to-blue-500/20 overflow-hidden">
+                    <div className="aspect-video bg-gradient-to-br from-[#4B6FED]/20 to-[#8A63F4]/20 overflow-hidden">
                       <img
                         src={getUnsplashImageUrl(featuredPost.id, 800, 450)}
                         alt={featuredPost.title}
@@ -292,10 +293,10 @@ export default function BlogListingClient() {
                       />
                     </div>
                     <CardHeader className="flex flex-col justify-center">
-                      <Badge className="w-fit mb-2" variant="secondary">Featured</Badge>
+                      <Badge className="w-fit mb-2 bg-[#4B6FED]/10 text-[#8AB4FF]">Featured</Badge>
                       <CardTitle className="text-2xl md:text-3xl mb-3">{featuredPost.title}</CardTitle>
                       <CardDescription className="text-base mb-4">{featuredPost.excerpt}</CardDescription>
-                      <div className="flex flex-wrap items-center gap-4 text-sm text-muted-foreground">
+                      <div className="flex flex-wrap items-center gap-4 text-sm text-gray-400">
                         <div className="flex items-center">
                           <Calendar className="h-4 w-4 mr-1" />
                           {new Date(featuredPost.published_date).toLocaleDateString()}
@@ -304,7 +305,7 @@ export default function BlogListingClient() {
                           <Clock className="h-4 w-4 mr-1" />
                           {featuredPost.reading_time} min read
                         </div>
-                        <Badge variant="outline">{featuredPost.category.name}</Badge>
+                        <Badge variant="outline" className="border-[#2D333B] text-gray-400">{featuredPost.category.name}</Badge>
                       </div>
                     </CardHeader>
                   </div>
@@ -317,7 +318,7 @@ export default function BlogListingClient() {
         <div className="mb-8 space-y-4">
           <div className="flex flex-col sm:flex-row gap-4">
             <div className="relative flex-1">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-500" />
               <Input
                 type="text"
                 placeholder={
@@ -330,12 +331,12 @@ export default function BlogListingClient() {
                   setSearchQuery(e.target.value);
                   setCurrentPage(1);
                 }}
-                className="pl-10"
+                className="pl-10 bg-[#161B22] border-[#2D333B] focus:border-[#4B6FED] text-white placeholder:text-gray-500"
                 disabled={searchingSemantics}
               />
               {searchingSemantics && (
                 <div className="absolute right-3 top-1/2 transform -translate-y-1/2">
-                  <div className="animate-spin h-4 w-4 border-2 border-primary border-t-transparent rounded-full" />
+                  <div className="animate-spin h-4 w-4 border-2 border-[#4B6FED] border-t-transparent rounded-full" />
                 </div>
               )}
             </div>
@@ -344,7 +345,7 @@ export default function BlogListingClient() {
                 variant={searchMode === 'exact' ? 'default' : 'outline'}
                 size="sm"
                 onClick={() => setSearchMode('exact')}
-                className="whitespace-nowrap"
+                className={searchMode === 'exact' ? 'bg-[#4B6FED] text-white' : 'border-[#2D333B] text-gray-400 hover:bg-[#1C2128]'}
               >
                 <Search className="h-4 w-4 mr-2" />
                 Exact Match
@@ -353,7 +354,7 @@ export default function BlogListingClient() {
                 variant={searchMode === 'semantic' ? 'default' : 'outline'}
                 size="sm"
                 onClick={() => setSearchMode('semantic')}
-                className="whitespace-nowrap"
+                className={searchMode === 'semantic' ? 'bg-[#4B6FED] text-white' : 'border-[#2D333B] text-gray-400 hover:bg-[#1C2128]'}
               >
                 <Zap className="h-4 w-4 mr-2" />
                 Semantic
@@ -371,6 +372,7 @@ export default function BlogListingClient() {
                   setSelectedCategory(category.slug);
                   setCurrentPage(1);
                 }}
+                className={selectedCategory === category.slug ? 'bg-[#4B6FED] text-white' : 'border-[#2D333B] text-gray-400 hover:bg-[#1C2128]'}
               >
                 {category.name}
               </Button>
@@ -399,8 +401,8 @@ export default function BlogListingClient() {
                 transition={{ duration: 0.3, delay: index * 0.1 }}
               >
                 <Link href={`/blog/${post.slug}`}>
-                  <Card className="h-full hover:shadow-lg transition-shadow duration-200 flex flex-col">
-                    <div className="aspect-video bg-gradient-to-br from-primary/10 to-blue-500/10 overflow-hidden">
+                  <Card className="h-full hover:shadow-lg transition-shadow duration-200 flex flex-col bg-[#161B22] border-[#2D333B] hover:border-[#4B6FED]/40">
+                    <div className="aspect-video bg-gradient-to-br from-[#4B6FED]/10 to-[#8A63F4]/10 overflow-hidden">
                       <img
                         src={getUnsplashImageUrl(post.id, 600, 338)}
                         alt={post.title}
@@ -410,10 +412,10 @@ export default function BlogListingClient() {
                     </div>
                     <CardHeader className="flex-1">
                       <div className="flex items-center gap-2 mb-2">
-                        <Badge variant="secondary">{post.category.name}</Badge>
-                        <span className="text-xs text-muted-foreground">{post.reading_time} min</span>
+                        <Badge className="bg-[#4B6FED]/10 text-[#8AB4FF]">{post.category.name}</Badge>
+                        <span className="text-xs text-gray-400">{post.reading_time} min</span>
                         {searchMode === 'semantic' && post._similarity && (
-                          <Badge variant="outline" className="ml-auto">
+                          <Badge variant="outline" className="ml-auto border-[#2D333B] text-gray-400">
                             <Zap className="h-3 w-3 mr-1" />
                             {Math.round(post._similarity * 100)}%
                           </Badge>
@@ -423,7 +425,7 @@ export default function BlogListingClient() {
                       <CardDescription className="line-clamp-3">{post.excerpt}</CardDescription>
                     </CardHeader>
                     <CardContent>
-                      <div className="flex items-center justify-between text-sm text-muted-foreground">
+                      <div className="flex items-center justify-between text-sm text-gray-400">
                         <div className="flex items-center">
                           <Calendar className="h-4 w-4 mr-1" />
                           {new Date(post.published_date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
@@ -436,7 +438,7 @@ export default function BlogListingClient() {
                       {post.tags && post.tags.length > 0 && (
                         <div className="flex flex-wrap gap-1 mt-3">
                           {post.tags.slice(0, 3).map((tag, idx) => (
-                            <Badge key={idx} variant="outline" className="text-xs">
+                            <Badge key={idx} variant="outline" className="text-xs border-[#2D333B] text-gray-400">
                               {tag.name}
                             </Badge>
                           ))}
@@ -452,9 +454,9 @@ export default function BlogListingClient() {
 
         {!loading && !error && filteredPosts.length === 0 && transformedPosts.length === 0 && (
           <div className="text-center py-12">
-            <Search className="h-12 w-12 mx-auto mb-4 text-muted-foreground" />
-            <h3 className="text-lg font-medium mb-2">No blog posts yet</h3>
-            <p className="text-muted-foreground mb-4">
+            <Search className="h-12 w-12 mx-auto mb-4 text-gray-500" />
+            <h3 className="text-lg font-medium mb-2 text-white">No blog posts yet</h3>
+            <p className="text-gray-400 mb-4">
               Check back soon for new content from the AINative team
             </p>
           </div>
@@ -462,9 +464,9 @@ export default function BlogListingClient() {
 
         {!loading && !error && filteredPosts.length === 0 && transformedPosts.length > 0 && (
           <div className="text-center py-12">
-            <Search className="h-12 w-12 mx-auto mb-4 text-muted-foreground" />
-            <h3 className="text-lg font-medium mb-2">No posts found</h3>
-            <p className="text-muted-foreground mb-4">
+            <Search className="h-12 w-12 mx-auto mb-4 text-gray-500" />
+            <h3 className="text-lg font-medium mb-2 text-white">No posts found</h3>
+            <p className="text-gray-400 mb-4">
               Try adjusting your search or filter criteria
             </p>
             <Button
@@ -474,6 +476,7 @@ export default function BlogListingClient() {
                 setSelectedCategory('all');
                 setCurrentPage(1);
               }}
+              className="border-[#2D333B] text-white hover:bg-[#1C2128]"
             >
               Clear Filters
             </Button>
@@ -486,6 +489,7 @@ export default function BlogListingClient() {
               variant="outline"
               onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
               disabled={currentPage === 1}
+              className="border-[#2D333B] text-white hover:bg-[#1C2128] disabled:opacity-50"
             >
               Previous
             </Button>
@@ -496,7 +500,7 @@ export default function BlogListingClient() {
                   variant={currentPage === page ? 'default' : 'outline'}
                   size="sm"
                   onClick={() => setCurrentPage(page)}
-                  className="w-10"
+                  className={`w-10 ${currentPage === page ? 'bg-[#4B6FED] text-white' : 'border-[#2D333B] text-gray-400 hover:bg-[#1C2128]'}`}
                 >
                   {page}
                 </Button>
@@ -506,6 +510,7 @@ export default function BlogListingClient() {
               variant="outline"
               onClick={() => setCurrentPage(prev => Math.min(totalPages, prev + 1))}
               disabled={currentPage === totalPages}
+              className="border-[#2D333B] text-white hover:bg-[#1C2128] disabled:opacity-50"
             >
               Next
             </Button>

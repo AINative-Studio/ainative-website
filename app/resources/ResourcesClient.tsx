@@ -148,41 +148,45 @@ export default function ResourcesClient() {
   });
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-blue-50 dark:from-gray-900 dark:via-gray-900 dark:to-gray-900">
+    <div className="min-h-screen bg-[#0D1117] text-white">
       <main className="container mx-auto px-4 py-20 mt-16">
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="text-center mb-12">
-          <div className="inline-flex items-center justify-center px-4 py-2 rounded-full bg-primary/10 text-primary text-sm font-medium mb-4">
+          <div className="inline-flex items-center justify-center px-4 py-2 rounded-full bg-[#4B6FED]/10 text-[#4B6FED] text-sm font-medium mb-4">
             <Folder className="h-4 w-4 mr-2" />Developer Resources
           </div>
-          <h1 className="text-4xl md:text-5xl font-extrabold tracking-tight mb-4 bg-clip-text text-transparent bg-gradient-to-r from-primary to-blue-600">
+          <h1 className="text-4xl md:text-5xl font-extrabold tracking-tight mb-4 bg-clip-text text-transparent bg-gradient-to-r from-[#4B6FED] to-[#8A63F4]">
             Tools & Resources
           </h1>
-          <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
+          <p className="text-xl text-gray-400 max-w-3xl mx-auto">
             SDKs, templates, code examples, and more to accelerate your development
           </p>
         </motion.div>
 
         <div className="mb-8 space-y-4">
           <div className="relative">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
             <Input
               type="text"
               placeholder="Search resources..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="pl-10"
+              className="pl-10 bg-[#161B22] border-[#2D333B] text-white placeholder:text-gray-500 focus:border-[#4B6FED] focus:ring-[#4B6FED]"
             />
           </div>
 
           <div className="flex flex-wrap gap-2">
-            <span className="text-sm font-medium mr-2 flex items-center">Type:</span>
+            <span className="text-sm font-medium mr-2 flex items-center text-gray-300">Type:</span>
             {resourceTypes.map(type => (
               <Button
                 key={type}
                 variant={selectedType === type ? 'default' : 'outline'}
                 size="sm"
                 onClick={() => setSelectedType(type)}
-                className="capitalize"
+                className={`capitalize ${
+                  selectedType === type
+                    ? 'bg-[#4B6FED] text-white hover:bg-[#4B6FED]/90'
+                    : 'bg-[#161B22] border-[#2D333B] text-gray-300 hover:bg-[#21262D] hover:text-white'
+                }`}
               >
                 {type === 'All' ? type : resourceTypeLabels[type]}
               </Button>
@@ -198,28 +202,28 @@ export default function ResourcesClient() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: index * 0.1 }}
             >
-              <Card className="h-full hover:shadow-lg transition-shadow flex flex-col">
-                <div className="aspect-video bg-gradient-to-br from-primary/10 to-blue-500/10 flex items-center justify-center">
-                  <FileCode className="h-16 w-16 text-primary" />
+              <Card className="h-full hover:shadow-lg transition-all duration-300 flex flex-col bg-[#161B22] border-[#2D333B] hover:border-[#4B6FED]/50">
+                <div className="aspect-video bg-gradient-to-br from-[#4B6FED]/10 to-[#8A63F4]/10 flex items-center justify-center">
+                  <FileCode className="h-16 w-16 text-[#4B6FED]" />
                 </div>
                 <CardHeader className="flex-1">
                   <div className="flex items-center justify-between mb-2">
-                    <Badge variant="secondary">{resourceTypeLabels[resource.resource_type]}</Badge>
-                    <span className="text-xs text-muted-foreground">{resource.version}</span>
+                    <Badge className="bg-[#4B6FED]/20 text-[#8AB4FF] border-0">{resourceTypeLabels[resource.resource_type]}</Badge>
+                    <span className="text-xs text-gray-500">{resource.version}</span>
                   </div>
-                  <CardTitle className="mb-2">{resource.title}</CardTitle>
-                  <CardDescription className="mb-4">{resource.description}</CardDescription>
+                  <CardTitle className="mb-2 text-white">{resource.title}</CardTitle>
+                  <CardDescription className="mb-4 text-gray-400">{resource.description}</CardDescription>
 
-                  <div className="text-xs text-muted-foreground mb-3">
-                    <div className="font-medium mb-1">Compatible with:</div>
+                  <div className="text-xs text-gray-400 mb-3">
+                    <div className="font-medium mb-1 text-gray-300">Compatible with:</div>
                     <div className="flex flex-wrap gap-1">
                       {resource.compatibility.map((item, i) => (
-                        <Badge key={i} variant="outline" className="text-xs">{item}</Badge>
+                        <Badge key={i} variant="outline" className="text-xs border-[#2D333B] text-gray-400">{item}</Badge>
                       ))}
                     </div>
                   </div>
 
-                  <div className="text-xs text-muted-foreground">
+                  <div className="text-xs text-gray-400">
                     <Download className="inline h-3 w-3 mr-1" />
                     {resource.downloads_count.toLocaleString()} downloads
                   </div>
@@ -228,21 +232,21 @@ export default function ResourcesClient() {
                 <CardContent className="pt-0">
                   <div className="flex gap-2">
                     {resource.github_url && (
-                      <Button variant="outline" size="sm" asChild className="flex-1">
+                      <Button variant="outline" size="sm" asChild className="flex-1 border-[#2D333B] text-gray-300 hover:bg-[#21262D] hover:text-white">
                         <a href={resource.github_url} target="_blank" rel="noopener noreferrer">
                           <Github className="h-4 w-4 mr-1" />GitHub
                         </a>
                       </Button>
                     )}
                     {resource.npm_url && (
-                      <Button variant="default" size="sm" asChild className="flex-1 text-white">
+                      <Button size="sm" asChild className="flex-1 bg-[#4B6FED] text-white hover:bg-[#4B6FED]/90">
                         <a href={resource.npm_url} target="_blank" rel="noopener noreferrer">
                           <ExternalLink className="h-4 w-4 mr-1" />NPM
                         </a>
                       </Button>
                     )}
                     {resource.download_url && (
-                      <Button variant="default" size="sm" asChild className="flex-1 text-white">
+                      <Button size="sm" asChild className="flex-1 bg-[#4B6FED] text-white hover:bg-[#4B6FED]/90">
                         <a href={resource.download_url} download>
                           <Download className="h-4 w-4 mr-1" />Download
                         </a>
@@ -257,9 +261,13 @@ export default function ResourcesClient() {
 
         {filteredResources.length === 0 && (
           <div className="text-center py-12">
-            <Search className="h-12 w-12 mx-auto mb-4 text-muted-foreground" />
-            <h3 className="text-lg font-medium mb-2">No resources found</h3>
-            <Button variant="outline" onClick={() => { setSearchQuery(''); setSelectedType('All'); }}>
+            <Search className="h-12 w-12 mx-auto mb-4 text-gray-500" />
+            <h3 className="text-lg font-medium mb-2 text-white">No resources found</h3>
+            <Button
+              variant="outline"
+              onClick={() => { setSearchQuery(''); setSelectedType('All'); }}
+              className="border-[#2D333B] text-gray-300 hover:bg-[#21262D] hover:text-white"
+            >
               Clear Filters
             </Button>
           </div>

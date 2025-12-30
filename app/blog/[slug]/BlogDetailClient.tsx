@@ -200,10 +200,10 @@ export default function BlogDetailClient({ slug }: BlogDetailClientProps) {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-blue-50 dark:from-gray-900 dark:via-gray-900 dark:to-gray-900">
+    <div className="min-h-screen bg-[#0D1117] text-white">
       <main className="container mx-auto px-4 py-20 mt-16">
         <Link href="/blog">
-          <Button variant="ghost" className="mb-6">
+          <Button variant="ghost" className="mb-6 text-gray-300 hover:text-white hover:bg-[#161B22]">
             <ArrowLeft className="h-4 w-4 mr-2" />
             Back to Blog
           </Button>
@@ -214,13 +214,13 @@ export default function BlogDetailClient({ slug }: BlogDetailClientProps) {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
           >
-            <Card className="border-destructive/50 bg-destructive/5">
+            <Card className="border-red-500/50 bg-red-900/20">
               <CardHeader>
                 <div className="flex items-center gap-3">
-                  <AlertCircle className="h-5 w-5 text-destructive" />
+                  <AlertCircle className="h-5 w-5 text-red-400" />
                   <div>
-                    <CardTitle className="text-destructive">Error Loading Blog Post</CardTitle>
-                    <CardDescription className="mt-1">{error}</CardDescription>
+                    <CardTitle className="text-red-400">Error Loading Blog Post</CardTitle>
+                    <CardDescription className="mt-1 text-gray-400">{error}</CardDescription>
                   </div>
                 </div>
               </CardHeader>
@@ -228,12 +228,13 @@ export default function BlogDetailClient({ slug }: BlogDetailClientProps) {
                 <Button
                   onClick={() => window.location.reload()}
                   variant="outline"
+                  className="border-[#2D333B] text-gray-300 hover:bg-[#161B22]"
                 >
                   Try Again
                 </Button>
                 <Button
                   onClick={() => router.push('/blog')}
-                  variant="default"
+                  className="bg-[#4B6FED] hover:bg-[#4B6FED]/90"
                 >
                   Back to Blog
                 </Button>
@@ -267,17 +268,17 @@ export default function BlogDetailClient({ slug }: BlogDetailClientProps) {
               >
                 <div className="mb-8">
                   <div className="flex flex-wrap items-center gap-2 mb-4">
-                    <Badge variant="secondary">{post.category.name}</Badge>
+                    <Badge className="bg-[#4B6FED]/20 text-[#8AB4FF] border-[#4B6FED]/30">{post.category.name}</Badge>
                     {post.tags.map((tag, index) => (
-                      <Badge key={index} variant="outline">{tag.name}</Badge>
+                      <Badge key={index} variant="outline" className="border-[#2D333B] text-gray-400">{tag.name}</Badge>
                     ))}
                   </div>
 
-                  <h1 className="text-4xl md:text-5xl font-extrabold tracking-tight mb-4">
+                  <h1 className="text-4xl md:text-5xl font-extrabold tracking-tight mb-4 text-white">
                     {post.title}
                   </h1>
 
-                  <div className="flex flex-wrap items-center gap-4 text-muted-foreground">
+                  <div className="flex flex-wrap items-center gap-4 text-gray-400">
                     <div className="flex items-center">
                       <Calendar className="h-4 w-4 mr-1" />
                       {new Date(post.published_date).toLocaleDateString('en-US', {
@@ -297,7 +298,7 @@ export default function BlogDetailClient({ slug }: BlogDetailClientProps) {
                   </div>
                 </div>
 
-                <div className="aspect-video bg-gradient-to-br from-primary/20 to-blue-500/20 rounded-lg mb-8 overflow-hidden">
+                <div className="aspect-video bg-gradient-to-br from-[#4B6FED]/20 to-[#8A63F4]/20 rounded-lg mb-8 overflow-hidden border border-[#2D333B]">
                   <img
                     src={getUnsplashImageUrl(post.id, 1200, 675)}
                     alt={post.title}
@@ -306,7 +307,7 @@ export default function BlogDetailClient({ slug }: BlogDetailClientProps) {
                   />
                 </div>
 
-                <div className="prose prose-lg dark:prose-invert max-w-none">
+                <div className="prose prose-lg prose-invert max-w-none">
                   <ReactMarkdown
                     components={{
                       code({ className, children, ...props }) {
@@ -331,35 +332,35 @@ export default function BlogDetailClient({ slug }: BlogDetailClientProps) {
                         );
                       },
                       h1({ children, ...props }) {
-                        return <h1 className="text-4xl font-bold mt-8 mb-4 text-foreground" {...props}>{children}</h1>;
+                        return <h1 className="text-4xl font-bold mt-8 mb-4 text-white" {...props}>{children}</h1>;
                       },
                       h2({ children, ...props }) {
-                        return <h2 className="text-3xl font-bold mt-6 mb-3 text-foreground" {...props}>{children}</h2>;
+                        return <h2 className="text-3xl font-bold mt-6 mb-3 text-white" {...props}>{children}</h2>;
                       },
                       h3({ children, ...props }) {
-                        return <h3 className="text-2xl font-semibold mt-4 mb-2 text-foreground" {...props}>{children}</h3>;
+                        return <h3 className="text-2xl font-semibold mt-4 mb-2 text-white" {...props}>{children}</h3>;
                       },
                       p({ children, ...props }) {
-                        return <p className="mb-4 leading-relaxed text-muted-foreground" {...props}>{children}</p>;
+                        return <p className="mb-4 leading-relaxed text-gray-300" {...props}>{children}</p>;
                       },
                       ul({ children, ...props }) {
-                        return <ul className="my-4 list-disc pl-6 space-y-2" {...props}>{children}</ul>;
+                        return <ul className="my-4 list-disc pl-6 space-y-2 text-gray-300" {...props}>{children}</ul>;
                       },
                       ol({ children, ...props }) {
-                        return <ol className="my-4 list-decimal pl-6 space-y-2" {...props}>{children}</ol>;
+                        return <ol className="my-4 list-decimal pl-6 space-y-2 text-gray-300" {...props}>{children}</ol>;
                       },
                       li({ children, ...props }) {
-                        return <li className="mb-2 text-muted-foreground" {...props}>{children}</li>;
+                        return <li className="mb-2 text-gray-300" {...props}>{children}</li>;
                       },
                       blockquote({ children, ...props }) {
                         return (
-                          <blockquote className="border-l-4 border-primary pl-4 my-4 italic text-muted-foreground" {...props}>
+                          <blockquote className="border-l-4 border-[#4B6FED] pl-4 my-4 italic text-gray-400" {...props}>
                             {children}
                           </blockquote>
                         );
                       },
                       strong({ children, ...props }) {
-                        return <strong className="font-semibold text-foreground" {...props}>{children}</strong>;
+                        return <strong className="font-semibold text-white" {...props}>{children}</strong>;
                       },
                       a({ href, children, ...props }) {
                         return (
@@ -367,7 +368,7 @@ export default function BlogDetailClient({ slug }: BlogDetailClientProps) {
                             href={href}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="text-primary font-medium hover:underline inline-flex items-center gap-1"
+                            className="text-[#8AB4FF] font-medium hover:underline inline-flex items-center gap-1"
                             {...props}
                           >
                             {children}
@@ -375,7 +376,7 @@ export default function BlogDetailClient({ slug }: BlogDetailClientProps) {
                         );
                       },
                       hr({ ...props }) {
-                        return <hr className="my-8 border-border" {...props} />;
+                        return <hr className="my-8 border-[#2D333B]" {...props} />;
                       },
                     }}
                   >
@@ -383,14 +384,15 @@ export default function BlogDetailClient({ slug }: BlogDetailClientProps) {
                   </ReactMarkdown>
                 </div>
 
-                <Separator className="my-8" />
+                <Separator className="my-8 bg-[#2D333B]" />
 
                 <div className="flex items-center gap-4">
-                  <span className="text-sm font-medium">Share:</span>
+                  <span className="text-sm font-medium text-gray-300">Share:</span>
                   <Button
                     variant="outline"
                     size="sm"
                     onClick={() => handleShare('twitter')}
+                    className="border-[#2D333B] text-gray-300 hover:bg-[#161B22] hover:text-white"
                   >
                     <Twitter className="h-4 w-4" />
                   </Button>
@@ -398,6 +400,7 @@ export default function BlogDetailClient({ slug }: BlogDetailClientProps) {
                     variant="outline"
                     size="sm"
                     onClick={() => handleShare('linkedin')}
+                    className="border-[#2D333B] text-gray-300 hover:bg-[#161B22] hover:text-white"
                   >
                     <Linkedin className="h-4 w-4" />
                   </Button>
@@ -405,6 +408,7 @@ export default function BlogDetailClient({ slug }: BlogDetailClientProps) {
                     variant="outline"
                     size="sm"
                     onClick={() => handleShare('facebook')}
+                    className="border-[#2D333B] text-gray-300 hover:bg-[#161B22] hover:text-white"
                   >
                     <Facebook className="h-4 w-4" />
                   </Button>
@@ -414,38 +418,38 @@ export default function BlogDetailClient({ slug }: BlogDetailClientProps) {
 
             <div className="space-y-6">
               {post.author && (
-                <Card>
+                <Card className="bg-[#161B22] border-[#2D333B]">
                   <CardHeader>
-                    <CardTitle className="text-base mb-4">About the Author</CardTitle>
+                    <CardTitle className="text-base mb-4 text-white">About the Author</CardTitle>
                     <div className="flex items-start gap-3">
                       <Avatar>
-                        <AvatarFallback className="bg-primary text-white">
+                        <AvatarFallback className="bg-[#4B6FED] text-white">
                           {post.author.name.split(' ').map((n: string) => n[0]).join('')}
                         </AvatarFallback>
                       </Avatar>
                       <div>
-                        <h4 className="font-semibold">{post.author.name}</h4>
+                        <h4 className="font-semibold text-white">{post.author.name}</h4>
                         {post.author.role && (
-                          <p className="text-sm text-muted-foreground">{post.author.role}</p>
+                          <p className="text-sm text-gray-400">{post.author.role}</p>
                         )}
                       </div>
                     </div>
                     {post.author.bio && (
-                      <CardDescription className="mt-3">{post.author.bio}</CardDescription>
+                      <CardDescription className="mt-3 text-gray-400">{post.author.bio}</CardDescription>
                     )}
                   </CardHeader>
                   {(post.author.github_url || post.author.twitter_url) && (
                     <CardContent>
                       <div className="flex gap-2">
                         {post.author.github_url && (
-                          <Button variant="outline" size="sm" asChild>
+                          <Button variant="outline" size="sm" asChild className="border-[#2D333B] text-gray-300 hover:bg-[#0D1117] hover:text-white">
                             <a href={post.author.github_url} target="_blank" rel="noopener noreferrer">
                               GitHub
                             </a>
                           </Button>
                         )}
                         {post.author.twitter_url && (
-                          <Button variant="outline" size="sm" asChild>
+                          <Button variant="outline" size="sm" asChild className="border-[#2D333B] text-gray-300 hover:bg-[#0D1117] hover:text-white">
                             <a href={post.author.twitter_url} target="_blank" rel="noopener noreferrer">
                               Twitter
                             </a>
@@ -457,16 +461,16 @@ export default function BlogDetailClient({ slug }: BlogDetailClientProps) {
                 </Card>
               )}
 
-              <Card className="bg-gradient-to-br from-primary/5 to-blue-50 dark:from-primary/10 dark:to-gray-800/50 border-primary/20">
+              <Card className="bg-gradient-to-br from-[#4B6FED]/10 to-[#8A63F4]/10 border-[#4B6FED]/30">
                 <CardHeader>
-                  <CardTitle className="text-base">Ready to Build?</CardTitle>
-                  <CardDescription>
+                  <CardTitle className="text-base text-white">Ready to Build?</CardTitle>
+                  <CardDescription className="text-gray-400">
                     Start building AI-powered applications with AINative
                   </CardDescription>
                 </CardHeader>
                 <CardContent>
                   <Link href="/signup">
-                    <Button className="w-full">Get Started Free</Button>
+                    <Button className="w-full bg-[#4B6FED] hover:bg-[#4B6FED]/90 text-white">Get Started Free</Button>
                   </Link>
                 </CardContent>
               </Card>

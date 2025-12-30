@@ -58,11 +58,13 @@ export default function SignupPage() {
       <div className="w-full max-w-md">
         {/* Header */}
         <div className="text-center mb-8">
-          <Link href="/" className="inline-block text-3xl font-bold mb-4">
-            <span className="text-[#FF6B00]">AI</span>
-            <span className="text-primary">Native</span>
+          <Link href="/" className="inline-flex items-center justify-center gap-3 mb-6">
+            <img src="/ainative-icon.svg" alt="AINative Studio" className="h-12 w-auto" />
+            <span className="text-2xl font-bold uppercase">
+              <span className="text-white">AI</span><span className="text-[#5867EF]">NATIVE</span>
+            </span>
           </Link>
-          <h1 className="text-2xl font-bold mb-2">Create your account</h1>
+          <h1 className="text-2xl font-bold mb-2 text-white">Create your account</h1>
           <p className="text-gray-400">Start building AI-native applications today</p>
         </div>
 
