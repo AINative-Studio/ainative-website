@@ -114,6 +114,7 @@ export class PricingService {
     cancelUrl?: string;
     customerId?: string;
     metadata?: Record<string, string>;
+    stripePriceId?: string;
   }): Promise<{ sessionUrl: string; sessionId: string }> {
     try {
       const response = await apiClient.post<ApiResponse<{
@@ -128,7 +129,8 @@ export class PricingService {
           success_url: options?.successUrl || `${typeof window !== 'undefined' ? window.location.origin : ''}/billing/success`,
           cancel_url: options?.cancelUrl || `${typeof window !== 'undefined' ? window.location.origin : ''}/pricing`,
           customer_id: options?.customerId,
-          metadata: options?.metadata
+          metadata: options?.metadata,
+          stripe_price_id: options?.stripePriceId
         }
       );
 

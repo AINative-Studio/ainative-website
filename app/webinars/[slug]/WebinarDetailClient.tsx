@@ -23,7 +23,7 @@ import {
   Copy
 } from 'lucide-react';
 import { strapiClient, type Webinar as StrapiWebinar } from '@/lib/strapi-client';
-import { getUnsplashImageUrl } from '@/src/lib/unsplash';
+import { getUnsplashImageUrl } from '@/lib/unsplash';
 
 interface WebinarTag {
   id: number;

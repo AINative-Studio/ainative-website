@@ -23,7 +23,7 @@ import {
   Video,
 } from 'lucide-react';
 import { strapiClient } from '@/lib/strapi-client';
-import { getUnsplashImageUrl } from '@/src/lib/unsplash';
+import { getUnsplashImageUrl } from '@/lib/unsplash';
 import { cn } from '@/lib/utils';
 
 interface ShowcaseData {

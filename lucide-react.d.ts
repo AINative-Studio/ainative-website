@@ -17,8 +17,10 @@ declare module 'lucide-react' {
   export const Apple: LucideIcon;
   export const AppWindow: LucideIcon;
   export const Archive: LucideIcon;
+  export const ArrowDown: LucideIcon;
   export const ArrowLeft: LucideIcon;
   export const ArrowRight: LucideIcon;
+  export const ArrowUp: LucideIcon;
   export const ArrowUpDown: LucideIcon;
   export const ArrowUpRight: LucideIcon;
   export const Atom: LucideIcon;
@@ -31,6 +33,7 @@ declare module 'lucide-react' {
   export const Binary: LucideIcon;
   export const Book: LucideIcon;
   export const Bookmark: LucideIcon;
+  export const BookMarked: LucideIcon;
   export const BookmarkPlus: LucideIcon;
   export const BookOpen: LucideIcon;
   export const Bot: LucideIcon;
@@ -53,6 +56,7 @@ declare module 'lucide-react' {
   export const ChevronsUpDown: LucideIcon;
   export const Circle: LucideIcon;
   export const CircleHelp: LucideIcon;
+  export const ClipboardCheck: LucideIcon;
   export const ClipboardPaste: LucideIcon;
   export const Clock: LucideIcon;
   export const Cloud: LucideIcon;
@@ -87,10 +91,12 @@ declare module 'lucide-react' {
   export const Filter: LucideIcon;
   export const Flame: LucideIcon;
   export const Folder: LucideIcon;
+  export const FolderArchive: LucideIcon;
   export const FolderOpen: LucideIcon;
   export const Gauge: LucideIcon;
   export const Gift: LucideIcon;
   export const GitBranch: LucideIcon;
+  export const GitCommit: LucideIcon;
   export const GitFork: LucideIcon;
   export const GitMerge: LucideIcon;
   export const Github: LucideIcon;
@@ -98,6 +104,7 @@ declare module 'lucide-react' {
   export const GraduationCap: LucideIcon;
   export const Grid3x3: LucideIcon;
   export const Grip: LucideIcon;
+  export const GripVertical: LucideIcon;
   export const HardDrive: LucideIcon;
   export const Heart: LucideIcon;
   export const HelpCircle: LucideIcon;
@@ -110,11 +117,13 @@ declare module 'lucide-react' {
   export const Instagram: LucideIcon;
   export const Key: LucideIcon;
   export const Layers: LucideIcon;
+  export const LayoutGrid: LucideIcon;
   export const Lightbulb: LucideIcon;
   export const LineChart: LucideIcon;
   export const Link: LucideIcon;
   export const Linkedin: LucideIcon;
   export const List: LucideIcon;
+  export const ListTodo: LucideIcon;
   export const Loader2: LucideIcon;
   export const Lock: LucideIcon;
   export const LogIn: LucideIcon;
@@ -124,11 +133,14 @@ declare module 'lucide-react' {
   export const Map: LucideIcon;
   export const MapPin: LucideIcon;
   export const Maximize: LucideIcon;
+  export const Maximize2: LucideIcon;
   export const MemoryStick: LucideIcon;
   export const Menu: LucideIcon;
+  export const Merge: LucideIcon;
   export const MessageCircle: LucideIcon;
   export const MessageSquare: LucideIcon;
   export const Minimize: LucideIcon;
+  export const Minimize2: LucideIcon;
   export const Minus: LucideIcon;
   export const Monitor: LucideIcon;
   export const Moon: LucideIcon;
@@ -137,6 +149,7 @@ declare module 'lucide-react' {
   export const Move: LucideIcon;
   export const Navigation: LucideIcon;
   export const Network: LucideIcon;
+  export const NotebookPen: LucideIcon;
   export const Package: LucideIcon;
   export const Palette: LucideIcon;
   export const Pause: LucideIcon;
@@ -144,6 +157,7 @@ declare module 'lucide-react' {
   export const PenTool: LucideIcon;
   export const Percent: LucideIcon;
   export const Phone: LucideIcon;
+  export const PhoneCall: LucideIcon;
   export const PictureInPicture: LucideIcon;
   export const PieChart: LucideIcon;
   export const Play: LucideIcon;
@@ -156,10 +170,12 @@ declare module 'lucide-react' {
   export const RefreshCw: LucideIcon;
   export const Repeat: LucideIcon;
   export const Rocket: LucideIcon;
+  export const RotateCcw: LucideIcon;
   export const RotateCw: LucideIcon;
   export const Save: LucideIcon;
   export const SaveIcon: LucideIcon;
   export const Scale: LucideIcon;
+  export const ScanText: LucideIcon;
   export const Search: LucideIcon;
   export const Send: LucideIcon;
   export const Server: LucideIcon;
@@ -187,6 +203,7 @@ declare module 'lucide-react' {
   export const TestTube: LucideIcon;
   export const TestTube2: LucideIcon;
   export const ThumbsUp: LucideIcon;
+  export const ThumbsDown: LucideIcon;
   export const Timer: LucideIcon;
   export const Trash: LucideIcon;
   export const Trash2: LucideIcon;

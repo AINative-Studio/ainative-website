@@ -17,7 +17,7 @@ import {
   Sparkles
 } from 'lucide-react';
 import { strapiClient, Tutorial as StrapiTutorial } from '@/lib/strapi-client';
-import { getUnsplashImageUrl } from '@/src/lib/unsplash';
+import { getUnsplashImageUrl } from '@/lib/unsplash';
 import { searchCommunityContent } from '@/src/lib/community/search';
 
 interface Tutorial extends StrapiTutorial {

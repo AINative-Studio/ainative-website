@@ -21,7 +21,7 @@ import {
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
 import { vscDarkPlus } from 'react-syntax-highlighter/dist/esm/styles/prism';
 import { strapiClient, Tutorial as StrapiTutorial } from '@/lib/strapi-client';
-import { getUnsplashImageUrl } from '@/src/lib/unsplash';
+import { getUnsplashImageUrl } from '@/lib/unsplash';
 
 // Extended Tutorial type with additional fields that may come from Strapi
 interface TutorialData extends StrapiTutorial {

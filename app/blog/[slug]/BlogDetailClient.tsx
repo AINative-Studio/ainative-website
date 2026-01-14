@@ -11,7 +11,7 @@ import { Separator } from '@/components/ui/separator';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Skeleton } from '@/components/ui/skeleton';
 import { getBlogPost } from '@/src/lib/strapi';
-import { getUnsplashImageUrl } from '@/src/lib/unsplash';
+import { getUnsplashImageUrl } from '@/lib/unsplash';
 import {
   Calendar,
   Clock,

@@ -21,7 +21,7 @@ import {
   Zap,
   Play
 } from 'lucide-react';
-import { getUnsplashImageUrl } from '@/src/lib/unsplash';
+import { getUnsplashImageUrl } from '@/lib/unsplash';
 import { searchCommunityContent } from '@/src/lib/community/search';
 import { strapiClient, type Webinar as StrapiWebinar } from '@/lib/strapi-client';
 

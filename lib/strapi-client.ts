@@ -75,6 +75,7 @@ export interface BlogPost {
   category?: Category;
   tags?: Tag[];
   thumbnail_url?: string;
+  view_count?: number;
   createdAt?: string;
   updatedAt?: string;
   publishedAt?: string;
@@ -175,6 +176,24 @@ export interface Event {
   location?: string;
   max_attendees?: number;
   registration_url?: string;
+}
+
+/**
+ * Resource Interface
+ */
+export interface Resource {
+  id: number;
+  documentId: string;
+  title: string;
+  slug: string;
+  description?: string;
+  content?: string;
+  resource_type?: 'guide' | 'documentation' | 'whitepaper' | 'ebook' | 'template';
+  download_url?: string;
+  external_url?: string;
+  tags?: Tag[];
+  category?: Category;
+  publishedAt?: string;
 }
 
 /**
@@ -337,6 +356,21 @@ export default class StrapiClient {
   }
 
   /**
+   * Fetch all resources
+   */
+  async getResources(params: QueryParams = {}): Promise<StrapiResponse<Resource[]>> {
+    try {
+      const { data } = await this.client.get<StrapiResponse<Resource[]>>('/resources', {
+        params: { populate: '*', ...params },
+      });
+      return data;
+    } catch (error) {
+      console.error('Error fetching resources:', error);
+      throw error;
+    }
+  }
+
+  /**
    * Fetch all videos
    */
   async getVideos(params: QueryParams = {}): Promise<StrapiResponse<Video[]>> {
@@ -492,6 +526,39 @@ export default class StrapiClient {
     } catch (error) {
       console.error('Error subscribing to newsletter:', error);
       throw error;
+    }
+  }
+
+  /**
+   * Track blog post view
+   * Increments the view_count for a blog post by slug
+   */
+  async trackBlogView(slug: string): Promise<void> {
+    try {
+      // Get the blog post first to find its documentId and current view count
+      const { data } = await this.client.get<StrapiResponse<BlogPost[]>>('/blog-posts', {
+        params: {
+          filters: { slug: { $eq: slug } },
+        },
+      });
+
+      // Strapi v5 uses 'results' instead of 'data'
+      const posts = data.results || data.data || [];
+      const post = posts[0];
+
+      if (post) {
+        // Increment view count using Strapi's standard update API
+        const currentViewCount = post.view_count || 0;
+        await this.client.put(`/blog-posts/${post.documentId}`, {
+          data: { view_count: currentViewCount + 1 },
+        });
+        console.log(`Blog view tracked for: ${slug}, new count: ${currentViewCount + 1}`);
+      } else {
+        console.warn(`Blog post not found for tracking view: ${slug}`);
+      }
+    } catch (error) {
+      // Silently fail - view tracking shouldn't break the page
+      console.error('Failed to track view:', error);
     }
   }
 }

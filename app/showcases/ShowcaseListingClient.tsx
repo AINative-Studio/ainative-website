@@ -12,7 +12,7 @@ import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
 import { Search, Sparkles, ExternalLink, Github, AlertCircle, Filter, Video } from 'lucide-react';
 import { getShowcases } from '@/src/lib/strapi';
-import { getUnsplashImageUrl } from '@/src/lib/unsplash';
+import { getUnsplashImageUrl } from '@/lib/unsplash';
 import { searchCommunityContent } from '@/src/lib/community/search';
 
 interface ShowcaseData {

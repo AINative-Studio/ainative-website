@@ -293,6 +293,30 @@ class AuthService {
   }
 
   /**
+   * Verify email with token
+   */
+  async verifyEmail(token: string): Promise<{ message: string }> {
+    try {
+      const response = await fetch(`${this.baseURL}/v1/public/auth/verify-email?token=${encodeURIComponent(token)}`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.detail || errorData.message || 'Email verification failed');
+      }
+
+      return await response.json();
+    } catch (error) {
+      console.error('Email verification error:', error);
+      throw error;
+    }
+  }
+
+  /**
    * Get GitHub OAuth authorization URL
    */
   getGitHubAuthUrl(returnTo?: string): string {

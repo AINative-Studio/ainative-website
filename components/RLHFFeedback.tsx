@@ -19,9 +19,7 @@
 
 import { useState, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ThumbsUp, Check, AlertCircle, Loader2 } from 'lucide-react';
-// @ts-expect-error lucide-react type issue
-import { ThumbsDown } from 'lucide-react';
+import { ThumbsUp, ThumbsDown, Check, AlertCircle, Loader2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { rlhfService } from '@/services/RLHFService';
 import type {
