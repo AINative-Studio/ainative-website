@@ -1,0 +1,144 @@
+# AINative Studio - Issue Label Configuration
+# This file defines the labeling system for issue triage
+# Labels are automatically applied by the issue-triage.yml workflow
+
+# Status Labels (Triage Workflow)
+- name: status/need-triage
+  color: "FEF2C0"
+  description: "New issue that needs triage by maintainers"
+
+- name: status/triaged
+  color: "0E8A16"
+  description: "Issue has been reviewed and triaged by maintainers"
+
+- name: status/bot-triaged
+  color: "1D76DB"
+  description: "Issue auto-triaged by bot, needs human verification"
+
+- name: status/possible-duplicate
+  color: "D93F0B"
+  description: "Possible duplicate of an existing issue"
+
+- name: status/blocked
+  color: "B60205"
+  description: "Progress is blocked by external dependency or other issue"
+
+- name: status/in-progress
+  color: "C2E0C6"
+  description: "Work is currently in progress"
+
+- name: status/needs-info
+  color: "D4C5F9"
+  description: "Waiting for more information from issue reporter"
+
+- name: status/wontfix
+  color: "FFFFFF"
+  description: "This will not be worked on"
+
+# Area Labels (Component/Feature)
+- name: area/frontend
+  color: "1F77B4"
+  description: "Frontend code (React, Next.js, UI components)"
+
+- name: area/backend
+  color: "FF7F0E"
+  description: "Backend code (API, services, database)"
+
+- name: area/design
+  color: "2CA02C"
+  description: "Design system, CSS, styling, responsive layouts"
+
+- name: area/seo
+  color: "D62728"
+  description: "SEO, metadata, sitemap, structured data"
+
+- name: area/devops
+  color: "9467BD"
+  description: "CI/CD, deployment, infrastructure, Railway"
+
+- name: area/performance
+  color: "8C564B"
+  description: "Performance optimization, bundle size, loading speed"
+
+- name: area/accessibility
+  color: "E377C2"
+  description: "Accessibility (a11y), WCAG compliance, ARIA"
+
+- name: area/testing
+  color: "7F7F7F"
+  description: "Tests, test coverage, Jest, Playwright, E2E"
+
+- name: area/documentation
+  color: "BCBD22"
+  description: "Documentation, guides, code comments"
+
+- name: area/security
+  color: "B91D47"
+  description: "Security vulnerabilities, authentication, permissions"
+
+# Priority Labels (Severity)
+- name: priority/p0
+  color: "B60205"
+  description: "Critical - Production down, security issue, data loss"
+
+- name: priority/p1
+  color: "D93F0B"
+  description: "High - Blocking issue, major bug, regression"
+
+- name: priority/p2
+  color: "FBCA04"
+  description: "Medium - Normal priority"
+
+- name: priority/p3
+  color: "0E8A16"
+  description: "Low - Minor issue, nice to have"
+
+# Kind Labels (Issue Type)
+- name: kind/bug
+  color: "D73A4A"
+  description: "Something isn't working correctly"
+
+- name: kind/enhancement
+  color: "A2EEEF"
+  description: "New feature or request"
+
+- name: kind/documentation
+  color: "0075CA"
+  description: "Improvements or additions to documentation"
+
+- name: kind/question
+  color: "D876E3"
+  description: "Further information is requested"
+
+- name: kind/chore
+  color: "FEF2C0"
+  description: "Maintenance tasks, refactoring, code cleanup"
+
+- name: kind/regression
+  color: "E99695"
+  description: "Previously working functionality that broke"
+
+# Special Labels
+- name: good first issue
+  color: "7057FF"
+  description: "Good for newcomers"
+
+- name: help wanted
+  color: "008672"
+  description: "Extra attention is needed"
+
+- name: dependencies
+  color: "0366D6"
+  description: "Pull requests that update a dependency file"
+
+- name: duplicate
+  color: "CFD3D7"
+  description: "This issue or pull request already exists"
+
+- name: invalid
+  color: "E4E669"
+  description: "This doesn't seem right"
+
+- name: stale
+  color: "EEEEEE"
+  description: "No activity for extended period"

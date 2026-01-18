@@ -1,0 +1,111 @@
+name: Documentation Improvement
+description: Suggest improvements to documentation, guides, or code comments
+title: "[Docs]: "
+labels: ["kind/documentation", "status/need-triage"]
+assignees: []
+
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for helping improve our documentation! Clear docs make the project better for everyone.
+
+  - type: dropdown
+    id: doc-type
+    attributes:
+      label: Documentation Type
+      description: What type of documentation needs improvement?
+      options:
+        - README
+        - Code Comments
+        - API Documentation
+        - Setup/Installation Guide
+        - Architecture Documentation
+        - Contributing Guide
+        - User Guide
+        - Other
+    validations:
+      required: true
+
+  - type: textarea
+    id: location
+    attributes:
+      label: Documentation Location
+      description: Where is the documentation that needs improvement?
+      placeholder: "File path, URL, or section name..."
+    validations:
+      required: true
+
+  - type: textarea
+    id: issue
+    attributes:
+      label: Current Issue
+      description: What's wrong or missing in the current documentation?
+      placeholder: |
+        Describe the problem:
+        - Unclear explanations
+        - Missing information
+        - Outdated content
+        - Incorrect examples
+        - Typos/grammar issues
+    validations:
+      required: true
+
+  - type: textarea
+    id: improvement
+    attributes:
+      label: Suggested Improvement
+      description: How should the documentation be improved?
+      placeholder: Describe what should be added, changed, or clarified...
+    validations:
+      required: true
+
+  - type: textarea
+    id: example
+    attributes:
+      label: Proposed Content
+      description: If you have specific content suggestions, provide them here
+      placeholder: |
+        You can include:
+        - Updated text
+        - Code examples
+        - Diagrams/visuals
+        - Links to resources
+
+  - type: dropdown
+    id: priority
+    attributes:
+      label: Impact
+      description: How much does this affect users?
+      options:
+        - High - Blocks understanding of critical features
+        - Medium - Makes it harder to use the project
+        - Low - Minor improvement
+    validations:
+      required: true
+
+  - type: textarea
+    id: context
+    attributes:
+      label: Additional Context
+      description: Any other context about the documentation improvement
+      placeholder: Additional information...
+
+  - type: checkboxes
+    id: contribution
+    attributes:
+      label: Contribution
+      description: Would you like to contribute?
+      options:
+        - label: I'm willing to submit a PR with these documentation improvements
+
+  - type: checkboxes
+    id: checks
+    attributes:
+      label: Pre-submission Checklist
+      description: Please confirm the following
+      options:
+        - label: I have checked that this documentation issue hasn't been reported
+          required: true
+        - label: I have provided specific suggestions for improvement
+          required: true
