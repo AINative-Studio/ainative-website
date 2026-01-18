@@ -1,0 +1,189 @@
+# AINative Ignore File
+# Generated for Next.js project
+# Documentation: docs/ignore-system/USER_GUIDE.md
+
+# ==========================================
+# SECURITY (Highest Priority)
+# ==========================================
+
+# Auto-detect all secrets and credentials
+@secrets
+
+# Environment files - NEVER accessible by AI
+@noai .env
+@noai .env.local
+@noai .env.development
+@noai .env.production
+!.env.example        # Example template is safe
+
+# Credentials and keys
+@noai credentials.json
+@noai credentials.yml
+@noai config/keys/
+@noai *.pem
+@noai *.key
+@noai *.p12
+@noai *.pfx
+
+# ==========================================
+# DEPENDENCIES
+# ==========================================
+
+# Node modules
+node_modules/
+.pnp/
+.pnp.*
+
+# Yarn
+.yarn/*
+!.yarn/patches
+!.yarn/plugins
+!.yarn/releases
+!.yarn/versions
+
+# ==========================================
+# BUILD OUTPUTS
+# ==========================================
+
+# Next.js
+.next/
+out/
+
+# Build directories
+dist/
+build/
+
+# Production bundles
+*.bundle.js
+*.chunk.js
+
+# ==========================================
+# TESTING
+# ==========================================
+
+# Coverage reports
+coverage/
+.nyc_output/
+
+# Playwright
+playwright-report/
+test-results/
+blob-report/
+
+# ==========================================
+# LOGS AND DEBUGGING
+# ==========================================
+
+# Log files
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnpm-debug.log*
+
+# Debug files (temporary, expire after 2 hours)
+@temporary debug-*.log expire:2h
+@temporary *.debug.js expire:2h
+
+# ==========================================
+# IDE AND EDITORS
+# ==========================================
+
+# VS Code
+.vscode/
+
+# JetBrains IDEs
+.idea/
+
+# Vim
+*.swp
+*.swo
+*~
+
+# ==========================================
+# OPERATING SYSTEM
+# ==========================================
+
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Windows
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+# Linux
+.directory
+
+# ==========================================
+# READ-ONLY FILES
+# ==========================================
+
+# Database migrations (AI can read but not modify)
+@readonly migrations/
+@readonly *.sql
+
+# Documentation (AI can read but not modify)
+@readonly docs/
+@readonly README.md
+@readonly CHANGELOG.md
+
+# ==========================================
+# NEXT.JS SPECIFIC
+# ==========================================
+
+# TypeScript
+*.tsbuildinfo
+next-env.d.ts
+
+# Vercel
+.vercel
+
+# ==========================================
+# LARGE FILES AND MEDIA
+# ==========================================
+
+# Auto-exclude files > 1MB
+@large-files
+
+# Binary images
+@binary public/images/**/*.jpg
+@binary public/images/**/*.png
+@binary public/images/**/*.gif
+
+# Videos
+@binary public/videos/
+
+# ==========================================
+# ENVIRONMENT-SPECIFIC
+# ==========================================
+
+# Development only - ignore test data in production
+[prod] test-data/
+[prod] fixtures/
+
+# Production only - ignore debug files
+[prod] debug/
+[prod] *.debug.log
+
+# ==========================================
+# TEMPORARY FILES
+# ==========================================
+
+# Temp files (expire after 1 hour)
+@temporary *.tmp expire:1h
+@temporary temp/ expire:1h
+
+# Cache files
+*.cache
+
+# ==========================================
+# CUSTOM PROJECT PATTERNS
+# ==========================================
+
+# Add your custom patterns below:
+# Example:
+# @noai sensitive-data/        # Project-specific sensitive data
+# @readonly contracts/         # Smart contracts (read-only)
