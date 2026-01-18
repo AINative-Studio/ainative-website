@@ -1,0 +1,222 @@
+name: Issue Triage Bot
+
+on:
+  issues:
+    types: [opened, edited, reopened]
+
+permissions:
+  issues: write
+  contents: read
+
+jobs:
+  triage:
+    runs-on: ubuntu-latest
+    name: Auto-triage issues
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install dependencies
+        run: |
+          npm install --no-save @actions/core @actions/github natural compromise
+
+      - name: Run triage bot
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const fs = require('fs');
+            const natural = require('natural');
+
+            // Load triage configuration
+            const config = {
+              areaLabels: {
+                'area/frontend': ['react', 'next.js', 'nextjs', 'ui', 'component', 'page', 'layout', 'css', 'tailwind', 'framer-motion', 'animation'],
+                'area/backend': ['api', 'database', 'server', 'authentication', 'auth', 'endpoint', 'service', 'prisma', 'postgres'],
+                'area/design': ['css', 'styling', 'layout', 'responsive', 'mobile', 'desktop', 'theme', 'color', 'typography'],
+                'area/seo': ['meta', 'sitemap', 'schema', 'google', 'search', 'robots', 'opengraph', 'og', 'twitter card', 'structured data'],
+                'area/devops': ['deploy', 'deployment', 'ci/cd', 'cicd', 'railway', 'vercel', 'docker', 'build', 'production'],
+                'area/performance': ['slow', 'performance', 'optimize', 'speed', 'bundle', 'loading', 'render', 'hydration'],
+                'area/accessibility': ['a11y', 'accessibility', 'wcag', 'aria', 'keyboard', 'screen reader', 'contrast'],
+                'area/testing': ['test', 'jest', 'playwright', 'e2e', 'unit test', 'integration test', 'coverage']
+              },
+
+              priorityLabels: {
+                'priority/p0': ['critical', 'urgent', 'production down', 'outage', 'security', 'data loss', 'blocker'],
+                'priority/p1': ['high priority', 'blocking', 'important', 'major bug', 'regression'],
+                'priority/p2': ['medium', 'normal', 'moderate'],
+                'priority/p3': ['low', 'minor', 'nice to have', 'enhancement', 'improvement']
+              },
+
+              kindLabels: {
+                'kind/bug': ['error', 'crash', 'broken', 'fails', 'failed', 'bug', 'issue', 'problem', 'not working', 'exception', 'stack trace'],
+                'kind/enhancement': ['feature', 'improve', 'add', 'enhancement', 'request', 'suggestion', 'would be nice'],
+                'kind/documentation': ['docs', 'documentation', 'readme', 'guide', 'tutorial', 'examples', 'comments'],
+                'kind/question': ['question', 'how to', 'help', 'support', 'clarification']
+              }
+            };
+
+            const issue = context.payload.issue;
+            const issueBody = `${issue.title} ${issue.body || ''}`.toLowerCase();
+
+            // Function to detect labels based on keywords
+            function detectLabels(text, labelConfig) {
+              const detectedLabels = [];
+              for (const [label, keywords] of Object.entries(labelConfig)) {
+                for (const keyword of keywords) {
+                  if (text.includes(keyword.toLowerCase())) {
+                    detectedLabels.push(label);
+                    break;
+                  }
+                }
+              }
+              return detectedLabels;
+            }
+
+            // Detect appropriate labels
+            const areaLabels = detectLabels(issueBody, config.areaLabels);
+            const priorityLabels = detectLabels(issueBody, config.priorityLabels);
+            const kindLabels = detectLabels(issueBody, config.kindLabels);
+
+            // Default labels
+            const labelsToAdd = ['status/need-triage'];
+
+            // Add detected labels
+            labelsToAdd.push(...areaLabels);
+            labelsToAdd.push(...priorityLabels);
+            labelsToAdd.push(...kindLabels);
+
+            // If no priority detected, default to P2
+            if (priorityLabels.length === 0) {
+              labelsToAdd.push('priority/p2');
+            }
+
+            // If no kind detected, try to infer from issue template
+            if (kindLabels.length === 0) {
+              if (issueBody.includes('expected behavior') || issueBody.includes('actual behavior')) {
+                labelsToAdd.push('kind/bug');
+              } else if (issueBody.includes('feature description') || issueBody.includes('use case')) {
+                labelsToAdd.push('kind/enhancement');
+              }
+            }
+
+            // Apply labels
+            await github.rest.issues.addLabels({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: issue.number,
+              labels: [...new Set(labelsToAdd)] // Remove duplicates
+            });
+
+            console.log(`Applied labels: ${labelsToAdd.join(', ')}`);
+
+            // Check for duplicates
+            const { data: existingIssues } = await github.rest.issues.listForRepo({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              state: 'all',
+              per_page: 100
+            });
+
+            // Calculate similarity using TF-IDF
+            const TfIdf = natural.TfIdf;
+            const tfidf = new TfIdf();
+
+            // Add current issue
+            tfidf.addDocument(issueBody);
+
+            // Add existing issues
+            const issueMap = new Map();
+            existingIssues
+              .filter(i => i.number !== issue.number && !i.pull_request)
+              .forEach(i => {
+                const text = `${i.title} ${i.body || ''}`.toLowerCase();
+                tfidf.addDocument(text);
+                issueMap.set(tfidf.documents.length - 1, i);
+              });
+
+            // Find similar issues
+            const similarities = [];
+            tfidf.tfidfs(issueBody.split(' '), (i, measure) => {
+              if (i > 0 && measure > 0.3) { // Threshold for similarity
+                const similarIssue = issueMap.get(i - 1);
+                if (similarIssue) {
+                  similarities.push({
+                    issue: similarIssue,
+                    score: measure
+                  });
+                }
+              }
+            });
+
+            // Sort by similarity score
+            similarities.sort((a, b) => b.score - a.score);
+
+            // Post comment if duplicates found
+            if (similarities.length > 0) {
+              const duplicates = similarities.slice(0, 5); // Top 5 matches
+
+              let comment = '## Possible Duplicate Issues Detected\n\n';
+              comment += 'This issue appears similar to the following existing issues:\n\n';
+
+              duplicates.forEach(({ issue: dup, score }) => {
+                const similarity = Math.round(score * 100);
+                const status = dup.state === 'open' ? '🟢 Open' : '🔴 Closed';
+                comment += `- ${status} #${dup.number}: [${dup.title}](${dup.html_url}) (${similarity}% similar)\n`;
+              });
+
+              comment += '\n---\n';
+              comment += '**Note**: This is an automated detection. Please review the linked issues to see if they address your concern.\n';
+              comment += 'If this is genuinely a new issue, please disregard this message.\n';
+
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: issue.number,
+                body: comment
+              });
+
+              // Add possible duplicate label
+              await github.rest.issues.addLabels({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: issue.number,
+                labels: ['status/possible-duplicate']
+              });
+
+              console.log(`Found ${similarities.length} potential duplicates`);
+            }
+
+            // Post welcome message for first-time contributors
+            const { data: issueComments } = await github.rest.issues.listComments({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: issue.number
+            });
+
+            const isFirstIssue = existingIssues.filter(i =>
+              i.user.login === issue.user.login && i.number !== issue.number
+            ).length === 0;
+
+            if (isFirstIssue && context.payload.action === 'opened') {
+              const welcomeComment = `👋 Thanks for opening your first issue in AINative Studio!\n\n` +
+                `Our triage bot has automatically labeled this issue. A maintainer will review it soon.\n\n` +
+                `**What happens next?**\n` +
+                `1. A maintainer will review and update labels if needed\n` +
+                `2. We'll ask for more information if required\n` +
+                `3. Once triaged, the issue will be prioritized for development\n\n` +
+                `Feel free to provide additional context or screenshots if helpful!`;
+
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: issue.number,
+                body: welcomeComment
+              });
+            }
