@@ -51,6 +51,7 @@ export default function TutorialDetailClient({ slug }: TutorialDetailClientProps
     if (slug) {
       fetchTutorial();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [slug]);
 
   const fetchTutorial = async () => {

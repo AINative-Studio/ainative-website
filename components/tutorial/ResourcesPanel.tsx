@@ -34,7 +34,7 @@ interface ResourcesPanelProps {
   className?: string;
 }
 
-export function ResourcesPanel({ resources, tutorialTitle, className = '' }: ResourcesPanelProps) {
+export function ResourcesPanel({ resources, className = '' }: ResourcesPanelProps) {
   const [downloadingId, setDownloadingId] = useState<string | null>(null);
 
   /**
