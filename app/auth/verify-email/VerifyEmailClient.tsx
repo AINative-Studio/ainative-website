@@ -50,7 +50,7 @@ export default function VerifyEmailClient() {
   }, [searchParams, router]);
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-[#0D1117] px-4">
+    <div className="min-h-screen flex items-center justify-center bg-vite-bg px-4">
       <div className="max-w-md w-full bg-[#161B22] rounded-2xl border border-[#2D333B]/50 p-8 text-center">
         {status === 'loading' && (
           <>

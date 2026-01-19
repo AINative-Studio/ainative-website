@@ -75,7 +75,7 @@ function formatRelativeTime(date: Date): string {
 function TaskHistoryItem({ task }: { task: CompletedTask }) {
     return (
         <motion.div
-            className="p-3 rounded-lg bg-[#0D1117] border border-gray-800 hover:border-gray-700 transition-colors"
+            className="p-3 rounded-lg bg-vite-bg border border-gray-800 hover:border-gray-700 transition-colors"
             initial={{ opacity: 0, x: -10 }}
             animate={{ opacity: 1, x: 0 }}
             data-testid={`task-history-item-${task.id}`}
@@ -139,7 +139,7 @@ function MetricCard({
 }) {
     return (
         <div
-            className="p-3 rounded-lg bg-[#0D1117] border border-gray-800"
+            className="p-3 rounded-lg bg-vite-bg border border-gray-800"
             data-testid={`metric-${label.toLowerCase().replace(/\s+/g, '-')}`}
         >
             <div className="flex items-center gap-2 mb-1">
@@ -201,7 +201,7 @@ export function AgentDetailModal({
                                     <Badge
                                         key={capability}
                                         variant="secondary"
-                                        className="bg-[#0D1117] text-gray-300 text-xs"
+                                        className="bg-vite-bg text-gray-300 text-xs"
                                     >
                                         {capability}
                                     </Badge>
@@ -212,7 +212,7 @@ export function AgentDetailModal({
                 </DialogHeader>
 
                 <Tabs defaultValue="activity" className="mt-4">
-                    <TabsList className="bg-[#0D1117] border border-gray-800 w-full justify-start">
+                    <TabsList className="bg-vite-bg border border-gray-800 w-full justify-start">
                         <TabsTrigger
                             value="activity"
                             className="data-[state=active]:bg-[#4B6FED]/20"
@@ -239,7 +239,7 @@ export function AgentDetailModal({
                     {/* Current Activity Tab */}
                     <TabsContent value="activity" className="mt-4 space-y-4">
                         {/* Task progress summary */}
-                        <div className="p-4 rounded-lg bg-[#0D1117] border border-gray-800">
+                        <div className="p-4 rounded-lg bg-vite-bg border border-gray-800">
                             <div className="flex items-center justify-between mb-3">
                                 <span className="text-sm text-gray-400">
                                     Task Progress
@@ -261,7 +261,7 @@ export function AgentDetailModal({
                         </div>
 
                         {/* Current task details */}
-                        <div className="p-4 rounded-lg bg-[#0D1117] border border-gray-800">
+                        <div className="p-4 rounded-lg bg-vite-bg border border-gray-800">
                             <h4 className="text-sm font-medium text-gray-300 mb-3 flex items-center gap-2">
                                 <ChevronRight className="w-4 h-4 text-[#8AB4FF]" />
                                 Current Task
@@ -307,7 +307,7 @@ export function AgentDetailModal({
 
                         {/* Files being modified */}
                         {activity.filesBeingModified.length > 0 && (
-                            <div className="p-4 rounded-lg bg-[#0D1117] border border-gray-800">
+                            <div className="p-4 rounded-lg bg-vite-bg border border-gray-800">
                                 <h4 className="text-sm font-medium text-gray-300 mb-3 flex items-center gap-2">
                                     <FileCode className="w-4 h-4 text-[#8AB4FF]" />
                                     Files Being Modified ({activity.filesBeingModified.length})
@@ -394,7 +394,7 @@ export function AgentDetailModal({
                         </div>
 
                         {/* Weekly summary */}
-                        <div className="mt-4 p-4 rounded-lg bg-[#0D1117] border border-gray-800">
+                        <div className="mt-4 p-4 rounded-lg bg-vite-bg border border-gray-800">
                             <h4 className="text-sm font-medium text-gray-300 mb-2">
                                 This Week
                             </h4>

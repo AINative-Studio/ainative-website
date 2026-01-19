@@ -73,7 +73,7 @@ export default function PrivacyClient() {
             <span className="inline-block px-4 py-2 rounded-full bg-primary/10 text-primary text-sm font-medium mb-4">
               Your Privacy Matters
             </span>
-            <h1 className="text-4xl md:text-6xl font-bold mb-4 bg-clip-text text-transparent bg-gradient-to-r from-primary via-[#FF8A3D] to-[#FF6B6B] inline-block">
+            <h1 className="text-4xl md:text-6xl font-bold mb-4 bg-clip-text text-transparent bg-gradient-to-r from-primary via-[#FCAE39] to-[#FF6B6B] inline-block">
               Privacy Policy
             </h1>
             <p className="text-gray-400 max-w-3xl mx-auto text-lg">
@@ -91,7 +91,7 @@ export default function PrivacyClient() {
                 <div className="p-3 bg-primary/10 rounded-xl mr-4">
                   <Database className="w-6 h-6 text-primary" />
                 </div>
-                <h2 className="text-3xl font-bold bg-gradient-to-r from-primary to-[#FF8A3D] bg-clip-text text-transparent">
+                <h2 className="text-3xl font-bold bg-gradient-to-r from-primary to-[#FCAE39] bg-clip-text text-transparent">
                   Information We Collect
                 </h2>
               </div>
@@ -504,7 +504,7 @@ export default function PrivacyClient() {
       {/* Background elements */}
       <div className="fixed inset-0 -z-10 overflow-hidden">
         <div className="absolute top-0 right-0 w-96 h-96 bg-primary/5 rounded-full filter blur-3xl -mr-48 -mt-48"></div>
-        <div className="absolute bottom-0 left-0 w-96 h-96 bg-[#FF8A3D]/5 rounded-full filter blur-3xl -ml-48 -mb-48"></div>
+        <div className="absolute bottom-0 left-0 w-96 h-96 bg-[#FCAE39]/5 rounded-full filter blur-3xl -ml-48 -mb-48"></div>
       </div>
     </div>
   );

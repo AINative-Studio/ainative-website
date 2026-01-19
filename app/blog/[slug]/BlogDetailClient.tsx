@@ -200,7 +200,7 @@ export default function BlogDetailClient({ slug }: BlogDetailClientProps) {
   };
 
   return (
-    <div className="min-h-screen bg-[#0D1117] text-white">
+    <div className="min-h-screen bg-vite-bg text-white">
       <main className="container mx-auto px-4 py-20 mt-16">
         <Link href="/blog">
           <Button variant="ghost" className="mb-6 text-gray-300 hover:text-white hover:bg-[#161B22]">
@@ -442,14 +442,14 @@ export default function BlogDetailClient({ slug }: BlogDetailClientProps) {
                     <CardContent>
                       <div className="flex gap-2">
                         {post.author.github_url && (
-                          <Button variant="outline" size="sm" asChild className="border-[#2D333B] text-gray-300 hover:bg-[#0D1117] hover:text-white">
+                          <Button variant="outline" size="sm" asChild className="border-[#2D333B] text-gray-300 hover:bg-vite-bg hover:text-white">
                             <a href={post.author.github_url} target="_blank" rel="noopener noreferrer">
                               GitHub
                             </a>
                           </Button>
                         )}
                         {post.author.twitter_url && (
-                          <Button variant="outline" size="sm" asChild className="border-[#2D333B] text-gray-300 hover:bg-[#0D1117] hover:text-white">
+                          <Button variant="outline" size="sm" asChild className="border-[#2D333B] text-gray-300 hover:bg-vite-bg hover:text-white">
                             <a href={post.author.twitter_url} target="_blank" rel="noopener noreferrer">
                               Twitter
                             </a>

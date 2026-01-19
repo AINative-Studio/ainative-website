@@ -12,7 +12,7 @@ export const metadata: Metadata = {
 
 export default function DesignSystemPage() {
   return (
-    <div className="min-h-screen bg-[#0D1117] text-white pt-24 pb-12">
+    <div className="min-h-screen bg-vite-bg text-white pt-24 pb-12">
       <div className="container max-w-6xl mx-auto px-4">
         {/* Header */}
         <div className="text-center mb-16">

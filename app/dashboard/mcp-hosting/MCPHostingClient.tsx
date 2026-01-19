@@ -303,7 +303,7 @@ function LogsPanel({ logs, onClose }: { logs: MCPServerLog[]; onClose: () => voi
           </Button>
         </CardHeader>
         <CardContent className="p-0">
-          <div className="h-64 overflow-y-auto bg-[#0D1117] font-mono text-sm">
+          <div className="h-64 overflow-y-auto bg-vite-bg font-mono text-sm">
             {logs.length === 0 ? (
               <div className="p-4 text-gray-500 text-center">No logs available</div>
             ) : (

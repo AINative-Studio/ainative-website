@@ -37,7 +37,7 @@ export default function SignOutClient() {
 
   if (status === 'loading') {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-[#0D1117]">
+      <div className="min-h-screen flex items-center justify-center bg-vite-bg">
         <div className="animate-pulse">
           <div className="h-8 w-8 border-4 border-primary border-t-transparent rounded-full animate-spin" />
         </div>
@@ -47,7 +47,7 @@ export default function SignOutClient() {
 
   if (status === 'unauthenticated') {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-[#0D1117] px-4">
+      <div className="min-h-screen flex items-center justify-center bg-vite-bg px-4">
         <Card className="w-full max-w-md p-8 space-y-6 bg-[#161B22] border-gray-800 text-center">
           <div className="space-y-2">
             <h1 className="text-2xl font-bold text-white">Already Signed Out</h1>
@@ -67,7 +67,7 @@ export default function SignOutClient() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-[#0D1117] px-4">
+    <div className="min-h-screen flex items-center justify-center bg-vite-bg px-4">
       <Card className="w-full max-w-md p-8 space-y-6 bg-[#161B22] border-gray-800">
         {/* Header */}
         <div className="text-center space-y-2">
@@ -82,7 +82,7 @@ export default function SignOutClient() {
 
         {/* Session Info */}
         {session?.user && (
-          <div className="p-4 bg-[#0D1117] border border-gray-700 rounded-lg">
+          <div className="p-4 bg-vite-bg border border-gray-700 rounded-lg">
             <div className="flex items-center space-x-3">
               {session.user.image && (
                 <img

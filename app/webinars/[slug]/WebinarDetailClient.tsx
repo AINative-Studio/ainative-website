@@ -182,7 +182,7 @@ export default function WebinarDetailClient({ slug }: WebinarDetailClientProps) 
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-[#0D1117]">
+      <div className="min-h-screen bg-vite-bg">
         <div className="bg-[#161B22] backdrop-blur-sm border-b border-[#2D333B]">
           <div className="container mx-auto px-4 py-4">
             <Link href="/webinars" className="inline-flex items-center text-sm text-gray-400 hover:text-[#4B6FED] transition-colors">
@@ -222,7 +222,7 @@ export default function WebinarDetailClient({ slug }: WebinarDetailClientProps) 
 
   if (error || !webinar) {
     return (
-      <div className="min-h-screen bg-[#0D1117]">
+      <div className="min-h-screen bg-vite-bg">
         <div className="container mx-auto px-4 py-16 text-center">
           <Video className="h-16 w-16 mx-auto mb-4 text-gray-500" />
           <h1 className="text-2xl font-bold mb-4 text-white">{error === 'Webinar not found' ? 'Webinar Not Found' : 'Error Loading Webinar'}</h1>
@@ -247,7 +247,7 @@ export default function WebinarDetailClient({ slug }: WebinarDetailClientProps) 
   const isFull = webinar.max_attendees > 0 && webinar.current_attendees >= webinar.max_attendees;
 
   return (
-    <div className="min-h-screen bg-[#0D1117]">
+    <div className="min-h-screen bg-vite-bg">
       <div className="bg-[#161B22] backdrop-blur-sm border-b border-[#2D333B]">
         <div className="container mx-auto px-4 py-4">
           <Link href="/webinars" className="inline-flex items-center text-sm text-gray-400 hover:text-[#4B6FED] transition-colors">
@@ -262,7 +262,7 @@ export default function WebinarDetailClient({ slug }: WebinarDetailClientProps) 
           <div className="lg:col-span-2 space-y-8">
             <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
               <Card className="overflow-hidden shadow-xl bg-[#161B22] border-[#2D333B]">
-                <div className="relative aspect-video bg-[#0D1117]">
+                <div className="relative aspect-video bg-vite-bg">
                   {isPast && webinar.video?.video_url ? (
                     <video
                       ref={videoRef}

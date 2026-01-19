@@ -382,7 +382,7 @@ export default function NotificationsClient() {
   });
 
   return (
-    <div className="relative flex flex-col min-h-screen bg-[#0D1117] text-white overflow-hidden">
+    <div className="relative flex flex-col min-h-screen bg-vite-bg text-white overflow-hidden">
       {/* Animated Background */}
       <div className="fixed top-0 left-0 w-full h-full -z-10 overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-br from-[#0D1117] via-[#0D1117] to-[#1A1B2E]" />

@@ -37,7 +37,7 @@ const SelectBrandedTrigger = React.forwardRef<
           error && !disabled,
         'border-green-400 focus:border-green-400 focus:ring-green-400/20':
           success && !disabled,
-        'opacity-50 cursor-not-allowed bg-[#0D1117]': disabled,
+        'opacity-50 cursor-not-allowed bg-vite-bg': disabled,
       },
       className
     )}

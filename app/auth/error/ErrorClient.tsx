@@ -82,7 +82,7 @@ export default function ErrorClient() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-[#0D1117] px-4">
+    <div className="min-h-screen flex items-center justify-center bg-vite-bg px-4">
       <Card className="w-full max-w-md p-8 space-y-6 bg-[#161B22] border-gray-800">
         {/* Icon */}
         <div className="text-center space-y-2">
@@ -95,7 +95,7 @@ export default function ErrorClient() {
 
         {/* Error Code */}
         {error && (
-          <div className="p-4 bg-[#0D1117] border border-gray-700 rounded-lg">
+          <div className="p-4 bg-vite-bg border border-gray-700 rounded-lg">
             <p className="text-sm text-gray-400">
               Error Code: <span className="text-red-400 font-mono">{error}</span>
             </p>

@@ -250,7 +250,7 @@ export function SwarmLaunchConfirmation({
     return (
         <>
             <Dialog open={isOpen} onOpenChange={(open) => !open && handleCancel()}>
-                <DialogContent className="max-w-4xl max-h-[90vh] overflow-hidden bg-[#0D1117] border-gray-800 text-white">
+                <DialogContent className="max-w-4xl max-h-[90vh] overflow-hidden bg-vite-bg border-gray-800 text-white">
                     <DialogHeader className="pb-4 border-b border-gray-800">
                         <div className="flex items-center justify-between">
                             <div className="flex items-center gap-3">
@@ -696,7 +696,7 @@ export function SwarmLaunchConfirmation({
 
             {/* Cancel Confirmation Dialog */}
             <Dialog open={showCancelDialog} onOpenChange={setShowCancelDialog}>
-                <DialogContent className="max-w-md bg-[#0D1117] border-gray-800 text-white">
+                <DialogContent className="max-w-md bg-vite-bg border-gray-800 text-white">
                     <DialogHeader>
                         <DialogTitle className="text-white">Cancel Launch?</DialogTitle>
                         <DialogDescription className="text-gray-400">

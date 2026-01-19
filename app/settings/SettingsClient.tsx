@@ -149,7 +149,7 @@ export default function SettingsClient() {
           name="name"
           value={profile.name || ''}
           onChange={handleProfileChange}
-          className="bg-[#0D1117] border border-gray-700 focus:ring-2 focus:ring-[#4B6FED]/30 focus:border-[#4B6FED]/70"
+          className="bg-vite-bg border border-gray-700 focus:ring-2 focus:ring-[#4B6FED]/30 focus:border-[#4B6FED]/70"
           placeholder="Enter your full name"
         />
       </div>
@@ -160,7 +160,7 @@ export default function SettingsClient() {
           name="email"
           value={profile.email || ''}
           onChange={handleProfileChange}
-          className="bg-[#0D1117] border border-gray-700 focus:ring-2 focus:ring-[#4B6FED]/30 focus:border-[#4B6FED]/70"
+          className="bg-vite-bg border border-gray-700 focus:ring-2 focus:ring-[#4B6FED]/30 focus:border-[#4B6FED]/70"
           placeholder="Enter your email"
         />
       </div>
@@ -181,7 +181,7 @@ export default function SettingsClient() {
 
   const renderNotificationsSection = () => (
     <div className="space-y-4">
-      <div className="flex items-center justify-between p-4 bg-[#0D1117] rounded-lg">
+      <div className="flex items-center justify-between p-4 bg-vite-bg rounded-lg">
         <div>
           <h3 className="font-medium text-white">Email Notifications</h3>
           <p className="text-sm text-gray-400">Receive important updates via email</p>
@@ -191,7 +191,7 @@ export default function SettingsClient() {
           onCheckedChange={(checked) => handleNotificationChange('email_notifications', checked)}
         />
       </div>
-      <div className="flex items-center justify-between p-4 bg-[#0D1117] rounded-lg">
+      <div className="flex items-center justify-between p-4 bg-vite-bg rounded-lg">
         <div>
           <h3 className="font-medium text-white">Push Notifications</h3>
           <p className="text-sm text-gray-400">Get browser notifications</p>
@@ -201,7 +201,7 @@ export default function SettingsClient() {
           onCheckedChange={(checked) => handleNotificationChange('push_notifications', checked)}
         />
       </div>
-      <div className="flex items-center justify-between p-4 bg-[#0D1117] rounded-lg">
+      <div className="flex items-center justify-between p-4 bg-vite-bg rounded-lg">
         <div>
           <h3 className="font-medium text-white">Marketing Emails</h3>
           <p className="text-sm text-gray-400">Receive product updates and offers</p>
@@ -211,7 +211,7 @@ export default function SettingsClient() {
           onCheckedChange={(checked) => handleNotificationChange('marketing_emails', checked)}
         />
       </div>
-      <div className="flex items-center justify-between p-4 bg-[#0D1117] rounded-lg">
+      <div className="flex items-center justify-between p-4 bg-vite-bg rounded-lg">
         <div>
           <h3 className="font-medium text-white">Security Alerts</h3>
           <p className="text-sm text-gray-400">Get notified about security events</p>
@@ -243,7 +243,7 @@ export default function SettingsClient() {
         <select
           value={communication.email_frequency}
           onChange={(e) => handleCommunicationChange('email_frequency', e.target.value as 'immediate' | 'daily' | 'weekly')}
-          className="w-full p-2 bg-[#0D1117] border border-gray-700 rounded-md text-white focus:ring-2 focus:ring-[#4B6FED]/30 focus:border-[#4B6FED]/70"
+          className="w-full p-2 bg-vite-bg border border-gray-700 rounded-md text-white focus:ring-2 focus:ring-[#4B6FED]/30 focus:border-[#4B6FED]/70"
         >
           <option value="immediate">Immediate</option>
           <option value="daily">Daily Digest</option>
@@ -256,7 +256,7 @@ export default function SettingsClient() {
           type="text"
           value={communication.timezone}
           onChange={(e) => handleCommunicationChange('timezone', e.target.value)}
-          className="bg-[#0D1117] border border-gray-700 focus:ring-2 focus:ring-[#4B6FED]/30 focus:border-[#4B6FED]/70"
+          className="bg-vite-bg border border-gray-700 focus:ring-2 focus:ring-[#4B6FED]/30 focus:border-[#4B6FED]/70"
           disabled
         />
         <p className="text-xs text-gray-500 mt-1">Timezone is automatically detected from your browser</p>

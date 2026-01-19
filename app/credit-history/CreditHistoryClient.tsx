@@ -167,7 +167,7 @@ export default function CreditHistoryClient() {
             <input
               type="text"
               placeholder="Search transactions..."
-              className="bg-[#0D1117] text-white border border-gray-700 rounded-md p-2 pl-10 w-full focus:outline-none focus:ring-2 focus:ring-[#4B6FED]/30 focus:border-[#4B6FED]/70"
+              className="bg-vite-bg text-white border border-gray-700 rounded-md p-2 pl-10 w-full focus:outline-none focus:ring-2 focus:ring-[#4B6FED]/30 focus:border-[#4B6FED]/70"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
             />
@@ -175,12 +175,12 @@ export default function CreditHistoryClient() {
           <div className="flex items-center gap-2">
             <button
               onClick={() => setSortDirection(prev => prev === 'asc' ? 'desc' : 'asc')}
-              className="flex items-center gap-1 bg-[#0D1117] border border-gray-700 rounded-md px-3 py-2 text-gray-300 hover:bg-[#161B22] transition-colors"
+              className="flex items-center gap-1 bg-vite-bg border border-gray-700 rounded-md px-3 py-2 text-gray-300 hover:bg-[#161B22] transition-colors"
             >
               Sort by date
               <ChevronsUpDown className="h-4 w-4" />
             </button>
-            <button className="flex items-center gap-1 bg-[#0D1117] border border-gray-700 rounded-md px-3 py-2 text-gray-300 hover:bg-[#161B22] transition-colors">
+            <button className="flex items-center gap-1 bg-vite-bg border border-gray-700 rounded-md px-3 py-2 text-gray-300 hover:bg-[#161B22] transition-colors">
               <Download className="h-4 w-4" />
               Export
             </button>

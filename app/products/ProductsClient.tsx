@@ -98,7 +98,7 @@ const stats = [
 
 export default function ProductsClient() {
   return (
-    <div className="bg-[#0D1117] text-white font-sans min-h-screen">
+    <div className="bg-vite-bg text-white font-sans min-h-screen">
       {/* Animated Background */}
       <div className="fixed inset-0 -z-10 overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-br from-[#0D1117] via-[#0A0D14] to-[#0D1117]" />

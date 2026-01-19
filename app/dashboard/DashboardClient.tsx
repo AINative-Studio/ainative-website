@@ -295,7 +295,7 @@ export default function DashboardClient() {
   // Show loading state while mounted or user data is being fetched
   if (!mounted || !user) {
     return (
-      <div className="flex items-center justify-center min-h-screen text-white bg-[#0D1117]">
+      <div className="flex items-center justify-center min-h-screen text-white bg-vite-bg">
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500 mx-auto mb-4"></div>
           <p>Loading dashboard...</p>

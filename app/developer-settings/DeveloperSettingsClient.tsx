@@ -170,7 +170,7 @@ export default function DeveloperSettingsClient() {
                 API Base URL
               </label>
               <div className="flex items-center gap-2">
-                <code className="flex-1 bg-[#0D1117] px-4 py-3 rounded-lg text-[#8AB4FF] font-mono text-sm border border-[#2D333B]">
+                <code className="flex-1 bg-vite-bg px-4 py-3 rounded-lg text-[#8AB4FF] font-mono text-sm border border-[#2D333B]">
                   https://api.ainative.studio/v1
                 </code>
                 <Button
@@ -189,14 +189,14 @@ export default function DeveloperSettingsClient() {
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-4">
-              <div className="p-4 bg-[#0D1117] rounded-lg border border-[#2D333B]">
+              <div className="p-4 bg-vite-bg rounded-lg border border-[#2D333B]">
                 <div className="flex items-center gap-2 mb-2">
                   <div className="w-2 h-2 bg-green-500 rounded-full"></div>
                   <span className="text-sm font-medium">Production</span>
                 </div>
                 <code className="text-xs text-gray-400">api.ainative.studio</code>
               </div>
-              <div className="p-4 bg-[#0D1117] rounded-lg border border-[#2D333B]">
+              <div className="p-4 bg-vite-bg rounded-lg border border-[#2D333B]">
                 <div className="flex items-center gap-2 mb-2">
                   <div className="w-2 h-2 bg-yellow-500 rounded-full"></div>
                   <span className="text-sm font-medium">Staging</span>

@@ -21,7 +21,7 @@ export const metadata: Metadata = {
 
 function VerifyEmailFallback() {
   return (
-    <div className="min-h-screen flex items-center justify-center bg-[#0D1117] px-4">
+    <div className="min-h-screen flex items-center justify-center bg-vite-bg px-4">
       <div className="max-w-md w-full bg-[#161B22] rounded-2xl border border-[#2D333B]/50 p-8 text-center">
         <div className="animate-pulse space-y-4">
           <div className="h-16 w-16 bg-[#1C2128] rounded-full mx-auto" />

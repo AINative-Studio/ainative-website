@@ -328,7 +328,7 @@ export default function VideoDetailClient({ slug }: VideoDetailClientProps) {
   }
 
   return (
-    <div className="min-h-screen bg-[#0D1117]">
+    <div className="min-h-screen bg-vite-bg">
       <div className="max-w-7xl mx-auto px-4 py-8">
         {/* Back Button */}
         <Link
@@ -573,7 +573,7 @@ export default function VideoDetailClient({ slug }: VideoDetailClientProps) {
                   >
                     <div className="bg-[#161B22] backdrop-blur-sm rounded-lg overflow-hidden border border-[#2D333B] hover:border-[#4B6FED] transition-all duration-200">
                       <div className="flex gap-3">
-                        <div className="w-40 h-24 flex-shrink-0 relative bg-[#0D1117]">
+                        <div className="w-40 h-24 flex-shrink-0 relative bg-vite-bg">
                           <div className="w-full h-full bg-gradient-to-br from-[#4B6FED]/20 to-[#8A63F4]/20 flex items-center justify-center">
                             <VideoIcon className="w-8 h-8 text-[#4B6FED]/50" />
                           </div>

@@ -54,7 +54,7 @@ export default function SignupPage() {
   ];
 
   return (
-    <div className="min-h-screen bg-[#0D1117] text-white flex items-center justify-center px-4 pt-16">
+    <div className="min-h-screen bg-vite-bg text-white flex items-center justify-center px-4 pt-16">
       <div className="w-full max-w-md">
         {/* Header */}
         <div className="text-center mb-8">

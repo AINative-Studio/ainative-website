@@ -259,7 +259,7 @@ export function AgentSwarmRulesUpload() {
                     />
                     <Button
                       onClick={() => fileInputRef.current?.click()}
-                      className="bg-gradient-to-r from-primary to-[#FF8A3D]"
+                      className="bg-gradient-to-r from-primary to-[#FCAE39]"
                     >
                       Select File
                     </Button>
@@ -268,7 +268,7 @@ export function AgentSwarmRulesUpload() {
               </div>
 
               {/* Rules Format Guide */}
-              <Card className="bg-[#0D1117] border-gray-800">
+              <Card className="bg-vite-bg border-gray-800">
                 <CardHeader>
                   <CardTitle className="text-sm">Rules File Format</CardTitle>
                 </CardHeader>
@@ -307,7 +307,7 @@ export function AgentSwarmRulesUpload() {
                       key={file.id}
                       initial={{ opacity: 0, y: 10 }}
                       animate={{ opacity: 1, y: 0 }}
-                      className="bg-[#0D1117] border border-gray-800 rounded-lg p-4"
+                      className="bg-vite-bg border border-gray-800 rounded-lg p-4"
                     >
                       <div className="flex items-start justify-between">
                         <div className="flex-1">

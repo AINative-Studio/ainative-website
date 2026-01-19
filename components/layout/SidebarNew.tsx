@@ -152,11 +152,11 @@ export default function SidebarNew({ isMobile = false, onClose }: SidebarProps) 
           animate={{ x: 0 }}
           exit={{ x: -280 }}
           transition={{ type: "spring", damping: 25, stiffness: 300 }}
-          className="w-72 h-full bg-[#0D1117] shadow-xl p-5 overflow-y-auto relative z-50 border-r border-gray-800"
+          className="w-72 h-full bg-vite-bg shadow-xl p-5 overflow-y-auto relative z-50 border-r border-gray-800"
         >
           <div className="flex items-center justify-between mb-8">
             <div className="flex items-center gap-2">
-              <div className="bg-gradient-to-r from-primary to-[#FF8A3D] w-8 h-8 rounded-full flex items-center justify-center">
+              <div className="bg-gradient-to-r from-primary to-[#FCAE39] w-8 h-8 rounded-full flex items-center justify-center">
                 <span className="text-white font-bold">A</span>
               </div>
               <Link href="/" className="text-lg font-bold hover:underline">
@@ -179,7 +179,7 @@ export default function SidebarNew({ isMobile = false, onClose }: SidebarProps) 
 
   // Desktop sidebar
   return (
-    <aside className="w-72 bg-[#0D1117] border-r border-[#1C2128] h-[calc(100vh-64px)] sticky top-[64px] hidden md:flex flex-col overflow-y-auto p-5 text-white">
+    <aside className="w-72 bg-vite-bg border-r border-[#1C2128] h-[calc(100vh-64px)] sticky top-[64px] hidden md:flex flex-col overflow-y-auto p-5 text-white">
       {sidebarContent}
     </aside>
   );
