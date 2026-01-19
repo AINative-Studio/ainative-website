@@ -24,6 +24,9 @@ import {
 } from 'lucide-react';
 import { strapiClient, type Webinar as StrapiWebinar } from '@/lib/strapi-client';
 import { getUnsplashImageUrl } from '@/lib/unsplash';
+import { RegistrationForm } from '@/components/webinar/RegistrationForm';
+import { CalendarButtons } from '@/components/webinar/CalendarButtons';
+import { Webinar as WebinarAPIType } from '@/lib/webinarAPI';
 
 interface WebinarTag {
   id: number;
@@ -454,21 +457,37 @@ export default function WebinarDetailClient({ slug }: WebinarDetailClientProps) 
 
           <div className="space-y-6">
             {isUpcoming && (
-              <Card className="bg-[#161B22] border-[#2D333B]">
-                <CardHeader>
-                  <CardTitle className="text-white">Reserve Your Spot</CardTitle>
-                  <CardDescription className="text-gray-400">
-                    {isFull ? 'This webinar is currently full' : 'Register now to join this live webinar'}
-                  </CardDescription>
-                </CardHeader>
-                <CardContent className="space-y-3">
-                  {!isFull && (
-                    <Button className="w-full bg-[#4B6FED] hover:bg-[#3A56D3] text-white" size="lg">
-                      Register Now
-                    </Button>
-                  )}
-                </CardContent>
-              </Card>
+              <div>
+                {!isFull && (
+                  <RegistrationForm
+                    webinar={{
+                      id: webinar.id.toString(),
+                      slug: webinar.slug,
+                      title: webinar.title,
+                      description: webinar.description,
+                      date: webinar.date,
+                      duration: webinar.duration,
+                      status: webinar.status,
+                      current_attendees: webinar.current_attendees,
+                      max_attendees: webinar.max_attendees,
+                      speaker: webinar.speaker ? {
+                        name: webinar.speaker.name,
+                        title: webinar.speaker.bio,
+                      } : undefined,
+                    } as WebinarAPIType}
+                  />
+                )}
+                {isFull && (
+                  <Card className="bg-[#161B22] border-[#2D333B]">
+                    <CardHeader>
+                      <CardTitle className="text-white">Webinar Full</CardTitle>
+                      <CardDescription className="text-gray-400">
+                        This webinar has reached capacity
+                      </CardDescription>
+                    </CardHeader>
+                  </Card>
+                )}
+              </div>
             )}
 
             {isLive && webinar.meeting_url && (
@@ -500,6 +519,36 @@ export default function WebinarDetailClient({ slug }: WebinarDetailClientProps) 
                       </Badge>
                     ))}
                   </div>
+                </CardContent>
+              </Card>
+            )}
+
+            {isUpcoming && (
+              <Card className="bg-[#161B22] border-[#2D333B]">
+                <CardHeader>
+                  <CardTitle className="text-white">Add to Calendar</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <CalendarButtons
+                    webinar={{
+                      id: webinar.id.toString(),
+                      slug: webinar.slug,
+                      title: webinar.title,
+                      description: webinar.description,
+                      date: webinar.date,
+                      duration: webinar.duration,
+                      status: webinar.status,
+                      current_attendees: webinar.current_attendees,
+                      max_attendees: webinar.max_attendees,
+                      meeting_url: webinar.meeting_url,
+                      speaker: webinar.speaker ? {
+                        name: webinar.speaker.name,
+                        title: webinar.speaker.bio,
+                      } : undefined,
+                    } as WebinarAPIType}
+                    variant="dropdown"
+                    size="sm"
+                  />
                 </CardContent>
               </Card>
             )}
