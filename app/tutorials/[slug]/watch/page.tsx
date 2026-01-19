@@ -1,11 +1,13 @@
 import { Metadata } from 'next';
 import TutorialWatchClient from './TutorialWatchClient';
 
-interface Props {
-  params: { slug: string };
+interface TutorialWatchPageProps {
+  params: Promise<{
+    slug: string;
+  }>;
 }
 
-export async function generateMetadata({ params }: Props): Promise<Metadata> {
+export async function generateMetadata({ params }: TutorialWatchPageProps): Promise<Metadata> {
   // TODO: Fetch tutorial title from API for better SEO
   return {
     title: 'Watch Tutorial',
@@ -14,6 +16,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   };
 }
 
-export default function TutorialWatchPage({ params }: Props) {
-  return <TutorialWatchClient slug={params.slug} />;
+export default async function TutorialWatchPage({ params }: TutorialWatchPageProps) {
+  const resolvedParams = await params;
+  return <TutorialWatchClient slug={resolvedParams.slug} />;
 }
