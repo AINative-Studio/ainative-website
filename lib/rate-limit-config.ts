@@ -26,6 +26,7 @@ export type RateLimitTier =
   | 'auth'
   | 'payment'
   | 'apiKey'
+  | 'api'
   | 'search'
   | 'readonly'
   | 'default';
@@ -62,6 +63,16 @@ export const RATE_LIMIT_CONFIGS: Record<RateLimitTier, RateLimitConfig> = {
     limit: 20,
     windowMs: 60 * 1000, // 1 minute
     description: '20 requests per minute',
+  },
+
+  /**
+   * API proxy endpoints: 60 requests/minute
+   * Higher limit for proxied API calls
+   */
+  api: {
+    limit: 60,
+    windowMs: 60 * 1000, // 1 minute
+    description: '60 requests per minute',
   },
 
   /**

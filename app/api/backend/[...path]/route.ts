@@ -1,6 +1,6 @@
 /**
- * Luma API Proxy Route
- * Proxies requests to Luma API to avoid CORS issues
+ * Backend API Proxy Route
+ * Proxies requests to AINative backend services
  */
 
 import { NextRequest, NextResponse } from 'next/server';
@@ -11,31 +11,23 @@ import {
   createProxyErrorResponse,
   logProxyRequest,
   extractQueryParams,
+  forwardHeaders,
 } from '@/lib/api-proxy-utils';
 
-const LUMA_API_BASE = 'https://api.lu.ma';
-const LUMA_API_KEY = process.env.LUMA_API_KEY;
+const BACKEND_BASE_URL =
+  process.env.AINATIVE_BACKEND_URL || 'https://api.ainative.studio';
+
+// Headers to forward from client to backend
+const FORWARDED_HEADERS = ['Authorization', 'X-Request-ID', 'X-Session-ID'];
 
 async function handleProxyRequest(
   request: NextRequest,
   pathSegments: string[]
 ) {
-  // Apply rate limiting (search tier: 30 requests/minute)
-  const rateLimitResult = await applyRateLimit(request, { tier: 'search' });
+  // Apply rate limiting (API tier: 60 requests/minute)
+  const rateLimitResult = await applyRateLimit(request, { tier: 'api' });
   if (!rateLimitResult.success) {
     return rateLimitResult.response!;
-  }
-
-  if (!LUMA_API_KEY) {
-    return NextResponse.json(
-      {
-        error: {
-          code: 'CONFIG_ERROR',
-          message: 'Luma API key not configured',
-        },
-      },
-      { status: 500 }
-    );
   }
 
   try {
@@ -45,12 +37,10 @@ async function handleProxyRequest(
     const targetPath = `${path}${queryParams}`;
 
     // Log request in development
-    logProxyRequest(request.method, path, LUMA_API_BASE);
+    logProxyRequest(request.method, path, BACKEND_BASE_URL);
 
-    // Prepare Luma API headers
-    const lumaHeaders: Record<string, string> = {
-      'x-luma-api-key': LUMA_API_KEY,
-    };
+    // Forward authorization and tracking headers
+    const forwardedHeaders = forwardHeaders(request, FORWARDED_HEADERS);
 
     // Prepare request body for non-GET requests
     let body: string | undefined;
@@ -62,10 +52,10 @@ async function handleProxyRequest(
     const response = await proxyRequest(
       targetPath,
       {
-        baseUrl: LUMA_API_BASE,
-        headers: lumaHeaders,
+        baseUrl: BACKEND_BASE_URL,
+        headers: forwardedHeaders,
         retries: 3,
-        timeout: 20000, // 20s timeout for Luma API
+        timeout: 30000, // 30s timeout for backend API
       },
       {
         method: request.method,
@@ -79,17 +69,26 @@ async function handleProxyRequest(
     // Create response with rate limit headers
     const jsonResponse = NextResponse.json(data, { status: response.status });
 
-    // Add our rate limit headers
+    // Add rate limit headers to response
     Object.entries(rateLimitResult.headers).forEach(([key, value]) => {
       jsonResponse.headers.set(key, value);
     });
 
+    // Forward response headers from backend
+    const headersToForward = ['X-Request-ID', 'X-RateLimit-Remaining'];
+    headersToForward.forEach((header) => {
+      const value = response.headers.get(header);
+      if (value) {
+        jsonResponse.headers.set(header, value);
+      }
+    });
+
     return jsonResponse;
   } catch (error) {
-    console.error('[Luma Proxy Error]', error);
+    console.error('[Backend Proxy Error]', error);
     return createProxyErrorResponse(
       error,
-      'Failed to proxy request to Luma API'
+      'Failed to proxy request to backend API'
     );
   }
 }
