@@ -67,6 +67,11 @@ export default function OAuthCallbackClient() {
               setAuthUser(userProfile as unknown as Record<string, unknown>);
             }
 
+            // Check if this is a new user (first login)
+            // If welcome_dismissed is not set, this is likely a first-time user
+            const isFirstLogin = typeof window !== 'undefined'
+              && !localStorage.getItem('welcome_dismissed');
+
             setStatus('Login successful! Redirecting...');
             toast.success('Successfully authenticated with GitHub!');
 
@@ -75,9 +80,13 @@ export default function OAuthCallbackClient() {
               localStorage.removeItem('oauth_callback_url');
             }
 
-            // Redirect to stored callback URL or dashboard
+            // Redirect to stored callback URL or dashboard with welcome flag for new users
+            const redirectUrl = isFirstLogin && storedCallbackUrl === '/dashboard'
+              ? '/dashboard?welcome=true'
+              : storedCallbackUrl;
+
             setTimeout(() => {
-              router.push(storedCallbackUrl);
+              router.push(redirectUrl);
             }, 1000);
 
           } else {
