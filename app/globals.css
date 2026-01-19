@@ -593,6 +593,17 @@ a {
   }
 }
 
+/* Full-width section - Edge-to-edge layout */
+.full-width-section {
+  width: 100vw;
+  position: relative;
+  left: 50%;
+  right: 50%;
+  margin-left: -50vw;
+  margin-right: -50vw;
+  padding-top: 10rem;
+}
+
 /* ============================================
    Theme Configuration for Tailwind v4
    ============================================ */
@@ -626,6 +637,10 @@ a {
   --color-ainative-secondary-dark: var(--ainative-secondary-dark);
   --color-ainative-accent: var(--ainative-accent);
   --color-ainative-accent-secondary: var(--ainative-accent-secondary);
+
+  /* Teal accent color - Issue #372 */
+  --color-ainative-teal: #22BCDE;
+  --color-accent-secondary: #22BCDE;
 
   /* Design System Colors (ported from upstream) */
   --color-dark-1: #131726;
