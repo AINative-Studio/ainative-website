@@ -2,33 +2,13 @@
  * Tutorial Progress API
  * GET /api/tutorials/[id]/progress - Get tutorial progress
  * DELETE /api/tutorials/[id]/progress - Reset progress
+ *
+ * Uses persistent storage via TutorialProgressService
  */
 
 import { NextRequest, NextResponse } from 'next/server';
 import { getUserId } from '@/lib/auth-helpers';
-import type { TutorialProgress } from '@/types/tutorial';
-
-// In-memory storage for demo (replace with database in production)
-const progressStore = new Map<string, TutorialProgress>();
-
-/**
- * Generate default progress for a tutorial
- */
-function getDefaultProgress(tutorialId: string, userId: string | null): TutorialProgress {
-  return {
-    tutorialId,
-    userId,
-    completionPercentage: 0,
-    chaptersCompleted: 0,
-    totalChapters: 0,
-    chapterProgress: [],
-    quizScores: [],
-    certificateEligible: false,
-    certificateEarned: false,
-    totalWatchTime: 0,
-    lastWatchedAt: null,
-  };
-}
+import TutorialProgressService from '@/services/tutorialProgressService';
 
 /**
  * GET /api/tutorials/[id]/progress
@@ -42,16 +22,18 @@ export async function GET(
     const resolvedParams = await params;
     const userId = await getUserId();
     const tutorialId = resolvedParams.id;
-    const key = `${tutorialId}_${userId}`;
 
-    // Get progress from storage or return default
-    const progress = progressStore.get(key) || getDefaultProgress(tutorialId, userId);
+    // Get progress from persistent storage
+    const progress = await TutorialProgressService.getProgress(tutorialId, userId);
 
     return NextResponse.json(progress, { status: 200 });
   } catch (error) {
     console.error('Failed to get tutorial progress:', error);
     return NextResponse.json(
-      { error: 'Failed to get tutorial progress' },
+      {
+        error: 'Failed to get tutorial progress',
+        details: error instanceof Error ? error.message : 'Unknown error'
+      },
       { status: 500 }
     );
   }
@@ -69,10 +51,9 @@ export async function DELETE(
     const resolvedParams = await params;
     const userId = await getUserId();
     const tutorialId = resolvedParams.id;
-    const key = `${tutorialId}_${userId}`;
 
-    // Remove progress from storage
-    progressStore.delete(key);
+    // Reset progress in persistent storage
+    await TutorialProgressService.resetProgress(tutorialId, userId);
 
     return NextResponse.json(
       { success: true, message: 'Progress reset successfully' },
@@ -81,7 +62,10 @@ export async function DELETE(
   } catch (error) {
     console.error('Failed to reset tutorial progress:', error);
     return NextResponse.json(
-      { error: 'Failed to reset tutorial progress' },
+      {
+        error: 'Failed to reset tutorial progress',
+        details: error instanceof Error ? error.message : 'Unknown error'
+      },
       { status: 500 }
     );
   }

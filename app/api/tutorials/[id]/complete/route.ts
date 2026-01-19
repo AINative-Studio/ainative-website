@@ -1,14 +1,13 @@
 /**
  * Tutorial Completion API
  * POST /api/tutorials/[id]/complete - Mark tutorial as complete and earn certificate
+ *
+ * Uses persistent storage via TutorialProgressService
  */
 
 import { NextRequest, NextResponse } from 'next/server';
 import { getUserId } from '@/lib/auth-helpers';
-import type { TutorialProgress } from '@/types/tutorial';
-
-// Shared progress store
-const progressStore = new Map<string, TutorialProgress>();
+import TutorialProgressService from '@/services/tutorialProgressService';
 
 /**
  * POST /api/tutorials/[id]/complete
@@ -22,44 +21,32 @@ export async function POST(
     const resolvedParams = await params;
     const userId = await getUserId();
     const tutorialId = resolvedParams.id;
-    const key = `${tutorialId}_${userId}`;
 
-    // Get existing progress
-    const progress = progressStore.get(key);
-
-    if (!progress) {
-      return NextResponse.json(
-        { error: 'No progress found for this tutorial' },
-        { status: 404 }
-      );
-    }
+    // Get existing progress to check eligibility
+    const currentProgress = await TutorialProgressService.getProgress(tutorialId, userId);
 
     // Check if user is eligible for certificate
-    if (!progress.certificateEligible) {
+    if (!currentProgress.certificateEligible) {
       return NextResponse.json(
         {
           error: 'Not eligible for certificate',
           message: 'Complete all chapters and pass all quizzes to earn certificate',
           eligibility: {
-            chaptersComplete: progress.completionPercentage >= 95,
+            chaptersComplete: currentProgress.completionPercentage >= 95,
             quizzesPassed:
-              progress.quizScores.length === 0 || progress.quizScores.every((q) => q.passed),
-            currentCompletion: progress.completionPercentage,
-            passedQuizzes: progress.quizScores.filter((q) => q.passed).length,
-            totalQuizzes: progress.quizScores.length,
+              currentProgress.quizScores.length === 0 ||
+              currentProgress.quizScores.every((q) => q.passed),
+            currentCompletion: currentProgress.completionPercentage,
+            passedQuizzes: currentProgress.quizScores.filter((q) => q.passed).length,
+            totalQuizzes: currentProgress.quizScores.length,
           },
         },
         { status: 400 }
       );
     }
 
-    // Mark certificate as earned
-    progress.certificateEarned = true;
-    progress.completionPercentage = 100;
-    progress.lastWatchedAt = new Date();
-
-    // Save updated progress
-    progressStore.set(key, progress);
+    // Mark tutorial as complete via service
+    const progress = await TutorialProgressService.completeTutorial(tutorialId, userId);
 
     return NextResponse.json(
       {
@@ -73,7 +60,10 @@ export async function POST(
   } catch (error) {
     console.error('Failed to complete tutorial:', error);
     return NextResponse.json(
-      { error: 'Failed to complete tutorial' },
+      {
+        error: 'Failed to complete tutorial',
+        details: error instanceof Error ? error.message : 'Unknown error'
+      },
       { status: 500 }
     );
   }
