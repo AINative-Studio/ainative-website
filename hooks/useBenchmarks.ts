@@ -7,6 +7,7 @@
 
 import { useEffect } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { qnnApiClient } from '@/services/QNNApiClient';
 import {
   BenchmarkMetrics,
   BenchmarkRequest,
@@ -28,25 +29,21 @@ export const benchmarkKeys = {
 /**
  * Hook to fetch all benchmark results
  *
+ * @param modelId - Optional model ID to filter benchmarks
  * @returns React Query result with benchmark results list
  *
  * @example
  * ```tsx
  * const { data: benchmarks, isLoading } = useBenchmarks();
+ * // Or filter by model
+ * const { data: modelBenchmarks } = useBenchmarks('model-456');
  * ```
  */
-export function useBenchmarks() {
+export function useBenchmarks(modelId?: string) {
   return useQuery({
-    queryKey: benchmarkKeys.list(),
-    queryFn: async (): Promise<BenchmarkResult[]> => {
-      // TODO: Replace with actual API client from Agent 1
-      // const apiClient = new QNNApiClient();
-      // return apiClient.listBenchmarks();
-
-      console.warn('useBenchmarks: Using placeholder data. Waiting for Agent 1 API client.');
-      await new Promise(resolve => setTimeout(resolve, 500));
-
-      return [];
+    queryKey: modelId ? benchmarkKeys.byModel(modelId) : benchmarkKeys.list(),
+    queryFn: async (): Promise<BenchmarkMetrics[]> => {
+      return qnnApiClient.getBenchmarkMetrics(modelId);
     },
     staleTime: 5 * 60 * 1000, // 5 minutes
     gcTime: 15 * 60 * 1000,
@@ -68,15 +65,8 @@ export function useBenchmarks() {
 export function useBenchmarksByModel(modelId: string, enabled: boolean = true) {
   return useQuery({
     queryKey: benchmarkKeys.byModel(modelId),
-    queryFn: async (): Promise<BenchmarkResult[]> => {
-      // TODO: Replace with actual API client from Agent 1
-      // const apiClient = new QNNApiClient();
-      // return apiClient.getBenchmarksByModel(modelId);
-
-      console.warn('useBenchmarksByModel: Using placeholder. Waiting for Agent 1 API client.');
-      await new Promise(resolve => setTimeout(resolve, 400));
-
-      return [];
+    queryFn: async (): Promise<BenchmarkMetrics[]> => {
+      return qnnApiClient.getBenchmarkMetrics(modelId);
     },
     staleTime: 5 * 60 * 1000,
     enabled: enabled && !!modelId,
@@ -99,14 +89,7 @@ export function useBenchmark(id: string, enabled: boolean = true) {
   return useQuery({
     queryKey: benchmarkKeys.detail(id),
     queryFn: async (): Promise<BenchmarkResult> => {
-      // TODO: Replace with actual API client from Agent 1
-      // const apiClient = new QNNApiClient();
-      // return apiClient.getBenchmark(id);
-
-      console.warn('useBenchmark: Using placeholder. Waiting for Agent 1 API client.');
-      await new Promise(resolve => setTimeout(resolve, 300));
-
-      throw new Error('Benchmark not found (placeholder implementation)');
+      return qnnApiClient.getBenchmarkResult(id);
     },
     staleTime: 10 * 60 * 1000, // 10 minutes (benchmarks don't change often)
     enabled: enabled && !!id,
@@ -128,15 +111,8 @@ export function useBenchmark(id: string, enabled: boolean = true) {
 export function useBenchmarkMetrics(modelId: string, enabled: boolean = true) {
   return useQuery({
     queryKey: benchmarkKeys.results(modelId),
-    queryFn: async (): Promise<BenchmarkMetrics | null> => {
-      // TODO: Replace with actual API client from Agent 1
-      // const apiClient = new QNNApiClient();
-      // return apiClient.getBenchmarkMetrics(modelId);
-
-      console.warn('useBenchmarkMetrics: Using placeholder. Waiting for Agent 1 API client.');
-      await new Promise(resolve => setTimeout(resolve, 400));
-
-      return null;
+    queryFn: async (): Promise<BenchmarkMetrics[]> => {
+      return qnnApiClient.getBenchmarkMetrics(modelId);
     },
     staleTime: 10 * 60 * 1000,
     enabled: enabled && !!modelId,
@@ -168,17 +144,16 @@ export function useRunBenchmark() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: async (request: BenchmarkRequest): Promise<ApiResponse<BenchmarkResult>> => {
-      // TODO: Replace with actual API client from Agent 1
-      // const apiClient = new QNNApiClient();
-      // return apiClient.runBenchmark(request);
-
-      console.warn('useRunBenchmark: Using placeholder. Waiting for Agent 1 API client.');
-      await new Promise(resolve => setTimeout(resolve, 1000));
-
-      throw new Error('Run benchmark not implemented (placeholder)');
+    mutationFn: async (request: BenchmarkRequest): Promise<BenchmarkResult> => {
+      return qnnApiClient.runBenchmark(request);
     },
     onMutate: async (request) => {
+      // Cancel any outgoing refetches
+      await queryClient.cancelQueries({ queryKey: benchmarkKeys.byModel(request.modelId) });
+
+      // Snapshot the previous value
+      const previousBenchmarks = queryClient.getQueryData(benchmarkKeys.byModel(request.modelId));
+
       // Create optimistic benchmark result
       const tempId = `temp-benchmark-${Date.now()}`;
       const optimisticResult: BenchmarkResult = {
@@ -188,18 +163,16 @@ export function useRunBenchmark() {
         createdAt: new Date().toISOString(),
       };
 
-      // Add to cache optimistically
+      // Optimistically update cache
       queryClient.setQueryData(benchmarkKeys.byModel(request.modelId), (old: any) => {
         if (!old) return [optimisticResult];
         return [optimisticResult, ...old];
       });
 
-      return { optimisticResult };
+      return { previousBenchmarks, optimisticResult };
     },
-    onSuccess: (response, variables) => {
-      const result = response.data;
-
-      // Invalidate benchmark queries
+    onSuccess: (result, variables) => {
+      // Invalidate and refetch benchmark queries
       queryClient.invalidateQueries({ queryKey: benchmarkKeys.byModel(variables.modelId) });
       queryClient.invalidateQueries({ queryKey: benchmarkKeys.list() });
 
@@ -208,8 +181,14 @@ export function useRunBenchmark() {
         queryClient.invalidateQueries({ queryKey: benchmarkKeys.results(variables.modelId) });
       }
     },
-    onError: (err, variables) => {
-      // Remove optimistic update on error
+    onError: (err, variables, context) => {
+      // Rollback to previous value on error
+      if (context?.previousBenchmarks) {
+        queryClient.setQueryData(benchmarkKeys.byModel(variables.modelId), context.previousBenchmarks);
+      }
+    },
+    onSettled: (data, error, variables) => {
+      // Always refetch after error or success
       queryClient.invalidateQueries({ queryKey: benchmarkKeys.byModel(variables.modelId) });
     },
   });
@@ -236,14 +215,7 @@ export function useBenchmarkStatus(id: string, enabled: boolean = true) {
   const query = useQuery({
     queryKey: benchmarkKeys.detail(id),
     queryFn: async (): Promise<BenchmarkResult> => {
-      // TODO: Replace with actual API client from Agent 1
-      // const apiClient = new QNNApiClient();
-      // return apiClient.getBenchmarkStatus(id);
-
-      console.warn('useBenchmarkStatus: Using placeholder. Waiting for Agent 1 API client.');
-      await new Promise(resolve => setTimeout(resolve, 300));
-
-      throw new Error('Benchmark not found (placeholder implementation)');
+      return qnnApiClient.getBenchmarkResult(id);
     },
     staleTime: 0, // Always fetch fresh data
     refetchInterval: (query) => {
@@ -283,20 +255,16 @@ export function useBenchmarkStatus(id: string, enabled: boolean = true) {
 export function useCompareBenchmarks(modelIds: string[]) {
   return useQuery({
     queryKey: [...benchmarkKeys.all, 'compare', ...modelIds.sort()],
-    queryFn: async (): Promise<Record<string, BenchmarkMetrics | null>> => {
-      // TODO: Replace with actual API client from Agent 1
-      // const apiClient = new QNNApiClient();
-      // const results = await Promise.all(
-      //   modelIds.map(id => apiClient.getBenchmarkMetrics(id))
-      // );
-      // return Object.fromEntries(
-      //   modelIds.map((id, index) => [id, results[index]])
-      // );
+    queryFn: async (): Promise<Record<string, BenchmarkMetrics[]>> => {
+      // Fetch benchmarks for all models in parallel
+      const results = await Promise.all(
+        modelIds.map(id => qnnApiClient.getBenchmarkMetrics(id).catch(() => []))
+      );
 
-      console.warn('useCompareBenchmarks: Using placeholder. Waiting for Agent 1 API client.');
-      await new Promise(resolve => setTimeout(resolve, 600));
-
-      return Object.fromEntries(modelIds.map(id => [id, null]));
+      // Create a map of modelId to benchmark metrics
+      return Object.fromEntries(
+        modelIds.map((id, index) => [id, results[index]])
+      );
     },
     staleTime: 10 * 60 * 1000,
     enabled: modelIds.length > 0,
@@ -322,9 +290,7 @@ export function usePrefetchBenchmark() {
     queryClient.prefetchQuery({
       queryKey: benchmarkKeys.detail(id),
       queryFn: async (): Promise<BenchmarkResult> => {
-        // TODO: Replace with actual API client
-        console.warn('Prefetch: Waiting for Agent 1 API client.');
-        throw new Error('Prefetch not implemented');
+        return qnnApiClient.getBenchmarkResult(id);
       },
       staleTime: 10 * 60 * 1000,
     });
