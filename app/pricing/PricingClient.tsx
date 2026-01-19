@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { motion, Variants } from 'framer-motion';
 import { Cpu, Shield, Users, Zap, Check } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { ButtonCustom } from '@/components/ui/button-custom';
 import { pricingService, type PricingPlan } from '@/services/pricingService';
 import { appConfig } from '@/lib/config/app';
 
