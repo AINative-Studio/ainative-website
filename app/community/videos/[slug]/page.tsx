@@ -1,5 +1,6 @@
 import { Metadata } from 'next';
 import VideoDetailClient from './VideoDetailClient';
+import { VideoSchema, BreadcrumbSchema } from '@/components/seo/StructuredData';
 
 interface PageProps {
   params: Promise<{ slug: string }>;
@@ -12,36 +13,48 @@ const mockVideos = [
     title: 'Getting Started with AI Kit',
     description:
       'Learn how to set up and use AI Kit for your first AI-powered application.',
+    duration: 'PT12M30S',
+    uploadDate: '2025-01-10T10:00:00Z',
   },
   {
     slug: 'rag-applications-zerodb',
     title: 'Building RAG Applications with ZeroDB',
     description:
       'Deep dive into Retrieval-Augmented Generation using ZeroDB vector database.',
+    duration: 'PT18M45S',
+    uploadDate: '2025-01-12T14:00:00Z',
   },
   {
     slug: 'qnn-optimization-webinar',
     title: 'QNN Performance Optimization Webinar',
     description:
       'Live webinar on optimizing Quantum Neural Networks for production workloads.',
+    duration: 'PT45M00S',
+    uploadDate: '2025-01-15T16:00:00Z',
   },
   {
     slug: 'ai-code-editor-showcase',
     title: 'AI-Powered Code Editor Showcase',
     description:
       'See how our community members built an intelligent code editor using AI Kit.',
+    duration: 'PT22M15S',
+    uploadDate: '2025-01-08T11:00:00Z',
   },
   {
     slug: 'agent-swarm-demo',
     title: 'Agent Swarm Architecture Demo',
     description:
       'Live demonstration of multi-agent orchestration using AI Kit.',
+    duration: 'PT15M30S',
+    uploadDate: '2025-01-06T13:00:00Z',
   },
   {
     slug: 'semantic-search-guide',
     title: 'Semantic Search Implementation Guide',
     description:
       'Step-by-step tutorial on implementing semantic search using ZeroDB.',
+    duration: 'PT20M00S',
+    uploadDate: '2025-01-05T09:00:00Z',
   },
 ];
 
@@ -89,5 +102,36 @@ export async function generateStaticParams() {
 
 export default async function VideoDetailPage({ params }: PageProps) {
   const resolvedParams = await params;
-  return <VideoDetailClient slug={resolvedParams.slug} />;
+  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://www.ainative.studio';
+  const video = mockVideos.find((v) => v.slug === resolvedParams.slug);
+
+  if (!video) {
+    return <VideoDetailClient slug={resolvedParams.slug} />;
+  }
+
+  // Breadcrumb items
+  const breadcrumbItems = [
+    { name: 'Home', url: siteUrl },
+    { name: 'Community', url: `${siteUrl}/community` },
+    { name: 'Videos', url: `${siteUrl}/community/videos` },
+    { name: video.title, url: `${siteUrl}/community/videos/${video.slug}` }
+  ];
+
+  // Video data for structured data
+  const videoData = {
+    title: video.title,
+    description: video.description,
+    thumbnailUrl: `${siteUrl}/images/videos/${video.slug}-poster.png`,
+    uploadDate: video.uploadDate,
+    duration: video.duration,
+    embedUrl: `${siteUrl}/community/videos/${video.slug}/player`
+  };
+
+  return (
+    <>
+      <VideoSchema {...videoData} />
+      <BreadcrumbSchema items={breadcrumbItems} />
+      <VideoDetailClient slug={resolvedParams.slug} />
+    </>
+  );
 }
