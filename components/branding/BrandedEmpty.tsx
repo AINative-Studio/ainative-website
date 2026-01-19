@@ -1,5 +1,6 @@
 import * as React from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 
@@ -101,11 +102,15 @@ export const BrandedEmpty = React.forwardRef<HTMLDivElement, BrandedEmptyProps>(
               {icon}
             </div>
           ) : (
-            <img
+            <Image
               src={image}
               alt=""
+              width={384}
+              height={256}
               className="w-64 md:w-96 opacity-60 hover:opacity-80 transition-opacity duration-300"
               aria-hidden="true"
+              priority={false}
+              quality={90}
             />
           )}
         </div>
