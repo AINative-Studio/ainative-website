@@ -44,7 +44,7 @@ export default function Header() {
     <header
       className={cn(
         'fixed top-0 left-0 right-0 z-50 transition-all duration-300 border-b',
-        'bg-[#0D1117] shadow-sm border-[#2D333B]'
+        'bg-vite-bg shadow-sm border-[#2D333B]'
       )}
     >
       <div className="container-custom flex items-center justify-between py-4 px-4 md:px-6">
@@ -156,7 +156,7 @@ export default function Header() {
 
       {/* Mobile Menu Sheet */}
       {mobileMenuOpen && (
-        <div className="fixed inset-0 z-40 bg-[#0D1117] animate-in slide-in-from-top p-6 flex flex-col gap-6 md:hidden">
+        <div className="fixed inset-0 z-40 bg-vite-bg animate-in slide-in-from-top p-6 flex flex-col gap-6 md:hidden">
           <div className="flex justify-between items-center">
             <Link href="/" className="flex items-center gap-3" onClick={() => setMobileMenuOpen(false)}>
               <img src="/ainative-icon.svg" alt="AINative Studio" className="h-10 w-auto" />

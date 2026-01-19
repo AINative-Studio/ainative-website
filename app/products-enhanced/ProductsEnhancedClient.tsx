@@ -94,7 +94,7 @@ export default function ProductsEnhancedClient() {
   }, [stats]);
 
   return (
-    <div className="bg-[#0D1117] text-white font-sans overflow-hidden">
+    <div className="bg-vite-bg text-white font-sans overflow-hidden">
       {/* Animated Background */}
       <div className="fixed inset-0 -z-10">
         <div className="absolute inset-0 bg-gradient-to-br from-[#0D1117] via-[#0A0D14] to-[#0D1117]">
@@ -344,7 +344,7 @@ export default function ProductsEnhancedClient() {
               >
                 <div className="absolute -inset-4 bg-gradient-to-r from-[#4B6FED] to-[#D04BF4] rounded-2xl opacity-20 blur-xl" />
                 <div className="relative bg-[#1C2128] p-1 rounded-2xl border border-white/10 overflow-hidden">
-                  <div className="h-6 bg-[#0D1117] flex items-center px-3">
+                  <div className="h-6 bg-vite-bg flex items-center px-3">
                     <div className="flex space-x-1.5">
                       <div className="w-3 h-3 rounded-full bg-red-500" />
                       <div className="w-3 h-3 rounded-full bg-yellow-500" />

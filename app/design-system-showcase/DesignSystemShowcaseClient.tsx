@@ -223,7 +223,7 @@ export default function DesignSystemShowcaseClient() {
     : AI_KIT_PACKAGES.filter(pkg => pkg.category === selectedCategory);
 
   return (
-    <div className="min-h-screen bg-[#0D1117]">
+    <div className="min-h-screen bg-vite-bg">
       {/* Hero Section */}
       <section className="relative overflow-hidden bg-gradient-to-b from-[#0D1117] via-[#161B22] to-[#0D1117] py-28 pt-36">
         <div className="absolute inset-0 bg-grid-white/[0.02] bg-[size:50px_50px]" />
@@ -345,7 +345,7 @@ export default function DesignSystemShowcaseClient() {
       </section>
 
       {/* AI Kit Packages */}
-      <section className="py-20 bg-[#0D1117]">
+      <section className="py-20 bg-vite-bg">
         <div className="container mx-auto px-6">
           <div className="text-center space-y-4 mb-12">
             <GradientText variant="secondary" size="3xl" as="h2" className="font-bold">
@@ -456,7 +456,7 @@ export default function DesignSystemShowcaseClient() {
             </div>
 
             <Tabs defaultValue="forms" className="w-full">
-              <TabsList className="grid grid-cols-4 md:grid-cols-7 w-full max-w-4xl mx-auto mb-12 bg-[#0D1117]">
+              <TabsList className="grid grid-cols-4 md:grid-cols-7 w-full max-w-4xl mx-auto mb-12 bg-vite-bg">
                 <TabsTrigger value="forms">Forms</TabsTrigger>
                 <TabsTrigger value="feedback">Feedback</TabsTrigger>
                 <TabsTrigger value="layout">Layout</TabsTrigger>
@@ -478,7 +478,7 @@ export default function DesignSystemShowcaseClient() {
                     <CardContent className="space-y-4">
                       <div>
                         <Label className="text-gray-400 mb-2 block">Standard Input</Label>
-                        <Input placeholder="Enter your name..." className="bg-[#0D1117] text-white border-[#2D333B]" />
+                        <Input placeholder="Enter your name..." className="bg-vite-bg text-white border-[#2D333B]" />
                       </div>
                       <div>
                         <Label className="text-gray-400 mb-2 block">Branded Input</Label>
@@ -496,7 +496,7 @@ export default function DesignSystemShowcaseClient() {
                     <CardContent className="space-y-4">
                       <div>
                         <Label className="text-gray-400 mb-2 block">Standard Textarea</Label>
-                        <Textarea placeholder="Enter your message..." className="bg-[#0D1117] text-white border-[#2D333B]" />
+                        <Textarea placeholder="Enter your message..." className="bg-vite-bg text-white border-[#2D333B]" />
                       </div>
                       <div>
                         <Label className="text-gray-400 mb-2 block">Branded Textarea</Label>
@@ -514,7 +514,7 @@ export default function DesignSystemShowcaseClient() {
                     <CardContent>
                       <Label className="text-gray-400 mb-2 block">Choose Framework</Label>
                       <Select value={selectedFramework} onValueChange={setSelectedFramework}>
-                        <SelectTrigger className="bg-[#0D1117] text-white border-[#2D333B]">
+                        <SelectTrigger className="bg-vite-bg text-white border-[#2D333B]">
                           <SelectValue placeholder="Select framework" />
                         </SelectTrigger>
                         <SelectContent>
@@ -566,7 +566,7 @@ export default function DesignSystemShowcaseClient() {
                       <CardDescription>Contextual alert messages</CardDescription>
                     </CardHeader>
                     <CardContent className="space-y-4">
-                      <Alert variant="default" className="bg-[#0D1117] border-[#2D333B]">
+                      <Alert variant="default" className="bg-vite-bg border-[#2D333B]">
                         <Info className="h-4 w-4 text-[#4B6FED]" />
                         <AlertTitle className="text-white">Information</AlertTitle>
                         <AlertDescription className="text-gray-400">
@@ -644,7 +644,7 @@ export default function DesignSystemShowcaseClient() {
                     <CardDescription>Reinforcement Learning from Human Feedback UI</CardDescription>
                   </CardHeader>
                   <CardContent className="space-y-6">
-                    <div className="bg-[#0D1117] rounded-lg p-6 border border-[#2D333B]">
+                    <div className="bg-vite-bg rounded-lg p-6 border border-[#2D333B]">
                       <h4 className="text-white font-medium mb-2">Agent Output Example</h4>
                       <p className="text-gray-400 text-sm mb-4">
                         The code refactoring was completed using TypeScript strict mode.
@@ -756,21 +756,21 @@ export default function DesignSystemShowcaseClient() {
                       <div className="rounded-lg border border-[#2D333B] overflow-hidden">
                         <Table>
                           <TableHeader>
-                            <TableRow className="border-[#2D333B] hover:bg-[#0D1117]">
+                            <TableRow className="border-[#2D333B] hover:bg-vite-bg">
                               <TableHead className="text-gray-400">Package</TableHead>
                               <TableHead className="text-gray-400">Downloads</TableHead>
                               <TableHead className="text-gray-400">Status</TableHead>
                             </TableRow>
                           </TableHeader>
                           <TableBody>
-                            <TableRow className="border-[#2D333B] hover:bg-[#0D1117]">
+                            <TableRow className="border-[#2D333B] hover:bg-vite-bg">
                               <TableCell className="text-white">@ainative/ai-kit</TableCell>
                               <TableCell className="text-gray-400">12.5K</TableCell>
                               <TableCell>
                                 <Badge className="bg-green-900/20 text-green-400 border-green-800">Active</Badge>
                               </TableCell>
                             </TableRow>
-                            <TableRow className="border-[#2D333B] hover:bg-[#0D1117]">
+                            <TableRow className="border-[#2D333B] hover:bg-vite-bg">
                               <TableCell className="text-white">@ainative/ai-kit-nextjs</TableCell>
                               <TableCell className="text-gray-400">8.3K</TableCell>
                               <TableCell>
@@ -858,11 +858,11 @@ export default function DesignSystemShowcaseClient() {
                           <Button variant="outline">Open Menu</Button>
                         </DropdownMenuTrigger>
                         <DropdownMenuContent className="bg-[#1C2128] border-[#2D333B]">
-                          <DropdownMenuItem className="text-gray-300 hover:bg-[#0D1117]">
+                          <DropdownMenuItem className="text-gray-300 hover:bg-vite-bg">
                             <User className="mr-2 h-4 w-4" />
                             Profile
                           </DropdownMenuItem>
-                          <DropdownMenuItem className="text-gray-300 hover:bg-[#0D1117]">
+                          <DropdownMenuItem className="text-gray-300 hover:bg-vite-bg">
                             <Settings className="mr-2 h-4 w-4" />
                             Settings
                           </DropdownMenuItem>
@@ -924,7 +924,7 @@ export default function DesignSystemShowcaseClient() {
       </section>
 
       {/* Code Examples */}
-      <section className="py-20 bg-[#0D1117]">
+      <section className="py-20 bg-vite-bg">
         <div className="container mx-auto px-6">
           <div className="max-w-6xl mx-auto">
             <div className="text-center space-y-4 mb-12">
@@ -977,7 +977,7 @@ export default function DesignSystemShowcaseClient() {
       <section className="py-20 bg-gradient-to-b from-[#0D1117] to-[#161B22]">
         <div className="container mx-auto px-6">
           <GradientBorder variant="rainbow" borderWidth="2" className="max-w-4xl mx-auto">
-            <div className="bg-[#0D1117] p-12 text-center space-y-6">
+            <div className="bg-vite-bg p-12 text-center space-y-6">
               <GradientText variant="rainbow" size="4xl" as="h2" className="font-bold">
                 Ready to Build?
               </GradientText>

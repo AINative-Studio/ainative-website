@@ -488,7 +488,7 @@ function VersionHistory({
                             animate={{ opacity: 1, y: 0 }}
                             transition={{ delay: idx * 0.05 }}
                             className={cn(
-                                'p-3 rounded-lg border bg-[#0D1117] border-gray-800 hover:border-gray-700 transition-colors',
+                                'p-3 rounded-lg border bg-vite-bg border-gray-800 hover:border-gray-700 transition-colors',
                                 version.version === currentVersion && 'border-primary/50 bg-primary/5'
                             )}
                         >
@@ -625,7 +625,7 @@ function ExportDialog({
                 </DialogHeader>
 
                 <div className="relative">
-                    <ScrollArea className="h-[300px] rounded-lg bg-[#0D1117] border border-gray-800">
+                    <ScrollArea className="h-[300px] rounded-lg bg-vite-bg border border-gray-800">
                         <pre className="p-4 text-sm font-mono text-gray-300 whitespace-pre-wrap">
                             {exportContent}
                         </pre>
@@ -1034,7 +1034,7 @@ export default function DataModelReview({
 
                 {/* Feedback Buttons */}
                 <TooltipProvider delayDuration={200}>
-                    <div className="flex items-center gap-1 bg-[#0D1117] rounded-full p-1 border border-gray-800">
+                    <div className="flex items-center gap-1 bg-vite-bg rounded-full p-1 border border-gray-800">
                         <Tooltip>
                             <TooltipTrigger asChild>
                                 <motion.button
@@ -1161,7 +1161,7 @@ export default function DataModelReview({
                                         initial={{ opacity: 0, y: 10 }}
                                         animate={{ opacity: 1, y: 0 }}
                                         transition={{ delay: idx * 0.1 }}
-                                        className="p-4 bg-[#0D1117] rounded-lg border border-gray-800 hover:border-gray-700 transition-colors"
+                                        className="p-4 bg-vite-bg rounded-lg border border-gray-800 hover:border-gray-700 transition-colors"
                                     >
                                         <div className="flex items-center gap-2 mb-3">
                                             <Database className="w-5 h-5 text-purple-400" />
@@ -1211,7 +1211,7 @@ export default function DataModelReview({
                             {/* Relationships */}
                             {currentDataModel.relationships &&
                                 currentDataModel.relationships.length > 0 && (
-                                    <div className="mt-4 p-4 bg-[#0D1117] rounded-lg border border-gray-800">
+                                    <div className="mt-4 p-4 bg-vite-bg rounded-lg border border-gray-800">
                                         <h4 className="font-semibold text-gray-100 mb-2">
                                             Relationships
                                         </h4>
@@ -1239,7 +1239,7 @@ export default function DataModelReview({
                     </div>
 
                     {/* Right: Chat + History Tabs */}
-                    <div className="flex flex-col bg-[#0D1117] rounded-lg border border-gray-800 overflow-hidden">
+                    <div className="flex flex-col bg-vite-bg rounded-lg border border-gray-800 overflow-hidden">
                         <Tabs
                             value={activeRightTab}
                             onValueChange={(v) => setActiveRightTab(v as 'chat' | 'history')}
@@ -1248,14 +1248,14 @@ export default function DataModelReview({
                             <TabsList className="grid grid-cols-2 bg-[#161B22] rounded-none border-b border-gray-800">
                                 <TabsTrigger
                                     value="chat"
-                                    className="data-[state=active]:bg-[#0D1117]"
+                                    className="data-[state=active]:bg-vite-bg"
                                 >
                                     <MessageSquare className="w-4 h-4 mr-2" />
                                     Edit with AI
                                 </TabsTrigger>
                                 <TabsTrigger
                                     value="history"
-                                    className="data-[state=active]:bg-[#0D1117]"
+                                    className="data-[state=active]:bg-vite-bg"
                                 >
                                     <History className="w-4 h-4 mr-2" />
                                     History
@@ -1311,7 +1311,7 @@ export default function DataModelReview({
                                                     )}
                                                 >
                                                     {message.role === 'assistant' && (
-                                                        <div className="w-8 h-8 rounded-full bg-gradient-to-br from-primary to-[#FF8A3D] flex items-center justify-center flex-shrink-0">
+                                                        <div className="w-8 h-8 rounded-full bg-gradient-to-br from-primary to-[#FCAE39] flex items-center justify-center flex-shrink-0">
                                                             <Bot className="w-4 h-4 text-white" />
                                                         </div>
                                                     )}
@@ -1353,7 +1353,7 @@ export default function DataModelReview({
 
                                         {isChatLoading && (
                                             <div className="flex gap-3">
-                                                <div className="w-8 h-8 rounded-full bg-gradient-to-br from-primary to-[#FF8A3D] flex items-center justify-center">
+                                                <div className="w-8 h-8 rounded-full bg-gradient-to-br from-primary to-[#FCAE39] flex items-center justify-center">
                                                     <Bot className="w-4 h-4 text-white" />
                                                 </div>
                                                 <div className="bg-[#161B22] rounded-lg px-4 py-2 border border-gray-800">
@@ -1381,7 +1381,7 @@ export default function DataModelReview({
                                             onKeyPress={handleKeyPress}
                                             placeholder="Ask to modify the data model..."
                                             disabled={isChatLoading || showDiffPreview}
-                                            className="flex-1 bg-[#0D1117] border-gray-700 text-gray-200 placeholder:text-gray-500 focus:border-primary"
+                                            className="flex-1 bg-vite-bg border-gray-700 text-gray-200 placeholder:text-gray-500 focus:border-primary"
                                         />
                                         <Button
                                             onClick={() => handleSendMessage()}
@@ -1428,7 +1428,7 @@ export default function DataModelReview({
                                                 'p-2 rounded-lg transition-all duration-200',
                                                 isThumbsUpActive
                                                     ? 'bg-green-500/20 text-green-400 border border-green-500/30'
-                                                    : 'bg-[#0D1117] text-gray-400 border border-gray-800 hover:border-green-500/30 hover:text-green-400',
+                                                    : 'bg-vite-bg text-gray-400 border border-gray-800 hover:border-green-500/30 hover:text-green-400',
                                                 (isLoading || isSuccess) && 'cursor-not-allowed opacity-70'
                                             )}
                                             aria-label="Thumbs up"
@@ -1454,7 +1454,7 @@ export default function DataModelReview({
                                                 'p-2 rounded-lg transition-all duration-200',
                                                 isThumbsDownActive
                                                     ? 'bg-red-500/20 text-red-400 border border-red-500/30'
-                                                    : 'bg-[#0D1117] text-gray-400 border border-gray-800 hover:border-red-500/30 hover:text-red-400',
+                                                    : 'bg-vite-bg text-gray-400 border border-gray-800 hover:border-red-500/30 hover:text-red-400',
                                                 (isLoading || isSuccess) && 'cursor-not-allowed opacity-70'
                                             )}
                                             aria-label="Thumbs down"
@@ -1480,7 +1480,7 @@ export default function DataModelReview({
                             'w-full transition-all duration-200',
                             isApproved
                                 ? 'bg-green-500 hover:bg-green-600'
-                                : 'bg-gradient-to-r from-primary to-[#FF8A3D] hover:opacity-90'
+                                : 'bg-gradient-to-r from-primary to-[#FCAE39] hover:opacity-90'
                         )}
                     >
                         {isApproved ? (

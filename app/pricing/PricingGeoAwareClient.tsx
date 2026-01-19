@@ -348,7 +348,7 @@ export default function PricingGeoAwareClient() {
   };
 
   return (
-    <div className="min-h-screen bg-[#0D1117] text-white py-28">
+    <div className="min-h-screen bg-vite-bg text-white py-28">
       <div className="max-w-screen-xl mx-auto px-6 space-y-12">
         {/* Header */}
         <motion.header

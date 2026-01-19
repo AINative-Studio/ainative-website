@@ -95,7 +95,7 @@ export default function HomeClient() {
   const y = useTransform(scrollYProgress, [0, 1], [0, 100]);
 
   return (
-    <div ref={targetRef} className="relative flex flex-col min-h-screen bg-[#0D1117] text-white overflow-hidden">
+    <div ref={targetRef} className="relative flex flex-col min-h-screen bg-vite-bg text-white overflow-hidden">
       {/* Enhanced Animated Background */}
       <motion.div
         className="fixed top-0 left-0 w-full h-full -z-10 overflow-hidden"
@@ -245,7 +245,7 @@ export default function HomeClient() {
       </section>
 
       {/* Value Proposition Section - Clean & Simple */}
-      <section className="py-20 bg-[#0D1117] relative">
+      <section className="py-20 bg-vite-bg relative">
         <div className="container-custom max-w-6xl">
           <motion.div
             className="text-center mb-16"

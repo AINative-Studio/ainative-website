@@ -269,7 +269,7 @@ function DraggableIssueCard({
                                 onChange={(e) => setEditedPoints(parseInt(e.target.value) || 0)}
                                 onKeyDown={handleKeyDown}
                                 onBlur={handlePointsSave}
-                                className="w-12 h-7 text-center text-xs bg-[#0D1117] border-primary/50"
+                                className="w-12 h-7 text-center text-xs bg-vite-bg border-primary/50"
                                 autoFocus
                                 data-testid={`points-input-${issue.id}`}
                             />
@@ -426,8 +426,8 @@ function SprintCard({
                     : isDragOver
                         ? 'bg-primary/10 border-primary border-dashed'
                         : isCurrentReview && reviewMode === 'paced'
-                            ? 'bg-[#0D1117] border-primary/50 ring-2 ring-primary/20'
-                            : 'bg-[#0D1117] border-gray-800 hover:border-gray-700'
+                            ? 'bg-vite-bg border-primary/50 ring-2 ring-primary/20'
+                            : 'bg-vite-bg border-gray-800 hover:border-gray-700'
             )}
             data-testid={`sprint-card-${sprint.number}`}
         >
@@ -677,7 +677,7 @@ function SprintCard({
                                             ? 'bg-green-500 hover:bg-green-600'
                                             : !sprint.isReviewed
                                                 ? 'bg-gray-700 text-gray-400 cursor-not-allowed'
-                                                : 'bg-gradient-to-r from-primary to-[#FF8A3D] hover:opacity-90'
+                                                : 'bg-gradient-to-r from-primary to-[#FCAE39] hover:opacity-90'
                                     )}
                                     data-testid={`approve-sprint-${sprint.number}`}
                                 >
@@ -719,7 +719,7 @@ function PacingControls({
     sprintStatuses: { isReviewed: boolean; isApproved: boolean }[];
 }) {
     return (
-        <div className="flex items-center justify-between p-4 bg-[#0D1117] rounded-lg border border-gray-800">
+        <div className="flex items-center justify-between p-4 bg-vite-bg rounded-lg border border-gray-800">
             <Button
                 variant="outline"
                 onClick={onPrevious}
@@ -1210,7 +1210,7 @@ export default function SprintPlanReview({
             {/* Floating Thumbs Up/Down (Top-Right) */}
             <div className="absolute top-4 right-4 z-10">
                 <TooltipProvider delayDuration={200}>
-                    <div className="flex items-center gap-2 bg-[#0D1117] rounded-full p-1 border border-gray-800 shadow-lg">
+                    <div className="flex items-center gap-2 bg-vite-bg rounded-full p-1 border border-gray-800 shadow-lg">
                         {/* Thumbs Up */}
                         <Tooltip>
                             <TooltipTrigger asChild>
@@ -1422,7 +1422,7 @@ export default function SprintPlanReview({
 
                 {/* Sprint Plan Summary */}
                 <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-                    <div className="p-3 bg-[#0D1117] rounded-lg border border-gray-800">
+                    <div className="p-3 bg-vite-bg rounded-lg border border-gray-800">
                         <div className="flex items-center gap-2 text-sm text-gray-400 mb-1">
                             <Clock className="w-4 h-4" />
                             Total Duration
@@ -1430,7 +1430,7 @@ export default function SprintPlanReview({
                         <div className="text-lg font-semibold text-primary">{sprintPlan.totalDuration}</div>
                     </div>
 
-                    <div className="p-3 bg-[#0D1117] rounded-lg border border-gray-800">
+                    <div className="p-3 bg-vite-bg rounded-lg border border-gray-800">
                         <div className="flex items-center gap-2 text-sm text-gray-400 mb-1">
                             <Target className="w-4 h-4" />
                             Total Points
@@ -1440,7 +1440,7 @@ export default function SprintPlanReview({
                         </div>
                     </div>
 
-                    <div className="p-3 bg-[#0D1117] rounded-lg border border-gray-800">
+                    <div className="p-3 bg-vite-bg rounded-lg border border-gray-800">
                         <div className="flex items-center gap-2 text-sm text-gray-400 mb-1">
                             <Bot className="w-4 h-4" />
                             Agent Time
@@ -1450,7 +1450,7 @@ export default function SprintPlanReview({
                         </div>
                     </div>
 
-                    <div className="p-3 bg-[#0D1117] rounded-lg border border-gray-800">
+                    <div className="p-3 bg-vite-bg rounded-lg border border-gray-800">
                         <div className="flex items-center gap-2 text-sm text-gray-400 mb-1">
                             <CheckCircle2 className="w-4 h-4" />
                             Approved
@@ -1462,7 +1462,7 @@ export default function SprintPlanReview({
                 </div>
 
                 {/* Overall Progress */}
-                <div className="p-4 bg-[#0D1117] rounded-lg border border-gray-800">
+                <div className="p-4 bg-vite-bg rounded-lg border border-gray-800">
                     <div className="flex items-center justify-between mb-2 text-sm">
                         <span className="text-gray-400">Sprint Review Progress</span>
                         <span className="text-gray-300">{approvedCount} of {totalSprints} approved</span>
@@ -1474,7 +1474,7 @@ export default function SprintPlanReview({
                 </div>
 
                 {/* Agent vs Human Time Visualization */}
-                <div className="p-4 bg-[#0D1117] rounded-lg border border-gray-800">
+                <div className="p-4 bg-vite-bg rounded-lg border border-gray-800">
                     <div className="flex items-center justify-between mb-2 text-sm text-gray-400">
                         <span>Agent / Human Time Split</span>
                         <span>95% / 5%</span>
@@ -1555,7 +1555,7 @@ export default function SprintPlanReview({
                 )}
 
                 {/* Save Draft Section */}
-                <div className="p-4 bg-[#0D1117] rounded-lg border border-gray-800">
+                <div className="p-4 bg-vite-bg rounded-lg border border-gray-800">
                     <div className="flex items-center justify-between">
                         <div className="flex items-center gap-2">
                             <Bookmark className="w-4 h-4 text-gray-400" />
@@ -1615,7 +1615,7 @@ export default function SprintPlanReview({
                                                 'p-2 rounded-lg transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-[#161B22]',
                                                 isThumbsUpActive
                                                     ? 'bg-green-500/20 text-green-400 border border-green-500/30 focus:ring-green-500'
-                                                    : 'bg-[#0D1117] text-gray-400 border border-gray-800 hover:border-green-500/30 hover:text-green-400 focus:ring-gray-500',
+                                                    : 'bg-vite-bg text-gray-400 border border-gray-800 hover:border-green-500/30 hover:text-green-400 focus:ring-gray-500',
                                                 (isLoading || isSuccess) && 'cursor-not-allowed opacity-70'
                                             )}
                                             aria-label="Thumbs up"
@@ -1640,7 +1640,7 @@ export default function SprintPlanReview({
                                                 'p-2 rounded-lg transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-[#161B22]',
                                                 isThumbsDownActive
                                                     ? 'bg-red-500/20 text-red-400 border border-red-500/30 focus:ring-red-500'
-                                                    : 'bg-[#0D1117] text-gray-400 border border-gray-800 hover:border-red-500/30 hover:text-red-400 focus:ring-gray-500',
+                                                    : 'bg-vite-bg text-gray-400 border border-gray-800 hover:border-red-500/30 hover:text-red-400 focus:ring-gray-500',
                                                 (isLoading || isSuccess) && 'cursor-not-allowed opacity-70'
                                             )}
                                             aria-label="Thumbs down"
@@ -1657,7 +1657,7 @@ export default function SprintPlanReview({
                     </div>
 
                     {/* Final Review Checkbox */}
-                    <label className="flex items-center gap-3 cursor-pointer group p-3 bg-[#0D1117] rounded-lg border border-gray-800 hover:border-gray-700 transition-colors">
+                    <label className="flex items-center gap-3 cursor-pointer group p-3 bg-vite-bg rounded-lg border border-gray-800 hover:border-gray-700 transition-colors">
                         <Checkbox
                             checked={hasReviewedAll}
                             onCheckedChange={(checked) => setHasReviewedAll(!!checked)}
@@ -1706,7 +1706,7 @@ export default function SprintPlanReview({
                                     ? 'bg-green-500 hover:bg-green-600'
                                     : !hasReviewedAll || !allSprintsApproved
                                         ? 'bg-gray-700 text-gray-400 cursor-not-allowed'
-                                        : 'bg-gradient-to-r from-primary to-[#FF8A3D] hover:opacity-90'
+                                        : 'bg-gradient-to-r from-primary to-[#FCAE39] hover:opacity-90'
                             )}
                             data-testid="finalize-sprint-plan"
                         >

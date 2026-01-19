@@ -89,7 +89,7 @@ const ApiSection = ({ title, icon: Icon, description, endpoints }: ApiSectionPro
       <Card className="h-full transition-all duration-300 hover:shadow-2xl hover:-translate-y-0.5 hover:border-[#4B6FED]/30 bg-[#161B22] backdrop-blur-sm overflow-hidden group-hover:shadow-[#4B6FED]/20 group-hover:shadow-xl relative before:absolute before:inset-0 before:bg-gradient-to-br before:from-[#4B6FED]/5 before:to-transparent before:opacity-0 hover:before:opacity-100 before:transition-all before:duration-500 border border-[#2D333B]">
         {/* Animated gradient border */}
         <div className="absolute inset-0 p-px rounded-xl bg-gradient-to-br from-[#4B6FED]/20 via-[#8A63F4]/30 to-[#8AB4FF]/20 opacity-0 group-hover:opacity-100 transition-all duration-500">
-          <div className="absolute inset-0.5 bg-[#0D1117] rounded-[11px]" />
+          <div className="absolute inset-0.5 bg-vite-bg rounded-[11px]" />
         </div>
 
         <div className="relative z-10 h-full flex flex-col">
@@ -137,7 +137,7 @@ const ApiSection = ({ title, icon: Icon, description, endpoints }: ApiSectionPro
                   }`}>
                     {endpoint.method}
                   </span>
-                  <code className="text-xs font-mono bg-[#0D1117] text-[#8AB4FF] px-2 py-1 rounded">
+                  <code className="text-xs font-mono bg-vite-bg text-[#8AB4FF] px-2 py-1 rounded">
                     {endpoint.path}
                   </code>
                 </div>
@@ -843,9 +843,9 @@ export default function DevResourcesClient() {
   );
 
   return (
-    <div className="min-h-screen bg-[#0D1117] text-white">
+    <div className="min-h-screen bg-vite-bg text-white">
       {/* Search Bar */}
-      <header className="sticky top-20 z-10 bg-[#0D1117]/80 backdrop-blur-lg border-b border-[#2D333B] transition-all duration-300 shadow-sm">
+      <header className="sticky top-20 z-10 bg-vite-bg/80 backdrop-blur-lg border-b border-[#2D333B] transition-all duration-300 shadow-sm">
         <div className="container mx-auto px-4 py-3">
           <div className="relative max-w-2xl mx-auto">
             <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">

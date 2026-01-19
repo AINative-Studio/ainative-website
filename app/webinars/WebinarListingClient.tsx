@@ -230,7 +230,7 @@ export default function WebinarListingClient() {
   const pastCount = filteredWebinars.filter(w => w.status === 'completed').length;
 
   return (
-    <div className="min-h-screen bg-[#0D1117]">
+    <div className="min-h-screen bg-vite-bg">
       <main className="container mx-auto px-4 py-20 mt-16">
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="text-center mb-12">
           <div className="inline-flex items-center justify-center px-4 py-2 rounded-full bg-[#4B6FED]/10 text-[#4B6FED] text-sm font-medium mb-4">

@@ -26,7 +26,7 @@ export default function QNNClient() {
   const calendlyUrl = appConfig.links.calendly;
 
   return (
-    <div className="full-width-section bg-[#0D1117] text-white">
+    <div className="full-width-section bg-vite-bg text-white">
       <div className="container mx-auto px-4 py-16">
         <div className="max-w-6xl mx-auto">
           {/* Hero Section */}

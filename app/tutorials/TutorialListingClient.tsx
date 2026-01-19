@@ -128,7 +128,7 @@ export default function TutorialListingClient() {
   })();
 
   return (
-    <div className="min-h-screen bg-[#0D1117]">
+    <div className="min-h-screen bg-vite-bg">
       <main className="container mx-auto px-4 py-20 mt-16">
         <motion.div
           initial={{ opacity: 0, y: 20 }}

@@ -204,7 +204,7 @@ const ApiKeysClient: React.FC = () => {
                       placeholder="e.g. Production API Key"
                       value={newKeyName}
                       onChange={(e) => setNewKeyName(e.target.value)}
-                      className="bg-[#0D1117] border-[#1E262F] text-white"
+                      className="bg-vite-bg border-[#1E262F] text-white"
                     />
                   </div>
                 </div>
@@ -230,7 +230,7 @@ const ApiKeysClient: React.FC = () => {
                   </AlertDescription>
                 </Alert>
                 <div className="flex items-center gap-2 mb-4">
-                  <code className="bg-[#0D1117] px-3 py-2 rounded text-primary flex-1 break-all">
+                  <code className="bg-vite-bg px-3 py-2 rounded text-primary flex-1 break-all">
                     {newKeyGenerated}
                   </code>
                   <Button
@@ -276,7 +276,7 @@ const ApiKeysClient: React.FC = () => {
                 key={apiKey.id}
                 className={`p-4 border rounded-md ${
                   apiKey.status === 'active'
-                    ? 'border-[#1E262F] bg-[#0D1117]'
+                    ? 'border-[#1E262F] bg-vite-bg'
                     : 'border-gray-700 bg-gray-900/50'
                 }`}
               >

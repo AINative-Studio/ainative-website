@@ -169,7 +169,7 @@ export default function ProfileClient() {
                   value={formData.name}
                   onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                   disabled={!isEditing}
-                  className="bg-[#0D1117] border-[#2D333B]"
+                  className="bg-vite-bg border-[#2D333B]"
                 />
               </div>
 
@@ -180,7 +180,7 @@ export default function ProfileClient() {
                   type="email"
                   value={formData.email}
                   disabled
-                  className="bg-[#0D1117] border-[#2D333B]"
+                  className="bg-vite-bg border-[#2D333B]"
                 />
                 <p className="text-xs text-muted-foreground">
                   Email cannot be changed. Contact support for assistance.

@@ -79,7 +79,7 @@ export default function AnalyticsVerifyClient() {
   };
 
   return (
-    <div className="min-h-screen bg-[#0D1117] text-white p-8">
+    <div className="min-h-screen bg-vite-bg text-white p-8">
       <div className="max-w-6xl mx-auto">
         {/* Header */}
         <div className="mb-8">

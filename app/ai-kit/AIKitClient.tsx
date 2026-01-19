@@ -271,7 +271,7 @@ export default function AIKitClient() {
     : aiKitPackages.filter(pkg => pkg.category === selectedCategory);
 
   return (
-    <main className="min-h-screen bg-[#0D1117] text-white overflow-hidden">
+    <main className="min-h-screen bg-vite-bg text-white overflow-hidden">
       {/* Animated Background */}
       <div className="fixed inset-0 -z-10">
         <div className="absolute inset-0 bg-gradient-to-br from-[#0D1117] via-[#0D1117] to-[#1A1B2E]" />
@@ -533,7 +533,7 @@ export default function AIKitClient() {
 
                         {/* Install Command */}
                         <div className="relative group/install">
-                          <div className="bg-[#0D1117] rounded-lg p-3 pr-12 font-mono text-xs text-gray-300 border border-[#2D333B]">
+                          <div className="bg-vite-bg rounded-lg p-3 pr-12 font-mono text-xs text-gray-300 border border-[#2D333B]">
                             npm install {pkg.name}
                           </div>
                           <button
@@ -627,7 +627,7 @@ export default function AIKitClient() {
                   </CardDescription>
                 </CardHeader>
                 <CardContent>
-                  <pre className="bg-[#0D1117] rounded-lg p-4 overflow-x-auto border border-[#2D333B]">
+                  <pre className="bg-vite-bg rounded-lg p-4 overflow-x-auto border border-[#2D333B]">
                     <code className="text-sm text-gray-300 font-mono">
                       {codeExamples.react}
                     </code>
@@ -648,7 +648,7 @@ export default function AIKitClient() {
                   </CardDescription>
                 </CardHeader>
                 <CardContent>
-                  <pre className="bg-[#0D1117] rounded-lg p-4 overflow-x-auto border border-[#2D333B]">
+                  <pre className="bg-vite-bg rounded-lg p-4 overflow-x-auto border border-[#2D333B]">
                     <code className="text-sm text-gray-300 font-mono">
                       {codeExamples.vue}
                     </code>
@@ -669,7 +669,7 @@ export default function AIKitClient() {
                   </CardDescription>
                 </CardHeader>
                 <CardContent>
-                  <pre className="bg-[#0D1117] rounded-lg p-4 overflow-x-auto border border-[#2D333B]">
+                  <pre className="bg-vite-bg rounded-lg p-4 overflow-x-auto border border-[#2D333B]">
                     <code className="text-sm text-gray-300 font-mono">
                       {codeExamples.cli}
                     </code>

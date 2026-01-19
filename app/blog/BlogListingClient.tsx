@@ -219,7 +219,7 @@ export default function BlogListingClient() {
   const featuredPost = transformedPosts[0];
 
   return (
-    <div className="min-h-screen bg-[#0D1117] text-white">
+    <div className="min-h-screen bg-vite-bg text-white">
       <main className="container mx-auto px-4 py-20 mt-16">
         <motion.div
           initial={{ opacity: 0, y: 20 }}

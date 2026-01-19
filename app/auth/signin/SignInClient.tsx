@@ -101,7 +101,7 @@ export default function SignInClient() {
 
   if (status === 'loading') {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-[#0D1117]">
+      <div className="min-h-screen flex items-center justify-center bg-vite-bg">
         <div className="animate-pulse">
           <div className="h-8 w-8 border-4 border-primary border-t-transparent rounded-full animate-spin" />
         </div>
@@ -110,7 +110,7 @@ export default function SignInClient() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-[#0D1117] px-4">
+    <div className="min-h-screen flex items-center justify-center bg-vite-bg px-4">
       <Card className="w-full max-w-md p-8 space-y-6 bg-[#161B22] border-gray-800">
         {/* Header */}
         <div className="text-center space-y-2">
@@ -169,7 +169,7 @@ export default function SignInClient() {
               autoComplete="email"
               required
               disabled={isLoading}
-              className="w-full px-4 py-2 bg-[#0D1117] border border-gray-700 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent disabled:opacity-50"
+              className="w-full px-4 py-2 bg-vite-bg border border-gray-700 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent disabled:opacity-50"
               placeholder="you@example.com"
             />
           </div>
@@ -185,7 +185,7 @@ export default function SignInClient() {
               autoComplete="current-password"
               required
               disabled={isLoading}
-              className="w-full px-4 py-2 bg-[#0D1117] border border-gray-700 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent disabled:opacity-50"
+              className="w-full px-4 py-2 bg-vite-bg border border-gray-700 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent disabled:opacity-50"
               placeholder="••••••••"
             />
           </div>

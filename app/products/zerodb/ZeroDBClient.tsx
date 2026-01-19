@@ -152,7 +152,7 @@ export default function ZeroDBClient() {
   };
 
   return (
-    <div className="min-h-screen bg-[#0D1117] text-white">
+    <div className="min-h-screen bg-vite-bg text-white">
       {/* Hero Section */}
       <section className="relative pt-32 pb-20 px-6 overflow-hidden">
         {/* Background gradient */}
@@ -331,7 +331,7 @@ export default function ZeroDBClient() {
             >
               <div className="absolute -inset-4 bg-gradient-to-r from-[#4B6FED] to-[#8A63F5] rounded-xl opacity-20 blur-xl" />
               <div className="relative bg-[#1C2128] rounded-xl border border-white/10 overflow-hidden">
-                <div className="flex items-center justify-between px-4 py-3 bg-[#0D1117] border-b border-white/10">
+                <div className="flex items-center justify-between px-4 py-3 bg-vite-bg border-b border-white/10">
                   <div className="flex items-center gap-2">
                     <div className="w-3 h-3 rounded-full bg-red-500" />
                     <div className="w-3 h-3 rounded-full bg-yellow-500" />

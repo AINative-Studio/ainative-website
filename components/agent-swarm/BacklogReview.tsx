@@ -253,7 +253,7 @@ function IssueCard({
                 exit={{ opacity: 0, scale: 0.95 }}
                 transition={{ duration: 0.15 }}
                 className={cn(
-                    'p-3 bg-[#0D1117] rounded-lg border cursor-grab active:cursor-grabbing',
+                    'p-3 bg-vite-bg rounded-lg border cursor-grab active:cursor-grabbing',
                     isSelected ? 'border-primary/60 bg-primary/5' : 'border-gray-800 hover:border-gray-700'
                 )}
                 data-testid={`issue-card-${issue.id}`}
@@ -328,7 +328,7 @@ function IssueCard({
             <Collapsible open={isExpanded} onOpenChange={setIsExpanded}>
                 <div
                     className={cn(
-                        'p-4 bg-[#0D1117] rounded-lg border transition-all duration-200',
+                        'p-4 bg-vite-bg rounded-lg border transition-all duration-200',
                         isSelected ? 'border-primary/60 bg-primary/5' : 'border-gray-800 hover:border-gray-700',
                         isExpanded && 'border-primary/40'
                     )}
@@ -634,7 +634,7 @@ function FilterSortControls({
     onViewModeChange,
 }: FilterSortControlsProps) {
     return (
-        <div className="flex flex-wrap items-center gap-3 p-3 bg-[#0D1117] rounded-lg border border-gray-800 mb-4">
+        <div className="flex flex-wrap items-center gap-3 p-3 bg-vite-bg rounded-lg border border-gray-800 mb-4">
             {/* View Mode Toggle */}
             <div className="flex items-center gap-1 p-1 bg-[#161B22] rounded-md border border-gray-800">
                 <Button
@@ -871,7 +871,7 @@ function PRDCoverageAnalysis({ prdRequirements, issues, onAddMissingIssue }: PRD
     if (prdRequirements.length === 0) return null;
 
     return (
-        <div className="p-4 bg-[#0D1117] rounded-lg border border-gray-800 mb-4" data-testid="prd-coverage">
+        <div className="p-4 bg-vite-bg rounded-lg border border-gray-800 mb-4" data-testid="prd-coverage">
             <div className="flex items-center justify-between mb-3">
                 <h4 className="flex items-center gap-2 text-sm font-medium text-gray-300">
                     <Target className="w-4 h-4 text-blue-400" />
@@ -1016,7 +1016,7 @@ function AddIssueDialog({ isOpen, onClose, onAdd, epics, defaultPrdSection }: Ad
                             value={title}
                             onChange={(e) => setTitle(e.target.value)}
                             placeholder="Enter issue title..."
-                            className="bg-[#0D1117] border-gray-700"
+                            className="bg-vite-bg border-gray-700"
                             data-testid="new-issue-title"
                         />
                     </div>
@@ -1025,7 +1025,7 @@ function AddIssueDialog({ isOpen, onClose, onAdd, epics, defaultPrdSection }: Ad
                         <div>
                             <label className="text-sm font-medium text-gray-300 mb-1 block">Type</label>
                             <Select value={type} onValueChange={(v) => setType(v as IssueType)}>
-                                <SelectTrigger className="bg-[#0D1117] border-gray-700">
+                                <SelectTrigger className="bg-vite-bg border-gray-700">
                                     <SelectValue />
                                 </SelectTrigger>
                                 <SelectContent className="bg-[#161B22] border-gray-700">
@@ -1041,7 +1041,7 @@ function AddIssueDialog({ isOpen, onClose, onAdd, epics, defaultPrdSection }: Ad
                         <div>
                             <label className="text-sm font-medium text-gray-300 mb-1 block">Priority</label>
                             <Select value={priority} onValueChange={(v) => setPriority(v as Priority)}>
-                                <SelectTrigger className="bg-[#0D1117] border-gray-700">
+                                <SelectTrigger className="bg-vite-bg border-gray-700">
                                     <SelectValue />
                                 </SelectTrigger>
                                 <SelectContent className="bg-[#161B22] border-gray-700">
@@ -1061,7 +1061,7 @@ function AddIssueDialog({ isOpen, onClose, onAdd, epics, defaultPrdSection }: Ad
                                 value={storyPoints.toString()}
                                 onValueChange={(v) => setStoryPoints(parseInt(v) as StoryPoints)}
                             >
-                                <SelectTrigger className="bg-[#0D1117] border-gray-700">
+                                <SelectTrigger className="bg-vite-bg border-gray-700">
                                     <SelectValue />
                                 </SelectTrigger>
                                 <SelectContent className="bg-[#161B22] border-gray-700">
@@ -1078,7 +1078,7 @@ function AddIssueDialog({ isOpen, onClose, onAdd, epics, defaultPrdSection }: Ad
                         <div>
                             <label className="text-sm font-medium text-gray-300 mb-1 block">Epic</label>
                             <Select value={epicId} onValueChange={setEpicId}>
-                                <SelectTrigger className="bg-[#0D1117] border-gray-700">
+                                <SelectTrigger className="bg-vite-bg border-gray-700">
                                     <SelectValue />
                                 </SelectTrigger>
                                 <SelectContent className="bg-[#161B22] border-gray-700">
@@ -1098,7 +1098,7 @@ function AddIssueDialog({ isOpen, onClose, onAdd, epics, defaultPrdSection }: Ad
                             value={description}
                             onChange={(e) => setDescription(e.target.value)}
                             placeholder="Describe the issue..."
-                            className="bg-[#0D1117] border-gray-700 min-h-[80px]"
+                            className="bg-vite-bg border-gray-700 min-h-[80px]"
                             data-testid="new-issue-description"
                         />
                     </div>
@@ -1109,7 +1109,7 @@ function AddIssueDialog({ isOpen, onClose, onAdd, epics, defaultPrdSection }: Ad
                             value={criteria}
                             onChange={(e) => setCriteria(e.target.value)}
                             placeholder="Enter each criterion on a new line..."
-                            className="bg-[#0D1117] border-gray-700 min-h-[80px]"
+                            className="bg-vite-bg border-gray-700 min-h-[80px]"
                         />
                     </div>
                 </div>
@@ -1191,7 +1191,7 @@ function MergeIssuesDialog({ isOpen, onClose, selectedIssues, onMerge }: MergeDi
                         <Input
                             value={title}
                             onChange={(e) => setTitle(e.target.value)}
-                            className="bg-[#0D1117] border-gray-700"
+                            className="bg-vite-bg border-gray-700"
                             data-testid="merge-title-input"
                         />
                     </div>
@@ -1201,7 +1201,7 @@ function MergeIssuesDialog({ isOpen, onClose, selectedIssues, onMerge }: MergeDi
                         <Textarea
                             value={description}
                             onChange={(e) => setDescription(e.target.value)}
-                            className="bg-[#0D1117] border-gray-700 min-h-[150px]"
+                            className="bg-vite-bg border-gray-700 min-h-[150px]"
                         />
                     </div>
 
@@ -1273,7 +1273,7 @@ function ReestimateDialog({ isOpen, onClose, selectedIssues, onReestimate }: Ree
 
                 <div className="space-y-3 py-4 max-h-[400px] overflow-y-auto">
                     {selectedIssues.map((issue) => (
-                        <div key={issue.id} className="flex items-center justify-between p-3 bg-[#0D1117] rounded-lg border border-gray-800">
+                        <div key={issue.id} className="flex items-center justify-between p-3 bg-vite-bg rounded-lg border border-gray-800">
                             <div className="flex-1 min-w-0 mr-4">
                                 <p className="text-sm font-medium text-gray-200 truncate">{issue.title}</p>
                                 <p className="text-xs text-gray-500">Current: {issue.storyPoints} pts</p>
@@ -1368,7 +1368,7 @@ function KanbanBoard({ issues, selectedIds, onUpdate, onDelete, onSelect, onReor
             {columns.map((column) => (
                 <div
                     key={column.id}
-                    className={cn('p-3 bg-[#0D1117] rounded-lg border-t-2', column.color)}
+                    className={cn('p-3 bg-vite-bg rounded-lg border-t-2', column.color)}
                     onDrop={(e) => handleDrop(e, column.id)}
                     onDragOver={handleDragOver}
                     data-testid={`kanban-column-${column.id}`}
@@ -1743,7 +1743,7 @@ export default function BacklogReview({
             {/* Floating Thumbs Up/Down (Top-Right) */}
             <div className="absolute top-4 right-4 z-10">
                 <TooltipProvider delayDuration={200}>
-                    <div className="flex items-center gap-2 bg-[#0D1117] rounded-full p-1 border border-gray-800 shadow-lg">
+                    <div className="flex items-center gap-2 bg-vite-bg rounded-full p-1 border border-gray-800 shadow-lg">
                         {/* Thumbs Up */}
                         <Tooltip>
                             <TooltipTrigger asChild>
@@ -1904,7 +1904,7 @@ export default function BacklogReview({
                 />
 
                 {/* Backlog Summary */}
-                <div className="mb-4 p-4 bg-[#0D1117] rounded-lg border border-gray-800">
+                <div className="mb-4 p-4 bg-vite-bg rounded-lg border border-gray-800">
                     <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-center">
                         <div>
                             <p className="text-2xl font-bold text-primary">{backlog.totalTasks}</p>
@@ -2064,7 +2064,7 @@ export default function BacklogReview({
                                                 'p-2 rounded-lg transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-[#161B22]',
                                                 isThumbsUpActive
                                                     ? 'bg-green-500/20 text-green-400 border border-green-500/30 focus:ring-green-500'
-                                                    : 'bg-[#0D1117] text-gray-400 border border-gray-800 hover:border-green-500/30 hover:text-green-400 focus:ring-gray-500',
+                                                    : 'bg-vite-bg text-gray-400 border border-gray-800 hover:border-green-500/30 hover:text-green-400 focus:ring-gray-500',
                                                 (isLoading || isSuccess) && 'cursor-not-allowed opacity-70'
                                             )}
                                             aria-label="Thumbs up"
@@ -2089,7 +2089,7 @@ export default function BacklogReview({
                                                 'p-2 rounded-lg transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-[#161B22]',
                                                 isThumbsDownActive
                                                     ? 'bg-red-500/20 text-red-400 border border-red-500/30 focus:ring-red-500'
-                                                    : 'bg-[#0D1117] text-gray-400 border border-gray-800 hover:border-red-500/30 hover:text-red-400 focus:ring-gray-500',
+                                                    : 'bg-vite-bg text-gray-400 border border-gray-800 hover:border-red-500/30 hover:text-red-400 focus:ring-gray-500',
                                                 (isLoading || isSuccess) && 'cursor-not-allowed opacity-70'
                                             )}
                                             aria-label="Thumbs down"
@@ -2113,7 +2113,7 @@ export default function BacklogReview({
                             'w-full transition-all duration-200',
                             isApproved
                                 ? 'bg-green-500 hover:bg-green-600'
-                                : 'bg-gradient-to-r from-primary to-[#FF8A3D] hover:opacity-90'
+                                : 'bg-gradient-to-r from-primary to-[#FCAE39] hover:opacity-90'
                         )}
                         data-testid="approve-backlog-btn"
                     >

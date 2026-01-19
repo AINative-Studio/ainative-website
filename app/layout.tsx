@@ -213,7 +213,7 @@ export default function RootLayout({
         <StructuredData />
       </head>
       <body
-        className={`${poppins.variable} ${geistSans.variable} ${geistMono.variable} font-sans antialiased bg-[#0D1117] text-white`}
+        className={`${poppins.variable} ${geistSans.variable} ${geistMono.variable} font-sans antialiased bg-vite-bg text-white`}
       >
         {/* GTM noscript fallback */}
         <GoogleTagManagerNoscript />

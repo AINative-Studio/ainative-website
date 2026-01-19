@@ -64,7 +64,7 @@ const fadeInUp = {
 
 export default function DocsClient() {
   return (
-    <div className="min-h-screen bg-[#0D1117]">
+    <div className="min-h-screen bg-vite-bg">
       <div className="container mx-auto px-4 py-16">
         <div className="max-w-5xl mx-auto">
           {/* Hero Section */}
@@ -145,7 +145,7 @@ export default function DocsClient() {
                 </CardDescription>
               </CardHeader>
               <CardContent>
-                <div className="bg-[#0D1117] border border-[#2D333B] rounded-lg p-4 overflow-x-auto">
+                <div className="bg-vite-bg border border-[#2D333B] rounded-lg p-4 overflow-x-auto">
                   <pre className="text-sm text-gray-100">
                     <code>{`import { AINativeClient } from '@ainative/sdk';
 

@@ -111,7 +111,7 @@ export default function OAuthCallbackClient() {
   }, [router, searchParams]);
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen bg-[#0D1117] text-white p-4">
+    <div className="flex flex-col items-center justify-center min-h-screen bg-vite-bg text-white p-4">
       <div className="flex flex-col items-center space-y-6 max-w-md text-center">
         <div className="flex items-center space-x-3">
           <svg className="h-8 w-8" viewBox="0 0 24 24" fill="currentColor">

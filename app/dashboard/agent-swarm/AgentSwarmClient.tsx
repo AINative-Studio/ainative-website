@@ -55,7 +55,7 @@ const ProjectCard = ({ project }: { project: AgentSwarmProject }) => {
           </div>
           <div className="w-full bg-gray-800 rounded-full h-2">
             <div
-              className="bg-gradient-to-r from-primary to-[#FF8A3D] h-2 rounded-full transition-all"
+              className="bg-gradient-to-r from-primary to-[#FCAE39] h-2 rounded-full transition-all"
               style={{ width: `${project.progress}%` }}
             ></div>
           </div>
@@ -66,7 +66,7 @@ const ProjectCard = ({ project }: { project: AgentSwarmProject }) => {
             {project.agents.map((agent, index) => (
               <div
                 key={index}
-                className="p-3 bg-[#0D1117] rounded-lg border border-gray-800"
+                className="p-3 bg-vite-bg rounded-lg border border-gray-800"
               >
                 <div className="flex items-center gap-2 mb-2">
                   {agent.status === 'working' && (
@@ -257,7 +257,7 @@ export default function AgentSwarmClient() {
           </CardHeader>
           <CardContent>
             <Tabs value={activeTab} onValueChange={setActiveTab}>
-              <TabsList className="grid w-full grid-cols-2 bg-[#0D1117]">
+              <TabsList className="grid w-full grid-cols-2 bg-vite-bg">
                 <TabsTrigger value="upload" className="flex items-center gap-2">
                   <Upload className="w-4 h-4" />
                   Upload PRD File
@@ -291,7 +291,7 @@ export default function AgentSwarmClient() {
                 </div>
 
                 {selectedFile && (
-                  <div className="flex items-center justify-between p-4 bg-[#0D1117] rounded-lg">
+                  <div className="flex items-center justify-between p-4 bg-vite-bg rounded-lg">
                     <div className="flex items-center gap-3">
                       <FileText className="w-5 h-5 text-primary" />
                       <div>
@@ -315,7 +315,7 @@ export default function AgentSwarmClient() {
                     value={prdText}
                     onChange={(e) => setPrdText(e.target.value)}
                     placeholder="# Product Requirements Document&#10;&#10;## Project Overview&#10;Describe your project here..."
-                    className="w-full h-[400px] p-4 bg-[#0D1117] border border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary resize-none font-mono text-sm"
+                    className="w-full h-[400px] p-4 bg-vite-bg border border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary resize-none font-mono text-sm"
                   />
                   <p className="text-xs text-gray-500 mt-2">
                     {prdText.length} characters • {prdText.split(/\s+/).filter((w) => w).length}{' '}
@@ -329,7 +329,7 @@ export default function AgentSwarmClient() {
               <Button
                 onClick={handleCreateProject}
                 disabled={uploading || (!selectedFile && !prdText.trim())}
-                className="w-full bg-gradient-to-r from-primary to-[#FF8A3D] h-12 text-base"
+                className="w-full bg-gradient-to-r from-primary to-[#FCAE39] h-12 text-base"
               >
                 {uploading ? (
                   <>

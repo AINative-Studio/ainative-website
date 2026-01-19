@@ -113,7 +113,7 @@ export default function TimeComparisonCard({
 
                     {/* Visual Comparison Stats */}
                     <div className="grid grid-cols-2 gap-3 pt-2">
-                        <div className="p-3 bg-[#0D1117] rounded-lg border border-gray-800">
+                        <div className="p-3 bg-vite-bg rounded-lg border border-gray-800">
                             <div className="flex items-center gap-2 mb-1">
                                 <Clock className="w-3.5 h-3.5 text-gray-500" />
                                 <p className="text-xs text-gray-500">Traditional</p>

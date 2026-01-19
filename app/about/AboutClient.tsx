@@ -90,7 +90,7 @@ const techStack = [
 
 export default function AboutClient() {
   return (
-    <div className="min-h-screen bg-[#0D1117] text-white">
+    <div className="min-h-screen bg-vite-bg text-white">
       {/* Hero Section */}
       <div className="relative overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-b from-[#4B6FED]/10 to-transparent -z-10" />

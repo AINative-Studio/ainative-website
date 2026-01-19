@@ -112,7 +112,7 @@ export function AgentTeamOverview({
 
     if (isLoading) {
         return (
-            <Card className={cn('bg-[#0D1117] border-gray-800', className)}>
+            <Card className={cn('bg-vite-bg border-gray-800', className)}>
                 <CardHeader className="pb-4">
                     <div className="flex items-center justify-between">
                         <CardTitle className="flex items-center gap-2 text-xl">
@@ -131,7 +131,7 @@ export function AgentTeamOverview({
 
     return (
         <Card
-            className={cn('bg-[#0D1117] border-gray-800', className)}
+            className={cn('bg-vite-bg border-gray-800', className)}
             data-testid="agent-team-overview"
         >
             <CardHeader className="pb-4">

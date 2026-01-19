@@ -311,7 +311,7 @@ export default function QNNDashboardClient() {
                 {models.map((model) => (
                   <div
                     key={model.id}
-                    className="flex items-center justify-between p-3 bg-[#0D1117] rounded-lg border border-[#2D333B]"
+                    className="flex items-center justify-between p-3 bg-vite-bg rounded-lg border border-[#2D333B]"
                   >
                     <div className="flex-1">
                       <div className="flex items-center gap-2">
@@ -366,7 +366,7 @@ export default function QNNDashboardClient() {
                 {trainingJobs.map((job) => (
                   <div
                     key={job.id}
-                    className="p-3 bg-[#0D1117] rounded-lg border border-[#2D333B]"
+                    className="p-3 bg-vite-bg rounded-lg border border-[#2D333B]"
                   >
                     <div className="flex items-center justify-between mb-2">
                       <div className="flex items-center gap-2">

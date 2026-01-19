@@ -172,7 +172,7 @@ export default function EventsCalendarClient() {
   };
 
   return (
-    <div className="min-h-screen bg-[#0D1117]">
+    <div className="min-h-screen bg-vite-bg">
       <main className="container-custom py-20 mt-16">
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="text-center mb-12">
           <div className="inline-flex items-center justify-center px-4 py-2 rounded-full bg-[#4B6FED]/10 text-[#8AB4FF] text-sm font-medium mb-4">
@@ -259,7 +259,7 @@ export default function EventsCalendarClient() {
                       <span className="font-semibold text-[#4B6FED]">$497</span>
                     </div>
                   </div>
-                  <div className="bg-[#0D1117]/60 rounded p-3 text-xs text-gray-400">
+                  <div className="bg-vite-bg/60 rounded p-3 text-xs text-gray-400">
                     <strong className="text-white">ROI:</strong> 80% cost reduction, 60s deploy time, 9 APIs unified
                   </div>
                 </div>

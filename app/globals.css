@@ -301,6 +301,10 @@ a {
   box-shadow: 0 0 30px rgba(75, 111, 237, 0.5);
 }
 
+.shadow-glow-primary {
+  box-shadow: 0 0 30px rgba(75, 111, 237, 0.5), 0 0 60px rgba(75, 111, 237, 0.3);
+}
+
 /* Text gradients */
 .text-gradient-primary {
   background: linear-gradient(135deg, #4B6FED 0%, #8A63F4 100%);

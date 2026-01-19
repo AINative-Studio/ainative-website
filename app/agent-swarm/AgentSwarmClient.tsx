@@ -109,7 +109,7 @@ export default function AgentSwarmClient() {
   };
 
   return (
-    <div className="relative flex flex-col min-h-screen bg-[#0D1117] text-white overflow-hidden">
+    <div className="relative flex flex-col min-h-screen bg-vite-bg text-white overflow-hidden">
       {/* Enhanced Animated Background */}
       <div className="fixed top-0 left-0 w-full h-full -z-10 overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-br from-[#0D1117] via-[#0D1117] to-[#1A1B2E]" />
@@ -256,7 +256,7 @@ export default function AgentSwarmClient() {
                 viewport={{ once: true, margin: "-100px" }}
                 className="relative"
               >
-                <div className="relative bg-[#0D1117] rounded-2xl p-6 border border-[#2D333B]/50 hover:border-[#4B6FED]/40 transition-all duration-300">
+                <div className="relative bg-vite-bg rounded-2xl p-6 border border-[#2D333B]/50 hover:border-[#4B6FED]/40 transition-all duration-300">
                   <div className={`absolute -top-4 left-6 px-3 py-1 rounded-full bg-gradient-to-r ${step.color} text-white font-bold text-sm`}>
                     Step {step.step}
                   </div>
@@ -278,7 +278,7 @@ export default function AgentSwarmClient() {
       </section>
 
       {/* Specialized Agents */}
-      <section className="py-12 bg-[#0D1117] relative overflow-hidden">
+      <section className="py-12 bg-vite-bg relative overflow-hidden">
         <div className="container-custom max-w-7xl mx-auto px-4">
           <motion.div
             className="text-center mb-8"
@@ -364,7 +364,7 @@ export default function AgentSwarmClient() {
                 <p className="text-gray-400 text-sm mb-4">{agent.desc}</p>
                 <div className="flex flex-wrap gap-2">
                   {agent.capabilities.map((cap) => (
-                    <span key={cap} className="px-2 py-1 rounded-full bg-[#0D1117] text-[#8AB4FF] text-xs">
+                    <span key={cap} className="px-2 py-1 rounded-full bg-vite-bg text-[#8AB4FF] text-xs">
                       {cap}
                     </span>
                   ))}
@@ -431,7 +431,7 @@ export default function AgentSwarmClient() {
                 initial="hidden"
                 whileInView="show"
                 viewport={{ once: true, margin: "-100px" }}
-                className="bg-[#0D1117] rounded-2xl p-6 border border-[#2D333B]/50 hover:border-[#8A63F4]/40 transition-all duration-300"
+                className="bg-vite-bg rounded-2xl p-6 border border-[#2D333B]/50 hover:border-[#8A63F4]/40 transition-all duration-300"
               >
                 <div className="p-3 rounded-xl bg-[#8A63F4]/10 w-fit mb-4">
                   <feature.icon className="h-6 w-6 text-[#8AB4FF]" />
@@ -453,7 +453,7 @@ export default function AgentSwarmClient() {
       </section>
 
       {/* Pricing Tiers */}
-      <section className="py-12 bg-[#0D1117] relative overflow-hidden">
+      <section className="py-12 bg-vite-bg relative overflow-hidden">
         <div className="container-custom max-w-7xl mx-auto px-4">
           <motion.div
             className="text-center mb-8"

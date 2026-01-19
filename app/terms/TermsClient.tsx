@@ -57,7 +57,7 @@ const TermCard: React.FC<TermCardProps> = ({ icon, title, children }) => (
 
 export default function TermsClient() {
   return (
-    <div className="min-h-screen bg-[#0D1117] text-white">
+    <div className="min-h-screen bg-vite-bg text-white">
       <div className="container mx-auto px-4 py-16 max-w-6xl">
         <motion.div
           initial="hidden"

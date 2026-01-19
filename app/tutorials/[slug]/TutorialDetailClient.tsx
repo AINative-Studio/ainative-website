@@ -134,7 +134,7 @@ export default function TutorialDetailClient({ slug }: TutorialDetailClientProps
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-[#0D1117]">
+      <div className="min-h-screen bg-vite-bg">
         <main className="container mx-auto px-4 py-20 mt-16">
           <Link href="/tutorials">
             <Button variant="ghost" className="mb-6 text-gray-400 hover:text-white">
@@ -191,7 +191,7 @@ export default function TutorialDetailClient({ slug }: TutorialDetailClientProps
 
   if (error || !tutorial) {
     return (
-      <div className="min-h-screen bg-[#0D1117]">
+      <div className="min-h-screen bg-vite-bg">
         <main className="container mx-auto px-4 py-20 mt-16">
           <Link href="/tutorials">
             <Button variant="ghost" className="mb-6 text-gray-400 hover:text-white">
@@ -233,7 +233,7 @@ export default function TutorialDetailClient({ slug }: TutorialDetailClientProps
   }
 
   return (
-    <div className="min-h-screen bg-[#0D1117]">
+    <div className="min-h-screen bg-vite-bg">
       <main className="container mx-auto px-4 py-20 mt-16">
         <Link href="/tutorials">
           <Button variant="ghost" className="mb-6 text-gray-400 hover:text-white">

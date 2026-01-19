@@ -99,7 +99,7 @@ export default function DownloadClient() {
   ];
 
   return (
-    <div className="bg-[#0D1117] text-white py-32 px-6 sm:px-8">
+    <div className="bg-vite-bg text-white py-32 px-6 sm:px-8">
       <div className="max-w-7xl mx-auto space-y-36">
 
         {/* Hero Section */}
@@ -214,17 +214,17 @@ export default function DownloadClient() {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-center">
-            <div className="bg-[#0D1117]/50 rounded-lg p-4 border border-[#21262D]">
+            <div className="bg-vite-bg/50 rounded-lg p-4 border border-[#21262D]">
               <Code className="h-6 w-6 mx-auto text-[#4B6FED] mb-2" />
               <h4 className="text-sm font-semibold text-white mb-1">IDE Source</h4>
               <p className="text-xs text-gray-400">Main IDE application code</p>
             </div>
-            <div className="bg-[#0D1117]/50 rounded-lg p-4 border border-[#21262D]">
+            <div className="bg-vite-bg/50 rounded-lg p-4 border border-[#21262D]">
               <Terminal className="h-6 w-6 mx-auto text-[#8A63F4] mb-2" />
               <h4 className="text-sm font-semibold text-white mb-1">Extensions</h4>
               <p className="text-xs text-gray-400">Plugin ecosystem</p>
             </div>
-            <div className="bg-[#0D1117]/50 rounded-lg p-4 border border-[#21262D]">
+            <div className="bg-vite-bg/50 rounded-lg p-4 border border-[#21262D]">
               <Zap className="h-6 w-6 mx-auto text-[#D04BF4] mb-2" />
               <h4 className="text-sm font-semibold text-white mb-1">Documentation</h4>
               <p className="text-xs text-gray-400">Guides and API docs</p>

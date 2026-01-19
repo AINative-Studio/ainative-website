@@ -115,7 +115,7 @@ export default function ShowcaseDetailClient({ slug }: ShowcaseDetailClientProps
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-[#0D1117]">
+      <div className="min-h-screen bg-vite-bg">
         <main className="container mx-auto px-4 py-20 mt-16">
           <Link href="/showcases">
             <Button variant="ghost" className="mb-6 text-gray-400 hover:text-white hover:bg-[#161B22]">
@@ -143,7 +143,7 @@ export default function ShowcaseDetailClient({ slug }: ShowcaseDetailClientProps
 
   if (error || !showcase) {
     return (
-      <div className="min-h-screen bg-[#0D1117]">
+      <div className="min-h-screen bg-vite-bg">
         <main className="container mx-auto px-4 py-20 mt-16">
           <Link href="/showcases">
             <Button variant="ghost" className="mb-6 text-gray-400 hover:text-white hover:bg-[#161B22]">
@@ -206,7 +206,7 @@ export default function ShowcaseDetailClient({ slug }: ShowcaseDetailClientProps
   };
 
   return (
-    <div className="min-h-screen bg-[#0D1117]">
+    <div className="min-h-screen bg-vite-bg">
       <main className="container mx-auto px-4 py-20 mt-16">
         <div className="flex items-center justify-between mb-6">
           <Link href="/showcases">

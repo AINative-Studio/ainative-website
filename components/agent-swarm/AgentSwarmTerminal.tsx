@@ -261,7 +261,7 @@ export default function AgentSwarmTerminal({
   };
 
   return (
-    <Card className="bg-[#0D1117] border-gray-800">
+    <Card className="bg-vite-bg border-gray-800">
       <CardHeader>
         <CardTitle className="flex items-center justify-between">
           <div className="flex items-center gap-2">
@@ -302,7 +302,7 @@ export default function AgentSwarmTerminal({
                   key={agent.name}
                   initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
-                  className="flex items-center gap-2 p-2 bg-[#0D1117] rounded border border-gray-800"
+                  className="flex items-center gap-2 p-2 bg-vite-bg rounded border border-gray-800"
                 >
                   {STATUS_ICONS[agent.status]}
                   <div className="flex-1 min-w-0">
