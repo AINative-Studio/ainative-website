@@ -14,7 +14,12 @@
     "test:e2e": "playwright test",
     "test:e2e:ui": "playwright test --ui",
     "test:e2e:headed": "playwright test --headed",
-    "verify:keywords": "tsx scripts/verify-keywords.ts"
+    "verify:keywords": "tsx scripts/verify-keywords.ts",
+    "perf:test": "lhci autorun",
+    "perf:collect": "lhci collect",
+    "perf:assert": "lhci assert",
+    "perf:upload": "lhci upload",
+    "perf:report": "lhci open"
   },
   "dependencies": {
     "@radix-ui/react-accordion": "^1.2.12",
