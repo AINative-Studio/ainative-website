@@ -1,5 +1,6 @@
 import * as React from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { X } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -99,14 +100,17 @@ export const BrandedWelcome = React.forwardRef<HTMLDivElement, BrandedWelcomePro
       >
         {/* Background Image */}
         {showImage && (
-          <div
-            className="absolute inset-0 opacity-10 bg-cover bg-center z-0"
-            style={{
-              backgroundImage: `url(${backgroundImage})`,
-              backgroundRepeat: 'no-repeat',
-            }}
-            aria-hidden="true"
-          />
+          <div className="absolute inset-0 z-0 opacity-10" aria-hidden="true">
+            <Image
+              src={backgroundImage}
+              alt=""
+              fill
+              className="object-cover object-center"
+              priority={false}
+              quality={90}
+              sizes="100vw"
+            />
+          </div>
         )}
 
         {/* Content Layer */}
