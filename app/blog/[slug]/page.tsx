@@ -1,5 +1,6 @@
 import { Metadata } from 'next';
 import BlogDetailClient from './BlogDetailClient';
+import { ArticleSchema, BreadcrumbSchema } from '@/components/seo/StructuredData';
 
 interface BlogDetailPageProps {
   params: Promise<{
@@ -25,5 +26,33 @@ export async function generateMetadata({ params }: BlogDetailPageProps): Promise
 
 export default async function BlogDetailPage({ params }: BlogDetailPageProps) {
   const resolvedParams = await params;
-  return <BlogDetailClient slug={resolvedParams.slug} />;
+  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://www.ainative.studio';
+
+  // Generate title from slug for structured data
+  const title = resolvedParams.slug.replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
+
+  // Breadcrumb items
+  const breadcrumbItems = [
+    { name: 'Home', url: siteUrl },
+    { name: 'Blog', url: `${siteUrl}/blog` },
+    { name: title, url: `${siteUrl}/blog/${resolvedParams.slug}` }
+  ];
+
+  // Article data for structured data
+  const articleData = {
+    title,
+    description: 'Read this article on the AINative Blog',
+    author: 'AI Native Studio',
+    datePublished: new Date().toISOString(),
+    dateModified: new Date().toISOString(),
+    image: `${siteUrl}/card.png`
+  };
+
+  return (
+    <>
+      <ArticleSchema article={articleData} />
+      <BreadcrumbSchema items={breadcrumbItems} />
+      <BlogDetailClient slug={resolvedParams.slug} />
+    </>
+  );
 }
