@@ -4,11 +4,18 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server';
+import { applyRateLimit } from '@/middleware/rateLimit';
 
 const LUMA_API_BASE = 'https://api.lu.ma';
 const LUMA_API_KEY = process.env.LUMA_API_KEY;
 
 async function proxyRequest(request: NextRequest, pathSegments: string[]) {
+  // Apply rate limiting (search tier: 30 requests/minute)
+  const rateLimitResult = await applyRateLimit(request, { tier: 'search' });
+  if (!rateLimitResult.success) {
+    return rateLimitResult.response!;
+  }
+
   if (!LUMA_API_KEY) {
     return NextResponse.json(
       { error: { code: 'CONFIG_ERROR', message: 'Luma API key not configured' } },
@@ -39,7 +46,14 @@ async function proxyRequest(request: NextRequest, pathSegments: string[]) {
 
     const data = await response.json();
 
-    return NextResponse.json(data, { status: response.status });
+    const jsonResponse = NextResponse.json(data, { status: response.status });
+
+    // Add rate limit headers to response
+    Object.entries(rateLimitResult.headers).forEach(([key, value]) => {
+      jsonResponse.headers.set(key, value);
+    });
+
+    return jsonResponse;
   } catch (error) {
     console.error('[Luma Proxy Error]', error);
     return NextResponse.json(
