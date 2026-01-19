@@ -109,3 +109,90 @@ export function createInitialExecutionStages(): ExecutionStagesState {
     validation: { status: 'pending', progress: 0, data: null }
   };
 }
+
+/**
+ * Get progress visualization data
+ */
+export function getProgressVisualization(executionStages: ExecutionStagesState) {
+  const stages = [
+    { key: 'launchSwarm', number: 7, label: 'Launch Swarm' },
+    { key: 'createRepo', number: 8, label: 'Create Repository' },
+    { key: 'publishBacklog', number: 9, label: 'Publish Backlog' },
+    { key: 'featureDev', number: 10, label: 'Feature Development' },
+    { key: 'validation', number: 11, label: 'Validation' },
+  ] as const;
+
+  return stages.map((stage) => {
+    const stageData = executionStages[stage.key as keyof ExecutionStagesState];
+    return {
+      number: stage.number,
+      label: stage.label,
+      status: stageData.status,
+      progress: stageData.progress,
+      isActive: stageData.status === 'in_progress',
+      isCompleted: stageData.status === 'completed',
+      isFailed: stageData.status === 'failed',
+    };
+  });
+}
+
+/**
+ * Calculate overall execution progress percentage
+ */
+export function calculateOverallProgress(executionStages: ExecutionStagesState): number {
+  const stages = Object.values(executionStages);
+  const completedStages = stages.filter((s) => s.status === 'completed').length;
+  const totalStages = stages.length;
+
+  const inProgressStage = stages.find((s) => s.status === 'in_progress');
+  const partialProgress = inProgressStage ? inProgressStage.progress / 100 : 0;
+
+  return Math.round(((completedStages + partialProgress) / totalStages) * 100);
+}
+
+/**
+ * Get stage status icon
+ */
+export function getStageStatusIcon(status: StageStatus): string {
+  const icons: Record<StageStatus, string> = {
+    pending: '⏳',
+    in_progress: '🔄',
+    completed: '✅',
+    failed: '❌',
+  };
+  return icons[status];
+}
+
+/**
+ * Get stage status color
+ */
+export function getStageStatusColor(status: StageStatus): string {
+  const colors: Record<StageStatus, string> = {
+    pending: 'gray',
+    in_progress: 'blue',
+    completed: 'green',
+    failed: 'red',
+  };
+  return colors[status];
+}
+
+/**
+ * Format stage duration for display
+ */
+export function formatStageDuration(durationMs?: number): string {
+  if (!durationMs) return 'N/A';
+
+  const seconds = Math.floor(durationMs / 1000);
+  const minutes = Math.floor(seconds / 60);
+  const hours = Math.floor(minutes / 60);
+
+  if (hours > 0) {
+    const remainingMinutes = minutes % 60;
+    return `${hours}h ${remainingMinutes}m`;
+  } else if (minutes > 0) {
+    const remainingSeconds = seconds % 60;
+    return `${minutes}m ${remainingSeconds}s`;
+  } else {
+    return `${seconds}s`;
+  }
+}

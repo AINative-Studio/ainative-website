@@ -3,6 +3,15 @@
  * Used for tracking agent swarm execution progress
  */
 
+// Re-export new execution stage enum and types
+export {
+  ExecutionStage,
+  EXECUTION_STAGE_NAMES,
+  type StageTransition,
+  type StageEvent,
+  type StageMetrics,
+} from './executionStageEnum';
+
 export type StageStatus = 'pending' | 'in_progress' | 'completed' | 'failed';
 
 export interface ExecutionStageData {
