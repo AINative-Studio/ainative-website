@@ -20,7 +20,8 @@ import {
   CheckCircle,
   AlertCircle,
   XCircle,
-  ArrowUpRight
+  ArrowUpRight,
+  Shield
 } from 'lucide-react';
 import Link from 'next/link';
 
@@ -476,37 +477,68 @@ export default function QNNDashboardClient() {
       </motion.div>
 
       {/* Quick Actions */}
-      <motion.div
-        initial="hidden"
-        animate="visible"
-        variants={fadeUp}
-      >
-        <Card className="bg-gradient-to-r from-[#4B6FED]/10 to-[#8A63F4]/10 border-[#4B6FED]/30">
-          <CardContent className="flex items-center justify-between py-6">
-            <div className="flex items-center gap-4">
-              <div className="p-3 bg-[#4B6FED]/20 rounded-lg">
-                <Cpu className="h-6 w-6 text-[#4B6FED]" />
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        {/* Signatures Quick Action */}
+        <motion.div
+          initial="hidden"
+          animate="visible"
+          variants={fadeUp}
+        >
+          <Card className="bg-gradient-to-r from-purple-500/10 to-[#4B6FED]/10 border-purple-500/30">
+            <CardContent className="flex items-center justify-between py-6">
+              <div className="flex items-center gap-4">
+                <div className="p-3 bg-purple-500/20 rounded-lg">
+                  <Shield className="h-6 w-6 text-purple-400" />
+                </div>
+                <div>
+                  <h3 className="font-semibold text-lg">Manage Model Signatures</h3>
+                  <p className="text-gray-400 text-sm">
+                    Sign, verify, and secure your models with quantum-resistant signatures
+                  </p>
+                </div>
               </div>
-              <div>
-                <h3 className="font-semibold text-lg">Ready to train a new model?</h3>
-                <p className="text-gray-400 text-sm">
-                  Create and train quantum neural networks with our visual builder
-                </p>
-              </div>
-            </div>
-            <div className="flex gap-2">
-              <Link href="/products/qnn">
-                <Button variant="outline" className="border-[#4B6FED] text-[#4B6FED]">
-                  Learn More
+              <Link href="/dashboard/qnn/signatures">
+                <Button className="bg-purple-500 hover:bg-purple-500/80">
+                  View Signatures
                 </Button>
               </Link>
-              <Button className="bg-[#4B6FED] hover:bg-[#4B6FED]/80">
-                Create Model
-              </Button>
-            </div>
-          </CardContent>
-        </Card>
-      </motion.div>
+            </CardContent>
+          </Card>
+        </motion.div>
+
+        {/* Create Model Quick Action */}
+        <motion.div
+          initial="hidden"
+          animate="visible"
+          variants={fadeUp}
+        >
+          <Card className="bg-gradient-to-r from-[#4B6FED]/10 to-[#8A63F4]/10 border-[#4B6FED]/30">
+            <CardContent className="flex items-center justify-between py-6">
+              <div className="flex items-center gap-4">
+                <div className="p-3 bg-[#4B6FED]/20 rounded-lg">
+                  <Cpu className="h-6 w-6 text-[#4B6FED]" />
+                </div>
+                <div>
+                  <h3 className="font-semibold text-lg">Ready to train a new model?</h3>
+                  <p className="text-gray-400 text-sm">
+                    Create and train quantum neural networks with our visual builder
+                  </p>
+                </div>
+              </div>
+              <div className="flex gap-2">
+                <Link href="/products/qnn">
+                  <Button variant="outline" className="border-[#4B6FED] text-[#4B6FED]">
+                    Learn More
+                  </Button>
+                </Link>
+                <Button className="bg-[#4B6FED] hover:bg-[#4B6FED]/80">
+                  Create Model
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+        </motion.div>
+      </div>
     </div>
   );
 }
