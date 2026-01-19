@@ -61,7 +61,8 @@ export const appConfig = {
       secondary: process.env.NEXT_PUBLIC_THEME_SECONDARY || '#8A63F4',
       accent: process.env.NEXT_PUBLIC_THEME_ACCENT || '#D04BF4',
       background: process.env.NEXT_PUBLIC_THEME_BACKGROUND || '#0D1117',
-      orange: process.env.NEXT_PUBLIC_THEME_ORANGE || '#FCAE39'
+      orange: process.env.NEXT_PUBLIC_THEME_ORANGE || '#FCAE39',
+      discord: process.env.NEXT_PUBLIC_THEME_DISCORD || '#5865F2'
     }
   },
 
