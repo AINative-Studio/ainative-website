@@ -1,6 +1,6 @@
 /**
- * Luma API Proxy Route
- * Proxies requests to Luma API to avoid CORS issues
+ * GitHub API Proxy Route
+ * Proxies requests to GitHub API to avoid exposing tokens and CORS issues
  */
 
 import { NextRequest, NextResponse } from 'next/server';
@@ -13,25 +13,25 @@ import {
   extractQueryParams,
 } from '@/lib/api-proxy-utils';
 
-const LUMA_API_BASE = 'https://api.lu.ma';
-const LUMA_API_KEY = process.env.LUMA_API_KEY;
+const GITHUB_API_BASE = 'https://api.github.com';
+const GITHUB_TOKEN = process.env.GITHUB_TOKEN;
 
 async function handleProxyRequest(
   request: NextRequest,
   pathSegments: string[]
 ) {
-  // Apply rate limiting (search tier: 30 requests/minute)
-  const rateLimitResult = await applyRateLimit(request, { tier: 'search' });
+  // Apply rate limiting (API tier: 60 requests/minute)
+  const rateLimitResult = await applyRateLimit(request, { tier: 'api' });
   if (!rateLimitResult.success) {
     return rateLimitResult.response!;
   }
 
-  if (!LUMA_API_KEY) {
+  if (!GITHUB_TOKEN) {
     return NextResponse.json(
       {
         error: {
           code: 'CONFIG_ERROR',
-          message: 'Luma API key not configured',
+          message: 'GitHub token not configured',
         },
       },
       { status: 500 }
@@ -45,11 +45,13 @@ async function handleProxyRequest(
     const targetPath = `${path}${queryParams}`;
 
     // Log request in development
-    logProxyRequest(request.method, path, LUMA_API_BASE);
+    logProxyRequest(request.method, path, GITHUB_API_BASE);
 
-    // Prepare Luma API headers
-    const lumaHeaders: Record<string, string> = {
-      'x-luma-api-key': LUMA_API_KEY,
+    // Prepare GitHub API headers
+    const githubHeaders: Record<string, string> = {
+      Authorization: `Bearer ${GITHUB_TOKEN}`,
+      Accept: 'application/vnd.github.v3+json',
+      'User-Agent': 'AINative-Studio-Website',
     };
 
     // Prepare request body for non-GET requests
@@ -62,10 +64,10 @@ async function handleProxyRequest(
     const response = await proxyRequest(
       targetPath,
       {
-        baseUrl: LUMA_API_BASE,
-        headers: lumaHeaders,
-        retries: 3,
-        timeout: 20000, // 20s timeout for Luma API
+        baseUrl: GITHUB_API_BASE,
+        headers: githubHeaders,
+        retries: 2, // GitHub has good uptime, 2 retries should be enough
+        timeout: 15000, // 15s timeout for GitHub API
       },
       {
         method: request.method,
@@ -84,12 +86,26 @@ async function handleProxyRequest(
       jsonResponse.headers.set(key, value);
     });
 
+    // Forward GitHub's rate limit headers
+    const githubRateLimitHeaders = [
+      'X-RateLimit-Limit',
+      'X-RateLimit-Remaining',
+      'X-RateLimit-Reset',
+      'X-RateLimit-Used',
+    ];
+    githubRateLimitHeaders.forEach((header) => {
+      const value = response.headers.get(header);
+      if (value) {
+        jsonResponse.headers.set(`X-GitHub-${header}`, value);
+      }
+    });
+
     return jsonResponse;
   } catch (error) {
-    console.error('[Luma Proxy Error]', error);
+    console.error('[GitHub Proxy Error]', error);
     return createProxyErrorResponse(
       error,
-      'Failed to proxy request to Luma API'
+      'Failed to proxy request to GitHub API'
     );
   }
 }
