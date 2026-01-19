@@ -48,17 +48,42 @@ export interface Bookmark {
   createdAt: number;
 }
 
+export interface ChapterProgress {
+  chapterId: string;
+  watchTime: number;
+  completed: boolean;
+  lastPosition: number;
+}
+
+export interface QuizScore {
+  quizId: string;
+  score: number;
+  maxScore: number;
+  passed: boolean;
+  attempts?: number;
+  completedAt: Date;
+}
+
 export interface TutorialProgress {
-  videoId: string;
-  completedChapters: string[];
-  currentChapter: string | null;
-  lastWatchedTime: number;
-  quizScores: Record<string, number>;
-  notes: Note[];
-  bookmarks: Bookmark[];
+  tutorialId: string;
+  userId: string | null;
   completionPercentage: number;
+  chaptersCompleted: number;
+  totalChapters: number;
+  chapterProgress: ChapterProgress[];
+  quizScores: QuizScore[];
+  certificateEligible: boolean;
   certificateEarned: boolean;
-  lastUpdated: number;
+  totalWatchTime: number;
+  lastWatchedAt: Date | null;
+  // Legacy support
+  videoId?: string;
+  completedChapters?: string[];
+  currentChapter?: string | null;
+  lastWatchedTime?: number;
+  notes?: Note[];
+  bookmarks?: Bookmark[];
+  lastUpdated?: number;
 }
 
 export interface Tutorial {

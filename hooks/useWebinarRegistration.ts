@@ -47,7 +47,7 @@ export function useWebinarRegistration(webinar: Webinar) {
     const result = registrationSchema.safeParse(data);
 
     if (!result.success) {
-      return result.error.errors.map(err => ({
+      return result.error.issues.map(err => ({
         field: err.path[0] as string,
         message: err.message,
       }));

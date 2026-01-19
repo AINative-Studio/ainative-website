@@ -78,9 +78,11 @@ export function ProgressTracker({
    * Calculate average quiz score
    */
   const getAverageQuizScore = (): number => {
-    const scores = Object.values(progress.quizScores);
-    if (scores.length === 0) return 0;
-    return Math.round(scores.reduce((a, b) => a + b, 0) / scores.length);
+    if (progress.quizScores.length === 0) return 0;
+    const totalScore = progress.quizScores.reduce((sum, quiz) => {
+      return sum + (quiz.score / quiz.maxScore) * 100;
+    }, 0);
+    return Math.round(totalScore / progress.quizScores.length);
   };
 
   return (
@@ -99,14 +101,14 @@ export function ProgressTracker({
           onClick={() => setActiveTab('notes')}
         >
           <FileText size={16} />
-          Notes ({progress.notes.length})
+          Notes ({progress.notes?.length || 0})
         </button>
         <button
           className={`progress-tracker__tab ${activeTab === 'bookmarks' ? 'active' : ''}`}
           onClick={() => setActiveTab('bookmarks')}
         >
           <BookMarked size={16} />
-          Bookmarks ({progress.bookmarks.length})
+          Bookmarks ({progress.bookmarks?.length || 0})
         </button>
       </div>
 
@@ -147,7 +149,11 @@ export function ProgressTracker({
             <div className="progress-tracker__stat">
               <div className="progress-tracker__stat-label">Chapters Completed</div>
               <div className="progress-tracker__stat-value">
-                {progress.completedChapters.length} / {totalChapters}
+                {typeof progress.completedChapters === 'number'
+                  ? progress.completedChapters
+                  : Array.isArray(progress.completedChapters)
+                    ? progress.completedChapters.length
+                    : 0} / {totalChapters}
               </div>
             </div>
 
@@ -160,12 +166,12 @@ export function ProgressTracker({
 
             <div className="progress-tracker__stat">
               <div className="progress-tracker__stat-label">Notes Taken</div>
-              <div className="progress-tracker__stat-value">{progress.notes.length}</div>
+              <div className="progress-tracker__stat-value">{progress.notes?.length || 0}</div>
             </div>
 
             <div className="progress-tracker__stat">
               <div className="progress-tracker__stat-label">Bookmarks</div>
-              <div className="progress-tracker__stat-value">{progress.bookmarks.length}</div>
+              <div className="progress-tracker__stat-value">{progress.bookmarks?.length || 0}</div>
             </div>
           </div>
 
@@ -182,7 +188,7 @@ export function ProgressTracker({
         <div className="progress-tracker__content">
           <div className="progress-tracker__header">
             <h3>Your Notes</h3>
-            {progress.notes.length > 0 && (
+            {(progress.notes?.length || 0) > 0 && (
               <button className="progress-tracker__export-btn" onClick={onExportNotes}>
                 <Download size={14} />
                 Export to Markdown
@@ -190,7 +196,7 @@ export function ProgressTracker({
             )}
           </div>
 
-          {progress.notes.length === 0 ? (
+          {(progress.notes?.length || 0) === 0 ? (
             <div className="progress-tracker__empty">
               <FileText size={48} />
               <p>No notes yet</p>
@@ -198,7 +204,7 @@ export function ProgressTracker({
             </div>
           ) : (
             <div className="progress-tracker__list">
-              {progress.notes
+              {(progress.notes || [])
                 .sort((a, b) => b.createdAt - a.createdAt)
                 .map((note) => (
                   <div key={note.id} className="progress-tracker__note">
@@ -236,7 +242,7 @@ export function ProgressTracker({
             <h3>Your Bookmarks</h3>
           </div>
 
-          {progress.bookmarks.length === 0 ? (
+          {(progress.bookmarks?.length || 0) === 0 ? (
             <div className="progress-tracker__empty">
               <BookMarked size={48} />
               <p>No bookmarks yet</p>
@@ -244,7 +250,7 @@ export function ProgressTracker({
             </div>
           ) : (
             <div className="progress-tracker__list">
-              {progress.bookmarks
+              {(progress.bookmarks || [])
                 .sort((a, b) => a.timestamp - b.timestamp)
                 .map((bookmark) => (
                   <div key={bookmark.id} className="progress-tracker__bookmark">

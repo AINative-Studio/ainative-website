@@ -29,15 +29,23 @@ function loadProgress(id: string, chapters: Chapter[]): TutorialProgress {
   }
 
   return {
+    tutorialId: id,
+    userId: null,
     videoId: id,
     completedChapters: [],
     currentChapter: chapters[0]?.id || null,
     lastWatchedTime: 0,
-    quizScores: {},
+    quizScores: [],
     notes: [],
     bookmarks: [],
     completionPercentage: 0,
+    chaptersCompleted: 0,
+    totalChapters: chapters.length,
+    chapterProgress: [],
+    certificateEligible: false,
     certificateEarned: false,
+    totalWatchTime: 0,
+    lastWatchedAt: null,
     lastUpdated: Date.now(),
   };
 }
@@ -74,12 +82,13 @@ export function useTutorialProgress(videoId: string, chapters: Chapter[]) {
    */
   const completeChapter = useCallback(
     (chapterId: string) => {
-      if (!progress.completedChapters.includes(chapterId)) {
-        const completedChapters = [...progress.completedChapters, chapterId];
-        const completionPercentage = (completedChapters.length / chapters.length) * 100;
+      const completedChapters = progress.completedChapters || [];
+      if (!completedChapters.includes(chapterId)) {
+        const newCompletedChapters = [...completedChapters, chapterId];
+        const completionPercentage = (newCompletedChapters.length / chapters.length) * 100;
 
         saveProgress({
-          completedChapters,
+          completedChapters: newCompletedChapters,
           completionPercentage,
           certificateEarned: completionPercentage === 100,
         });
@@ -135,7 +144,7 @@ export function useTutorialProgress(videoId: string, chapters: Chapter[]) {
       };
 
       saveProgress({
-        notes: [...progress.notes, note],
+        notes: [...(progress.notes || []), note],
       });
     },
     [progress.notes, saveProgress]
@@ -147,7 +156,7 @@ export function useTutorialProgress(videoId: string, chapters: Chapter[]) {
   const deleteNote = useCallback(
     (noteId: string) => {
       saveProgress({
-        notes: progress.notes.filter((n) => n.id !== noteId),
+        notes: (progress.notes || []).filter((n) => n.id !== noteId),
       });
     },
     [progress.notes, saveProgress]
@@ -166,7 +175,7 @@ export function useTutorialProgress(videoId: string, chapters: Chapter[]) {
       };
 
       saveProgress({
-        bookmarks: [...progress.bookmarks, bookmark],
+        bookmarks: [...(progress.bookmarks || []), bookmark],
       });
     },
     [progress.bookmarks, saveProgress]
@@ -178,7 +187,7 @@ export function useTutorialProgress(videoId: string, chapters: Chapter[]) {
   const deleteBookmark = useCallback(
     (bookmarkId: string) => {
       saveProgress({
-        bookmarks: progress.bookmarks.filter((b) => b.id !== bookmarkId),
+        bookmarks: (progress.bookmarks || []).filter((b) => b.id !== bookmarkId),
       });
     },
     [progress.bookmarks, saveProgress]
@@ -191,11 +200,17 @@ export function useTutorialProgress(videoId: string, chapters: Chapter[]) {
     (result: QuizResult) => {
       const passed = result.score / result.totalQuestions >= QUIZ_PASS_THRESHOLD;
 
+      // Support both old (object) and new (array) format
+      const quizScores = Array.isArray(progress.quizScores)
+        ? progress.quizScores
+        : (progress.quizScores as any) || {};
+
+      const newScores = typeof quizScores === 'object' && !Array.isArray(quizScores)
+        ? { ...quizScores, [result.chapterId]: result.score }
+        : quizScores;
+
       saveProgress({
-        quizScores: {
-          ...progress.quizScores,
-          [result.chapterId]: result.score,
-        },
+        quizScores: newScores as any,
       });
 
       return passed;
@@ -208,7 +223,8 @@ export function useTutorialProgress(videoId: string, chapters: Chapter[]) {
    */
   const getQuizScore = useCallback(
     (chapterId: string): number | null => {
-      return progress.quizScores[chapterId] ?? null;
+      const quizScores = progress.quizScores as any;
+      return quizScores?.[chapterId] ?? null;
     },
     [progress.quizScores]
   );
@@ -218,7 +234,8 @@ export function useTutorialProgress(videoId: string, chapters: Chapter[]) {
    */
   const isChapterCompleted = useCallback(
     (chapterId: string): boolean => {
-      return progress.completedChapters.includes(chapterId);
+      const completedChapters = progress.completedChapters || [];
+      return Array.isArray(completedChapters) && completedChapters.includes(chapterId);
     },
     [progress.completedChapters]
   );
@@ -227,7 +244,7 @@ export function useTutorialProgress(videoId: string, chapters: Chapter[]) {
    * Export notes to markdown
    */
   const exportNotesToMarkdown = useCallback((): string => {
-    const sortedNotes = [...progress.notes].sort((a, b) => a.timestamp - b.timestamp);
+    const sortedNotes = [...(progress.notes || [])].sort((a, b) => a.timestamp - b.timestamp);
 
     let markdown = `# Tutorial Notes\n\n`;
     markdown += `Video: ${videoId}\n`;
@@ -254,7 +271,7 @@ export function useTutorialProgress(videoId: string, chapters: Chapter[]) {
    * Auto-update active chapter based on time
    */
   useEffect(() => {
-    const activeChapter = getActiveChapter(progress.lastWatchedTime);
+    const activeChapter = getActiveChapter(progress.lastWatchedTime || 0);
     if (activeChapter && activeChapter.id !== progress.currentChapter) {
       setCurrentChapter(activeChapter.id);
     }
