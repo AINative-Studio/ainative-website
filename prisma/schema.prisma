@@ -1,0 +1,310 @@
+// AINative Studio - Database Schema
+// PostgreSQL database with Prisma ORM
+
+generator client {
+  provider = "prisma-client-js"
+  previewFeatures = ["relationJoins"]
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+  directUrl = env("DIRECT_DATABASE_URL") // For migrations, bypasses PgBouncer
+}
+
+// ============================================
+// User Management
+// ============================================
+
+model User {
+  id            String   @id @default(cuid())
+  email         String   @unique
+  emailVerified DateTime?
+  name          String?
+  avatar        String?
+  role          Role     @default(USER)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  // Auth
+  accounts      Account[]
+  sessions      Session[]
+
+  // Relations
+  apiKeys       ApiKey[]
+  projects      Project[]
+  subscriptions Subscription[]
+  credits       Credit[]
+  usageMetrics  UsageMetric[]
+  billingInfo   BillingInfo?
+
+  @@index([email])
+  @@map("users")
+}
+
+enum Role {
+  USER
+  ADMIN
+  PREMIUM
+  ENTERPRISE
+}
+
+// NextAuth Account model
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String? @db.Text
+  access_token      String? @db.Text
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String? @db.Text
+  session_state     String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+  @@index([userId])
+  @@map("accounts")
+}
+
+// NextAuth Session model
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@map("sessions")
+}
+
+// NextAuth Verification Token model
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+  @@map("verification_tokens")
+}
+
+// ============================================
+// API Key Management
+// ============================================
+
+model ApiKey {
+  id        String   @id @default(cuid())
+  key       String   @unique
+  name      String
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+  expiresAt DateTime?
+  lastUsedAt DateTime?
+  isActive  Boolean  @default(true)
+  rateLimit Int      @default(1000) // Requests per hour
+
+  @@index([userId])
+  @@index([key])
+  @@map("api_keys")
+}
+
+// ============================================
+// Usage Tracking
+// ============================================
+
+model UsageMetric {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  endpoint  String
+  method    String   @default("GET")
+  requests  Int      @default(1)
+  tokens    Int      @default(0)
+  embeddings Int     @default(0)
+  cost      Decimal  @default(0) @db.Decimal(10, 6)
+  date      DateTime @default(now())
+  metadata  Json?    // Additional tracking data
+
+  @@index([userId, date])
+  @@index([endpoint])
+  @@map("usage_metrics")
+}
+
+// ============================================
+// Subscription Management
+// ============================================
+
+model Subscription {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  plan      Plan
+  status    SubscriptionStatus
+  stripeSubscriptionId String? @unique
+  stripeCustomerId     String?
+  currentPeriodStart   DateTime?
+  currentPeriodEnd     DateTime?
+  cancelAtPeriodEnd    Boolean  @default(false)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([userId])
+  @@index([stripeSubscriptionId])
+  @@map("subscriptions")
+}
+
+enum Plan {
+  FREE
+  BASIC
+  PRO
+  ENTERPRISE
+}
+
+enum SubscriptionStatus {
+  ACTIVE
+  CANCELED
+  PAST_DUE
+  TRIALING
+  INCOMPLETE
+  INCOMPLETE_EXPIRED
+  UNPAID
+}
+
+// ============================================
+// Billing Information
+// ============================================
+
+model BillingInfo {
+  id        String   @id @default(cuid())
+  userId    String   @unique
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  stripeCustomerId String? @unique
+
+  // Billing address
+  addressLine1 String?
+  addressLine2 String?
+  city         String?
+  state        String?
+  postalCode   String?
+  country      String?
+
+  // Payment method
+  paymentMethodId String?
+  last4           String?
+  cardBrand       String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  invoices Invoice[]
+
+  @@index([stripeCustomerId])
+  @@map("billing_info")
+}
+
+// ============================================
+// Invoice Management
+// ============================================
+
+model Invoice {
+  id        String   @id @default(cuid())
+  billingInfoId String
+  billingInfo   BillingInfo @relation(fields: [billingInfoId], references: [id], onDelete: Cascade)
+
+  stripeInvoiceId String  @unique
+  amount          Decimal @db.Decimal(10, 2)
+  currency        String  @default("usd")
+  status          InvoiceStatus
+  pdfUrl          String?
+
+  periodStart DateTime
+  periodEnd   DateTime
+  paidAt      DateTime?
+  dueDate     DateTime?
+
+  createdAt DateTime @default(now())
+
+  @@index([billingInfoId])
+  @@index([stripeInvoiceId])
+  @@map("invoices")
+}
+
+enum InvoiceStatus {
+  DRAFT
+  OPEN
+  PAID
+  VOID
+  UNCOLLECTIBLE
+}
+
+// ============================================
+// Credit System
+// ============================================
+
+model Credit {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  amount    Decimal  @db.Decimal(10, 2)
+  type      CreditType
+  description String?
+  reference   String? // Reference to related entity (subscription, invoice, etc.)
+  createdAt DateTime @default(now())
+
+  @@index([userId, createdAt])
+  @@index([type])
+  @@map("credits")
+}
+
+enum CreditType {
+  PURCHASE
+  BONUS
+  REFUND
+  USAGE
+  SUBSCRIPTION
+  PROMOTIONAL
+}
+
+// ============================================
+// Project Management
+// ============================================
+
+model Project {
+  id        String   @id @default(cuid())
+  name      String
+  description String?
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  settings  Json?    // Flexible project-specific settings
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([userId])
+  @@index([userId, isActive])
+  @@map("projects")
+}
+
+// ============================================
+// Rate Limiting (Optional - can use Redis instead)
+// ============================================
+
+model RateLimit {
+  id        String   @id @default(cuid())
+  identifier String  // API key or user ID
+  endpoint  String
+  count     Int      @default(0)
+  resetAt   DateTime
+  createdAt DateTime @default(now())
+
+  @@unique([identifier, endpoint])
+  @@index([identifier, resetAt])
+  @@map("rate_limits")
+}

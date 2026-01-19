@@ -163,14 +163,14 @@ export default function HomeClient() {
               variants={fadeUp}
               initial="hidden"
               animate="show"
-              className="text-4xl md:text-6xl lg:text-7xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-white to-gray-400 mb-6 leading-tight"
+              className="text-4xl md:text-6xl lg:text-7xl font-bold mb-6 leading-tight"
             >
-              The <span className="relative inline-block">
-                <span className="relative z-10 text-transparent bg-clip-text bg-gradient-to-r from-[#8AB4FF] to-[#4B6FED]">
+              <span className="text-gradient-primary">The <span className="relative inline-block">
+                <span className="relative z-10">
                   AI Native
                 </span>
                 <motion.span
-                  className="absolute bottom-0 left-0 w-full h-1 bg-[#4B6FED] rounded-full"
+                  className="absolute bottom-0 left-0 w-full h-1 bg-gradient-primary rounded-full"
                   initial={{ scaleX: 0, opacity: 0.7 }}
                   animate={{
                     scaleX: 1,
@@ -182,9 +182,9 @@ export default function HomeClient() {
                     }
                   }}
                 />
-              </span> Studio
+              </span> Studio</span>
               <br />
-              <span className="text-3xl md:text-5xl lg:text-6xl">
+              <span className="text-3xl md:text-5xl lg:text-6xl text-white">
                 For <AnimatedTargetText />
               </span>
             </motion.h1>
@@ -209,7 +209,7 @@ export default function HomeClient() {
               <Link href="/download" className="w-full sm:w-auto">
                 <Button
                   size="lg"
-                  className="w-full group relative overflow-hidden bg-[#4B6FED] hover:bg-[#3A56D3] text-white shadow-lg hover:shadow-xl hover:shadow-[#4B6FED]/20 transition-all duration-300 transform hover:-translate-y-0.5"
+                  className="w-full group relative overflow-hidden bg-gradient-primary text-white shadow-lg hover:shadow-xl hover:shadow-[#4B6FED]/30 transition-all duration-300 transform hover:-translate-y-0.5 hover:scale-105"
                 >
                   <span className="relative z-10">Download AI Native IDE</span>
                   <span className="absolute inset-0 bg-gradient-to-r from-white/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></span>
@@ -254,7 +254,7 @@ export default function HomeClient() {
             viewport={{ once: true }}
             transition={{ duration: 0.6 }}
           >
-            <h2 className="text-3xl md:text-4xl font-bold mb-4 text-white">
+            <h2 className="text-3xl md:text-4xl font-bold mb-4 text-gradient">
               Everything you need to build AI-powered applications
             </h2>
             <p className="text-lg text-gray-400 max-w-2xl mx-auto">
@@ -327,7 +327,7 @@ export default function HomeClient() {
             viewport={{ once: true }}
             transition={{ duration: 0.6 }}
           >
-            <h2 className="text-3xl md:text-4xl font-bold mb-4 text-white">
+            <h2 className="text-3xl md:text-4xl font-bold mb-4 text-gradient-primary">
               Ready to get started?
             </h2>
             <p className="text-lg text-gray-400 mb-8 max-w-2xl mx-auto">
@@ -336,7 +336,7 @@ export default function HomeClient() {
             <Link href="/signup">
               <Button
                 size="lg"
-                className="group relative overflow-hidden bg-[#4B6FED] hover:bg-[#3A56D3] text-white shadow-lg hover:shadow-xl hover:shadow-[#4B6FED]/20 transition-all duration-300 px-8 py-6 text-lg"
+                className="group relative overflow-hidden bg-gradient-primary text-white shadow-lg hover:shadow-xl hover:shadow-[#4B6FED]/30 transition-all duration-300 px-8 py-6 text-lg hover:scale-105"
               >
                 <span className="relative z-10">Get Started</span>
                 <ArrowRight className="ml-2 h-5 w-5 inline-block transition-transform duration-300 group-hover:translate-x-1" />
