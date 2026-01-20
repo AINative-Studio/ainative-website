@@ -3,17 +3,26 @@
  *
  * React Query hooks for managing QNN training jobs.
  * Includes real-time polling for active training status.
+ *
+ * Implements complete API integration with QNNApiClient for:
+ * - Training history management
+ * - Real-time training status monitoring
+ * - Training job lifecycle (start/stop)
+ * - Training logs retrieval
+ *
+ * @module useTraining
+ * Refs #432
  */
 
 import { useEffect } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useQNNContext } from '@/contexts/QNNContext';
+import { qnnApiClient } from '@/services/QNNApiClient';
 import {
   TrainingJob,
   StartTrainingRequest,
   TrainingLogs,
   TrainingStatus,
-  ApiResponse,
 } from '@/types/qnn.types';
 
 // Query keys for React Query cache management
@@ -50,14 +59,8 @@ export function useTrainingHistory() {
   return useQuery({
     queryKey: trainingKeys.history(),
     queryFn: async (): Promise<TrainingJob[]> => {
-      // TODO: Replace with actual API client from Agent 1
-      // const apiClient = new QNNApiClient();
-      // return apiClient.getTrainingHistory();
-
-      console.warn('useTrainingHistory: Using placeholder. Waiting for Agent 1 API client.');
-      await new Promise(resolve => setTimeout(resolve, 500));
-
-      return [];
+      const response = await qnnApiClient.getTrainingHistory();
+      return response.items;
     },
     staleTime: 1 * 60 * 1000, // 1 minute
     gcTime: 10 * 60 * 1000,
@@ -80,14 +83,8 @@ export function useTrainingByModel(modelId: string, enabled: boolean = true) {
   return useQuery({
     queryKey: trainingKeys.byModel(modelId),
     queryFn: async (): Promise<TrainingJob[]> => {
-      // TODO: Replace with actual API client from Agent 1
-      // const apiClient = new QNNApiClient();
-      // return apiClient.getTrainingByModel(modelId);
-
-      console.warn('useTrainingByModel: Using placeholder. Waiting for Agent 1 API client.');
-      await new Promise(resolve => setTimeout(resolve, 400));
-
-      return [];
+      const response = await qnnApiClient.getTrainingHistory(modelId, 1, 20);
+      return response.items;
     },
     staleTime: 2 * 60 * 1000,
     enabled: enabled && !!modelId,
@@ -116,14 +113,7 @@ export function useTrainingStatus(id: string, enabled: boolean = true) {
   const query = useQuery({
     queryKey: trainingKeys.status(id),
     queryFn: async (): Promise<TrainingJob> => {
-      // TODO: Replace with actual API client from Agent 1
-      // const apiClient = new QNNApiClient();
-      // return apiClient.getTrainingStatus(id);
-
-      console.warn('useTrainingStatus: Using placeholder. Waiting for Agent 1 API client.');
-      await new Promise(resolve => setTimeout(resolve, 300));
-
-      throw new Error('Training not found (placeholder implementation)');
+      return await qnnApiClient.getTrainingJob(id);
     },
     staleTime: 0, // Always fetch fresh data
     refetchInterval: (query) => {
@@ -170,19 +160,7 @@ export function useTrainingLogs(id: string, enabled: boolean = true) {
   return useQuery({
     queryKey: trainingKeys.logs(id),
     queryFn: async (): Promise<TrainingLogs> => {
-      // TODO: Replace with actual API client from Agent 1
-      // const apiClient = new QNNApiClient();
-      // return apiClient.getTrainingLogs(id);
-
-      console.warn('useTrainingLogs: Using placeholder. Waiting for Agent 1 API client.');
-      await new Promise(resolve => setTimeout(resolve, 300));
-
-      return {
-        trainingId: id,
-        logs: [],
-        totalLines: 0,
-        hasMore: false,
-      };
+      return await qnnApiClient.getTrainingLogs(id, 0, 100);
     },
     staleTime: 0,
     refetchInterval: (query) => {
@@ -225,19 +203,10 @@ export function useStartTraining() {
   const { setActiveTraining } = useQNNContext();
 
   return useMutation({
-    mutationFn: async (request: StartTrainingRequest): Promise<ApiResponse<TrainingJob>> => {
-      // TODO: Replace with actual API client from Agent 1
-      // const apiClient = new QNNApiClient();
-      // return apiClient.startTraining(request);
-
-      console.warn('useStartTraining: Using placeholder. Waiting for Agent 1 API client.');
-      await new Promise(resolve => setTimeout(resolve, 1000));
-
-      throw new Error('Start training not implemented (placeholder)');
+    mutationFn: async (request: StartTrainingRequest): Promise<TrainingJob> => {
+      return await qnnApiClient.startTraining(request);
     },
-    onSuccess: (response, variables) => {
-      const training = response.data;
-
+    onSuccess: (training, variables) => {
       // Set as active training
       setActiveTraining(training);
 
@@ -270,15 +239,8 @@ export function useStopTraining() {
   const { setActiveTraining } = useQNNContext();
 
   return useMutation({
-    mutationFn: async (id: string): Promise<ApiResponse<TrainingJob>> => {
-      // TODO: Replace with actual API client from Agent 1
-      // const apiClient = new QNNApiClient();
-      // return apiClient.stopTraining(id);
-
-      console.warn('useStopTraining: Using placeholder. Waiting for Agent 1 API client.');
-      await new Promise(resolve => setTimeout(resolve, 500));
-
-      throw new Error('Stop training not implemented (placeholder)');
+    mutationFn: async (id: string): Promise<void> => {
+      await qnnApiClient.stopTraining(id);
     },
     onMutate: async (id) => {
       // Optimistically update status to 'stopped'
@@ -299,7 +261,7 @@ export function useStopTraining() {
         queryClient.setQueryData(trainingKeys.status(id), context.previous);
       }
     },
-    onSuccess: (response, id) => {
+    onSuccess: (_, id) => {
       // Clear active training
       setActiveTraining(null);
 
