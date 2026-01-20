@@ -6,6 +6,7 @@
  */
 
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { qnnApiClient } from '@/services/QNNApiClient';
 import {
   Model,
   CreateModelRequest,
@@ -40,22 +41,20 @@ export function useModels(filters?: ModelFilters) {
   return useQuery({
     queryKey: modelKeys.list(filters),
     queryFn: async (): Promise<PaginatedResponse<Model>> => {
-      // TODO: Replace with actual API client from Agent 1
-      // const apiClient = new QNNApiClient();
-      // return apiClient.listModels(filters);
-
-      console.warn('useModels: Using placeholder data. Waiting for Agent 1 API client.');
-      await new Promise(resolve => setTimeout(resolve, 500));
-
-      return {
-        items: [],
-        total: 0,
-        page: 1,
-        perPage: 20,
-        totalPages: 0,
-        hasNext: false,
-        hasPrevious: false,
-      };
+      try {
+        const models = await qnnApiClient.listModels(filters);
+        return {
+          items: models,
+          total: models.length,
+          page: 1,
+          perPage: models.length,
+          totalPages: 1,
+          hasNext: false,
+          hasPrevious: false,
+        };
+      } catch (error) {
+        throw error;
+      }
     },
     staleTime: 3 * 60 * 1000, // 3 minutes
     gcTime: 10 * 60 * 1000,
@@ -78,14 +77,12 @@ export function useModelsByRepository(repositoryId: string, enabled: boolean = t
   return useQuery({
     queryKey: modelKeys.byRepository(repositoryId),
     queryFn: async (): Promise<Model[]> => {
-      // TODO: Replace with actual API client from Agent 1
-      // const apiClient = new QNNApiClient();
-      // return apiClient.listModelsByRepository(repositoryId);
-
-      console.warn('useModelsByRepository: Using placeholder. Waiting for Agent 1 API client.');
-      await new Promise(resolve => setTimeout(resolve, 400));
-
-      return [];
+      try {
+        const models = await qnnApiClient.listModels({ repositoryId });
+        return models;
+      } catch (error) {
+        throw error;
+      }
     },
     staleTime: 3 * 60 * 1000,
     enabled: enabled && !!repositoryId,
@@ -108,14 +105,12 @@ export function useModel(id: string, enabled: boolean = true) {
   return useQuery({
     queryKey: modelKeys.detail(id),
     queryFn: async (): Promise<Model> => {
-      // TODO: Replace with actual API client from Agent 1
-      // const apiClient = new QNNApiClient();
-      // return apiClient.getModel(id);
-
-      console.warn('useModel: Using placeholder. Waiting for Agent 1 API client.');
-      await new Promise(resolve => setTimeout(resolve, 300));
-
-      throw new Error('Model not found (placeholder implementation)');
+      try {
+        const model = await qnnApiClient.getModel(id);
+        return model;
+      } catch (error) {
+        throw error;
+      }
     },
     staleTime: 5 * 60 * 1000,
     enabled: enabled && !!id,
@@ -145,14 +140,16 @@ export function useCreateModel() {
 
   return useMutation({
     mutationFn: async (data: CreateModelRequest): Promise<ApiResponse<Model>> => {
-      // TODO: Replace with actual API client from Agent 1
-      // const apiClient = new QNNApiClient();
-      // return apiClient.createModel(data);
-
-      console.warn('useCreateModel: Using placeholder. Waiting for Agent 1 API client.');
-      await new Promise(resolve => setTimeout(resolve, 800));
-
-      throw new Error('Create not implemented (placeholder)');
+      try {
+        const model = await qnnApiClient.createModel(data);
+        return {
+          success: true,
+          data: model,
+          timestamp: new Date().toISOString(),
+        };
+      } catch (error) {
+        throw error;
+      }
     },
     onMutate: async (newModel) => {
       // Cancel any outgoing refetches
@@ -243,14 +240,16 @@ export function useUpdateModel() {
       id: string;
       data: UpdateModelRequest;
     }): Promise<ApiResponse<Model>> => {
-      // TODO: Replace with actual API client from Agent 1
-      // const apiClient = new QNNApiClient();
-      // return apiClient.updateModel(id, data);
-
-      console.warn('useUpdateModel: Using placeholder. Waiting for Agent 1 API client.');
-      await new Promise(resolve => setTimeout(resolve, 600));
-
-      throw new Error('Update not implemented (placeholder)');
+      try {
+        const model = await qnnApiClient.updateModel(id, data);
+        return {
+          success: true,
+          data: model,
+          timestamp: new Date().toISOString(),
+        };
+      } catch (error) {
+        throw error;
+      }
     },
     onMutate: async ({ id, data }) => {
       // Cancel outgoing refetches
@@ -305,14 +304,16 @@ export function useDeleteModel() {
 
   return useMutation({
     mutationFn: async (id: string): Promise<ApiResponse<void>> => {
-      // TODO: Replace with actual API client from Agent 1
-      // const apiClient = new QNNApiClient();
-      // return apiClient.deleteModel(id);
-
-      console.warn('useDeleteModel: Using placeholder. Waiting for Agent 1 API client.');
-      await new Promise(resolve => setTimeout(resolve, 500));
-
-      throw new Error('Delete not implemented (placeholder)');
+      try {
+        await qnnApiClient.deleteModel(id);
+        return {
+          success: true,
+          data: undefined as void,
+          timestamp: new Date().toISOString(),
+        };
+      } catch (error) {
+        throw error;
+      }
     },
     onMutate: async (id) => {
       // Cancel queries
@@ -365,9 +366,12 @@ export function usePrefetchModel() {
     queryClient.prefetchQuery({
       queryKey: modelKeys.detail(id),
       queryFn: async (): Promise<Model> => {
-        // TODO: Replace with actual API client
-        console.warn('Prefetch: Waiting for Agent 1 API client.');
-        throw new Error('Prefetch not implemented');
+        try {
+          const model = await qnnApiClient.getModel(id);
+          return model;
+        } catch (error) {
+          throw error;
+        }
       },
       staleTime: 5 * 60 * 1000,
     });
