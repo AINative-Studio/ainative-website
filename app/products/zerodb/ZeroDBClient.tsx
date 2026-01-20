@@ -152,9 +152,9 @@ export default function ZeroDBClient() {
   };
 
   return (
-    <div className="min-h-screen bg-vite-bg text-white">
+    <div className="full-width-section min-h-screen bg-vite-bg text-white">
       {/* Hero Section */}
-      <section className="relative pt-32 pb-20 px-6 overflow-hidden">
+      <section className="full-width-section-lg relative pt-32 pb-20 px-6">
         {/* Background gradient */}
         <div className="absolute inset-0 bg-gradient-to-br from-[#4B6FED]/10 via-transparent to-[#8A63F5]/10" />
         <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-[#4B6FED]/20 rounded-full filter blur-3xl" />

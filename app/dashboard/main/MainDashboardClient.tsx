@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { motion } from 'framer-motion';
+import { m as motion } from 'framer-motion';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import {
@@ -18,22 +18,22 @@ import {
   AlertCircle,
 } from 'lucide-react';
 import {
-  AreaChart,
+  LazyAreaChart,
+  LazyBarChart,
+  LazyPieChart,
+  LazyLineChart,
   Area,
   XAxis,
   YAxis,
   CartesianGrid,
   Tooltip,
   ResponsiveContainer,
-  BarChart,
   Bar,
-  PieChart,
   Pie,
   Cell,
-  LineChart,
   Line,
   Legend,
-} from 'recharts';
+} from '@/components/lazy';
 
 const fadeUp = {
   hidden: { opacity: 0, y: 20 },
@@ -204,7 +204,7 @@ function UsageChart({ data, isLoading }: { data?: UsageDataPoint[]; isLoading: b
             </div>
           ) : (
             <ResponsiveContainer width="100%" height={300}>
-              <AreaChart data={data}>
+              <LazyAreaChart data={data}>
                 <defs>
                   <linearGradient id="colorRequests" x1="0" y1="0" x2="0" y2="1">
                     <stop offset="5%" stopColor="#4B6FED" stopOpacity={0.3}/>
@@ -243,7 +243,7 @@ function UsageChart({ data, isLoading }: { data?: UsageDataPoint[]; isLoading: b
                   fill="url(#colorTokens)"
                   name="Tokens Used"
                 />
-              </AreaChart>
+              </LazyAreaChart>
             </ResponsiveContainer>
           )}
         </CardContent>
@@ -269,7 +269,7 @@ function ModelUsageChart({ data, isLoading }: { data?: ModelUsageData[]; isLoadi
             </div>
           ) : (
             <ResponsiveContainer width="100%" height={250}>
-              <PieChart>
+              <LazyPieChart>
                 <Pie
                   data={data}
                   cx="50%"
@@ -295,7 +295,7 @@ function ModelUsageChart({ data, isLoading }: { data?: ModelUsageData[]; isLoadi
                 <Legend
                   formatter={(value) => <span className="text-gray-300">{value}</span>}
                 />
-              </PieChart>
+              </LazyPieChart>
             </ResponsiveContainer>
           )}
         </CardContent>
@@ -321,7 +321,7 @@ function ProjectActivityChart({ data, isLoading }: { data?: ProjectActivityData[
             </div>
           ) : (
             <ResponsiveContainer width="100%" height={250}>
-              <BarChart data={data} layout="vertical">
+              <LazyBarChart data={data} layout="vertical">
                 <CartesianGrid strokeDasharray="3 3" stroke="#374151" />
                 <XAxis type="number" stroke="#9CA3AF" fontSize={12} />
                 <YAxis dataKey="name" type="category" stroke="#9CA3AF" fontSize={12} width={80} />
@@ -337,7 +337,7 @@ function ProjectActivityChart({ data, isLoading }: { data?: ProjectActivityData[
                 <Bar dataKey="codeGen" fill="#4B6FED" name="Code Generated" radius={[0, 4, 4, 0]} />
                 <Bar dataKey="reviews" fill="#10B981" name="Reviews" radius={[0, 4, 4, 0]} />
                 <Bar dataKey="fixes" fill="#F59E0B" name="Bug Fixes" radius={[0, 4, 4, 0]} />
-              </BarChart>
+              </LazyBarChart>
             </ResponsiveContainer>
           )}
         </CardContent>
@@ -363,7 +363,7 @@ function PerformanceChart({ data, isLoading }: { data?: PerformanceData[]; isLoa
             </div>
           ) : (
             <ResponsiveContainer width="100%" height={300}>
-              <LineChart data={data}>
+              <LazyLineChart data={data}>
                 <CartesianGrid strokeDasharray="3 3" stroke="#374151" />
                 <XAxis dataKey="time" stroke="#9CA3AF" fontSize={12} />
                 <YAxis yAxisId="left" stroke="#9CA3AF" fontSize={12} />
@@ -395,7 +395,7 @@ function PerformanceChart({ data, isLoading }: { data?: PerformanceData[]; isLoa
                   dot={{ fill: '#10B981', strokeWidth: 2 }}
                   name="Throughput (req/s)"
                 />
-              </LineChart>
+              </LazyLineChart>
             </ResponsiveContainer>
           )}
         </CardContent>

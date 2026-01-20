@@ -119,7 +119,7 @@ export default function AgentSwarmClient() {
       </div>
 
       {/* Hero Section */}
-      <section className="relative min-h-[80vh] flex items-center justify-center overflow-hidden pt-20 pb-12 z-10">
+      <section className="full-width-section relative min-h-[80vh] flex items-center justify-center pt-20 pb-12 z-10">
         <div className="container-custom max-w-6xl mx-auto px-4 relative z-10">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -195,7 +195,7 @@ export default function AgentSwarmClient() {
       </section>
 
       {/* How It Works */}
-      <section className="py-12 bg-[#161B22] relative overflow-hidden">
+      <section className="full-width-section-md bg-[#161B22]">
         <div className="container-custom max-w-7xl mx-auto px-4">
           <motion.div
             className="text-center mb-8"
@@ -278,7 +278,7 @@ export default function AgentSwarmClient() {
       </section>
 
       {/* Specialized Agents */}
-      <section className="py-12 bg-vite-bg relative overflow-hidden">
+      <section className="full-width-section-md bg-vite-bg">
         <div className="container-custom max-w-7xl mx-auto px-4">
           <motion.div
             className="text-center mb-8"
@@ -376,7 +376,7 @@ export default function AgentSwarmClient() {
       </section>
 
       {/* Technical Architecture */}
-      <section className="py-12 bg-[#161B22] relative overflow-hidden">
+      <section className="full-width-section-md bg-[#161B22]">
         <div className="container-custom max-w-7xl mx-auto px-4">
           <motion.div
             className="text-center mb-8"
@@ -453,7 +453,7 @@ export default function AgentSwarmClient() {
       </section>
 
       {/* Pricing Tiers */}
-      <section className="py-12 bg-vite-bg relative overflow-hidden">
+      <section className="full-width-section-md bg-vite-bg">
         <div className="container-custom max-w-7xl mx-auto px-4">
           <motion.div
             className="text-center mb-8"
@@ -525,7 +525,7 @@ export default function AgentSwarmClient() {
       </section>
 
       {/* CTA Section */}
-      <section className="py-12 bg-gradient-to-br from-[#0D1117] via-[#161B22] to-[#0D1117] relative overflow-hidden">
+      <section className="full-width-section-md bg-gradient-to-br from-[#0D1117] via-[#161B22] to-[#0D1117]">
         <div className="absolute inset-0 -z-10">
           <div className="absolute top-1/4 left-1/3 w-96 h-96 bg-[#4B6FED]/20 rounded-full filter blur-3xl"></div>
           <div className="absolute bottom-1/4 right-1/3 w-80 h-80 bg-[#8A63F4]/20 rounded-full filter blur-3xl"></div>

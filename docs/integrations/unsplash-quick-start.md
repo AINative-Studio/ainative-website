@@ -2,7 +2,7 @@
 
 ## 5-Minute Setup
 
-### Basic Usage
+### Basic Usage (Simple)
 
 Import and use in any React component:
 
@@ -22,6 +22,31 @@ export default function MyComponent() {
       alt="Description"
       loading="lazy"
       className="w-full h-full object-cover"
+    />
+  );
+}
+```
+
+### Advanced Usage (With Service)
+
+Use the full service for caching, rate limiting, and attribution:
+
+```typescript
+'use client';
+
+import { UnsplashImage } from '@/components/unsplash/UnsplashImage';
+
+export default function MyComponent() {
+  return (
+    <UnsplashImage
+      id={123}
+      width={800}
+      height={450}
+      alt="Description"
+      showAttribution={true}
+      attributionVariant="overlay"
+      loading="lazy"
+      className="w-full h-auto rounded-lg"
     />
   );
 }

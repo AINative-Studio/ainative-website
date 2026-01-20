@@ -16,6 +16,11 @@
 /test-results/
 /blob-report/
 
+# performance testing
+.lighthouseci/
+analyze/
+lighthouse-reports/
+
 # next.js
 /.next/
 /out/

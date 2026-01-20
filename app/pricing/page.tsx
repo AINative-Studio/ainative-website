@@ -1,5 +1,9 @@
 import { Metadata } from 'next';
 import PricingClient from './PricingClient';
+import { getRevalidateTime } from '@/lib/cache-config';
+
+// Enable ISR with 5-minute revalidation for pricing page (time-sensitive)
+export const revalidate = getRevalidateTime('marketing', 'pricing'); // 300 seconds (5 minutes)
 
 export const metadata: Metadata = {
   title: 'Pricing - Free AI Code Editor & Pro Plans',

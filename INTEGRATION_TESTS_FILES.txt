@@ -1,0 +1,39 @@
+INTEGRATION TESTS SUITE - FILE REFERENCE
+=========================================
+
+Core Test Files (6 test suites, 99+ scenarios, 2,644 lines)
+------------------------------------------------------------
+/Users/aideveloper/ainative-website-nextjs-staging/__tests__/integration/auth-flow.integration.test.ts
+/Users/aideveloper/ainative-website-nextjs-staging/__tests__/integration/payment-subscription-flow.integration.test.ts
+/Users/aideveloper/ainative-website-nextjs-staging/__tests__/integration/credit-system-flow.integration.test.ts
+/Users/aideveloper/ainative-website-nextjs-staging/__tests__/integration/video-processing-flow.integration.test.ts
+/Users/aideveloper/ainative-website-nextjs-staging/__tests__/integration/rlhf-feedback-flow.integration.test.ts
+/Users/aideveloper/ainative-website-nextjs-staging/__tests__/integration/community-features-flow.integration.test.ts
+
+Infrastructure Files (899 lines)
+---------------------------------
+/Users/aideveloper/ainative-website-nextjs-staging/__tests__/integration/setup.ts
+/Users/aideveloper/ainative-website-nextjs-staging/__tests__/integration/helpers/test-helpers.ts
+
+Configuration Files
+-------------------
+/Users/aideveloper/ainative-website-nextjs-staging/jest.integration.config.js
+/Users/aideveloper/ainative-website-nextjs-staging/.github/workflows/integration-tests.yml
+
+Documentation Files
+-------------------
+/Users/aideveloper/ainative-website-nextjs-staging/__tests__/integration/README.md
+/Users/aideveloper/ainative-website-nextjs-staging/__tests__/integration/QUICK_START.md
+/Users/aideveloper/ainative-website-nextjs-staging/INTEGRATION_TESTS_SUMMARY.md
+/Users/aideveloper/ainative-website-nextjs-staging/INTEGRATION_TESTS_FILES.txt
+
+Scripts
+-------
+/Users/aideveloper/ainative-website-nextjs-staging/scripts/verify-integration-tests.sh
+
+Modified Files
+--------------
+/Users/aideveloper/ainative-website-nextjs-staging/package.json (added test:integration* scripts)
+
+Total Files: 16 (12 new, 1 modified, 3 documentation)
+Total Lines of Code: 3,543+ (tests + infrastructure)

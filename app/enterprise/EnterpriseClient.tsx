@@ -52,7 +52,7 @@ export default function EnterpriseClient() {
   const calendlyUrl = appConfig.links.calendly;
 
   return (
-    <div className="bg-vite-bg text-white pt-36 pb-28">
+    <div className="full-width-section bg-vite-bg text-white pt-36 pb-28">
       <div className="max-w-6xl mx-auto px-4 space-y-28">
 
         {/* Hero Section */}

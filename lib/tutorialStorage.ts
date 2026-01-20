@@ -77,7 +77,7 @@ export function getTutorialProgress(tutorialId: string): TutorialProgress | null
  * Save tutorial progress
  */
 export function saveTutorialProgress(progress: TutorialProgress): void {
-    if (!isLocalStorageAvailable()) return;
+    if (!isLocalStorageAvailable() || !progress.videoId) return;
 
     try {
         const data = JSON.stringify({
@@ -277,7 +277,7 @@ export function markTutorialComplete(tutorialId: string): void {
             completedChapters: [],
             currentChapter: null,
             lastWatchedTime: 0,
-            quizScores: {},
+            quizScores: [],
             notes: [],
             bookmarks: [],
             completionPercentage: 100,

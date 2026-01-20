@@ -74,7 +74,7 @@ export class SessionSyncManager {
   private handleSyncMessage(message: SessionSyncMessage) {
     switch (message.type) {
       case 'SESSION_UPDATE':
-        this.onSessionUpdate(message.session);
+        this.onSessionUpdate(message.session ?? null);
         break;
 
       case 'SESSION_LOGOUT':

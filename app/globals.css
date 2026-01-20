@@ -593,6 +593,90 @@ a {
   }
 }
 
+/* Full-width-section - For sections that need full viewport width with backgrounds */
+.full-width-section {
+  width: 100%;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Full-width-section with vertical padding variants */
+.full-width-section-sm {
+  width: 100%;
+  position: relative;
+  overflow: hidden;
+  padding-top: 3rem;
+  padding-bottom: 3rem;
+}
+
+.full-width-section-md {
+  width: 100%;
+  position: relative;
+  overflow: hidden;
+  padding-top: 4rem;
+  padding-bottom: 4rem;
+}
+
+.full-width-section-lg {
+  width: 100%;
+  position: relative;
+  overflow: hidden;
+  padding-top: 5rem;
+  padding-bottom: 5rem;
+}
+
+.full-width-section-xl {
+  width: 100%;
+  position: relative;
+  overflow: hidden;
+  padding-top: 6rem;
+  padding-bottom: 6rem;
+}
+
+@media (min-width: 768px) {
+  .full-width-section-sm {
+    padding-top: 4rem;
+    padding-bottom: 4rem;
+  }
+
+  .full-width-section-md {
+    padding-top: 5rem;
+    padding-bottom: 5rem;
+  }
+
+  .full-width-section-lg {
+    padding-top: 6rem;
+    padding-bottom: 6rem;
+  }
+
+  .full-width-section-xl {
+    padding-top: 8rem;
+    padding-bottom: 8rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  .full-width-section-sm {
+    padding-top: 5rem;
+    padding-bottom: 5rem;
+  }
+
+  .full-width-section-md {
+    padding-top: 6rem;
+    padding-bottom: 6rem;
+  }
+
+  .full-width-section-lg {
+    padding-top: 8rem;
+    padding-bottom: 8rem;
+  }
+
+  .full-width-section-xl {
+    padding-top: 10rem;
+    padding-bottom: 10rem;
+  }
+}
+
 /* ============================================
    Theme Configuration for Tailwind v4
    ============================================ */
