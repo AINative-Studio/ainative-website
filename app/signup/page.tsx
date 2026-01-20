@@ -8,6 +8,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Github, ArrowRight, Check } from 'lucide-react';
+import { authService } from '@/services/authService';
 
 export default function SignupPage() {
   const [name, setName] = useState('');
@@ -22,8 +23,14 @@ export default function SignupPage() {
     setError('');
 
     try {
-      // TODO: Implement actual user registration API call
-      // For now, sign in with credentials after "registration"
+      // Register the user with authService
+      await authService.register({
+        email,
+        password,
+        preferred_name: name,
+      });
+
+      // Auto-login after successful registration
       const result = await signIn('credentials', {
         email,
         password,
@@ -32,12 +39,15 @@ export default function SignupPage() {
       });
 
       if (result?.error) {
-        setError('Failed to create account. Please try again.');
+        setError('Registration successful, but login failed. Please try signing in.');
       } else if (result?.url) {
         window.location.href = result.url;
       }
-    } catch {
-      setError('Failed to create account. Please try again.');
+    } catch (err) {
+      const errorMessage = err instanceof Error && err.message
+        ? err.message
+        : 'Failed to create account. Please try again.';
+      setError(errorMessage);
     } finally {
       setIsLoading(false);
     }
@@ -105,7 +115,10 @@ export default function SignupPage() {
                 type="text"
                 placeholder="John Doe"
                 value={name}
-                onChange={(e) => setName(e.target.value)}
+                onChange={(e) => {
+                  setName(e.target.value);
+                  if (error) setError('');
+                }}
                 required
                 className="h-12 bg-[#1C2128] border-[#2D333B] focus:border-[#4B6FED]"
               />
@@ -118,7 +131,10 @@ export default function SignupPage() {
                 type="email"
                 placeholder="you@example.com"
                 value={email}
-                onChange={(e) => setEmail(e.target.value)}
+                onChange={(e) => {
+                  setEmail(e.target.value);
+                  if (error) setError('');
+                }}
                 required
                 className="h-12 bg-[#1C2128] border-[#2D333B] focus:border-[#4B6FED]"
               />
@@ -131,7 +147,10 @@ export default function SignupPage() {
                 type="password"
                 placeholder="••••••••"
                 value={password}
-                onChange={(e) => setPassword(e.target.value)}
+                onChange={(e) => {
+                  setPassword(e.target.value);
+                  if (error) setError('');
+                }}
                 required
                 minLength={8}
                 className="h-12 bg-[#1C2128] border-[#2D333B] focus:border-[#4B6FED]"
