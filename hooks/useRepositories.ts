@@ -13,6 +13,7 @@ import {
   PaginatedResponse,
   ApiResponse,
 } from '@/types/qnn.types';
+import { qnnApiClient } from '@/services/QNNApiClient';
 
 // Query keys for React Query cache management
 export const repositoryKeys = {
@@ -39,27 +40,7 @@ export function useRepositories(searchParams?: RepositorySearchParams) {
   return useQuery({
     queryKey: repositoryKeys.list(searchParams),
     queryFn: async (): Promise<PaginatedResponse<Repository>> => {
-      // TODO: Replace with actual API client from Agent 1
-      // const apiClient = new QNNApiClient();
-      // return searchParams
-      //   ? apiClient.searchRepositories(searchParams)
-      //   : apiClient.listRepositories();
-
-      // Placeholder implementation - will be replaced by Agent 1's API client
-      console.warn('useRepositories: Using placeholder data. Waiting for Agent 1 API client.');
-
-      // Simulate API delay
-      await new Promise(resolve => setTimeout(resolve, 500));
-
-      return {
-        items: [],
-        total: 0,
-        page: searchParams?.page || 1,
-        perPage: searchParams?.perPage || 20,
-        totalPages: 0,
-        hasNext: false,
-        hasPrevious: false,
-      };
+      return qnnApiClient.listRepositories(searchParams);
     },
     staleTime: 5 * 60 * 1000, // 5 minutes
     gcTime: 10 * 60 * 1000, // 10 minutes (formerly cacheTime)
@@ -83,14 +64,7 @@ export function useRepository(id: string, enabled: boolean = true) {
   return useQuery({
     queryKey: repositoryKeys.detail(id),
     queryFn: async (): Promise<Repository> => {
-      // TODO: Replace with actual API client from Agent 1
-      // const apiClient = new QNNApiClient();
-      // return apiClient.getRepository(id);
-
-      console.warn('useRepository: Using placeholder data. Waiting for Agent 1 API client.');
-      await new Promise(resolve => setTimeout(resolve, 300));
-
-      throw new Error('Repository not found (placeholder implementation)');
+      return qnnApiClient.getRepository(id);
     },
     staleTime: 5 * 60 * 1000,
     enabled: enabled && !!id,
@@ -115,14 +89,7 @@ export function useRepositoryAnalysis(id: string, enabled: boolean = true) {
   return useQuery({
     queryKey: repositoryKeys.analysis(id),
     queryFn: async (): Promise<RepositoryAnalysis> => {
-      // TODO: Replace with actual API client from Agent 1
-      // const apiClient = new QNNApiClient();
-      // return apiClient.getRepositoryAnalysis(id);
-
-      console.warn('useRepositoryAnalysis: Using placeholder data. Waiting for Agent 1 API client.');
-      await new Promise(resolve => setTimeout(resolve, 400));
-
-      throw new Error('Analysis not found (placeholder implementation)');
+      return qnnApiClient.getRepositoryAnalysis(id);
     },
     staleTime: 10 * 60 * 1000, // 10 minutes (analysis doesn't change often)
     enabled: enabled && !!id,
@@ -148,14 +115,7 @@ export function useAnalyzeRepository() {
 
   return useMutation({
     mutationFn: async (repositoryId: string): Promise<ApiResponse<RepositoryAnalysis>> => {
-      // TODO: Replace with actual API client from Agent 1
-      // const apiClient = new QNNApiClient();
-      // return apiClient.analyzeRepository(repositoryId);
-
-      console.warn('useAnalyzeRepository: Using placeholder. Waiting for Agent 1 API client.');
-      await new Promise(resolve => setTimeout(resolve, 1000));
-
-      throw new Error('Analyze not implemented (placeholder)');
+      return qnnApiClient.analyzeRepository(repositoryId);
     },
     onSuccess: (data, repositoryId) => {
       // Invalidate and refetch analysis
@@ -196,22 +156,7 @@ export function useSearchRepositories(
   return useQuery({
     queryKey: repositoryKeys.list(searchParams),
     queryFn: async (): Promise<PaginatedResponse<Repository>> => {
-      // TODO: Replace with actual API client from Agent 1
-      // const apiClient = new QNNApiClient();
-      // return apiClient.searchRepositories(searchParams);
-
-      console.warn('useSearchRepositories: Using placeholder. Waiting for Agent 1 API client.');
-      await new Promise(resolve => setTimeout(resolve, 500));
-
-      return {
-        items: [],
-        total: 0,
-        page: 1,
-        perPage: 20,
-        totalPages: 0,
-        hasNext: false,
-        hasPrevious: false,
-      };
+      return qnnApiClient.searchRepositories(searchParams);
     },
     staleTime: 2 * 60 * 1000, // 2 minutes for search results
     enabled: query.length >= 2, // Only search if query has at least 2 characters
@@ -238,9 +183,7 @@ export function usePrefetchRepository() {
     queryClient.prefetchQuery({
       queryKey: repositoryKeys.detail(id),
       queryFn: async (): Promise<Repository> => {
-        // TODO: Replace with actual API client
-        console.warn('Prefetch: Waiting for Agent 1 API client.');
-        throw new Error('Prefetch not implemented');
+        return qnnApiClient.getRepository(id);
       },
       staleTime: 5 * 60 * 1000,
     });

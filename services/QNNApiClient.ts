@@ -70,6 +70,9 @@ import {
   BenchmarkMetrics,
   BenchmarkRequest,
   BenchmarkResult,
+  ModelEvaluation,
+  EvaluationMetrics,
+  EvaluationRequest,
   QuantumMetrics,
   PerformanceMetrics,
   CostTracking,
@@ -484,18 +487,35 @@ export class QNNApiClient {
   }
 
   /**
-   * Analyze a repository
+   * Get repository analysis by ID
    *
    * @param id - Repository ID
-   * @returns Promise resolving to analysis results
+   * @returns Promise resolving to repository analysis
    */
-  async analyzeRepository(id: string): Promise<RepositoryAnalysis> {
+  async getRepositoryAnalysis(id: string): Promise<RepositoryAnalysis> {
+    try {
+      const response = await this.client.get<ApiResponse<RepositoryAnalysis>>(
+        `/v1/repositories/${id}/analysis`
+      );
+      const apiResponse = this.extractData(response);
+      return apiResponse.data;
+    } catch (error) {
+      throw this.handleError(error);
+    }
+  }
+
+  /**
+   * Analyze a repository (trigger new analysis)
+   *
+   * @param id - Repository ID
+   * @returns Promise resolving to API response with analysis results
+   */
+  async analyzeRepository(id: string): Promise<ApiResponse<RepositoryAnalysis>> {
     try {
       const response = await this.client.post<ApiResponse<RepositoryAnalysis>>(
         `/v1/repositories/${id}/analyze`
       );
-      const apiResponse = this.extractData(response);
-      return apiResponse.data;
+      return this.extractData(response);
     } catch (error) {
       throw this.handleError(error);
     }
@@ -780,6 +800,108 @@ export class QNNApiClient {
       );
       const apiResponse = this.extractData(response);
       return apiResponse.data;
+    } catch (error) {
+      throw this.handleError(error);
+    }
+  }
+
+  // ==========================================================================
+  // Evaluation Methods
+  // ==========================================================================
+
+  /**
+   * Get model evaluation results
+   *
+   * @param modelId - Model ID to get evaluation for
+   * @returns Promise resolving to model evaluation
+   */
+  async getModelEvaluation(modelId: string): Promise<ModelEvaluation> {
+    try {
+      const response = await this.client.get<ApiResponse<ModelEvaluation>>(
+        `/v1/models/${modelId}/evaluation`
+      );
+      const apiResponse = this.extractData(response);
+      return apiResponse.data;
+    } catch (error) {
+      throw this.handleError(error);
+    }
+  }
+
+  /**
+   * Get evaluation metrics for a model (lightweight)
+   *
+   * @param modelId - Model ID
+   * @returns Promise resolving to evaluation metrics
+   */
+  async getEvaluationMetrics(modelId: string): Promise<EvaluationMetrics> {
+    try {
+      const response = await this.client.get<ApiResponse<EvaluationMetrics>>(
+        `/v1/models/${modelId}/evaluation/metrics`
+      );
+      const apiResponse = this.extractData(response);
+      return apiResponse.data;
+    } catch (error) {
+      throw this.handleError(error);
+    }
+  }
+
+  /**
+   * Run evaluation on a model
+   *
+   * @param request - Evaluation request configuration
+   * @returns Promise resolving to evaluation result
+   */
+  async evaluateModel(request: EvaluationRequest): Promise<ApiResponse<ModelEvaluation>> {
+    try {
+      const response = await this.client.post<ApiResponse<ModelEvaluation>>(
+        '/v1/evaluation/run',
+        request
+      );
+      return this.extractData(response);
+    } catch (error) {
+      throw this.handleError(error);
+    }
+  }
+
+  /**
+   * Compare evaluations across multiple models
+   *
+   * @param modelIds - Array of model IDs to compare
+   * @returns Promise resolving to array of model evaluations
+   */
+  async compareEvaluations(modelIds: string[]): Promise<ModelEvaluation[]> {
+    try {
+      const response = await this.client.post<ApiResponse<ModelEvaluation[]>>(
+        '/v1/evaluation/compare',
+        { modelIds }
+      );
+      const apiResponse = this.extractData(response);
+      return apiResponse.data;
+    } catch (error) {
+      throw this.handleError(error);
+    }
+  }
+
+  /**
+   * Export evaluation report
+   *
+   * @param modelId - Model ID
+   * @param format - Export format (pdf, json, csv)
+   * @returns Promise resolving to file blob
+   */
+  async exportEvaluationReport(
+    modelId: string,
+    format: 'pdf' | 'json' | 'csv'
+  ): Promise<Blob> {
+    try {
+      const response = await this.client.get<Blob>(
+        `/v1/models/${modelId}/evaluation/export`,
+        {
+          params: { format },
+          responseType: 'blob',
+        }
+      );
+      return this.extractData(response);
     } catch (error) {
       throw this.handleError(error);
     }
