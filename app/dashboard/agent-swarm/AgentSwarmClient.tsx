@@ -3,9 +3,10 @@
 /**
  * Agent Swarm Dashboard - Client Component
  * Main UI for orchestrating AI agent swarms to build applications
+ * Issue #430 - WebSocket integration for real-time terminal
  */
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
 import {
@@ -20,6 +21,7 @@ import {
   AlertCircle,
   Clock,
   ClipboardPaste,
+  Terminal,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -27,11 +29,19 @@ import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { agentSwarmService, type AgentSwarmProject } from '@/lib/agent-swarm-service';
 import { rlhfService } from '@/lib/rlhf-service';
+import AgentSwarmTerminal from '@/components/agent-swarm/AgentSwarmTerminal';
+
+// Project Card Component Props
+interface ProjectCardProps {
+  project: AgentSwarmProject;
+  isSelected?: boolean;
+  onSelect?: (projectId: string) => void;
+}
 
 // Project Card Component
-const ProjectCard = ({ project }: { project: AgentSwarmProject }) => {
+const ProjectCard = ({ project, isSelected, onSelect }: ProjectCardProps) => {
   return (
-    <Card className="bg-[#161B22] border-gray-800">
+    <Card className={`bg-[#161B22] border-gray-800 ${isSelected ? 'ring-2 ring-primary' : ''}`}>
       <CardContent className="p-6">
         <div className="flex items-center justify-between mb-4">
           <div>
@@ -41,9 +51,14 @@ const ProjectCard = ({ project }: { project: AgentSwarmProject }) => {
             </p>
           </div>
           <div className="flex items-center gap-2">
-            <Button size="sm" variant="outline" className="border-gray-700">
-              <Eye className="w-4 h-4 mr-1" />
-              View Logs
+            <Button
+              size="sm"
+              variant={isSelected ? 'default' : 'outline'}
+              className={isSelected ? 'bg-primary' : 'border-gray-700'}
+              onClick={() => onSelect?.(project.id)}
+            >
+              <Terminal className="w-4 h-4 mr-1" />
+              {isSelected ? 'Viewing' : 'View Terminal'}
             </Button>
           </div>
         </div>
@@ -105,11 +120,26 @@ export default function AgentSwarmClient() {
   const [activeTab, setActiveTab] = useState('upload');
   const [uploading, setUploading] = useState(false);
   const [healthStatus, setHealthStatus] = useState<string>('');
+  const [selectedProjectId, setSelectedProjectId] = useState<string | null>(null);
+  const [terminalConnected, setTerminalConnected] = useState(false);
 
   useEffect(() => {
     checkHealth();
     loadProjects();
   }, []);
+
+  // Handle terminal connection status changes
+  const handleTerminalConnectionChange = useCallback((connected: boolean) => {
+    setTerminalConnected(connected);
+  }, []);
+
+  // Handle project selection for terminal view
+  const handleProjectSelect = useCallback((projectId: string) => {
+    setSelectedProjectId((prev) => (prev === projectId ? null : projectId));
+  }, []);
+
+  // Get the selected project
+  const selectedProject = activeProjects.find((p) => p.id === selectedProjectId);
 
   const checkHealth = async () => {
     try {
@@ -369,11 +399,46 @@ export default function AgentSwarmClient() {
         ) : (
           <div className="space-y-6">
             {activeProjects.map((project) => (
-              <ProjectCard key={project.id} project={project} />
+              <ProjectCard
+                key={project.id}
+                project={project}
+                isSelected={selectedProjectId === project.id}
+                onSelect={handleProjectSelect}
+              />
             ))}
           </div>
         )}
       </motion.div>
+
+      {/* Agent Swarm Terminal - WebSocket Real-time Logs */}
+      {selectedProjectId && selectedProject && (
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.3 }}
+          className="mb-8"
+        >
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-2xl font-bold flex items-center gap-2">
+              <Terminal className="w-6 h-6 text-green-400" />
+              Real-time Terminal - {selectedProject.name}
+            </h2>
+            {terminalConnected && (
+              <Badge variant="default" className="bg-green-600">
+                Live
+              </Badge>
+            )}
+          </div>
+          <AgentSwarmTerminal
+            projectId={selectedProjectId}
+            projectStatus={selectedProject.status}
+            projectStartedAt={selectedProject.createdAt ? new Date(selectedProject.createdAt) : undefined}
+            estimatedDurationSeconds={300}
+            onConnectionStatusChange={handleTerminalConnectionChange}
+            onTimerComplete={() => loadProjects()}
+          />
+        </motion.div>
+      )}
     </div>
   );
 }
