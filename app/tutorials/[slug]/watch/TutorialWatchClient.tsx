@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { VideoPlayer } from '@/components/video/VideoPlayer';
+import { LazyVideoPlayer } from '@/components/lazy';
 import ChapterNavigation from '@/components/tutorial/ChapterNavigation';
 import { QuizPanel } from '@/components/tutorial/QuizPanel';
 import { NotesPanel } from '@/components/tutorial/NotesPanel';
@@ -286,7 +286,7 @@ export default function TutorialWatchClient({ slug }: { slug: string }) {
         <div className="grid grid-cols-12 gap-6">
           {/* Video Player - Main Column */}
           <div className="col-span-12 lg:col-span-8">
-            <VideoPlayer
+            <LazyVideoPlayer
               src={tutorial.video_url}
               poster={tutorial.poster_url || tutorial.thumbnail_url}
               onTimeUpdate={handleTimeUpdate}

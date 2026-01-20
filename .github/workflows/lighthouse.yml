@@ -1,0 +1,85 @@
+name: Lighthouse CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  lighthouse:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20.x
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build application
+        run: npm run build
+        env:
+          NODE_ENV: production
+
+      - name: Run Lighthouse CI
+        uses: treosh/lighthouse-ci-action@v12
+        with:
+          configPath: './lighthouserc.js'
+          uploadArtifacts: true
+          temporaryPublicStorage: true
+          budgetPath: './performance-budget.json'
+        env:
+          LHCI_GITHUB_APP_TOKEN: ${{ secrets.LHCI_GITHUB_APP_TOKEN }}
+
+      - name: Upload Lighthouse Reports
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: lighthouse-reports
+          path: .lighthouseci/
+          retention-days: 30
+
+      - name: Performance Regression Check
+        if: github.event_name == 'pull_request'
+        run: |
+          echo "Checking for performance regressions..."
+          if [ -f .lighthouseci/manifest.json ]; then
+            echo "Lighthouse CI completed successfully"
+            cat .lighthouseci/manifest.json | jq '.[] | {url: .url, performance: .summary.performance, accessibility: .summary.accessibility}'
+          fi
+
+      - name: Comment PR with Results
+        uses: actions/github-script@v7
+        if: github.event_name == 'pull_request'
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const fs = require('fs');
+            if (fs.existsSync('.lighthouseci/manifest.json')) {
+              const manifest = JSON.parse(fs.readFileSync('.lighthouseci/manifest.json', 'utf8'));
+              const reports = manifest.map(report => {
+                const scores = report.summary;
+                return `
+                ### ${report.url}
+                - Performance: ${(scores.performance * 100).toFixed(0)}
+                - Accessibility: ${(scores.accessibility * 100).toFixed(0)}
+                - Best Practices: ${(scores['best-practices'] * 100).toFixed(0)}
+                - SEO: ${(scores.seo * 100).toFixed(0)}
+                `;
+              }).join('\n');
+
+              await github.rest.issues.createComment({
+                issue_number: context.issue.number,
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                body: `## Lighthouse CI Results\n\n${reports}\n\nView full reports in the workflow artifacts.`
+              });
+            }

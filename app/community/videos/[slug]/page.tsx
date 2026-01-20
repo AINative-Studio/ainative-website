@@ -1,10 +1,17 @@
 import { Metadata } from 'next';
 import VideoDetailClient from './VideoDetailClient';
 import { VideoSchema, BreadcrumbSchema } from '@/components/seo/StructuredData';
+import { getRevalidateTime, getCacheTags } from '@/lib/cache-config';
 
 interface PageProps {
   params: Promise<{ slug: string }>;
 }
+
+// Enable ISR with 15-minute revalidation
+export const revalidate = getRevalidateTime('content', 'video'); // 900 seconds (15 minutes)
+
+// Add cache tags for on-demand revalidation
+export const tags = getCacheTags('video');
 
 // Mock video data for metadata generation
 const mockVideos = [

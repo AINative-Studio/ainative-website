@@ -6,6 +6,7 @@ import Link from 'next/link';
 import { motion } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { BrandedWelcome } from '@/components/branding/BrandedWelcome';
 import {
   CircleHelp,
   ChevronRight,
@@ -127,9 +128,10 @@ export default function DashboardClient() {
   const [aiMetrics, setAiMetrics] = useState<AiMetrics | null>(null);
   const [costData, setCostData] = useState<CostData | null>(null);
   const [apiError, setApiError] = useState<string | null>(null);
+  const [showWelcome, setShowWelcome] = useState(true);
   const router = useRouter();
 
-  // Load session from localStorage on mount
+  // Load session and welcome state from localStorage on mount
   useEffect(() => {
     setMounted(true);
     try {
@@ -138,8 +140,24 @@ export default function DashboardClient() {
         const userData = JSON.parse(userStr);
         setSessionUser({ email: userData.email, name: userData.name });
       }
+
+      // Check if user has dismissed welcome before
+      const welcomeDismissed = localStorage.getItem('dashboard_welcome_dismissed');
+      if (welcomeDismissed === 'true') {
+        setShowWelcome(false);
+      }
     } catch {
       // Ignore parse errors
+    }
+  }, []);
+
+  // Handle welcome dismissal with localStorage persistence
+  const handleWelcomeDismiss = useCallback(() => {
+    setShowWelcome(false);
+    try {
+      localStorage.setItem('dashboard_welcome_dismissed', 'true');
+    } catch {
+      // Ignore storage errors
     }
   }, []);
 
@@ -328,6 +346,24 @@ export default function DashboardClient() {
       animate="visible"
       variants={fadeIn}
     >
+      {/* Welcome Card - Only shown to new users or until dismissed */}
+      {showWelcome && (
+        <motion.div className="mb-8" variants={fadeUp}>
+          <BrandedWelcome
+            title="Welcome to AI Native Studio"
+            description="Get started by creating your first API key and explore our powerful AI development tools. Build faster with our comprehensive suite of APIs and services."
+            actionLabel="Get Your API Key"
+            actionHref="/developer-settings"
+            userName={user?.name || sessionUser?.name}
+            backgroundImage="/card.png"
+            showImage
+            showDismiss
+            onDismiss={handleWelcomeDismiss}
+            animate
+          />
+        </motion.div>
+      )}
+
       {/* Usage Header */}
       <motion.div className="mb-10" variants={fadeUp}>
         <div className="flex justify-between items-center flex-wrap gap-4">

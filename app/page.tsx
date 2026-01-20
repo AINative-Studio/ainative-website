@@ -1,5 +1,9 @@
 import { Metadata } from 'next';
 import HomeClient from './HomeClient';
+import { getRevalidateTime } from '@/lib/cache-config';
+
+// Enable ISR with 10-minute revalidation for home page
+export const revalidate = getRevalidateTime('marketing', 'home'); // 600 seconds (10 minutes)
 
 export const metadata: Metadata = {
   title: 'AI Native Studio - The Best AI Code Editor | Cursor & Windsurf Alternative',

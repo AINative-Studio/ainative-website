@@ -2,6 +2,24 @@
 // Learn more: https://github.com/testing-library/jest-dom
 import '@testing-library/jest-dom';
 
+// MSW (Mock Service Worker) Setup for API Mocking
+import { server, setupMockServer, resetMockHandlers } from './mocks/server';
+
+// Start the MSW server before all tests
+beforeAll(() => {
+  setupMockServer();
+});
+
+// Reset handlers after each test to ensure test isolation
+afterEach(() => {
+  resetMockHandlers();
+});
+
+// Clean up after all tests
+afterAll(() => {
+  server.close();
+});
+
 // Mock Next.js router
 jest.mock('next/navigation', () => ({
   useRouter() {

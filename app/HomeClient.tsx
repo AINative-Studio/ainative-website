@@ -133,7 +133,7 @@ export default function HomeClient() {
       </motion.div>
 
       {/* Hero Section */}
-      <section className="relative min-h-[70vh] flex items-center justify-center overflow-hidden pt-20 pb-12 z-10">
+      <section className="full-width-section relative min-h-[70vh] flex items-center justify-center pt-20 pb-12 z-10">
         <div className="absolute inset-0 -z-10">
           <div className="absolute inset-0 bg-gradient-to-b from-[#0D1117]/80 via-[#0D1117]/90 to-[#0D1117]/80"></div>
           {/* Center glow effect - matching Vite design */}
@@ -245,7 +245,7 @@ export default function HomeClient() {
       </section>
 
       {/* Value Proposition Section - Clean & Simple */}
-      <section className="py-20 bg-vite-bg relative">
+      <section className="full-width-section-md bg-vite-bg">
         <div className="container-custom max-w-6xl">
           <motion.div
             className="text-center mb-16"
@@ -319,7 +319,7 @@ export default function HomeClient() {
       </section>
 
       {/* Simple CTA Section */}
-      <section className="py-16 bg-gradient-to-b from-[#0D1117] to-[#161B22] relative">
+      <section className="full-width-section-sm bg-gradient-to-b from-[#0D1117] to-[#161B22]">
         <div className="container-custom max-w-4xl text-center">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
