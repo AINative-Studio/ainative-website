@@ -10,6 +10,7 @@ import { billingHandlers } from './billing.handlers';
 import { communityHandlers } from './community.handlers';
 import { videoHandlers } from './video.handlers';
 import { webinarHandlers } from './webinar.handlers';
+import { evaluationHandlers } from './evaluation.handlers';
 
 export const handlers = [
   ...authHandlers,
@@ -24,6 +25,7 @@ export const handlers = [
   ...communityHandlers,
   ...videoHandlers,
   ...webinarHandlers,
+  ...evaluationHandlers,
 ];
 
 export {
@@ -39,4 +41,5 @@ export {
   communityHandlers,
   videoHandlers,
   webinarHandlers,
+  evaluationHandlers,
 };
