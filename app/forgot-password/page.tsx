@@ -20,12 +20,12 @@ export default function ForgotPasswordPage() {
     setError('');
 
     try {
-      // TODO: Implement password reset API call
-      // For now, simulate a successful submission
-      await new Promise((resolve) => setTimeout(resolve, 1000));
+      const { authService } = await import('@/services/authService');
+      await authService.requestPasswordReset(email);
       setIsSubmitted(true);
-    } catch {
-      setError('Failed to send reset email. Please try again.');
+    } catch (err) {
+      const errorMessage = err instanceof Error ? err.message : 'Failed to send reset email. Please try again.';
+      setError(errorMessage);
     } finally {
       setIsLoading(false);
     }
