@@ -2,6 +2,7 @@
 
 import { Suspense, useState } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { useSearchParams, useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -58,7 +59,7 @@ function LoginForm() {
       {/* Header */}
       <div className="text-center mb-8">
         <Link href="/" className="inline-flex items-center justify-center gap-3 mb-6">
-          <img src="/ainative-icon.svg" alt="AINative Studio" className="h-12 w-auto" />
+          <Image src="/ainative-icon.svg" alt="AINative Studio" width={48} height={48} className="h-12 w-auto" />
           <span className="text-2xl font-bold uppercase">
             <span className="text-white">AI</span><span className="text-[#5867EF]">NATIVE</span>
           </span>
@@ -169,7 +170,7 @@ function LoginFormFallback() {
     <div className="w-full max-w-md">
       <div className="text-center mb-8">
         <div className="inline-flex items-center justify-center gap-3 mb-6">
-          <img src="/ainative-icon.svg" alt="AINative Studio" className="h-12 w-auto" />
+          <Image src="/ainative-icon.svg" alt="AINative Studio" width={48} height={48} className="h-12 w-auto" />
           <span className="text-2xl font-bold uppercase">
             <span className="text-white">AI</span><span className="text-[#5867EF]">NATIVE</span>
           </span>

@@ -3,6 +3,7 @@
 import { useState, useCallback, useRef, useEffect } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { motion } from 'framer-motion';
+import Image from 'next/image';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -181,7 +182,7 @@ export default function VideoProcessingClient() {
                     {viewMode === 'grid' && (
                       <div className="relative aspect-video bg-gray-900">
                         {video.thumbnailUrl ? (
-                          <img src={video.thumbnailUrl} alt={video.name} className="w-full h-full object-cover" />
+                          <Image src={video.thumbnailUrl} alt={video.name} fill className="object-cover" sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw" />
                         ) : (
                           <div className="flex items-center justify-center h-full"><Film className="h-12 w-12 text-gray-600" /></div>
                         )}
