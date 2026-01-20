@@ -1,6 +1,8 @@
 import { NextAuthOptions } from 'next-auth';
 import GitHubProvider from 'next-auth/providers/github';
 import CredentialsProvider from 'next-auth/providers/credentials';
+import { PrismaAdapter } from '@next-auth/prisma-adapter';
+import { prisma } from '@/lib/prisma';
 
 /**
  * NextAuth Configuration with Cross-Subdomain SSO Support
@@ -14,12 +16,15 @@ import CredentialsProvider from 'next-auth/providers/credentials';
  * - CSRF protection
  * - Secure cookie settings (httpOnly, sameSite, secure)
  * - Token rotation for enhanced security
+ * - Database session persistence via Prisma adapter
  */
 
 const isProd = process.env.NODE_ENV === 'production';
 const isDev = process.env.NODE_ENV === 'development';
 
 export const authOptions: NextAuthOptions = {
+  // Database adapter for persistent sessions
+  adapter: PrismaAdapter(prisma),
   // OAuth Providers
   providers: [
     GitHubProvider({
@@ -71,9 +76,9 @@ export const authOptions: NextAuthOptions = {
     }),
   ],
 
-  // Session Configuration
+  // Session Configuration - use database strategy with Prisma adapter
   session: {
-    strategy: 'jwt',
+    strategy: 'database',
     maxAge: 30 * 24 * 60 * 60, // 30 days
     updateAge: 24 * 60 * 60, // Update session every 24 hours
   },
