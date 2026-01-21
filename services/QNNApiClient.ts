@@ -907,6 +907,26 @@ export class QNNApiClient {
     }
   }
 
+  /**
+   * Get evaluation (alias for getModelEvaluation for API compatibility)
+   *
+   * @param modelId - Model ID to get evaluation for
+   * @returns Promise resolving to model evaluation
+   */
+  async getEvaluation(modelId: string): Promise<ModelEvaluation> {
+    return this.getModelEvaluation(modelId);
+  }
+
+  /**
+   * Run evaluation (alias for evaluateModel for API compatibility)
+   *
+   * @param request - Evaluation request configuration
+   * @returns Promise resolving to evaluation result
+   */
+  async runEvaluation(request: EvaluationRequest): Promise<ApiResponse<ModelEvaluation>> {
+    return this.evaluateModel(request);
+  }
+
   // ==========================================================================
   // Monitoring Methods
   // ==========================================================================

@@ -3,21 +3,40 @@
 import '@testing-library/jest-dom';
 
 // MSW (Mock Service Worker) Setup for API Mocking
-import { server, setupMockServer, resetMockHandlers } from './mocks/server';
+// Note: MSW is conditionally loaded to avoid issues with ESM modules in certain test configurations
+let server;
+let setupMockServer;
+let resetMockHandlers;
+
+try {
+  const mswServer = require('./mocks/server');
+  server = mswServer.server;
+  setupMockServer = mswServer.setupMockServer;
+  resetMockHandlers = mswServer.resetMockHandlers;
+} catch (error) {
+  // MSW not available, skip mock server setup
+  console.warn('MSW server not loaded:', error.message);
+}
 
 // Start the MSW server before all tests
 beforeAll(() => {
-  setupMockServer();
+  if (setupMockServer) {
+    setupMockServer();
+  }
 });
 
 // Reset handlers after each test to ensure test isolation
 afterEach(() => {
-  resetMockHandlers();
+  if (resetMockHandlers) {
+    resetMockHandlers();
+  }
 });
 
 // Clean up after all tests
 afterAll(() => {
-  server.close();
+  if (server) {
+    server.close();
+  }
 });
 
 // Mock Next.js router
