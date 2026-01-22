@@ -995,6 +995,143 @@ export class QNNApiClient {
   }
 
   // ==========================================================================
+  // Code Analysis Methods
+  // ==========================================================================
+
+  /**
+   * Analyze code quality using ML model
+   *
+   * @param code - Source code to analyze
+   * @param language - Programming language
+   * @param options - Optional analysis options
+   * @returns Promise resolving to code analysis result
+   */
+  async analyzeCode(
+    code: string,
+    language: string,
+    options?: { include_suggestions?: boolean; include_normalized_features?: boolean; detailed_metrics?: boolean }
+  ): Promise<{
+    quality_score: number;
+    features: {
+      file_size_bytes: number;
+      line_count: number;
+      comment_count: number;
+      function_count: number;
+      class_count: number;
+      avg_function_length: number;
+      cyclomatic_complexity?: number;
+      comment_ratio?: number;
+    };
+    normalized_features?: number[];
+    suggestions?: string[];
+    language: string;
+    timestamp: string;
+    model_version?: string;
+    analysis_id?: string;
+  }> {
+    try {
+      const response = await this.client.post<ApiResponse<{
+        quality_score: number;
+        features: {
+          file_size_bytes: number;
+          line_count: number;
+          comment_count: number;
+          function_count: number;
+          class_count: number;
+          avg_function_length: number;
+          cyclomatic_complexity?: number;
+          comment_ratio?: number;
+        };
+        normalized_features?: number[];
+        suggestions?: string[];
+        language: string;
+        timestamp: string;
+        model_version?: string;
+        analysis_id?: string;
+      }>>(
+        '/v1/code/analyze',
+        {
+          code,
+          language,
+          options: {
+            include_suggestions: true,
+            include_normalized_features: true,
+            ...options,
+          },
+        }
+      );
+      const apiResponse = this.extractData(response);
+      return apiResponse.data;
+    } catch (error) {
+      throw this.handleError(error);
+    }
+  }
+
+  /**
+   * Extract code features using ML model
+   *
+   * @param code - Source code to analyze
+   * @param language - Programming language
+   * @returns Promise resolving to code metrics
+   */
+  async extractCodeFeatures(
+    code: string,
+    language: string
+  ): Promise<{
+    file_size_bytes: number;
+    line_count: number;
+    comment_count: number;
+    function_count: number;
+    class_count: number;
+    avg_function_length: number;
+    cyclomatic_complexity?: number;
+    comment_ratio?: number;
+  }> {
+    try {
+      const response = await this.client.post<ApiResponse<{
+        file_size_bytes: number;
+        line_count: number;
+        comment_count: number;
+        function_count: number;
+        class_count: number;
+        avg_function_length: number;
+        cyclomatic_complexity?: number;
+        comment_ratio?: number;
+      }>>(
+        '/v1/code/features',
+        { code, language }
+      );
+      const apiResponse = this.extractData(response);
+      return apiResponse.data;
+    } catch (error) {
+      throw this.handleError(error);
+    }
+  }
+
+  /**
+   * Get quality score for code
+   *
+   * @param code - Source code to evaluate
+   * @param language - Programming language
+   * @returns Promise resolving to quality score (0-1)
+   */
+  async getCodeQualityScore(
+    code: string,
+    language: string
+  ): Promise<number> {
+    try {
+      const response = await this.client.post<ApiResponse<{ quality_score: number }>>(
+        '/v1/code/quality',
+        { code, language }
+      );
+      const apiResponse = this.extractData(response);
+      return apiResponse.data.quality_score;
+    } catch (error) {
+      throw this.handleError(error);
+    }
+  }
+
+  // ==========================================================================
   // Signature Management Methods
   // ==========================================================================
 
