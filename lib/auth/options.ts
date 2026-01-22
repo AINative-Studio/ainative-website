@@ -1,6 +1,5 @@
 import { NextAuthOptions } from 'next-auth';
 import GitHubProvider from 'next-auth/providers/github';
-import LinkedInProvider from 'next-auth/providers/linkedin';
 import CredentialsProvider from 'next-auth/providers/credentials';
 import { PrismaAdapter } from '@next-auth/prisma-adapter';
 import { prisma } from '@/lib/prisma';
@@ -8,12 +7,11 @@ import { prisma } from '@/lib/prisma';
 /**
  * NextAuth Configuration with Cross-Subdomain SSO Support
  *
- * This configuration enables OAuth login with GitHub and LinkedIn, and supports
+ * This configuration enables OAuth login with GitHub and supports
  * session sharing across all *.ainative.studio subdomains.
  *
  * Key Features:
  * - GitHub OAuth with automatic token refresh
- * - LinkedIn OAuth for professional identity
  * - Cross-subdomain session cookies
  * - CSRF protection
  * - Secure cookie settings (httpOnly, sameSite, secure)
@@ -36,16 +34,6 @@ export const authOptions: NextAuthOptions = {
       authorization: {
         params: {
           scope: 'read:user user:email',
-        },
-      },
-    }),
-    LinkedInProvider({
-      clientId: process.env.LINKEDIN_CLIENT_ID ?? '',
-      clientSecret: process.env.LINKEDIN_CLIENT_SECRET ?? '',
-      // Request OpenID Connect scopes for profile and email access
-      authorization: {
-        params: {
-          scope: 'openid profile email',
         },
       },
     }),

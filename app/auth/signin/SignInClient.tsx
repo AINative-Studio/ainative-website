@@ -5,7 +5,7 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
-import { Github, Linkedin } from 'lucide-react';
+import { Github } from 'lucide-react';
 
 export default function SignInClient() {
   const router = useRouter();
@@ -60,27 +60,6 @@ export default function SignInClient() {
 
       if (result?.error) {
         setError('Failed to sign in with GitHub. Please try again.');
-        setIsLoading(false);
-      }
-    } catch (err) {
-      console.error('Sign in error:', err);
-      setError('An unexpected error occurred. Please try again.');
-      setIsLoading(false);
-    }
-  };
-
-  const handleLinkedInSignIn = async () => {
-    setIsLoading(true);
-    setError(null);
-
-    try {
-      const result = await signIn('linkedin', {
-        callbackUrl,
-        redirect: true,
-      });
-
-      if (result?.error) {
-        setError('Failed to sign in with LinkedIn. Please try again.');
         setIsLoading(false);
       }
     } catch (err) {
@@ -162,21 +141,6 @@ export default function SignInClient() {
               <>
                 <Github className="mr-2 h-5 w-5" />
                 Continue with GitHub
-              </>
-            )}
-          </Button>
-          <Button
-            onClick={handleLinkedInSignIn}
-            disabled={isLoading}
-            className="w-full bg-[#0A66C2] hover:bg-[#004182] text-white"
-            size="lg"
-          >
-            {isLoading ? (
-              <div className="h-5 w-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
-            ) : (
-              <>
-                <Linkedin className="mr-2 h-5 w-5" />
-                Continue with LinkedIn
               </>
             )}
           </Button>
