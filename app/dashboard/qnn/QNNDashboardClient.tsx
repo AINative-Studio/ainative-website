@@ -21,8 +21,7 @@ import {
   AlertCircle,
   XCircle,
   ArrowUpRight,
-  Shield,
-  Target
+  Shield
 } from 'lucide-react';
 import Link from 'next/link';
 
@@ -478,35 +477,7 @@ export default function QNNDashboardClient() {
       </motion.div>
 
       {/* Quick Actions */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Evaluation Quick Action */}
-        <motion.div
-          initial="hidden"
-          animate="visible"
-          variants={fadeUp}
-        >
-          <Card className="bg-gradient-to-r from-emerald-500/10 to-teal-500/10 border-emerald-500/30">
-            <CardContent className="flex items-center justify-between py-6">
-              <div className="flex items-center gap-4">
-                <div className="p-3 bg-emerald-500/20 rounded-lg">
-                  <Target className="h-6 w-6 text-emerald-400" />
-                </div>
-                <div>
-                  <h3 className="font-semibold text-lg">Model Evaluation</h3>
-                  <p className="text-gray-400 text-sm">
-                    Evaluate model performance with metrics and ROC curves
-                  </p>
-                </div>
-              </div>
-              <Link href="/dashboard/qnn/evaluation">
-                <Button className="bg-emerald-500 hover:bg-emerald-500/80">
-                  Evaluate
-                </Button>
-              </Link>
-            </CardContent>
-          </Card>
-        </motion.div>
-
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Signatures Quick Action */}
         <motion.div
           initial="hidden"
@@ -520,15 +491,15 @@ export default function QNNDashboardClient() {
                   <Shield className="h-6 w-6 text-purple-400" />
                 </div>
                 <div>
-                  <h3 className="font-semibold text-lg">Model Signatures</h3>
+                  <h3 className="font-semibold text-lg">Manage Model Signatures</h3>
                   <p className="text-gray-400 text-sm">
-                    Sign and verify models with quantum-resistant signatures
+                    Sign, verify, and secure your models with quantum-resistant signatures
                   </p>
                 </div>
               </div>
               <Link href="/dashboard/qnn/signatures">
                 <Button className="bg-purple-500 hover:bg-purple-500/80">
-                  Signatures
+                  View Signatures
                 </Button>
               </Link>
             </CardContent>
@@ -548,17 +519,22 @@ export default function QNNDashboardClient() {
                   <Cpu className="h-6 w-6 text-[#4B6FED]" />
                 </div>
                 <div>
-                  <h3 className="font-semibold text-lg">Train New Model</h3>
+                  <h3 className="font-semibold text-lg">Ready to train a new model?</h3>
                   <p className="text-gray-400 text-sm">
-                    Create and train quantum neural networks
+                    Create and train quantum neural networks with our visual builder
                   </p>
                 </div>
               </div>
-              <Link href="/products/qnn">
+              <div className="flex gap-2">
+                <Link href="/products/qnn">
+                  <Button variant="outline" className="border-[#4B6FED] text-[#4B6FED]">
+                    Learn More
+                  </Button>
+                </Link>
                 <Button className="bg-[#4B6FED] hover:bg-[#4B6FED]/80">
-                  Create
+                  Create Model
                 </Button>
-              </Link>
+              </div>
             </CardContent>
           </Card>
         </motion.div>
