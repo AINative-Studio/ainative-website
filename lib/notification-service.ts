@@ -1,6 +1,9 @@
 /**
  * Notification Service - Backend integration for Notification Center
  * Integrates with all backend notification endpoints
+ *
+ * NOTE: Mock fallback behavior is controlled by NEXT_PUBLIC_USE_MOCKS environment variable.
+ * In production, API errors will propagate as proper errors with error state.
  */
 
 import apiClient from './api-client';
@@ -62,7 +65,24 @@ export interface NotificationStats {
   byCategory: Record<string, number>;
 }
 
-// Mock Data Generator
+// Service Error class for notification-specific errors
+export class NotificationServiceError extends Error {
+  constructor(
+    message: string,
+    public code: string = 'NOTIFICATION_ERROR',
+    public originalError?: unknown
+  ) {
+    super(message);
+    this.name = 'NotificationServiceError';
+  }
+}
+
+// Check if mocks should be used (development only)
+const shouldUseMocks = (): boolean => {
+  return process.env.NEXT_PUBLIC_USE_MOCKS === 'true';
+};
+
+// Mock Data Generator - Only used in development when NEXT_PUBLIC_USE_MOCKS=true
 function generateMockNotifications(): Notification[] {
   const now = new Date();
   const notifications: Notification[] = [
@@ -162,10 +182,41 @@ function generateMockNotifications(): Notification[] {
   return notifications;
 }
 
+// Default preferences for development mocks
+function getDefaultPreferences(): NotificationPreferences {
+  return {
+    email: {
+      enabled: true,
+      system: true,
+      billing: true,
+      security: true,
+      feature: true,
+      marketing: false,
+    },
+    inApp: {
+      enabled: true,
+      system: true,
+      billing: true,
+      security: true,
+      feature: true,
+      marketing: true,
+    },
+    push: {
+      enabled: false,
+      system: false,
+      billing: false,
+      security: false,
+      feature: false,
+      marketing: false,
+    },
+  };
+}
+
 // Notification Service
 const notificationService = {
   /**
    * Get list of notifications with optional filtering
+   * @throws NotificationServiceError if API call fails and mocks are disabled
    */
   async getNotifications(filter?: 'all' | 'unread' | 'read'): Promise<Notification[]> {
     try {
@@ -173,228 +224,307 @@ const notificationService = {
       const response = await apiClient.get<{ notifications: Notification[] }>(`/v1/notifications${params}`);
       return response.data.notifications || [];
     } catch (error) {
-      console.warn('Failed to fetch notifications from API, using mock data:', error);
+      // In development with mocks enabled, return mock data
+      if (shouldUseMocks()) {
+        console.warn('[DEV] Using mock notifications data');
+        const mockNotifications = generateMockNotifications();
 
-      // Return mock data as fallback
-      const mockNotifications = generateMockNotifications();
+        if (filter === 'unread') {
+          return mockNotifications.filter(n => !n.read);
+        } else if (filter === 'read') {
+          return mockNotifications.filter(n => n.read);
+        }
 
-      if (filter === 'unread') {
-        return mockNotifications.filter(n => !n.read);
-      } else if (filter === 'read') {
-        return mockNotifications.filter(n => n.read);
+        return mockNotifications;
       }
 
-      return mockNotifications;
+      // In production, throw error to be handled by UI
+      console.error('Failed to fetch notifications:', error);
+      throw new NotificationServiceError(
+        'Failed to fetch notifications',
+        'FETCH_NOTIFICATIONS_ERROR',
+        error
+      );
     }
   },
 
   /**
    * Get a specific notification by ID
+   * @throws NotificationServiceError if API call fails and mocks are disabled
    */
   async getNotification(id: string): Promise<Notification> {
     try {
       const response = await apiClient.get<Notification>(`/v1/notifications/${id}`);
       return response.data;
     } catch (error) {
-      console.warn('Failed to fetch notification from API, using mock data:', error);
+      // In development with mocks enabled, return mock data
+      if (shouldUseMocks()) {
+        console.warn('[DEV] Using mock notification data');
+        const mockNotifications = generateMockNotifications();
+        const notification = mockNotifications.find(n => n.id === id);
 
-      // Return mock data as fallback
-      const mockNotifications = generateMockNotifications();
-      const notification = mockNotifications.find(n => n.id === id);
+        if (!notification) {
+          throw new NotificationServiceError('Notification not found', 'NOT_FOUND');
+        }
 
-      if (!notification) {
-        throw new Error('Notification not found');
+        return notification;
       }
 
-      return notification;
+      // In production, throw error
+      console.error('Failed to fetch notification:', error);
+      throw new NotificationServiceError(
+        'Notification not found',
+        'FETCH_NOTIFICATION_ERROR',
+        error
+      );
     }
   },
 
   /**
    * Mark notification as read
+   * @throws NotificationServiceError if API call fails and mocks are disabled
    */
   async markAsRead(id: string): Promise<Notification> {
     try {
       const response = await apiClient.put<Notification>(`/v1/notifications/${id}/read`);
       return response.data;
     } catch (error) {
-      console.warn('Failed to mark notification as read via API:', error);
+      // In development with mocks enabled, simulate success
+      if (shouldUseMocks()) {
+        console.warn('[DEV] Simulating mark as read');
+        const mockNotifications = generateMockNotifications();
+        const notification = mockNotifications.find(n => n.id === id);
 
-      // Simulate success for mock data
-      const mockNotifications = generateMockNotifications();
-      const notification = mockNotifications.find(n => n.id === id);
+        if (!notification) {
+          throw new NotificationServiceError('Notification not found', 'NOT_FOUND');
+        }
 
-      if (!notification) {
-        throw new Error('Notification not found');
+        return {
+          ...notification,
+          read: true,
+          readAt: new Date().toISOString(),
+        };
       }
 
-      return {
-        ...notification,
-        read: true,
-        readAt: new Date().toISOString(),
-      };
+      // In production, throw error
+      console.error('Failed to mark notification as read:', error);
+      throw new NotificationServiceError(
+        'Failed to mark notification as read',
+        'MARK_AS_READ_ERROR',
+        error
+      );
     }
   },
 
   /**
    * Mark notification as unread
+   * @throws NotificationServiceError if API call fails and mocks are disabled
    */
   async markAsUnread(id: string): Promise<Notification> {
     try {
       const response = await apiClient.put<Notification>(`/v1/notifications/${id}/unread`);
       return response.data;
     } catch (error) {
-      console.warn('Failed to mark notification as unread via API:', error);
+      // In development with mocks enabled, simulate success
+      if (shouldUseMocks()) {
+        console.warn('[DEV] Simulating mark as unread');
+        const mockNotifications = generateMockNotifications();
+        const notification = mockNotifications.find(n => n.id === id);
 
-      // Simulate success for mock data
-      const mockNotifications = generateMockNotifications();
-      const notification = mockNotifications.find(n => n.id === id);
+        if (!notification) {
+          throw new NotificationServiceError('Notification not found', 'NOT_FOUND');
+        }
 
-      if (!notification) {
-        throw new Error('Notification not found');
+        return {
+          ...notification,
+          read: false,
+          readAt: undefined,
+        };
       }
 
-      return {
-        ...notification,
-        read: false,
-        readAt: undefined,
-      };
+      // In production, throw error
+      console.error('Failed to mark notification as unread:', error);
+      throw new NotificationServiceError(
+        'Failed to mark notification as unread',
+        'MARK_AS_UNREAD_ERROR',
+        error
+      );
     }
   },
 
   /**
    * Delete a notification
+   * @throws NotificationServiceError if API call fails and mocks are disabled
    */
   async deleteNotification(id: string): Promise<void> {
     try {
       await apiClient.delete(`/v1/notifications/${id}`);
     } catch (error) {
-      console.warn('Failed to delete notification via API:', error);
-      // Simulate success for mock data
+      // In development with mocks enabled, simulate success
+      if (shouldUseMocks()) {
+        console.warn('[DEV] Simulating delete notification');
+        return;
+      }
+
+      // In production, throw error
+      console.error('Failed to delete notification:', error);
+      throw new NotificationServiceError(
+        'Failed to delete notification',
+        'DELETE_NOTIFICATION_ERROR',
+        error
+      );
     }
   },
 
   /**
    * Mark all notifications as read
+   * @throws NotificationServiceError if API call fails and mocks are disabled
    */
   async markAllAsRead(): Promise<{ success: boolean; count: number }> {
     try {
       const response = await apiClient.put<{ success: boolean; count: number }>('/v1/notifications/mark-all-read');
       return response.data;
     } catch (error) {
-      console.warn('Failed to mark all as read via API:', error);
+      // In development with mocks enabled, simulate success
+      if (shouldUseMocks()) {
+        console.warn('[DEV] Simulating mark all as read');
+        const mockNotifications = generateMockNotifications();
+        const unreadCount = mockNotifications.filter(n => !n.read).length;
 
-      // Simulate success for mock data
-      const mockNotifications = generateMockNotifications();
-      const unreadCount = mockNotifications.filter(n => !n.read).length;
+        return {
+          success: true,
+          count: unreadCount,
+        };
+      }
 
-      return {
-        success: true,
-        count: unreadCount,
-      };
+      // In production, throw error
+      console.error('Failed to mark all as read:', error);
+      throw new NotificationServiceError(
+        'Failed to mark all notifications as read',
+        'MARK_ALL_AS_READ_ERROR',
+        error
+      );
     }
   },
 
   /**
    * Get notification preferences
+   * @throws NotificationServiceError if API call fails and mocks are disabled
    */
   async getPreferences(): Promise<NotificationPreferences> {
     try {
       const response = await apiClient.get<NotificationPreferences>('/v1/notifications/preferences');
       return response.data;
     } catch (error) {
-      console.warn('Failed to fetch preferences from API, using defaults:', error);
+      // In development with mocks enabled, return default preferences
+      if (shouldUseMocks()) {
+        console.warn('[DEV] Using default notification preferences');
+        return getDefaultPreferences();
+      }
 
-      // Return default preferences
-      return {
-        email: {
-          enabled: true,
-          system: true,
-          billing: true,
-          security: true,
-          feature: true,
-          marketing: false,
-        },
-        inApp: {
-          enabled: true,
-          system: true,
-          billing: true,
-          security: true,
-          feature: true,
-          marketing: true,
-        },
-        push: {
-          enabled: false,
-          system: false,
-          billing: false,
-          security: false,
-          feature: false,
-          marketing: false,
-        },
-      };
+      // In production, throw error
+      console.error('Failed to fetch preferences:', error);
+      throw new NotificationServiceError(
+        'Failed to fetch notification preferences',
+        'FETCH_PREFERENCES_ERROR',
+        error
+      );
     }
   },
 
   /**
    * Update notification preferences
+   * @throws NotificationServiceError if API call fails and mocks are disabled
    */
   async updatePreferences(preferences: NotificationPreferences): Promise<NotificationPreferences> {
     try {
       const response = await apiClient.put<NotificationPreferences>('/v1/notifications/preferences', preferences);
       return response.data;
     } catch (error) {
-      console.warn('Failed to update preferences via API:', error);
+      // In development with mocks enabled, return the preferences (simulating success)
+      if (shouldUseMocks()) {
+        console.warn('[DEV] Simulating update preferences');
+        return preferences;
+      }
 
-      // Return the preferences as-is (simulating success)
-      return preferences;
+      // In production, throw error
+      console.error('Failed to update preferences:', error);
+      throw new NotificationServiceError(
+        'Failed to update notification preferences',
+        'UPDATE_PREFERENCES_ERROR',
+        error
+      );
     }
   },
 
   /**
    * Subscribe to push notifications
+   * @throws NotificationServiceError if API call fails and mocks are disabled
    */
   async subscribeToPush(subscription: PushSubscription): Promise<{ success: boolean; message: string }> {
     try {
       const response = await apiClient.post<{ success: boolean; message: string }>('/v1/notifications/subscribe', subscription);
       return response.data;
     } catch (error) {
-      console.warn('Failed to subscribe to push notifications via API:', error);
+      // In development with mocks enabled, simulate success
+      if (shouldUseMocks()) {
+        console.warn('[DEV] Simulating push subscription');
+        return {
+          success: true,
+          message: 'Push notifications enabled (mock)',
+        };
+      }
 
-      // Simulate success
-      return {
-        success: true,
-        message: 'Push notifications enabled (mock)',
-      };
+      // In production, throw error
+      console.error('Failed to subscribe to push notifications:', error);
+      throw new NotificationServiceError(
+        'Failed to subscribe to push notifications',
+        'SUBSCRIBE_PUSH_ERROR',
+        error
+      );
     }
   },
 
   /**
    * Get notification statistics
+   * @throws NotificationServiceError if API call fails and mocks are disabled
    */
   async getStats(): Promise<NotificationStats> {
     try {
       const response = await apiClient.get<NotificationStats>('/v1/notifications/stats');
       return response.data;
     } catch (error) {
-      console.warn('Failed to fetch stats from API, calculating from mock data:', error);
+      // In development with mocks enabled, calculate stats from mock data
+      if (shouldUseMocks()) {
+        console.warn('[DEV] Calculating stats from mock data');
+        const mockNotifications = generateMockNotifications();
 
-      // Calculate stats from mock data
-      const mockNotifications = generateMockNotifications();
+        return {
+          total: mockNotifications.length,
+          unread: mockNotifications.filter(n => !n.read).length,
+          byType: mockNotifications.reduce((acc, n) => {
+            acc[n.type] = (acc[n.type] || 0) + 1;
+            return acc;
+          }, {} as Record<string, number>),
+          byCategory: mockNotifications.reduce((acc, n) => {
+            acc[n.category] = (acc[n.category] || 0) + 1;
+            return acc;
+          }, {} as Record<string, number>),
+        };
+      }
 
-      return {
-        total: mockNotifications.length,
-        unread: mockNotifications.filter(n => !n.read).length,
-        byType: mockNotifications.reduce((acc, n) => {
-          acc[n.type] = (acc[n.type] || 0) + 1;
-          return acc;
-        }, {} as Record<string, number>),
-        byCategory: mockNotifications.reduce((acc, n) => {
-          acc[n.category] = (acc[n.category] || 0) + 1;
-          return acc;
-        }, {} as Record<string, number>),
-      };
+      // In production, throw error
+      console.error('Failed to fetch stats:', error);
+      throw new NotificationServiceError(
+        'Failed to fetch notification statistics',
+        'FETCH_STATS_ERROR',
+        error
+      );
     }
   },
 };
 
 export default notificationService;
+
+// Export for testing purposes
+export { generateMockNotifications, getDefaultPreferences, shouldUseMocks };

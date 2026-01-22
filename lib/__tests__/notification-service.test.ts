@@ -1,5 +1,9 @@
 import apiClient from '../api-client';
-import notificationService from '../notification-service';
+import notificationService, {
+  NotificationServiceError,
+  generateMockNotifications,
+  getDefaultPreferences,
+} from '../notification-service';
 
 // Mock the apiClient
 jest.mock('../api-client', () => ({
@@ -12,14 +16,23 @@ jest.mock('../api-client', () => ({
   },
 }));
 
-// Mock console.warn to avoid noise in tests
+// Mock console.warn and console.error to avoid noise in tests
 jest.spyOn(console, 'warn').mockImplementation(() => {});
+jest.spyOn(console, 'error').mockImplementation(() => {});
 
 describe('NotificationService', () => {
   const mockApiClient = apiClient as jest.Mocked<typeof apiClient>;
+  const originalEnv = process.env;
 
   beforeEach(() => {
     jest.clearAllMocks();
+    // Reset environment variables
+    process.env = { ...originalEnv };
+    delete process.env.NEXT_PUBLIC_USE_MOCKS;
+  });
+
+  afterAll(() => {
+    process.env = originalEnv;
   });
 
   describe('getNotifications', () => {
@@ -89,7 +102,16 @@ describe('NotificationService', () => {
       expect(result).toEqual([]);
     });
 
-    it('falls back to mock data on error', async () => {
+    it('throws NotificationServiceError on API failure when mocks disabled', async () => {
+      process.env.NEXT_PUBLIC_USE_MOCKS = 'false';
+      mockApiClient.get.mockRejectedValueOnce(new Error('Network error'));
+
+      await expect(notificationService.getNotifications()).rejects.toThrow(NotificationServiceError);
+      await expect(notificationService.getNotifications()).rejects.toThrow('Failed to fetch notifications');
+    });
+
+    it('falls back to mock data when NEXT_PUBLIC_USE_MOCKS is true', async () => {
+      process.env.NEXT_PUBLIC_USE_MOCKS = 'true';
       mockApiClient.get.mockRejectedValueOnce(new Error('Network error'));
 
       const result = await notificationService.getNotifications();
@@ -100,13 +122,25 @@ describe('NotificationService', () => {
       expect(result[0]).toHaveProperty('title');
     });
 
-    it('filters mock data for unread', async () => {
+    it('filters mock data for unread when mocks enabled', async () => {
+      process.env.NEXT_PUBLIC_USE_MOCKS = 'true';
       mockApiClient.get.mockRejectedValueOnce(new Error('Network error'));
 
       const result = await notificationService.getNotifications('unread');
 
       result.forEach(notification => {
         expect(notification.read).toBe(false);
+      });
+    });
+
+    it('filters mock data for read when mocks enabled', async () => {
+      process.env.NEXT_PUBLIC_USE_MOCKS = 'true';
+      mockApiClient.get.mockRejectedValueOnce(new Error('Network error'));
+
+      const result = await notificationService.getNotifications('read');
+
+      result.forEach(notification => {
+        expect(notification.read).toBe(true);
       });
     });
   });
@@ -135,10 +169,28 @@ describe('NotificationService', () => {
       expect(result).toEqual(mockNotification);
     });
 
-    it('throws error for non-existent notification', async () => {
+    it('throws NotificationServiceError for API failure when mocks disabled', async () => {
+      process.env.NEXT_PUBLIC_USE_MOCKS = 'false';
+      mockApiClient.get.mockRejectedValueOnce(new Error('Not found'));
+
+      await expect(notificationService.getNotification('invalid-id')).rejects.toThrow(NotificationServiceError);
+    });
+
+    it('throws NotificationServiceError for non-existent notification in mocks', async () => {
+      process.env.NEXT_PUBLIC_USE_MOCKS = 'true';
       mockApiClient.get.mockRejectedValueOnce(new Error('Not found'));
 
       await expect(notificationService.getNotification('invalid-id')).rejects.toThrow('Notification not found');
+    });
+
+    it('returns mock notification when mocks enabled and API fails', async () => {
+      process.env.NEXT_PUBLIC_USE_MOCKS = 'true';
+      mockApiClient.get.mockRejectedValueOnce(new Error('Network error'));
+
+      const result = await notificationService.getNotification('1');
+
+      expect(result).toHaveProperty('id', '1');
+      expect(result).toHaveProperty('title');
     });
   });
 
@@ -168,13 +220,29 @@ describe('NotificationService', () => {
       expect(result.readAt).toBeDefined();
     });
 
-    it('falls back gracefully on error', async () => {
+    it('throws NotificationServiceError on API failure when mocks disabled', async () => {
+      process.env.NEXT_PUBLIC_USE_MOCKS = 'false';
+      mockApiClient.put.mockRejectedValueOnce(new Error('Network error'));
+
+      await expect(notificationService.markAsRead('1')).rejects.toThrow(NotificationServiceError);
+      await expect(notificationService.markAsRead('1')).rejects.toThrow('Failed to mark notification as read');
+    });
+
+    it('simulates success when mocks enabled and API fails', async () => {
+      process.env.NEXT_PUBLIC_USE_MOCKS = 'true';
       mockApiClient.put.mockRejectedValueOnce(new Error('Network error'));
 
       const result = await notificationService.markAsRead('1');
 
       expect(result.read).toBe(true);
       expect(result.readAt).toBeDefined();
+    });
+
+    it('throws error for invalid notification ID when mocks enabled', async () => {
+      process.env.NEXT_PUBLIC_USE_MOCKS = 'true';
+      mockApiClient.put.mockRejectedValueOnce(new Error('Network error'));
+
+      await expect(notificationService.markAsRead('invalid-id')).rejects.toThrow('Notification not found');
     });
   });
 
@@ -202,7 +270,15 @@ describe('NotificationService', () => {
       expect(result.read).toBe(false);
     });
 
-    it('falls back gracefully on error', async () => {
+    it('throws NotificationServiceError on API failure when mocks disabled', async () => {
+      process.env.NEXT_PUBLIC_USE_MOCKS = 'false';
+      mockApiClient.put.mockRejectedValueOnce(new Error('Network error'));
+
+      await expect(notificationService.markAsUnread('1')).rejects.toThrow(NotificationServiceError);
+    });
+
+    it('simulates success when mocks enabled and API fails', async () => {
+      process.env.NEXT_PUBLIC_USE_MOCKS = 'true';
       mockApiClient.put.mockRejectedValueOnce(new Error('Network error'));
 
       const result = await notificationService.markAsUnread('1');
@@ -225,7 +301,15 @@ describe('NotificationService', () => {
       expect(mockApiClient.delete).toHaveBeenCalledWith('/v1/notifications/1');
     });
 
-    it('handles delete errors gracefully', async () => {
+    it('throws NotificationServiceError on API failure when mocks disabled', async () => {
+      process.env.NEXT_PUBLIC_USE_MOCKS = 'false';
+      mockApiClient.delete.mockRejectedValueOnce(new Error('Network error'));
+
+      await expect(notificationService.deleteNotification('1')).rejects.toThrow(NotificationServiceError);
+    });
+
+    it('simulates success when mocks enabled and API fails', async () => {
+      process.env.NEXT_PUBLIC_USE_MOCKS = 'true';
       mockApiClient.delete.mockRejectedValueOnce(new Error('Network error'));
 
       // Should not throw
@@ -248,7 +332,15 @@ describe('NotificationService', () => {
       expect(result.count).toBe(5);
     });
 
-    it('falls back gracefully on error', async () => {
+    it('throws NotificationServiceError on API failure when mocks disabled', async () => {
+      process.env.NEXT_PUBLIC_USE_MOCKS = 'false';
+      mockApiClient.put.mockRejectedValueOnce(new Error('Network error'));
+
+      await expect(notificationService.markAllAsRead()).rejects.toThrow(NotificationServiceError);
+    });
+
+    it('simulates success when mocks enabled and API fails', async () => {
+      process.env.NEXT_PUBLIC_USE_MOCKS = 'true';
       mockApiClient.put.mockRejectedValueOnce(new Error('Network error'));
 
       const result = await notificationService.markAllAsRead();
@@ -299,7 +391,15 @@ describe('NotificationService', () => {
       expect(result).toEqual(mockPreferences);
     });
 
-    it('returns defaults on error', async () => {
+    it('throws NotificationServiceError on API failure when mocks disabled', async () => {
+      process.env.NEXT_PUBLIC_USE_MOCKS = 'false';
+      mockApiClient.get.mockRejectedValueOnce(new Error('Network error'));
+
+      await expect(notificationService.getPreferences()).rejects.toThrow(NotificationServiceError);
+    });
+
+    it('returns default preferences when mocks enabled and API fails', async () => {
+      process.env.NEXT_PUBLIC_USE_MOCKS = 'true';
       mockApiClient.get.mockRejectedValueOnce(new Error('Network error'));
 
       const result = await notificationService.getPreferences();
@@ -351,7 +451,16 @@ describe('NotificationService', () => {
       expect(result).toEqual(preferences);
     });
 
-    it('returns preferences as-is on error', async () => {
+    it('throws NotificationServiceError on API failure when mocks disabled', async () => {
+      process.env.NEXT_PUBLIC_USE_MOCKS = 'false';
+      const preferences = getDefaultPreferences();
+      mockApiClient.put.mockRejectedValueOnce(new Error('Network error'));
+
+      await expect(notificationService.updatePreferences(preferences)).rejects.toThrow(NotificationServiceError);
+    });
+
+    it('returns preferences as-is when mocks enabled and API fails', async () => {
+      process.env.NEXT_PUBLIC_USE_MOCKS = 'true';
       const preferences = {
         email: {
           enabled: true,
@@ -409,7 +518,18 @@ describe('NotificationService', () => {
       expect(result.success).toBe(true);
     });
 
-    it('falls back gracefully on error', async () => {
+    it('throws NotificationServiceError on API failure when mocks disabled', async () => {
+      process.env.NEXT_PUBLIC_USE_MOCKS = 'false';
+      mockApiClient.post.mockRejectedValueOnce(new Error('Network error'));
+
+      await expect(notificationService.subscribeToPush({
+        endpoint: 'https://push.example.com/123',
+        keys: { p256dh: 'key123', auth: 'auth123' },
+      })).rejects.toThrow(NotificationServiceError);
+    });
+
+    it('simulates success when mocks enabled and API fails', async () => {
+      process.env.NEXT_PUBLIC_USE_MOCKS = 'true';
       mockApiClient.post.mockRejectedValueOnce(new Error('Network error'));
 
       const result = await notificationService.subscribeToPush({
@@ -442,7 +562,15 @@ describe('NotificationService', () => {
       expect(result).toEqual(mockStats);
     });
 
-    it('calculates stats from mock data on error', async () => {
+    it('throws NotificationServiceError on API failure when mocks disabled', async () => {
+      process.env.NEXT_PUBLIC_USE_MOCKS = 'false';
+      mockApiClient.get.mockRejectedValueOnce(new Error('Network error'));
+
+      await expect(notificationService.getStats()).rejects.toThrow(NotificationServiceError);
+    });
+
+    it('calculates stats from mock data when mocks enabled and API fails', async () => {
+      process.env.NEXT_PUBLIC_USE_MOCKS = 'true';
       mockApiClient.get.mockRejectedValueOnce(new Error('Network error'));
 
       const result = await notificationService.getStats();
@@ -451,6 +579,55 @@ describe('NotificationService', () => {
       expect(result.unread).toBeGreaterThanOrEqual(0);
       expect(result.byType).toBeDefined();
       expect(result.byCategory).toBeDefined();
+    });
+  });
+
+  describe('NotificationServiceError', () => {
+    it('creates error with code and original error', () => {
+      const originalError = new Error('Original');
+      const error = new NotificationServiceError(
+        'Test error',
+        'TEST_ERROR',
+        originalError
+      );
+
+      expect(error.message).toBe('Test error');
+      expect(error.code).toBe('TEST_ERROR');
+      expect(error.originalError).toBe(originalError);
+      expect(error.name).toBe('NotificationServiceError');
+    });
+
+    it('uses default code when not provided', () => {
+      const error = new NotificationServiceError('Test error');
+
+      expect(error.code).toBe('NOTIFICATION_ERROR');
+    });
+  });
+
+  describe('mock data generators', () => {
+    it('generates valid mock notifications', () => {
+      const mockNotifications = generateMockNotifications();
+
+      expect(mockNotifications.length).toBeGreaterThan(0);
+      mockNotifications.forEach(notification => {
+        expect(notification).toHaveProperty('id');
+        expect(notification).toHaveProperty('title');
+        expect(notification).toHaveProperty('message');
+        expect(notification).toHaveProperty('type');
+        expect(notification).toHaveProperty('category');
+        expect(notification).toHaveProperty('read');
+        expect(notification).toHaveProperty('createdAt');
+      });
+    });
+
+    it('generates valid default preferences', () => {
+      const preferences = getDefaultPreferences();
+
+      expect(preferences).toHaveProperty('email');
+      expect(preferences).toHaveProperty('inApp');
+      expect(preferences).toHaveProperty('push');
+      expect(preferences.email.enabled).toBe(true);
+      expect(preferences.push.enabled).toBe(false);
     });
   });
 });
