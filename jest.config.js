@@ -70,8 +70,9 @@ const customJestConfig = {
   ],
 
   // Transform ignore patterns (for node_modules that need transformation)
+  // Note: ESM-only packages must be transformed by Jest
   transformIgnorePatterns: [
-    '/node_modules/(?!(@radix-ui|@tanstack|axios|msw|@mswjs|until-async)/)',
+    'node_modules/(?!(@radix-ui|@tanstack|axios|msw|@mswjs|until-async|outvariant|strict-event-emitter)/)',
   ],
 
   // Performance optimizations

@@ -7,7 +7,7 @@ import { signIn } from 'next-auth/react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Github, ArrowRight, Check } from 'lucide-react';
+import { Github, Linkedin, ArrowRight, Check } from 'lucide-react';
 import { authService } from '@/services/authService';
 
 export default function SignupPage() {
@@ -57,6 +57,10 @@ export default function SignupPage() {
     signIn('github', { callbackUrl: '/dashboard' });
   };
 
+  const handleLinkedInSignup = () => {
+    signIn('linkedin', { callbackUrl: '/dashboard' });
+  };
+
   const benefits = [
     'Free API credits to get started',
     'Access to ZeroDB vector database',
@@ -81,16 +85,27 @@ export default function SignupPage() {
 
         {/* Signup Form */}
         <div className="bg-[#161B22] rounded-2xl p-8 border border-[#2D333B]/50">
-          {/* GitHub Signup */}
-          <Button
-            type="button"
-            variant="outline"
-            className="w-full mb-6 h-12 bg-[#1C2128] border-[#2D333B] hover:bg-[#2D333B] hover:border-[#4B6FED]"
-            onClick={handleGitHubSignup}
-          >
-            <Github className="mr-2 h-5 w-5" />
-            Continue with GitHub
-          </Button>
+          {/* OAuth Signup Buttons */}
+          <div className="space-y-3 mb-6">
+            <Button
+              type="button"
+              variant="outline"
+              className="w-full h-12 bg-[#1C2128] border-[#2D333B] hover:bg-[#2D333B] hover:border-[#4B6FED]"
+              onClick={handleGitHubSignup}
+            >
+              <Github className="mr-2 h-5 w-5" />
+              Continue with GitHub
+            </Button>
+            <Button
+              type="button"
+              variant="outline"
+              className="w-full h-12 bg-[#0A66C2] border-[#0A66C2] hover:bg-[#004182] hover:border-[#004182] text-white"
+              onClick={handleLinkedInSignup}
+            >
+              <Linkedin className="mr-2 h-5 w-5" />
+              Continue with LinkedIn
+            </Button>
+          </div>
 
           <div className="relative mb-6">
             <div className="absolute inset-0 flex items-center">

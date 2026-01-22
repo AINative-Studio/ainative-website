@@ -12,6 +12,7 @@ import {
   EvaluationMetrics,
   ApiResponse,
 } from '@/types/qnn.types';
+import { qnnApiClient } from '@/services/QNNApiClient';
 
 // Query keys for React Query cache management
 export const evaluationKeys = {
@@ -39,67 +40,7 @@ export function useModelEvaluation(modelId: string, enabled: boolean = true) {
   return useQuery({
     queryKey: evaluationKeys.detail(modelId),
     queryFn: async (): Promise<ModelEvaluation> => {
-      // TODO: Replace with actual API client from Agent 1
-      // const apiClient = new QNNApiClient();
-      // return apiClient.getModelEvaluation(modelId);
-
-      console.warn('useModelEvaluation: Using mock data. Waiting for Agent 1 API client.');
-      await new Promise((resolve) => setTimeout(resolve, 800));
-
-      // Mock evaluation data for demonstration
-      const accuracy = 0.92 + Math.random() * 0.05;
-      const precision = accuracy + 0.01;
-      const recall = accuracy - 0.01;
-      const f1Score = (2 * (precision * recall)) / (precision + recall);
-
-      // Generate mock confusion matrix (2x2 for binary classification)
-      const truePositives = Math.floor(85 + Math.random() * 10);
-      const falseNegatives = Math.floor(5 + Math.random() * 5);
-      const falsePositives = Math.floor(5 + Math.random() * 5);
-      const trueNegatives = Math.floor(85 + Math.random() * 10);
-
-      return {
-        modelId,
-        evaluatedAt: new Date().toISOString(),
-        sampleSize: truePositives + falseNegatives + falsePositives + trueNegatives,
-        metrics: {
-          accuracy,
-          precision,
-          recall,
-          f1Score,
-          auc: 0.85 + Math.random() * 0.1,
-          specificity: trueNegatives / (trueNegatives + falsePositives),
-          npv: trueNegatives / (trueNegatives + falseNegatives),
-          mcc:
-            (truePositives * trueNegatives - falsePositives * falseNegatives) /
-            Math.sqrt(
-              (truePositives + falsePositives) *
-                (truePositives + falseNegatives) *
-                (trueNegatives + falsePositives) *
-                (trueNegatives + falseNegatives)
-            ),
-          accuracyChange: Math.random() > 0.5 ? 0.02 : -0.01,
-        },
-        confusionMatrix: [
-          [truePositives, falseNegatives],
-          [falsePositives, trueNegatives],
-        ],
-        classNames: ['Positive', 'Negative'],
-        rocCurve: Array.from({ length: 100 }, (_, i) => {
-          const fpr = i / 99;
-          const tpr = Math.min(1, fpr + (1 - fpr) * (1 - Math.exp(-5 * fpr)) * 0.9);
-          return {
-            threshold: 1 - i / 99,
-            truePositiveRate: tpr,
-            falsePositiveRate: fpr,
-          };
-        }),
-        precisionRecallCurve: Array.from({ length: 100 }, (_, i) => ({
-          threshold: 1 - i / 99,
-          precision: 0.85 + Math.random() * 0.1,
-          recall: (99 - i) / 99,
-        })),
-      };
+      return qnnApiClient.getModelEvaluation(modelId);
     },
     staleTime: 5 * 60 * 1000, // 5 minutes
     gcTime: 15 * 60 * 1000,
@@ -123,28 +64,7 @@ export function useEvaluationMetrics(modelId: string, enabled: boolean = true) {
   return useQuery({
     queryKey: evaluationKeys.metrics(modelId),
     queryFn: async (): Promise<EvaluationMetrics> => {
-      // TODO: Replace with actual API client from Agent 1
-      // const apiClient = new QNNApiClient();
-      // return apiClient.getEvaluationMetrics(modelId);
-
-      console.warn('useEvaluationMetrics: Using mock data. Waiting for Agent 1 API client.');
-      await new Promise((resolve) => setTimeout(resolve, 400));
-
-      const accuracy = 0.92 + Math.random() * 0.05;
-      const precision = accuracy + 0.01;
-      const recall = accuracy - 0.01;
-      const f1Score = (2 * (precision * recall)) / (precision + recall);
-
-      return {
-        accuracy,
-        precision,
-        recall,
-        f1Score,
-        auc: 0.85 + Math.random() * 0.1,
-        specificity: 0.88 + Math.random() * 0.05,
-        npv: 0.90 + Math.random() * 0.05,
-        mcc: 0.82 + Math.random() * 0.08,
-      };
+      return qnnApiClient.getEvaluationMetrics(modelId);
     },
     staleTime: 5 * 60 * 1000,
     enabled: enabled && !!modelId,
@@ -174,14 +94,7 @@ export function useRunEvaluation() {
 
   return useMutation({
     mutationFn: async (request: EvaluationRequest): Promise<ApiResponse<ModelEvaluation>> => {
-      // TODO: Replace with actual API client from Agent 1
-      // const apiClient = new QNNApiClient();
-      // return apiClient.evaluateModel(request);
-
-      console.warn('useRunEvaluation: Using mock. Waiting for Agent 1 API client.');
-      await new Promise((resolve) => setTimeout(resolve, 2000));
-
-      throw new Error('Evaluation not implemented (placeholder)');
+      return qnnApiClient.evaluateModel(request);
     },
     onSuccess: (data, variables) => {
       // Invalidate and refetch evaluation data
@@ -210,14 +123,7 @@ export function useCompareEvaluations(modelIds: string[]) {
   return useQuery({
     queryKey: [...evaluationKeys.all, 'compare', ...modelIds.sort()],
     queryFn: async (): Promise<ModelEvaluation[]> => {
-      // TODO: Replace with actual API client from Agent 1
-      // const apiClient = new QNNApiClient();
-      // return Promise.all(modelIds.map(id => apiClient.getModelEvaluation(id)));
-
-      console.warn('useCompareEvaluations: Using mock. Waiting for Agent 1 API client.');
-      await new Promise((resolve) => setTimeout(resolve, 1000));
-
-      return [];
+      return qnnApiClient.compareEvaluations(modelIds);
     },
     staleTime: 5 * 60 * 1000,
     enabled: modelIds.length > 0,
@@ -248,14 +154,7 @@ export function useExportEvaluationReport() {
       modelId: string;
       format: 'pdf' | 'json' | 'csv';
     }): Promise<Blob> => {
-      // TODO: Replace with actual API client from Agent 1
-      // const apiClient = new QNNApiClient();
-      // return apiClient.exportEvaluationReport(modelId, format);
-
-      console.warn('useExportEvaluationReport: Using mock. Waiting for Agent 1 API client.');
-      await new Promise((resolve) => setTimeout(resolve, 1500));
-
-      throw new Error('Export not implemented (placeholder)');
+      return qnnApiClient.exportEvaluationReport(modelId, format);
     },
   });
 }
@@ -279,9 +178,7 @@ export function usePrefetchEvaluation() {
     queryClient.prefetchQuery({
       queryKey: evaluationKeys.detail(modelId),
       queryFn: async (): Promise<ModelEvaluation> => {
-        // TODO: Replace with actual API client
-        console.warn('Prefetch evaluation: Waiting for Agent 1 API client.');
-        throw new Error('Prefetch not implemented');
+        return qnnApiClient.getModelEvaluation(modelId);
       },
       staleTime: 5 * 60 * 1000,
     });

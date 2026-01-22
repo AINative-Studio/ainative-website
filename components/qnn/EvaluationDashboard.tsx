@@ -30,20 +30,13 @@ import {
   CartesianGrid,
   Tooltip,
   Legend,
-  Cell,
 } from 'recharts';
 import { useModels } from '@/hooks/useModels';
-import { useModelEvaluation } from '@/hooks/useEvaluation';
-
-interface ConfusionMatrixData {
-  predicted: string;
-  actual: string;
-  value: number;
-}
+import { useModelEvaluation, useExportEvaluationReport } from '@/hooks/useEvaluation';
 
 export default function EvaluationDashboard() {
   const [selectedModelId, setSelectedModelId] = useState<string>('');
-  const [exportFormat, setExportFormat] = useState<'pdf' | 'json'>('json');
+  const [exportFormat, setExportFormat] = useState<'pdf' | 'json' | 'csv'>('json');
 
   // Fetch available models
   const { data: modelsResponse, isLoading: modelsLoading } = useModels({
@@ -56,41 +49,16 @@ export default function EvaluationDashboard() {
     !!selectedModelId
   );
 
+  // Export report mutation
+  const { mutate: exportReport, isPending: isExporting } = useExportEvaluationReport();
+
   const models = modelsResponse?.items || [];
   const isLoading = modelsLoading || evaluationLoading;
 
-  // Generate confusion matrix heatmap data
-  const confusionMatrixData = useMemo(() => {
-    if (!evaluation?.confusionMatrix) return [];
-
-    const matrix: ConfusionMatrixData[] = [];
-    const classes = evaluation.classNames || ['Class 0', 'Class 1'];
-    const matrixValues = evaluation.confusionMatrix;
-
-    matrixValues.forEach((row, i) => {
-      row.forEach((value, j) => {
-        matrix.push({
-          predicted: classes[j],
-          actual: classes[i],
-          value,
-        });
-      });
-    });
-
-    return matrix;
-  }, [evaluation]);
-
-  // Generate ROC curve data
+  // Generate ROC curve data from API response
   const rocCurveData = useMemo(() => {
-    if (!evaluation?.rocCurve) {
-      // Generate synthetic ROC curve for demo
-      const auc = evaluation?.metrics.auc || 0.85;
-      const points = 100;
-      return Array.from({ length: points }, (_, i) => {
-        const fpr = i / (points - 1);
-        const tpr = Math.min(1, fpr + (1 - fpr) * (1 - Math.exp(-5 * fpr)) * auc);
-        return { fpr, tpr };
-      });
+    if (!evaluation?.rocCurve || evaluation.rocCurve.length === 0) {
+      return [];
     }
     return evaluation.rocCurve.map((point) => ({
       fpr: point.falsePositiveRate,
@@ -98,24 +66,36 @@ export default function EvaluationDashboard() {
     }));
   }, [evaluation]);
 
-  // Handle export
-  const handleExport = async () => {
-    if (!evaluation) return;
+  // Handle export using API
+  const handleExport = () => {
+    if (!evaluation || !selectedModelId) return;
 
-    if (exportFormat === 'json') {
-      const dataStr = JSON.stringify(evaluation, null, 2);
-      const dataUri = 'data:application/json;charset=utf-8,' + encodeURIComponent(dataStr);
-      const exportFileDefaultName = `evaluation-${selectedModelId}-${Date.now()}.json`;
+    exportReport(
+      {
+        modelId: selectedModelId,
+        format: exportFormat,
+      },
+      {
+        onSuccess: (blob) => {
+          // Create download link from blob
+          const url = window.URL.createObjectURL(blob);
+          const extension = exportFormat === 'json' ? 'json' : exportFormat === 'pdf' ? 'pdf' : 'csv';
+          const filename = `evaluation-${selectedModelId}-${Date.now()}.${extension}`;
 
-      const linkElement = document.createElement('a');
-      linkElement.setAttribute('href', dataUri);
-      linkElement.setAttribute('download', exportFileDefaultName);
-      linkElement.click();
-    } else {
-      // PDF export would be implemented with a library like jsPDF
-      console.log('PDF export not yet implemented');
-      alert('PDF export coming soon! Use JSON for now.');
-    }
+          const linkElement = document.createElement('a');
+          linkElement.href = url;
+          linkElement.download = filename;
+          document.body.appendChild(linkElement);
+          linkElement.click();
+          document.body.removeChild(linkElement);
+          window.URL.revokeObjectURL(url);
+        },
+        onError: (error) => {
+          console.error('Export failed:', error);
+          alert(`Failed to export report: ${error.message}`);
+        },
+      }
+    );
   };
 
   const containerVariants = {
@@ -182,21 +162,23 @@ export default function EvaluationDashboard() {
             </div>
             {evaluation && (
               <div className="flex items-center gap-2">
-                <Select value={exportFormat} onValueChange={(v) => setExportFormat(v as 'pdf' | 'json')}>
+                <Select value={exportFormat} onValueChange={(v) => setExportFormat(v as 'pdf' | 'json' | 'csv')}>
                   <SelectTrigger className="w-[120px]">
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="json">JSON</SelectItem>
                     <SelectItem value="pdf">PDF</SelectItem>
+                    <SelectItem value="csv">CSV</SelectItem>
                   </SelectContent>
                 </Select>
                 <Button
                   onClick={handleExport}
+                  disabled={isExporting}
                   className="bg-primary hover:bg-primary/90 text-white"
                 >
                   <Download className="mr-2 h-4 w-4" />
-                  Export Report
+                  {isExporting ? 'Exporting...' : 'Export Report'}
                 </Button>
               </div>
             )}
@@ -408,79 +390,102 @@ export default function EvaluationDashboard() {
                   </CardDescription>
                 </CardHeader>
                 <CardContent>
-                  <ResponsiveContainer width="100%" height={350}>
-                    <LineChart
-                      data={rocCurveData}
-                      margin={{ top: 5, right: 20, left: 0, bottom: 5 }}
-                    >
-                      <CartesianGrid strokeDasharray="3 3" opacity={0.3} />
-                      <XAxis
-                        dataKey="fpr"
-                        label={{
-                          value: 'False Positive Rate',
-                          position: 'insideBottom',
-                          offset: -5,
-                        }}
-                        domain={[0, 1]}
-                        tickFormatter={(value) => value.toFixed(1)}
-                      />
-                      <YAxis
-                        dataKey="tpr"
-                        label={{
-                          value: 'True Positive Rate',
-                          angle: -90,
-                          position: 'insideLeft',
-                        }}
-                        domain={[0, 1]}
-                        tickFormatter={(value) => value.toFixed(1)}
-                      />
-                      <Tooltip
-                        formatter={(value?: number) => (value ?? 0).toFixed(3)}
-                        labelFormatter={(label) => `FPR: ${label.toFixed(3)}`}
-                        contentStyle={{
-                          backgroundColor: 'rgba(255, 255, 255, 0.95)',
-                          border: '1px solid #e5e7eb',
-                          borderRadius: '8px',
-                        }}
-                      />
-                      <Legend />
-                      {/* Diagonal reference line (random classifier) */}
-                      <Line
-                        type="linear"
-                        dataKey="fpr"
-                        stroke="#9ca3af"
-                        strokeWidth={2}
-                        strokeDasharray="5 5"
-                        dot={false}
-                        name="Random Classifier"
-                        isAnimationActive={false}
-                      />
-                      {/* Actual ROC curve */}
-                      <Line
-                        type="monotone"
-                        dataKey="tpr"
-                        stroke="hsl(var(--primary))"
-                        strokeWidth={3}
-                        dot={false}
-                        name="Model ROC"
-                        animationDuration={1500}
-                      />
-                    </LineChart>
-                  </ResponsiveContainer>
-                  <div className="mt-4 p-3 rounded-lg bg-gradient-to-br from-primary/5 to-primary/10">
-                    <p className="text-sm font-medium text-gray-900 dark:text-white">
-                      AUC Score: {evaluation.metrics.auc?.toFixed(4) || 'N/A'}
-                    </p>
-                    <p className="text-xs text-gray-600 dark:text-gray-300 mt-1">
-                      {evaluation.metrics.auc && evaluation.metrics.auc > 0.9
-                        ? 'Excellent discrimination ability'
-                        : evaluation.metrics.auc && evaluation.metrics.auc > 0.8
-                        ? 'Good discrimination ability'
-                        : evaluation.metrics.auc && evaluation.metrics.auc > 0.7
-                        ? 'Acceptable discrimination ability'
-                        : 'Poor discrimination ability'}
-                    </p>
-                  </div>
+                  {rocCurveData.length > 0 ? (
+                    <>
+                      <ResponsiveContainer width="100%" height={350}>
+                        <LineChart
+                          data={rocCurveData}
+                          margin={{ top: 5, right: 20, left: 0, bottom: 5 }}
+                        >
+                          <CartesianGrid strokeDasharray="3 3" opacity={0.3} />
+                          <XAxis
+                            dataKey="fpr"
+                            label={{
+                              value: 'False Positive Rate',
+                              position: 'insideBottom',
+                              offset: -5,
+                            }}
+                            domain={[0, 1]}
+                            tickFormatter={(value) => value.toFixed(1)}
+                          />
+                          <YAxis
+                            dataKey="tpr"
+                            label={{
+                              value: 'True Positive Rate',
+                              angle: -90,
+                              position: 'insideLeft',
+                            }}
+                            domain={[0, 1]}
+                            tickFormatter={(value) => value.toFixed(1)}
+                          />
+                          <Tooltip
+                            formatter={(value?: number) => (value ?? 0).toFixed(3)}
+                            labelFormatter={(label) => `FPR: ${label.toFixed(3)}`}
+                            contentStyle={{
+                              backgroundColor: 'rgba(255, 255, 255, 0.95)',
+                              border: '1px solid #e5e7eb',
+                              borderRadius: '8px',
+                            }}
+                          />
+                          <Legend />
+                          {/* Diagonal reference line (random classifier) */}
+                          <Line
+                            type="linear"
+                            dataKey="fpr"
+                            stroke="#9ca3af"
+                            strokeWidth={2}
+                            strokeDasharray="5 5"
+                            dot={false}
+                            name="Random Classifier"
+                            isAnimationActive={false}
+                          />
+                          {/* Actual ROC curve */}
+                          <Line
+                            type="monotone"
+                            dataKey="tpr"
+                            stroke="hsl(var(--primary))"
+                            strokeWidth={3}
+                            dot={false}
+                            name="Model ROC"
+                            animationDuration={1500}
+                          />
+                        </LineChart>
+                      </ResponsiveContainer>
+                      <div className="mt-4 p-3 rounded-lg bg-gradient-to-br from-primary/5 to-primary/10">
+                        <p className="text-sm font-medium text-gray-900 dark:text-white">
+                          AUC Score: {evaluation.metrics.auc?.toFixed(4) || 'N/A'}
+                        </p>
+                        <p className="text-xs text-gray-600 dark:text-gray-300 mt-1">
+                          {evaluation.metrics.auc && evaluation.metrics.auc > 0.9
+                            ? 'Excellent discrimination ability'
+                            : evaluation.metrics.auc && evaluation.metrics.auc > 0.8
+                            ? 'Good discrimination ability'
+                            : evaluation.metrics.auc && evaluation.metrics.auc > 0.7
+                            ? 'Acceptable discrimination ability'
+                            : 'Poor discrimination ability'}
+                        </p>
+                      </div>
+                    </>
+                  ) : (
+                    <div className="flex flex-col items-center justify-center h-[350px] text-center">
+                      <div className="p-4 rounded-full bg-gray-100 dark:bg-gray-700 mb-4">
+                        <Activity className="h-8 w-8 text-gray-400" />
+                      </div>
+                      <p className="text-gray-600 dark:text-gray-300 font-medium">
+                        ROC Curve Data Not Available
+                      </p>
+                      <p className="text-sm text-gray-500 dark:text-gray-400 mt-1 max-w-xs">
+                        The evaluation did not include ROC curve data. Run a new evaluation with ROC analysis enabled.
+                      </p>
+                      {evaluation.metrics.auc !== undefined && (
+                        <div className="mt-4 p-3 rounded-lg bg-gradient-to-br from-primary/5 to-primary/10">
+                          <p className="text-sm font-medium text-gray-900 dark:text-white">
+                            AUC Score: {evaluation.metrics.auc.toFixed(4)}
+                          </p>
+                        </div>
+                      )}
+                    </div>
+                  )}
                 </CardContent>
               </Card>
             </motion.div>

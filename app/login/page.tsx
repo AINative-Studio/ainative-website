@@ -7,8 +7,9 @@ import { useSearchParams, useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Github, ArrowRight } from 'lucide-react';
+import { Github, Linkedin, ArrowRight } from 'lucide-react';
 import { authService } from '@/services/AuthService';
+import { signIn } from 'next-auth/react';
 
 function LoginForm() {
   const searchParams = useSearchParams();
@@ -54,6 +55,11 @@ function LoginForm() {
     window.location.href = githubUrl;
   };
 
+  const handleLinkedInLogin = () => {
+    // Use next-auth signIn for LinkedIn OAuth
+    signIn('linkedin', { callbackUrl });
+  };
+
   return (
     <div className="w-full max-w-md">
       {/* Header */}
@@ -70,16 +76,27 @@ function LoginForm() {
 
       {/* Login Form */}
       <div className="bg-[#161B22] rounded-2xl p-8 border border-[#2D333B]/50">
-        {/* GitHub Login */}
-        <Button
-          type="button"
-          variant="outline"
-          className="w-full mb-6 h-12 bg-[#1C2128] border-[#2D333B] hover:bg-[#2D333B] hover:border-[#4B6FED]"
-          onClick={handleGitHubLogin}
-        >
-          <Github className="mr-2 h-5 w-5" />
-          Continue with GitHub
-        </Button>
+        {/* OAuth Login Buttons */}
+        <div className="space-y-3 mb-6">
+          <Button
+            type="button"
+            variant="outline"
+            className="w-full h-12 bg-[#1C2128] border-[#2D333B] hover:bg-[#2D333B] hover:border-[#4B6FED]"
+            onClick={handleGitHubLogin}
+          >
+            <Github className="mr-2 h-5 w-5" />
+            Continue with GitHub
+          </Button>
+          <Button
+            type="button"
+            variant="outline"
+            className="w-full h-12 bg-[#0A66C2] border-[#0A66C2] hover:bg-[#004182] hover:border-[#004182] text-white"
+            onClick={handleLinkedInLogin}
+          >
+            <Linkedin className="mr-2 h-5 w-5" />
+            Continue with LinkedIn
+          </Button>
+        </div>
 
         <div className="relative mb-6">
           <div className="absolute inset-0 flex items-center">
