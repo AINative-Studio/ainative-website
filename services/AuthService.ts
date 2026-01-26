@@ -336,6 +336,69 @@ class AuthService {
 
     return `https://github.com/login/oauth/authorize?client_id=${clientId}&redirect_uri=${encodeURIComponent(redirectUri)}&scope=read:user,user:email${stateParam}`;
   }
+
+  /**
+   * Get LinkedIn OAuth authorization URL
+   */
+  getLinkedInAuthUrl(returnTo?: string): string {
+    const clientId = process.env.NEXT_PUBLIC_LINKEDIN_CLIENT_ID || '';
+    const redirectUri = typeof window !== 'undefined'
+      ? `${window.location.origin}/login/callback`
+      : '';
+
+    let stateParam = '';
+    if (returnTo) {
+      // Encode return URL in state parameter for cross-subdomain SSO
+      const stateObj = { returnTo, provider: 'linkedin' };
+      const stateJson = JSON.stringify(stateObj);
+      const stateB64 = btoa(stateJson).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+      stateParam = `&state=${stateB64}`;
+    }
+
+    return `https://www.linkedin.com/oauth/v2/authorization?response_type=code&client_id=${clientId}&redirect_uri=${encodeURIComponent(redirectUri)}&scope=openid%20profile%20email${stateParam}`;
+  }
+
+  /**
+   * Exchange LinkedIn OAuth authorization code for access tokens
+   */
+  async handleLinkedInOAuthCallback(code: string, state?: string | null): Promise<LoginResponse> {
+    try {
+      const redirectUri = typeof window !== 'undefined'
+        ? `${window.location.origin}/login/callback`
+        : '';
+
+      const response = await fetch(`${this.baseURL}/v1/public/auth/linkedin/callback`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          code,
+          state,
+          redirect_uri: redirectUri,
+        }),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.detail || 'LinkedIn authentication failed');
+      }
+
+      const data: LoginResponse = await response.json();
+
+      if (data.access_token) {
+        setAuthToken(data.access_token);
+        if (data.refresh_token && typeof window !== 'undefined') {
+          localStorage.setItem('refresh_token', data.refresh_token);
+        }
+      }
+
+      return data;
+    } catch (error) {
+      console.error('LinkedIn OAuth exchange error:', error);
+      throw error;
+    }
+  }
 }
 
 // Export singleton instance

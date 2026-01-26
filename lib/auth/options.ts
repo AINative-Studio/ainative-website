@@ -1,5 +1,6 @@
 import { NextAuthOptions } from 'next-auth';
 import GitHubProvider from 'next-auth/providers/github';
+import LinkedInProvider from 'next-auth/providers/linkedin';
 import CredentialsProvider from 'next-auth/providers/credentials';
 
 export const authOptions: NextAuthOptions = {
@@ -7,6 +8,15 @@ export const authOptions: NextAuthOptions = {
     GitHubProvider({
       clientId: process.env.GITHUB_CLIENT_ID ?? '',
       clientSecret: process.env.GITHUB_CLIENT_SECRET ?? '',
+    }),
+    LinkedInProvider({
+      clientId: process.env.LINKEDIN_CLIENT_ID ?? '',
+      clientSecret: process.env.LINKEDIN_CLIENT_SECRET ?? '',
+      authorization: {
+        params: {
+          scope: 'openid profile email',
+        },
+      },
     }),
     CredentialsProvider({
       name: 'credentials',

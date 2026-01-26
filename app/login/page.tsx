@@ -6,7 +6,7 @@ import { useSearchParams, useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Github, ArrowRight } from 'lucide-react';
+import { Github, Linkedin, ArrowRight } from 'lucide-react';
 import { authService } from '@/services/AuthService';
 
 function LoginForm() {
@@ -49,8 +49,20 @@ function LoginForm() {
     // Store callback URL for after OAuth
     if (typeof window !== 'undefined') {
       localStorage.setItem('oauth_callback_url', callbackUrl);
+      localStorage.setItem('oauth_provider', 'github');
     }
     window.location.href = githubUrl;
+  };
+
+  const handleLinkedInLogin = () => {
+    // Redirect to LinkedIn OAuth
+    const linkedInUrl = authService.getLinkedInAuthUrl();
+    // Store callback URL for after OAuth
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('oauth_callback_url', callbackUrl);
+      localStorage.setItem('oauth_provider', 'linkedin');
+    }
+    window.location.href = linkedInUrl;
   };
 
   return (
@@ -69,16 +81,28 @@ function LoginForm() {
 
       {/* Login Form */}
       <div className="bg-[#161B22] rounded-2xl p-8 border border-[#2D333B]/50">
-        {/* GitHub Login */}
-        <Button
-          type="button"
-          variant="outline"
-          className="w-full mb-6 h-12 bg-[#1C2128] border-[#2D333B] hover:bg-[#2D333B] hover:border-[#4B6FED]"
-          onClick={handleGitHubLogin}
-        >
-          <Github className="mr-2 h-5 w-5" />
-          Continue with GitHub
-        </Button>
+        {/* OAuth Login Buttons */}
+        <div className="space-y-3 mb-6">
+          <Button
+            type="button"
+            variant="outline"
+            className="w-full h-12 bg-[#1C2128] border-[#2D333B] hover:bg-[#2D333B] hover:border-[#4B6FED]"
+            onClick={handleGitHubLogin}
+          >
+            <Github className="mr-2 h-5 w-5" />
+            Continue with GitHub
+          </Button>
+
+          <Button
+            type="button"
+            variant="outline"
+            className="w-full h-12 bg-[#1C2128] border-[#2D333B] hover:bg-[#0077B5]/10 hover:border-[#0077B5]"
+            onClick={handleLinkedInLogin}
+          >
+            <Linkedin className="mr-2 h-5 w-5 text-[#0077B5]" />
+            Continue with LinkedIn
+          </Button>
+        </div>
 
         <div className="relative mb-6">
           <div className="absolute inset-0 flex items-center">
