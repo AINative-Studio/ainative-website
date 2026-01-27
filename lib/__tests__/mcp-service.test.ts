@@ -20,7 +20,7 @@ describe('MCPService', () => {
   });
 
   describe('getCatalog', () => {
-    it('fetches catalog of MCP servers', async () => {
+    it('fetches catalog from /v1/public/mcp/catalog', async () => {
       const mockServers = {
         servers: [
           {
@@ -43,7 +43,7 @@ describe('MCPService', () => {
 
       const result = await mcpService.getCatalog();
 
-      expect(mockApiClient.get).toHaveBeenCalledWith('/v1/mcp/catalog');
+      expect(mockApiClient.get).toHaveBeenCalledWith('/v1/public/mcp/catalog');
       expect(result).toEqual(mockServers.servers);
     });
 
@@ -61,7 +61,7 @@ describe('MCPService', () => {
   });
 
   describe('deploy', () => {
-    it('deploys a new MCP server instance', async () => {
+    it('deploys via /v1/mcp/servers', async () => {
       const deployRequest = {
         serverId: 'server-1',
         region: 'us-west-2',
@@ -88,7 +88,7 @@ describe('MCPService', () => {
 
       const result = await mcpService.deploy(deployRequest);
 
-      expect(mockApiClient.post).toHaveBeenCalledWith('/v1/mcp/deploy', deployRequest);
+      expect(mockApiClient.post).toHaveBeenCalledWith('/v1/mcp/servers', deployRequest);
       expect(result).toEqual(mockInstance);
     });
 
@@ -102,7 +102,7 @@ describe('MCPService', () => {
   });
 
   describe('getServer', () => {
-    it('fetches server instance details', async () => {
+    it('fetches server from /v1/mcp/servers/{id}', async () => {
       const mockInstance = {
         id: 'instance-1',
         serverId: 'server-1',
@@ -121,7 +121,7 @@ describe('MCPService', () => {
 
       const result = await mcpService.getServer('instance-1');
 
-      expect(mockApiClient.get).toHaveBeenCalledWith('/v1/mcp/instance-1');
+      expect(mockApiClient.get).toHaveBeenCalledWith('/v1/mcp/servers/instance-1');
       expect(result).toEqual(mockInstance);
     });
 
@@ -133,7 +133,7 @@ describe('MCPService', () => {
   });
 
   describe('deleteServer', () => {
-    it('deletes a server instance', async () => {
+    it('deletes via /v1/mcp/servers/{id}', async () => {
       mockApiClient.delete.mockResolvedValueOnce({
         data: undefined,
         status: 204,
@@ -142,7 +142,7 @@ describe('MCPService', () => {
 
       await mcpService.deleteServer('instance-1');
 
-      expect(mockApiClient.delete).toHaveBeenCalledWith('/v1/mcp/instance-1');
+      expect(mockApiClient.delete).toHaveBeenCalledWith('/v1/mcp/servers/instance-1');
     });
 
     it('handles errors when deleting server', async () => {
@@ -153,7 +153,7 @@ describe('MCPService', () => {
   });
 
   describe('getServerStatus', () => {
-    it('fetches server health status', async () => {
+    it('fetches status from /v1/mcp/servers/{id}/status', async () => {
       const mockStatus = {
         instanceId: 'instance-1',
         status: 'healthy',
@@ -174,13 +174,13 @@ describe('MCPService', () => {
 
       const result = await mcpService.getServerStatus('instance-1');
 
-      expect(mockApiClient.get).toHaveBeenCalledWith('/v1/mcp/instance-1/status');
+      expect(mockApiClient.get).toHaveBeenCalledWith('/v1/mcp/servers/instance-1/status');
       expect(result).toEqual(mockStatus);
     });
   });
 
   describe('getServerLogs', () => {
-    it('fetches server logs', async () => {
+    it('fetches logs from /v1/mcp/servers/{id}/logs', async () => {
       const mockLogs = {
         logs: [
           {
@@ -199,7 +199,7 @@ describe('MCPService', () => {
 
       const result = await mcpService.getServerLogs('instance-1');
 
-      expect(mockApiClient.get).toHaveBeenCalledWith('/v1/mcp/instance-1/logs?');
+      expect(mockApiClient.get).toHaveBeenCalledWith('/v1/mcp/servers/instance-1/logs?');
       expect(result).toEqual(mockLogs.logs);
     });
 
@@ -222,7 +222,7 @@ describe('MCPService', () => {
 
       const result = await mcpService.getServerLogs('instance-1', { limit: 50, level: 'error' });
 
-      expect(mockApiClient.get).toHaveBeenCalledWith('/v1/mcp/instance-1/logs?limit=50&level=error');
+      expect(mockApiClient.get).toHaveBeenCalledWith('/v1/mcp/servers/instance-1/logs?limit=50&level=error');
       expect(result).toEqual(mockLogs.logs);
     });
 
@@ -240,7 +240,7 @@ describe('MCPService', () => {
   });
 
   describe('restartServer', () => {
-    it('restarts a server instance', async () => {
+    it('restarts via /v1/mcp/servers/{id}/restart', async () => {
       mockApiClient.post.mockResolvedValueOnce({
         data: { status: 'restarting' },
         status: 200,
@@ -249,13 +249,13 @@ describe('MCPService', () => {
 
       const result = await mcpService.restartServer('instance-1');
 
-      expect(mockApiClient.post).toHaveBeenCalledWith('/v1/mcp/instance-1/restart');
+      expect(mockApiClient.post).toHaveBeenCalledWith('/v1/mcp/servers/instance-1/restart');
       expect(result.status).toBe('restarting');
     });
   });
 
   describe('getInstances', () => {
-    it('fetches all user instances', async () => {
+    it('fetches instances from /v1/public/mcp/instances', async () => {
       const mockInstances = {
         instances: [
           {
@@ -278,7 +278,7 @@ describe('MCPService', () => {
 
       const result = await mcpService.getInstances();
 
-      expect(mockApiClient.get).toHaveBeenCalledWith('/v1/mcp/instances');
+      expect(mockApiClient.get).toHaveBeenCalledWith('/v1/public/mcp/instances');
       expect(result).toEqual(mockInstances.instances);
     });
 
@@ -296,7 +296,7 @@ describe('MCPService', () => {
   });
 
   describe('getUsageMetrics', () => {
-    it('fetches usage metrics', async () => {
+    it('fetches usage from /v1/mcp/servers/{id}/usage', async () => {
       const mockMetrics = {
         instanceId: 'instance-1',
         period: '24h',
@@ -315,7 +315,7 @@ describe('MCPService', () => {
 
       const result = await mcpService.getUsageMetrics('instance-1');
 
-      expect(mockApiClient.get).toHaveBeenCalledWith('/v1/mcp/instance-1/usage');
+      expect(mockApiClient.get).toHaveBeenCalledWith('/v1/mcp/servers/instance-1/usage');
       expect(result).toEqual(mockMetrics);
     });
 
@@ -338,13 +338,13 @@ describe('MCPService', () => {
 
       const result = await mcpService.getUsageMetrics('instance-1', '7d');
 
-      expect(mockApiClient.get).toHaveBeenCalledWith('/v1/mcp/instance-1/usage?period=7d');
+      expect(mockApiClient.get).toHaveBeenCalledWith('/v1/mcp/servers/instance-1/usage?period=7d');
       expect(result).toEqual(mockMetrics);
     });
   });
 
   describe('getBillingInfo', () => {
-    it('fetches billing information', async () => {
+    it('fetches billing from /v1/mcp/servers/{id}/billing', async () => {
       const mockBilling = {
         instanceId: 'instance-1',
         currentPeriod: {
@@ -366,13 +366,13 @@ describe('MCPService', () => {
 
       const result = await mcpService.getBillingInfo('instance-1');
 
-      expect(mockApiClient.get).toHaveBeenCalledWith('/v1/mcp/instance-1/billing');
+      expect(mockApiClient.get).toHaveBeenCalledWith('/v1/mcp/servers/instance-1/billing');
       expect(result).toEqual(mockBilling);
     });
   });
 
   describe('getCostBreakdown', () => {
-    it('fetches cost breakdown', async () => {
+    it('fetches cost breakdown from /v1/public/mcp/billing/summary', async () => {
       const mockCosts = {
         totalCost: 150.00,
         byInstance: [
@@ -392,13 +392,13 @@ describe('MCPService', () => {
 
       const result = await mcpService.getCostBreakdown();
 
-      expect(mockApiClient.get).toHaveBeenCalledWith('/v1/mcp/costs');
+      expect(mockApiClient.get).toHaveBeenCalledWith('/v1/public/mcp/billing/summary');
       expect(result).toEqual(mockCosts);
     });
   });
 
   describe('scaleCapacity', () => {
-    it('scales server capacity', async () => {
+    it('scales via /v1/mcp/servers/capacity', async () => {
       const scaleRequest = {
         instanceId: 'instance-1',
         replicas: 3,
@@ -413,13 +413,13 @@ describe('MCPService', () => {
 
       const result = await mcpService.scaleCapacity(scaleRequest);
 
-      expect(mockApiClient.post).toHaveBeenCalledWith('/v1/mcp/capacity', scaleRequest);
+      expect(mockApiClient.post).toHaveBeenCalledWith('/v1/mcp/servers/capacity', scaleRequest);
       expect(result.success).toBe(true);
     });
   });
 
   describe('getPerformanceMetrics', () => {
-    it('fetches performance metrics', async () => {
+    it('fetches performance from /v1/mcp/servers/{id}/performance', async () => {
       const mockMetrics = {
         instanceId: 'instance-1',
         timeRange: '1h',
@@ -447,7 +447,7 @@ describe('MCPService', () => {
 
       const result = await mcpService.getPerformanceMetrics('instance-1');
 
-      expect(mockApiClient.get).toHaveBeenCalledWith('/v1/mcp/instance-1/performance');
+      expect(mockApiClient.get).toHaveBeenCalledWith('/v1/mcp/servers/instance-1/performance');
       expect(result).toEqual(mockMetrics);
     });
 
@@ -466,7 +466,7 @@ describe('MCPService', () => {
 
       const result = await mcpService.getPerformanceMetrics('instance-1', '24h');
 
-      expect(mockApiClient.get).toHaveBeenCalledWith('/v1/mcp/instance-1/performance?timeRange=24h');
+      expect(mockApiClient.get).toHaveBeenCalledWith('/v1/mcp/servers/instance-1/performance?timeRange=24h');
       expect(result).toEqual(mockMetrics);
     });
   });
