@@ -55,7 +55,7 @@ describe('SandboxService', () => {
 
       const result = await sandboxService.listEnvironments();
 
-      expect(mockApiClient.get).toHaveBeenCalledWith('/v1/sandbox/environments');
+      expect(mockApiClient.get).toHaveBeenCalledWith('/v1/public/sandbox/environments');
       expect(result).toEqual(mockEnvironments);
     });
 
@@ -99,7 +99,7 @@ describe('SandboxService', () => {
 
       const result = await sandboxService.createSandbox(createRequest);
 
-      expect(mockApiClient.post).toHaveBeenCalledWith('/v1/sandbox/create', createRequest);
+      expect(mockApiClient.post).toHaveBeenCalledWith('/v1/public/sandbox/create', createRequest);
       expect(result).toEqual(mockSandbox);
     });
 
@@ -131,7 +131,7 @@ describe('SandboxService', () => {
 
       const result = await sandboxService.getSandbox('sandbox-1');
 
-      expect(mockApiClient.get).toHaveBeenCalledWith('/v1/sandbox/sandbox-1');
+      expect(mockApiClient.get).toHaveBeenCalledWith('/v1/public/sandbox/sandbox-1');
       expect(result).toEqual(mockSandbox);
     });
 
@@ -152,7 +152,7 @@ describe('SandboxService', () => {
 
       await sandboxService.deleteSandbox('sandbox-1');
 
-      expect(mockApiClient.delete).toHaveBeenCalledWith('/v1/sandbox/sandbox-1');
+      expect(mockApiClient.delete).toHaveBeenCalledWith('/v1/public/sandbox/sandbox-1');
     });
 
     it('handles errors when deleting sandbox', async () => {
@@ -191,7 +191,7 @@ describe('SandboxService', () => {
 
       const result = await sandboxService.execute('sandbox-1', executionRequest);
 
-      expect(mockApiClient.post).toHaveBeenCalledWith('/v1/sandbox/sandbox-1/execute', executionRequest);
+      expect(mockApiClient.post).toHaveBeenCalledWith('/v1/public/sandbox/sandbox-1/execute', executionRequest);
       expect(result).toEqual(mockResult);
     });
 
@@ -286,7 +286,7 @@ describe('SandboxService', () => {
 
       const result = await sandboxService.getExecutionHistory('sandbox-1');
 
-      expect(mockApiClient.get).toHaveBeenCalledWith('/v1/sandbox/sandbox-1/history?limit=20');
+      expect(mockApiClient.get).toHaveBeenCalledWith('/v1/public/sandbox/sandbox-1/history?limit=20');
       expect(result).toEqual(mockHistory);
     });
 
@@ -301,7 +301,7 @@ describe('SandboxService', () => {
 
       const result = await sandboxService.getExecutionHistory('sandbox-1', 50);
 
-      expect(mockApiClient.get).toHaveBeenCalledWith('/v1/sandbox/sandbox-1/history?limit=50');
+      expect(mockApiClient.get).toHaveBeenCalledWith('/v1/public/sandbox/sandbox-1/history?limit=50');
       expect(result).toEqual(mockHistory);
     });
 

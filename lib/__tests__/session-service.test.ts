@@ -56,7 +56,7 @@ describe('SessionService', () => {
 
       const result = await sessionService.listSessions();
 
-      expect(mockApiClient.get).toHaveBeenCalledWith('/v1/sessions');
+      expect(mockApiClient.get).toHaveBeenCalledWith('/v1/public/sessions');
       expect(result).toEqual(mockSessions);
     });
 
@@ -94,7 +94,7 @@ describe('SessionService', () => {
       const result = await sessionService.listSessions(params);
 
       expect(mockApiClient.get).toHaveBeenCalledWith(
-        '/v1/sessions?agent_id=agent-1&status=active&page=2&page_size=10'
+        '/v1/public/sessions?agent_id=agent-1&status=active&page=2&page_size=10'
       );
       expect(result).toEqual(mockSessions);
     });
@@ -141,7 +141,7 @@ describe('SessionService', () => {
 
       const result = await sessionService.getSession(sessionId);
 
-      expect(mockApiClient.get).toHaveBeenCalledWith(`/v1/sessions/${sessionId}`);
+      expect(mockApiClient.get).toHaveBeenCalledWith(`/v1/public/sessions/${sessionId}`);
       expect(result).toEqual(mockSession);
     });
 
@@ -168,7 +168,7 @@ describe('SessionService', () => {
 
       const result = await sessionService.deleteSession(sessionId);
 
-      expect(mockApiClient.delete).toHaveBeenCalledWith(`/v1/sessions/${sessionId}`);
+      expect(mockApiClient.delete).toHaveBeenCalledWith(`/v1/public/sessions/${sessionId}`);
       expect(result).toEqual(mockResponse);
     });
 
@@ -212,7 +212,7 @@ describe('SessionService', () => {
 
       const result = await sessionService.getMemoryContext({ session_id: 'session-1' });
 
-      expect(mockApiClient.get).toHaveBeenCalledWith('/v1/memory/context?session_id=session-1');
+      expect(mockApiClient.get).toHaveBeenCalledWith('/v1/public/memory/context?session_id=session-1');
       expect(result).toEqual(mockContext);
     });
 
@@ -246,7 +246,7 @@ describe('SessionService', () => {
       const result = await sessionService.getMemoryContext(params);
 
       expect(mockApiClient.get).toHaveBeenCalledWith(
-        '/v1/memory/context?session_id=session-1&max_tokens=4000'
+        '/v1/public/memory/context?session_id=session-1&max_tokens=4000'
       );
       expect(result).toEqual(mockContext);
     });
@@ -292,7 +292,7 @@ describe('SessionService', () => {
 
       const result = await sessionService.storeMemory(memoryData);
 
-      expect(mockApiClient.post).toHaveBeenCalledWith('/v1/memory/store', memoryData);
+      expect(mockApiClient.post).toHaveBeenCalledWith('/v1/public/memory/store', memoryData);
       expect(result).toEqual(mockResponse);
     });
 
@@ -319,7 +319,7 @@ describe('SessionService', () => {
 
       const result = await sessionService.storeMemory(memoryData);
 
-      expect(mockApiClient.post).toHaveBeenCalledWith('/v1/memory/store', memoryData);
+      expect(mockApiClient.post).toHaveBeenCalledWith('/v1/public/memory/store', memoryData);
       expect(result).toEqual(mockResponse);
     });
 
@@ -374,7 +374,7 @@ describe('SessionService', () => {
       const result = await sessionService.searchMemory(searchParams);
 
       expect(mockApiClient.get).toHaveBeenCalledWith(
-        '/v1/memory/search?query=React+hooks+useState&session_id=session-1&limit=10'
+        '/v1/public/memory/search?query=React+hooks+useState&session_id=session-1&limit=10'
       );
       expect(result).toEqual(mockResults);
     });
@@ -408,7 +408,7 @@ describe('SessionService', () => {
       const result = await sessionService.searchMemory(searchParams);
 
       expect(mockApiClient.get).toHaveBeenCalledWith(
-        '/v1/memory/search?query=deployment+strategies&limit=5'
+        '/v1/public/memory/search?query=deployment+strategies&limit=5'
       );
       expect(result).toEqual(mockResults);
     });
@@ -438,7 +438,7 @@ describe('SessionService', () => {
 
       const result = await sessionService.deleteMemory(memoryId);
 
-      expect(mockApiClient.delete).toHaveBeenCalledWith(`/v1/memory/${memoryId}`);
+      expect(mockApiClient.delete).toHaveBeenCalledWith(`/v1/public/memory/${memoryId}`);
       expect(result).toEqual(mockResponse);
     });
 
@@ -474,7 +474,7 @@ describe('SessionService', () => {
 
       const result = await sessionService.getMemoryStats('session-1');
 
-      expect(mockApiClient.get).toHaveBeenCalledWith('/v1/memory/stats?session_id=session-1');
+      expect(mockApiClient.get).toHaveBeenCalledWith('/v1/public/memory/stats?session_id=session-1');
       expect(result).toEqual(mockStats);
     });
 
@@ -503,7 +503,7 @@ describe('SessionService', () => {
 
       const result = await sessionService.clearSessionMemory(sessionId);
 
-      expect(mockApiClient.delete).toHaveBeenCalledWith(`/v1/sessions/${sessionId}/memory`);
+      expect(mockApiClient.delete).toHaveBeenCalledWith(`/v1/public/sessions/${sessionId}/memory`);
       expect(result).toEqual(mockResponse);
     });
 

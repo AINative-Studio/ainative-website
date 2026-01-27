@@ -81,7 +81,7 @@ export const webhookService = {
    * List all webhooks
    */
   async listWebhooks(): Promise<Webhook[]> {
-    const response = await apiClient.get<{ webhooks: Webhook[] }>('/v1/webhooks');
+    const response = await apiClient.get<{ webhooks: Webhook[] }>('/v1/public/webhooks');
     return response.data.webhooks;
   },
 
@@ -92,7 +92,7 @@ export const webhookService = {
     // Validate input
     validateWebhookInput(data);
 
-    const response = await apiClient.post<{ webhook: Webhook }>('/v1/webhooks', data);
+    const response = await apiClient.post<{ webhook: Webhook }>('/v1/public/webhooks', data);
     return response.data.webhook;
   },
 
@@ -100,7 +100,7 @@ export const webhookService = {
    * Get a specific webhook by ID
    */
   async getWebhook(id: string): Promise<Webhook> {
-    const response = await apiClient.get<{ webhook: Webhook }>(`/v1/webhooks/${id}`);
+    const response = await apiClient.get<{ webhook: Webhook }>(`/v1/public/webhooks/${id}`);
 
     if (response.status === 404) {
       throw new Error('Webhook not found');
@@ -116,7 +116,7 @@ export const webhookService = {
     // Validate input
     validateWebhookInput(data);
 
-    const response = await apiClient.put<{ webhook: Webhook }>(`/v1/webhooks/${id}`, data);
+    const response = await apiClient.put<{ webhook: Webhook }>(`/v1/public/webhooks/${id}`, data);
     return response.data.webhook;
   },
 
@@ -125,7 +125,7 @@ export const webhookService = {
    */
   async deleteWebhook(id: string): Promise<void> {
     const response = await apiClient.delete<{ message?: string; error?: string }>(
-      `/v1/webhooks/${id}`
+      `/v1/public/webhooks/${id}`
     );
 
     if (response.status === 404) {
@@ -138,7 +138,7 @@ export const webhookService = {
    */
   async testWebhook(id: string): Promise<WebhookTestResult> {
     const response = await apiClient.post<{ test_result: WebhookTestResult }>(
-      `/v1/webhooks/${id}/test`
+      `/v1/public/webhooks/${id}/test`
     );
     return response.data.test_result;
   },
@@ -148,7 +148,7 @@ export const webhookService = {
    */
   async getWebhookDeliveries(id: string): Promise<WebhookDelivery[]> {
     const response = await apiClient.get<{ deliveries: WebhookDelivery[] }>(
-      `/v1/webhooks/${id}/deliveries`
+      `/v1/public/webhooks/${id}/deliveries`
     );
     return response.data.deliveries;
   },
@@ -158,7 +158,7 @@ export const webhookService = {
    */
   async toggleWebhook(id: string, active: boolean): Promise<Webhook> {
     const response = await apiClient.post<{ webhook: Webhook }>(
-      `/v1/webhooks/${id}/toggle`,
+      `/v1/public/webhooks/${id}/toggle`,
       { active }
     );
     return response.data.webhook;
