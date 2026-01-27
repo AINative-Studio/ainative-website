@@ -1,11 +1,40 @@
 /**
  * Notification Service - Backend integration for Notification Center
- * Integrates with all backend notification endpoints
+ *
+ * Since backend notification endpoints are not yet implemented (see #447),
+ * this service uses a feature flag (NEXT_PUBLIC_ENABLE_NOTIFICATIONS) to
+ * control whether API calls are attempted. When the flag is disabled (default),
+ * all operations use local storage + mock data as a graceful fallback.
+ *
+ * When the backend endpoints become available, set NEXT_PUBLIC_ENABLE_NOTIFICATIONS=true
+ * to enable real API integration.
  */
 
 import apiClient from './api-client';
 
+// ============================================================
+// Feature Flag
+// ============================================================
+
+/**
+ * Controls whether the service attempts real API calls.
+ * Defaults to false since backend notification endpoints do not exist yet.
+ */
+export function isNotificationApiEnabled(): boolean {
+  if (typeof window === 'undefined') {
+    return process.env.NEXT_PUBLIC_ENABLE_NOTIFICATIONS === 'true';
+  }
+  try {
+    return process.env.NEXT_PUBLIC_ENABLE_NOTIFICATIONS === 'true';
+  } catch {
+    return false;
+  }
+}
+
+// ============================================================
 // Types
+// ============================================================
+
 export interface Notification {
   id: string;
   title: string;
@@ -62,7 +91,124 @@ export interface NotificationStats {
   byCategory: Record<string, number>;
 }
 
+// ============================================================
+// Local Storage Keys
+// ============================================================
+
+const STORAGE_KEYS = {
+  NOTIFICATIONS: 'ainative:notifications',
+  PREFERENCES: 'ainative:notification-preferences',
+  DELETED_IDS: 'ainative:notification-deleted-ids',
+} as const;
+
+// ============================================================
+// Local Storage Helpers
+// ============================================================
+
+function safeGetItem(key: string): string | null {
+  try {
+    if (typeof window !== 'undefined' && window.localStorage) {
+      return localStorage.getItem(key);
+    }
+  } catch {
+    // localStorage may be unavailable (SSR, private browsing, etc.)
+  }
+  return null;
+}
+
+function safeSetItem(key: string, value: string): void {
+  try {
+    if (typeof window !== 'undefined' && window.localStorage) {
+      localStorage.setItem(key, value);
+    }
+  } catch {
+    // localStorage may be unavailable or full
+  }
+}
+
+function getStoredReadState(): Record<string, { read: boolean; readAt?: string }> {
+  const raw = safeGetItem(STORAGE_KEYS.NOTIFICATIONS);
+  if (!raw) return {};
+  try {
+    return JSON.parse(raw);
+  } catch {
+    return {};
+  }
+}
+
+function setStoredReadState(state: Record<string, { read: boolean; readAt?: string }>): void {
+  safeSetItem(STORAGE_KEYS.NOTIFICATIONS, JSON.stringify(state));
+}
+
+function getDeletedIds(): string[] {
+  const raw = safeGetItem(STORAGE_KEYS.DELETED_IDS);
+  if (!raw) return [];
+  try {
+    return JSON.parse(raw);
+  } catch {
+    return [];
+  }
+}
+
+function addDeletedId(id: string): void {
+  const ids = getDeletedIds();
+  if (!ids.includes(id)) {
+    ids.push(id);
+    safeSetItem(STORAGE_KEYS.DELETED_IDS, JSON.stringify(ids));
+  }
+}
+
+function getStoredPreferences(): NotificationPreferences | null {
+  const raw = safeGetItem(STORAGE_KEYS.PREFERENCES);
+  if (!raw) return null;
+  try {
+    return JSON.parse(raw);
+  } catch {
+    return null;
+  }
+}
+
+function setStoredPreferences(prefs: NotificationPreferences): void {
+  safeSetItem(STORAGE_KEYS.PREFERENCES, JSON.stringify(prefs));
+}
+
+// ============================================================
+// Default Preferences
+// ============================================================
+
+function getDefaultPreferences(): NotificationPreferences {
+  return {
+    email: {
+      enabled: true,
+      system: true,
+      billing: true,
+      security: true,
+      feature: true,
+      marketing: false,
+    },
+    inApp: {
+      enabled: true,
+      system: true,
+      billing: true,
+      security: true,
+      feature: true,
+      marketing: true,
+    },
+    push: {
+      enabled: false,
+      system: false,
+      billing: false,
+      security: false,
+      feature: false,
+      marketing: false,
+    },
+  };
+}
+
+// ============================================================
 // Mock Data Generator
+// ============================================================
+
 function generateMockNotifications(): Notification[] {
   const now = new Date();
   const notifications: Notification[] = [
@@ -162,238 +308,263 @@ function generateMockNotifications(): Notification[] {
   return notifications;
 }
 
+/**
+ * Applies locally-stored read state and deletions to the mock notification list.
+ */
+function getLocalNotifications(): Notification[] {
+  const base = generateMockNotifications();
+  const readState = getStoredReadState();
+  const deletedIds = getDeletedIds();
+
+  return base
+    .filter(n => !deletedIds.includes(n.id))
+    .map(n => {
+      const stored = readState[n.id];
+      if (stored) {
+        return { ...n, read: stored.read, readAt: stored.readAt };
+      }
+      return n;
+    });
+}
+
+// ============================================================
 // Notification Service
+// ============================================================
+
 const notificationService = {
   /**
-   * Get list of notifications with optional filtering
+   * Check if notification API is enabled via feature flag.
+   */
+  isApiEnabled: isNotificationApiEnabled,
+
+  /**
+   * Get list of notifications with optional filtering.
+   * When API is disabled, returns mock data with local storage state.
    */
   async getNotifications(filter?: 'all' | 'unread' | 'read'): Promise<Notification[]> {
-    try {
-      const params = filter ? `?filter=${filter}` : '';
-      const response = await apiClient.get<{ notifications: Notification[] }>(`/v1/notifications${params}`);
-      return response.data.notifications || [];
-    } catch (error) {
-      console.warn('Failed to fetch notifications from API, using mock data:', error);
-
-      // Return mock data as fallback
-      const mockNotifications = generateMockNotifications();
-
-      if (filter === 'unread') {
-        return mockNotifications.filter(n => !n.read);
-      } else if (filter === 'read') {
-        return mockNotifications.filter(n => n.read);
+    if (isNotificationApiEnabled()) {
+      try {
+        const params = filter ? `?filter=${filter}` : '';
+        const response = await apiClient.get<{ notifications: Notification[] }>(`/v1/notifications${params}`);
+        return response.data.notifications || [];
+      } catch {
+        // Fall through to local fallback
       }
-
-      return mockNotifications;
     }
+
+    const notifications = getLocalNotifications();
+
+    if (filter === 'unread') {
+      return notifications.filter(n => !n.read);
+    } else if (filter === 'read') {
+      return notifications.filter(n => n.read);
+    }
+
+    return notifications;
   },
 
   /**
-   * Get a specific notification by ID
+   * Get a specific notification by ID.
    */
   async getNotification(id: string): Promise<Notification> {
-    try {
-      const response = await apiClient.get<Notification>(`/v1/notifications/${id}`);
-      return response.data;
-    } catch (error) {
-      console.warn('Failed to fetch notification from API, using mock data:', error);
-
-      // Return mock data as fallback
-      const mockNotifications = generateMockNotifications();
-      const notification = mockNotifications.find(n => n.id === id);
-
-      if (!notification) {
-        throw new Error('Notification not found');
+    if (isNotificationApiEnabled()) {
+      try {
+        const response = await apiClient.get<Notification>(`/v1/notifications/${id}`);
+        return response.data;
+      } catch {
+        // Fall through to local fallback
       }
-
-      return notification;
     }
+
+    const notifications = getLocalNotifications();
+    const notification = notifications.find(n => n.id === id);
+
+    if (!notification) {
+      throw new Error('Notification not found');
+    }
+
+    return notification;
   },
 
   /**
-   * Mark notification as read
+   * Mark notification as read. Persists to local storage when API is unavailable.
    */
   async markAsRead(id: string): Promise<Notification> {
-    try {
-      const response = await apiClient.put<Notification>(`/v1/notifications/${id}/read`);
-      return response.data;
-    } catch (error) {
-      console.warn('Failed to mark notification as read via API:', error);
-
-      // Simulate success for mock data
-      const mockNotifications = generateMockNotifications();
-      const notification = mockNotifications.find(n => n.id === id);
-
-      if (!notification) {
-        throw new Error('Notification not found');
+    if (isNotificationApiEnabled()) {
+      try {
+        const response = await apiClient.put<Notification>(`/v1/notifications/${id}/read`);
+        return response.data;
+      } catch {
+        // Fall through to local fallback
       }
-
-      return {
-        ...notification,
-        read: true,
-        readAt: new Date().toISOString(),
-      };
     }
+
+    const readAt = new Date().toISOString();
+    const state = getStoredReadState();
+    state[id] = { read: true, readAt };
+    setStoredReadState(state);
+
+    const notifications = getLocalNotifications();
+    const notification = notifications.find(n => n.id === id);
+
+    if (!notification) {
+      throw new Error('Notification not found');
+    }
+
+    return notification;
   },
 
   /**
-   * Mark notification as unread
+   * Mark notification as unread. Persists to local storage when API is unavailable.
    */
   async markAsUnread(id: string): Promise<Notification> {
-    try {
-      const response = await apiClient.put<Notification>(`/v1/notifications/${id}/unread`);
-      return response.data;
-    } catch (error) {
-      console.warn('Failed to mark notification as unread via API:', error);
-
-      // Simulate success for mock data
-      const mockNotifications = generateMockNotifications();
-      const notification = mockNotifications.find(n => n.id === id);
-
-      if (!notification) {
-        throw new Error('Notification not found');
+    if (isNotificationApiEnabled()) {
+      try {
+        const response = await apiClient.put<Notification>(`/v1/notifications/${id}/unread`);
+        return response.data;
+      } catch {
+        // Fall through to local fallback
       }
-
-      return {
-        ...notification,
-        read: false,
-        readAt: undefined,
-      };
     }
+
+    const state = getStoredReadState();
+    state[id] = { read: false, readAt: undefined };
+    setStoredReadState(state);
+
+    const notifications = getLocalNotifications();
+    const notification = notifications.find(n => n.id === id);
+
+    if (!notification) {
+      throw new Error('Notification not found');
+    }
+
+    return notification;
   },
 
   /**
-   * Delete a notification
+   * Delete a notification. Persists deletion to local storage when API is unavailable.
    */
   async deleteNotification(id: string): Promise<void> {
-    try {
-      await apiClient.delete(`/v1/notifications/${id}`);
-    } catch (error) {
-      console.warn('Failed to delete notification via API:', error);
-      // Simulate success for mock data
+    if (isNotificationApiEnabled()) {
+      try {
+        await apiClient.delete(`/v1/notifications/${id}`);
+        return;
+      } catch {
+        // Fall through to local fallback
+      }
     }
+
+    addDeletedId(id);
   },
 
   /**
-   * Mark all notifications as read
+   * Mark all notifications as read. Persists to local storage when API is unavailable.
    */
   async markAllAsRead(): Promise<{ success: boolean; count: number }> {
-    try {
-      const response = await apiClient.put<{ success: boolean; count: number }>('/v1/notifications/mark-all-read');
-      return response.data;
-    } catch (error) {
-      console.warn('Failed to mark all as read via API:', error);
-
-      // Simulate success for mock data
-      const mockNotifications = generateMockNotifications();
-      const unreadCount = mockNotifications.filter(n => !n.read).length;
-
-      return {
-        success: true,
-        count: unreadCount,
-      };
+    if (isNotificationApiEnabled()) {
+      try {
+        const response = await apiClient.put<{ success: boolean; count: number }>('/v1/notifications/mark-all-read');
+        return response.data;
+      } catch {
+        // Fall through to local fallback
+      }
     }
+
+    const notifications = getLocalNotifications();
+    const unreadNotifications = notifications.filter(n => !n.read);
+    const state = getStoredReadState();
+    const now = new Date().toISOString();
+
+    for (const n of unreadNotifications) {
+      state[n.id] = { read: true, readAt: now };
+    }
+    setStoredReadState(state);
+
+    return {
+      success: true,
+      count: unreadNotifications.length,
+    };
   },
 
   /**
-   * Get notification preferences
+   * Get notification preferences. Falls back to local storage or defaults.
    */
   async getPreferences(): Promise<NotificationPreferences> {
-    try {
-      const response = await apiClient.get<NotificationPreferences>('/v1/notifications/preferences');
-      return response.data;
-    } catch (error) {
-      console.warn('Failed to fetch preferences from API, using defaults:', error);
-
-      // Return default preferences
-      return {
-        email: {
-          enabled: true,
-          system: true,
-          billing: true,
-          security: true,
-          feature: true,
-          marketing: false,
-        },
-        inApp: {
-          enabled: true,
-          system: true,
-          billing: true,
-          security: true,
-          feature: true,
-          marketing: true,
-        },
-        push: {
-          enabled: false,
-          system: false,
-          billing: false,
-          security: false,
-          feature: false,
-          marketing: false,
-        },
-      };
+    if (isNotificationApiEnabled()) {
+      try {
+        const response = await apiClient.get<NotificationPreferences>('/v1/notifications/preferences');
+        return response.data;
+      } catch {
+        // Fall through to local fallback
+      }
     }
+
+    return getStoredPreferences() || getDefaultPreferences();
   },
 
   /**
-   * Update notification preferences
+   * Update notification preferences. Persists to local storage when API is unavailable.
    */
   async updatePreferences(preferences: NotificationPreferences): Promise<NotificationPreferences> {
-    try {
-      const response = await apiClient.put<NotificationPreferences>('/v1/notifications/preferences', preferences);
-      return response.data;
-    } catch (error) {
-      console.warn('Failed to update preferences via API:', error);
-
-      // Return the preferences as-is (simulating success)
-      return preferences;
+    if (isNotificationApiEnabled()) {
+      try {
+        const response = await apiClient.put<NotificationPreferences>('/v1/notifications/preferences', preferences);
+        return response.data;
+      } catch {
+        // Fall through to local fallback
+      }
     }
+
+    setStoredPreferences(preferences);
+    return preferences;
   },
 
   /**
-   * Subscribe to push notifications
+   * Subscribe to push notifications.
    */
   async subscribeToPush(subscription: PushSubscription): Promise<{ success: boolean; message: string }> {
-    try {
-      const response = await apiClient.post<{ success: boolean; message: string }>('/v1/notifications/subscribe', subscription);
-      return response.data;
-    } catch (error) {
-      console.warn('Failed to subscribe to push notifications via API:', error);
-
-      // Simulate success
-      return {
-        success: true,
-        message: 'Push notifications enabled (mock)',
-      };
+    if (isNotificationApiEnabled()) {
+      try {
+        const response = await apiClient.post<{ success: boolean; message: string }>('/v1/notifications/subscribe', subscription);
+        return response.data;
+      } catch {
+        // Fall through to local fallback
+      }
     }
+
+    return {
+      success: false,
+      message: 'Push notifications are not available while the notification backend is offline.',
+    };
   },
 
   /**
-   * Get notification statistics
+   * Get notification statistics.
    */
   async getStats(): Promise<NotificationStats> {
-    try {
-      const response = await apiClient.get<NotificationStats>('/v1/notifications/stats');
-      return response.data;
-    } catch (error) {
-      console.warn('Failed to fetch stats from API, calculating from mock data:', error);
-
-      // Calculate stats from mock data
-      const mockNotifications = generateMockNotifications();
-
-      return {
-        total: mockNotifications.length,
-        unread: mockNotifications.filter(n => !n.read).length,
-        byType: mockNotifications.reduce((acc, n) => {
-          acc[n.type] = (acc[n.type] || 0) + 1;
-          return acc;
-        }, {} as Record<string, number>),
-        byCategory: mockNotifications.reduce((acc, n) => {
-          acc[n.category] = (acc[n.category] || 0) + 1;
-          return acc;
-        }, {} as Record<string, number>),
-      };
+    if (isNotificationApiEnabled()) {
+      try {
+        const response = await apiClient.get<NotificationStats>('/v1/notifications/stats');
+        return response.data;
+      } catch {
+        // Fall through to local fallback
+      }
     }
+
+    const notifications = getLocalNotifications();
+
+    return {
+      total: notifications.length,
+      unread: notifications.filter(n => !n.read).length,
+      byType: notifications.reduce((acc, n) => {
+        acc[n.type] = (acc[n.type] || 0) + 1;
+        return acc;
+      }, {} as Record<string, number>),
+      byCategory: notifications.reduce((acc, n) => {
+        acc[n.category] = (acc[n.category] || 0) + 1;
+        return acc;
+      }, {} as Record<string, number>),
+    };
   },
 };
 

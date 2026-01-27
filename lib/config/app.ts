@@ -82,7 +82,8 @@ export const appConfig = {
   features: {
     enableAnalytics: process.env.NEXT_PUBLIC_ENABLE_ANALYTICS === 'true',
     enableChat: process.env.NEXT_PUBLIC_ENABLE_CHAT !== 'false', // default true
-    enableDebug: process.env.NODE_ENV === 'development'
+    enableDebug: process.env.NODE_ENV === 'development',
+    enableNotifications: process.env.NEXT_PUBLIC_ENABLE_NOTIFICATIONS === 'true' // default false, backend endpoints not yet available
   }
 } as const;
 
