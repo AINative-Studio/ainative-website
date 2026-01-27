@@ -20,7 +20,7 @@ describe('AgentService', () => {
   });
 
   describe('getAgents', () => {
-    it('fetches all agents', async () => {
+    it('fetches all agents from orchestration endpoint', async () => {
       const mockAgents = {
         agents: [
           {
@@ -45,7 +45,7 @@ describe('AgentService', () => {
 
       const result = await agentService.getAgents();
 
-      expect(mockApiClient.get).toHaveBeenCalledWith('/v1/agents');
+      expect(mockApiClient.get).toHaveBeenCalledWith('/v1/public/agent-orchestration/agents');
       expect(result).toEqual(mockAgents.agents);
     });
 
@@ -69,7 +69,7 @@ describe('AgentService', () => {
   });
 
   describe('createAgent', () => {
-    it('creates a new agent', async () => {
+    it('creates a new agent via orchestration endpoint', async () => {
       const createRequest = {
         name: 'New Agent',
         description: 'A new agent',
@@ -97,7 +97,7 @@ describe('AgentService', () => {
 
       const result = await agentService.createAgent(createRequest);
 
-      expect(mockApiClient.post).toHaveBeenCalledWith('/v1/agents', createRequest);
+      expect(mockApiClient.post).toHaveBeenCalledWith('/v1/public/agent-orchestration/agents', createRequest);
       expect(result).toEqual(mockAgent);
     });
 
@@ -126,7 +126,7 @@ describe('AgentService', () => {
 
       const result = await agentService.createAgent(createRequest);
 
-      expect(mockApiClient.post).toHaveBeenCalledWith('/v1/agents', createRequest);
+      expect(mockApiClient.post).toHaveBeenCalledWith('/v1/public/agent-orchestration/agents', createRequest);
       expect(result.templateId).toBe('template-1');
     });
 
@@ -144,7 +144,7 @@ describe('AgentService', () => {
   });
 
   describe('getAgent', () => {
-    it('fetches agent by id', async () => {
+    it('fetches agent by id from orchestration endpoint', async () => {
       const mockAgent = {
         id: 'agent-1',
         name: 'Code Assistant',
@@ -165,7 +165,7 @@ describe('AgentService', () => {
 
       const result = await agentService.getAgent('agent-1');
 
-      expect(mockApiClient.get).toHaveBeenCalledWith('/v1/agents/agent-1');
+      expect(mockApiClient.get).toHaveBeenCalledWith('/v1/public/agent-orchestration/agents/agent-1');
       expect(result).toEqual(mockAgent);
     });
 
@@ -177,7 +177,7 @@ describe('AgentService', () => {
   });
 
   describe('updateAgent', () => {
-    it('updates an agent', async () => {
+    it('updates an agent via orchestration endpoint', async () => {
       const updateRequest = {
         name: 'Updated Agent',
         config: {
@@ -205,7 +205,7 @@ describe('AgentService', () => {
 
       const result = await agentService.updateAgent('agent-1', updateRequest);
 
-      expect(mockApiClient.put).toHaveBeenCalledWith('/v1/agents/agent-1', updateRequest);
+      expect(mockApiClient.put).toHaveBeenCalledWith('/v1/public/agent-orchestration/agents/agent-1', updateRequest);
       expect(result.name).toBe('Updated Agent');
     });
 
@@ -219,7 +219,7 @@ describe('AgentService', () => {
   });
 
   describe('deleteAgent', () => {
-    it('deletes an agent', async () => {
+    it('deletes an agent via orchestration endpoint', async () => {
       mockApiClient.delete.mockResolvedValueOnce({
         data: { success: true },
         status: 200,
@@ -228,7 +228,7 @@ describe('AgentService', () => {
 
       const result = await agentService.deleteAgent('agent-1');
 
-      expect(mockApiClient.delete).toHaveBeenCalledWith('/v1/agents/agent-1');
+      expect(mockApiClient.delete).toHaveBeenCalledWith('/v1/public/agent-orchestration/agents/agent-1');
       expect(result.success).toBe(true);
     });
 
@@ -240,7 +240,7 @@ describe('AgentService', () => {
   });
 
   describe('runAgent', () => {
-    it('runs an agent', async () => {
+    it('runs an agent via orchestration tasks endpoint', async () => {
       const runRequest = {
         input: 'Write a hello world function',
         config: { temperature: 0.5 },
@@ -263,7 +263,10 @@ describe('AgentService', () => {
 
       const result = await agentService.runAgent('agent-1', runRequest);
 
-      expect(mockApiClient.post).toHaveBeenCalledWith('/v1/agents/agent-1/run', runRequest);
+      expect(mockApiClient.post).toHaveBeenCalledWith('/v1/public/agent-orchestration/tasks', {
+        agent_id: 'agent-1',
+        ...runRequest,
+      });
       expect(result.status).toBe('running');
     });
 
@@ -277,7 +280,7 @@ describe('AgentService', () => {
   });
 
   describe('getAgentRuns', () => {
-    it('fetches agent run history', async () => {
+    it('fetches agent run history from orchestration tasks', async () => {
       const mockRuns = {
         runs: [
           {
@@ -303,7 +306,7 @@ describe('AgentService', () => {
 
       const result = await agentService.getAgentRuns('agent-1');
 
-      expect(mockApiClient.get).toHaveBeenCalledWith('/v1/agents/agent-1/runs');
+      expect(mockApiClient.get).toHaveBeenCalledWith('/v1/public/agent-orchestration/tasks?agent_id=agent-1');
       expect(result).toEqual(mockRuns.runs);
     });
 
@@ -321,7 +324,7 @@ describe('AgentService', () => {
   });
 
   describe('getAgentLogs', () => {
-    it('fetches agent logs', async () => {
+    it('fetches agent logs from bridge metrics', async () => {
       const mockLogs = {
         logs: [
           {
@@ -343,7 +346,7 @@ describe('AgentService', () => {
 
       const result = await agentService.getAgentLogs('agent-1');
 
-      expect(mockApiClient.get).toHaveBeenCalledWith('/v1/agents/agent-1/logs');
+      expect(mockApiClient.get).toHaveBeenCalledWith('/v1/public/agent-bridge/metrics?agent_id=agent-1');
       expect(result).toEqual(mockLogs.logs);
     });
 
@@ -369,7 +372,7 @@ describe('AgentService', () => {
 
       const result = await agentService.getAgentLogs('agent-1', 'run-1');
 
-      expect(mockApiClient.get).toHaveBeenCalledWith('/v1/agents/agent-1/logs?runId=run-1');
+      expect(mockApiClient.get).toHaveBeenCalledWith('/v1/public/agent-bridge/metrics?agent_id=agent-1&run_id=run-1');
       expect(result).toEqual(mockLogs.logs);
     });
 
@@ -387,7 +390,7 @@ describe('AgentService', () => {
   });
 
   describe('getTemplates', () => {
-    it('fetches available templates', async () => {
+    it('fetches available templates from bridge endpoints', async () => {
       const mockTemplates = {
         templates: [
           {
@@ -417,7 +420,7 @@ describe('AgentService', () => {
 
       const result = await agentService.getTemplates();
 
-      expect(mockApiClient.get).toHaveBeenCalledWith('/v1/agents/templates');
+      expect(mockApiClient.get).toHaveBeenCalledWith('/v1/public/agent-bridge/endpoints');
       expect(result).toEqual(mockTemplates.templates);
     });
 
@@ -435,7 +438,7 @@ describe('AgentService', () => {
   });
 
   describe('cancelRun', () => {
-    it('cancels a running agent', async () => {
+    it('cancels a running agent task via orchestration', async () => {
       mockApiClient.post.mockResolvedValueOnce({
         data: { success: true },
         status: 200,
@@ -444,7 +447,7 @@ describe('AgentService', () => {
 
       const result = await agentService.cancelRun('agent-1', 'run-1');
 
-      expect(mockApiClient.post).toHaveBeenCalledWith('/v1/agents/agent-1/runs/run-1/cancel');
+      expect(mockApiClient.post).toHaveBeenCalledWith('/v1/public/agent-orchestration/tasks/run-1/cancel');
       expect(result.success).toBe(true);
     });
 
@@ -454,6 +457,26 @@ describe('AgentService', () => {
       await expect(
         agentService.cancelRun('agent-1', 'run-1')
       ).rejects.toThrow('Run already completed');
+    });
+  });
+
+  describe('getBridgeStatus', () => {
+    it('fetches bridge status', async () => {
+      const mockStatus = {
+        status: 'healthy',
+        agents: 5,
+      };
+
+      mockApiClient.get.mockResolvedValueOnce({
+        data: mockStatus,
+        status: 200,
+        statusText: 'OK',
+      });
+
+      const result = await agentService.getBridgeStatus();
+
+      expect(mockApiClient.get).toHaveBeenCalledWith('/v1/public/agent-bridge/status');
+      expect(result).toEqual(mockStatus);
     });
   });
 });
