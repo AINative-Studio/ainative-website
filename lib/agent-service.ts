@@ -105,13 +105,17 @@ export interface RunAgentRequest {
   };
 }
 
+// API base paths matching backend structure
+const ORCHESTRATION_BASE = '/v1/public/agent-orchestration';
+const BRIDGE_BASE = '/v1/public/agent-bridge';
+
 // Agent Service
 const agentService = {
   /**
    * Get list of all agents
    */
   async getAgents(): Promise<Agent[]> {
-    const response = await apiClient.get<{ agents: Agent[] }>('/v1/agents');
+    const response = await apiClient.get<{ agents: Agent[] }>(`${ORCHESTRATION_BASE}/agents`);
     return response.data.agents || [];
   },
 
@@ -119,7 +123,7 @@ const agentService = {
    * Create a new agent
    */
   async createAgent(request: CreateAgentRequest): Promise<Agent> {
-    const response = await apiClient.post<Agent>('/v1/agents', request);
+    const response = await apiClient.post<Agent>(`${ORCHESTRATION_BASE}/agents`, request);
     return response.data;
   },
 
@@ -127,7 +131,7 @@ const agentService = {
    * Get agent details
    */
   async getAgent(agentId: string): Promise<Agent> {
-    const response = await apiClient.get<Agent>(`/v1/agents/${agentId}`);
+    const response = await apiClient.get<Agent>(`${ORCHESTRATION_BASE}/agents/${agentId}`);
     return response.data;
   },
 
@@ -135,7 +139,7 @@ const agentService = {
    * Update an agent
    */
   async updateAgent(agentId: string, request: UpdateAgentRequest): Promise<Agent> {
-    const response = await apiClient.put<Agent>(`/v1/agents/${agentId}`, request);
+    const response = await apiClient.put<Agent>(`${ORCHESTRATION_BASE}/agents/${agentId}`, request);
     return response.data;
   },
 
@@ -143,50 +147,61 @@ const agentService = {
    * Delete an agent
    */
   async deleteAgent(agentId: string): Promise<{ success: boolean }> {
-    const response = await apiClient.delete<{ success: boolean }>(`/v1/agents/${agentId}`);
+    const response = await apiClient.delete<{ success: boolean }>(`${ORCHESTRATION_BASE}/agents/${agentId}`);
     return response.data;
   },
 
   /**
-   * Run an agent
+   * Run an agent (creates a task via orchestration)
    */
   async runAgent(agentId: string, request: RunAgentRequest): Promise<AgentRun> {
-    const response = await apiClient.post<AgentRun>(`/v1/agents/${agentId}/run`, request);
+    const response = await apiClient.post<AgentRun>(`${ORCHESTRATION_BASE}/tasks`, {
+      agent_id: agentId,
+      ...request,
+    });
     return response.data;
   },
 
   /**
-   * Get agent run history
+   * Get agent run history (tasks for this agent)
    */
   async getAgentRuns(agentId: string): Promise<AgentRun[]> {
-    const response = await apiClient.get<{ runs: AgentRun[] }>(`/v1/agents/${agentId}/runs`);
+    const response = await apiClient.get<{ runs: AgentRun[] }>(`${ORCHESTRATION_BASE}/tasks?agent_id=${agentId}`);
     return response.data.runs || [];
   },
 
   /**
-   * Get agent logs
+   * Get agent logs via bridge metrics
    */
   async getAgentLogs(agentId: string, runId?: string): Promise<AgentLog[]> {
     const endpoint = runId
-      ? `/v1/agents/${agentId}/logs?runId=${runId}`
-      : `/v1/agents/${agentId}/logs`;
+      ? `${BRIDGE_BASE}/metrics?agent_id=${agentId}&run_id=${runId}`
+      : `${BRIDGE_BASE}/metrics?agent_id=${agentId}`;
     const response = await apiClient.get<{ logs: AgentLog[] }>(endpoint);
     return response.data.logs || [];
   },
 
   /**
-   * Get available agent templates
+   * Get available agent templates (via bridge endpoints)
    */
   async getTemplates(): Promise<AgentTemplate[]> {
-    const response = await apiClient.get<{ templates: AgentTemplate[] }>('/v1/agents/templates');
+    const response = await apiClient.get<{ templates: AgentTemplate[] }>(`${BRIDGE_BASE}/endpoints`);
     return response.data.templates || [];
   },
 
   /**
-   * Cancel a running agent
+   * Cancel a running agent task
    */
   async cancelRun(agentId: string, runId: string): Promise<{ success: boolean }> {
-    const response = await apiClient.post<{ success: boolean }>(`/v1/agents/${agentId}/runs/${runId}/cancel`);
+    const response = await apiClient.post<{ success: boolean }>(`${ORCHESTRATION_BASE}/tasks/${runId}/cancel`);
+    return response.data;
+  },
+
+  /**
+   * Get bridge status for agents
+   */
+  async getBridgeStatus(): Promise<{ status: string; agents: number }> {
+    const response = await apiClient.get<{ status: string; agents: number }>(`${BRIDGE_BASE}/status`);
     return response.data;
   },
 };

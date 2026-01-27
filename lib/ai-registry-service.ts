@@ -157,13 +157,19 @@ export interface MultiModelInferenceResponse {
  * AI Registry Service class
  */
 class AIRegistryService {
+  // API base paths matching backend structure
+  private readonly MULTI_MODEL_BASE = '/v1/public/multi-model';
+  private readonly USAGE_BASE = '/v1/public/ai-usage';
+  private readonly CONTEXT_BASE = '/v1/public/ai-context';
+  private readonly ORCHESTRATION_BASE = '/v1/public/ai-orchestration';
+
   // ===== AI Model Registry Endpoints =====
 
   /**
    * List all registered AI models
    */
   async listModels(): Promise<ModelsResponse> {
-    const response = await apiClient.get<ModelsResponse>('/v1/ai-registry/models');
+    const response = await apiClient.get<ModelsResponse>(`${this.MULTI_MODEL_BASE}/models`);
     return response.data;
   }
 
@@ -171,7 +177,7 @@ class AIRegistryService {
    * Register a new AI model
    */
   async registerModel(data: RegisterModelData): Promise<AIModel> {
-    const response = await apiClient.post<AIModel>('/v1/ai-registry/models', data);
+    const response = await apiClient.post<AIModel>(`${this.MULTI_MODEL_BASE}/models`, data);
     return response.data;
   }
 
@@ -179,7 +185,7 @@ class AIRegistryService {
    * Get model details by ID
    */
   async getModelDetails(id: number): Promise<AIModel> {
-    const response = await apiClient.get<AIModel>(`/v1/ai-registry/models/${id}`);
+    const response = await apiClient.get<AIModel>(`${this.MULTI_MODEL_BASE}/models/${id}`);
     return response.data;
   }
 
@@ -188,16 +194,24 @@ class AIRegistryService {
    */
   async switchDefaultModel(id: number): Promise<SwitchModelResponse> {
     const response = await apiClient.post<SwitchModelResponse>(
-      `/v1/ai-registry/models/${id}/switch`,
+      `${this.MULTI_MODEL_BASE}/models/${id}/switch`,
       {}
     );
+    return response.data;
+  }
+
+  /**
+   * List available model providers
+   */
+  async listProviders(): Promise<{ providers: string[] }> {
+    const response = await apiClient.get<{ providers: string[] }>(`${this.MULTI_MODEL_BASE}/providers`);
     return response.data;
   }
 
   // ===== Usage Analytics Endpoints =====
 
   /**
-   * Get usage summary with optional date range
+   * Get usage summary (aggregate) with optional date range
    */
   async getUsageSummary(params: UsageQueryParams = {}): Promise<UsageSummary> {
     const queryParams = new URLSearchParams(
@@ -209,14 +223,14 @@ class AIRegistryService {
       }, {} as Record<string, string>)
     );
     const endpoint = queryParams.toString()
-      ? `/v1/ai-usage/summary?${queryParams.toString()}`
-      : '/v1/ai-usage/summary';
+      ? `${this.USAGE_BASE}/aggregate?${queryParams.toString()}`
+      : `${this.USAGE_BASE}/aggregate`;
     const response = await apiClient.get<UsageSummary>(endpoint);
     return response.data;
   }
 
   /**
-   * Get usage breakdown by model
+   * Get usage breakdown by model (via costs endpoint)
    */
   async getUsageByModel(params: UsageQueryParams = {}): Promise<UsageByModelResponse> {
     const queryParams = new URLSearchParams(
@@ -228,14 +242,14 @@ class AIRegistryService {
       }, {} as Record<string, string>)
     );
     const endpoint = queryParams.toString()
-      ? `/v1/ai-usage/models?${queryParams.toString()}`
-      : '/v1/ai-usage/models';
+      ? `${this.USAGE_BASE}/costs?${queryParams.toString()}`
+      : `${this.USAGE_BASE}/costs`;
     const response = await apiClient.get<UsageByModelResponse>(endpoint);
     return response.data;
   }
 
   /**
-   * Get daily usage trends
+   * Get daily usage trends (via logs endpoint)
    */
   async getDailyUsage(params: UsageQueryParams = {}): Promise<DailyUsageResponse> {
     const queryParams = new URLSearchParams(
@@ -247,8 +261,8 @@ class AIRegistryService {
       }, {} as Record<string, string>)
     );
     const endpoint = queryParams.toString()
-      ? `/v1/ai-usage/daily?${queryParams.toString()}`
-      : '/v1/ai-usage/daily';
+      ? `${this.USAGE_BASE}/logs?${queryParams.toString()}`
+      : `${this.USAGE_BASE}/logs`;
     const response = await apiClient.get<DailyUsageResponse>(endpoint);
     return response.data;
   }
@@ -257,7 +271,26 @@ class AIRegistryService {
    * Export usage data
    */
   async exportUsageData(params: ExportUsageParams): Promise<ExportResponse> {
-    const response = await apiClient.post<ExportResponse>('/v1/ai-usage/export', params);
+    const response = await apiClient.post<ExportResponse>(`${this.USAGE_BASE}/export`, params);
+    return response.data;
+  }
+
+  /**
+   * Get usage requests
+   */
+  async getUsageRequests(params: UsageQueryParams = {}): Promise<{ requests: unknown[] }> {
+    const queryParams = new URLSearchParams(
+      Object.entries(params).reduce((acc, [key, value]) => {
+        if (value !== undefined) {
+          acc[key] = String(value);
+        }
+        return acc;
+      }, {} as Record<string, string>)
+    );
+    const endpoint = queryParams.toString()
+      ? `${this.USAGE_BASE}/requests?${queryParams.toString()}`
+      : `${this.USAGE_BASE}/requests`;
+    const response = await apiClient.get<{ requests: unknown[] }>(endpoint);
     return response.data;
   }
 
@@ -267,7 +300,15 @@ class AIRegistryService {
    * Load context from vector database
    */
   async loadContext(query: ContextQuery): Promise<ContextResponse> {
-    const response = await apiClient.post<ContextResponse>('/v1/ai-context/load', query);
+    const response = await apiClient.post<ContextResponse>(`${this.CONTEXT_BASE}/contexts`, query);
+    return response.data;
+  }
+
+  /**
+   * Get conversations
+   */
+  async getConversations(): Promise<{ conversations: unknown[] }> {
+    const response = await apiClient.get<{ conversations: unknown[] }>(`${this.CONTEXT_BASE}/conversations`);
     return response.data;
   }
 
@@ -278,7 +319,7 @@ class AIRegistryService {
    */
   async multiModelInference(request: MultiModelInferenceRequest): Promise<MultiModelInferenceResponse> {
     const response = await apiClient.post<MultiModelInferenceResponse>(
-      '/v1/ai-orchestration/multi-model',
+      `${this.ORCHESTRATION_BASE}/requests`,
       request
     );
     return response.data;
