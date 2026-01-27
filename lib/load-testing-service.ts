@@ -104,7 +104,7 @@ const loadTestingService = {
    * Get list of available test scenarios
    */
   async getScenarios(): Promise<LoadTestScenario[]> {
-    const response = await apiClient.get<{ scenarios: LoadTestScenario[] }>('/v1/load-testing/scenarios');
+    const response = await apiClient.get<{ scenarios: LoadTestScenario[] }>('/v1/public/load-testing/scenarios');
     return response.data.scenarios || [];
   },
 
@@ -112,7 +112,7 @@ const loadTestingService = {
    * Create a new load test
    */
   async createTest(request: CreateTestRequest): Promise<LoadTest> {
-    const response = await apiClient.post<LoadTest>('/v1/load-testing/create', request);
+    const response = await apiClient.post<LoadTest>('/v1/public/load-testing/create', request);
     return response.data;
   },
 
@@ -120,7 +120,7 @@ const loadTestingService = {
    * Get test details and results
    */
   async getTest(testId: string): Promise<LoadTest & { result?: LoadTestResult }> {
-    const response = await apiClient.get<LoadTest & { result?: LoadTestResult }>(`/v1/load-testing/${testId}`);
+    const response = await apiClient.get<LoadTest & { result?: LoadTestResult }>(`/v1/public/load-testing/${testId}`);
     return response.data;
   },
 
@@ -128,7 +128,7 @@ const loadTestingService = {
    * Run a load test
    */
   async runTest(request: RunTestRequest): Promise<{ status: string; testId: string }> {
-    const response = await apiClient.post<{ status: string; testId: string }>('/v1/load-testing/run', request);
+    const response = await apiClient.post<{ status: string; testId: string }>('/v1/public/load-testing/run', request);
     return response.data;
   },
 
@@ -136,7 +136,7 @@ const loadTestingService = {
    * Get performance metrics for a test
    */
   async getTestMetrics(testId: string): Promise<LoadTestMetrics> {
-    const response = await apiClient.get<LoadTestMetrics>(`/v1/load-testing/${testId}/metrics`);
+    const response = await apiClient.get<LoadTestMetrics>(`/v1/public/load-testing/${testId}/metrics`);
     return response.data;
   },
 
@@ -144,7 +144,7 @@ const loadTestingService = {
    * Cancel a running test
    */
   async cancelTest(testId: string): Promise<{ status: string }> {
-    const response = await apiClient.post<{ status: string }>(`/v1/load-testing/${testId}/cancel`);
+    const response = await apiClient.post<{ status: string }>(`/v1/public/load-testing/${testId}/cancel`);
     return response.data;
   },
 
@@ -152,7 +152,7 @@ const loadTestingService = {
    * Get list of all tests (history)
    */
   async getTestHistory(): Promise<LoadTest[]> {
-    const response = await apiClient.get<{ tests: LoadTest[] }>('/v1/load-testing/history');
+    const response = await apiClient.get<{ tests: LoadTest[] }>('/v1/public/load-testing/results');
     return response.data.tests || [];
   },
 
@@ -160,7 +160,7 @@ const loadTestingService = {
    * Delete a test
    */
   async deleteTest(testId: string): Promise<void> {
-    await apiClient.delete(`/v1/load-testing/${testId}`);
+    await apiClient.delete(`/v1/public/load-testing/${testId}`);
   },
 };
 

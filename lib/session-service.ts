@@ -154,7 +154,7 @@ class SessionService {
     );
     const endpoint = queryParams.toString()
       ? `/v1/sessions?${queryParams.toString()}`
-      : '/v1/sessions';
+      : '/v1/public/sessions';
     const response = await apiClient.get<SessionsListResponse>(endpoint);
     return response.data;
   }
@@ -163,7 +163,7 @@ class SessionService {
    * Get session details by ID
    */
   async getSession(sessionId: string): Promise<SessionDetail> {
-    const response = await apiClient.get<SessionDetail>(`/v1/sessions/${sessionId}`);
+    const response = await apiClient.get<SessionDetail>(`/v1/public/sessions/${sessionId}`);
     return response.data;
   }
 
@@ -171,7 +171,7 @@ class SessionService {
    * Delete a session
    */
   async deleteSession(sessionId: string): Promise<DeleteSessionResponse> {
-    const response = await apiClient.delete<DeleteSessionResponse>(`/v1/sessions/${sessionId}`);
+    const response = await apiClient.delete<DeleteSessionResponse>(`/v1/public/sessions/${sessionId}`);
     return response.data;
   }
 
@@ -189,7 +189,7 @@ class SessionService {
         return acc;
       }, {} as Record<string, string>)
     );
-    const endpoint = `/v1/memory/context?${queryParams.toString()}`;
+    const endpoint = `/v1/public/memory/context?${queryParams.toString()}`;
     const response = await apiClient.get<MemoryContextResponse>(endpoint);
     return response.data;
   }
@@ -198,7 +198,7 @@ class SessionService {
    * Store new memory entry
    */
   async storeMemory(data: StoreMemoryData): Promise<StoredMemory> {
-    const response = await apiClient.post<StoredMemory>('/v1/memory/store', data);
+    const response = await apiClient.post<StoredMemory>('/v1/public/memory/store', data);
     return response.data;
   }
 
@@ -213,7 +213,7 @@ class SessionService {
     }
     queryParams.set('limit', String(params.limit));
 
-    const endpoint = `/v1/memory/search?${queryParams.toString()}`;
+    const endpoint = `/v1/public/memory/search?${queryParams.toString()}`;
     const response = await apiClient.get<MemorySearchResponse>(endpoint);
     return response.data;
   }
@@ -222,7 +222,7 @@ class SessionService {
    * Delete a specific memory entry
    */
   async deleteMemory(memoryId: string): Promise<DeleteMemoryResponse> {
-    const response = await apiClient.delete<DeleteMemoryResponse>(`/v1/memory/${memoryId}`);
+    const response = await apiClient.delete<DeleteMemoryResponse>(`/v1/public/memory/${memoryId}`);
     return response.data;
   }
 
@@ -231,7 +231,7 @@ class SessionService {
    */
   async getMemoryStats(sessionId: string): Promise<MemoryStats> {
     const response = await apiClient.get<MemoryStats>(
-      `/v1/memory/stats?session_id=${sessionId}`
+      `/v1/public/memory/stats?session_id=${sessionId}`
     );
     return response.data;
   }
@@ -241,7 +241,7 @@ class SessionService {
    */
   async clearSessionMemory(sessionId: string): Promise<ClearMemoryResponse> {
     const response = await apiClient.delete<ClearMemoryResponse>(
-      `/v1/sessions/${sessionId}/memory`
+      `/v1/public/sessions/${sessionId}/memory`
     );
     return response.data;
   }
