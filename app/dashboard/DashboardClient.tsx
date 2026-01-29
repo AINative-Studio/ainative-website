@@ -341,7 +341,7 @@ export default function DashboardClient() {
 
   return (
     <motion.div
-      className="max-w-5xl mx-auto"
+      className="w-full"
       initial="hidden"
       animate="visible"
       variants={fadeIn}
