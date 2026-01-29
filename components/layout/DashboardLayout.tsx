@@ -5,6 +5,7 @@ import { usePathname } from 'next/navigation';
 import { Menu } from 'lucide-react';
 import Header from './Header';
 import Sidebar from './Sidebar';
+import Footer from './Footer';
 
 interface DashboardLayoutProps {
   children: React.ReactNode;
@@ -94,16 +95,21 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
       )}
 
       {/* Layout Body */}
-      <div className="flex pt-16 md:pt-20">
+      <div className="flex flex-col pt-16 md:pt-20 min-h-screen">
         {/* Desktop Sidebar */}
         <div className="hidden md:block fixed left-0 top-0 h-full z-20">
           <Sidebar />
         </div>
 
         {/* Main Content */}
-        <main className="flex-1 p-4 md:p-6 overflow-y-auto w-full md:ml-72">
-          <div className="max-w-7xl mx-auto">{children}</div>
+        <main className="flex-1 py-4 md:py-6 overflow-y-auto overflow-x-hidden md:ml-72">
+          <div className="px-4 md:pl-4 md:pr-8 w-full max-w-[calc(100vw-18rem-2rem)]">{children}</div>
         </main>
+
+        {/* Footer - inside the layout with proper margin to avoid sidebar overlap */}
+        <div className="md:ml-72">
+          <Footer />
+        </div>
       </div>
     </div>
   );
