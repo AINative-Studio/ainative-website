@@ -83,7 +83,7 @@ const nextConfig: NextConfig = {
       },
       // Cache OG images
       {
-        source: '/og-:slug*.png',
+        source: '/og-:slug(.+).png',
         headers: [
           {
             key: 'Cache-Control',
