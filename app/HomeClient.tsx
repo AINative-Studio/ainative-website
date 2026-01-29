@@ -133,7 +133,7 @@ export default function HomeClient() {
       </motion.div>
 
       {/* Hero Section */}
-      <section className="full-width-section relative min-h-[70vh] flex items-center justify-center pt-20 pb-12 z-10">
+      <section className="full-width-section relative min-h-[70vh] flex items-center justify-center pt-32 pb-12 z-10">
         <div className="absolute inset-0 -z-10">
           <div className="absolute inset-0 bg-gradient-to-b from-[#0D1117]/80 via-[#0D1117]/90 to-[#0D1117]/80"></div>
           {/* Center glow effect - matching Vite design */}
