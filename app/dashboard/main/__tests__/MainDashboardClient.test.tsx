@@ -1,8 +1,16 @@
 import { render, screen, waitFor, fireEvent } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import MainDashboardClient from '../MainDashboardClient';
 
-// Mock dependencies
+// Mock framer-motion
+jest.mock('framer-motion', () => ({
+  motion: {
+    div: ({ children, ...props }: any) => <div {...props}>{children}</div>,
+  },
+}));
+
+// Mock next/navigation
 jest.mock('next/navigation', () => ({
   useRouter: () => ({
     push: jest.fn(),
@@ -15,6 +23,7 @@ jest.mock('next/navigation', () => ({
   usePathname: () => '/test-path',
 }));
 
+// Mock next-auth
 jest.mock('next-auth/react', () => ({
   useSession: () => ({
     data: {
@@ -27,17 +36,60 @@ jest.mock('next-auth/react', () => ({
   signOut: jest.fn(),
 }));
 
+// Mock lazy components
+jest.mock('@/components/lazy', () => ({
+  LazyAreaChart: ({ children, ...props }: any) => <div data-testid="area-chart" {...props}>{children}</div>,
+  LazyBarChart: ({ children, ...props }: any) => <div data-testid="bar-chart" {...props}>{children}</div>,
+  LazyLineChart: ({ children, ...props }: any) => <div data-testid="line-chart" {...props}>{children}</div>,
+  LazyPieChart: ({ children, ...props }: any) => <div data-testid="pie-chart" {...props}>{children}</div>,
+  Area: ({ ...props }: any) => <div data-testid="area" {...props} />,
+  XAxis: ({ ...props }: any) => <div data-testid="x-axis" {...props} />,
+  YAxis: ({ ...props }: any) => <div data-testid="y-axis" {...props} />,
+  CartesianGrid: ({ ...props }: any) => <div data-testid="cartesian-grid" {...props} />,
+  Tooltip: ({ ...props }: any) => <div data-testid="tooltip" {...props} />,
+  ResponsiveContainer: ({ children, ...props }: any) => <div data-testid="responsive-container" {...props}>{children}</div>,
+  Bar: ({ ...props }: any) => <div data-testid="bar" {...props} />,
+  Pie: ({ ...props }: any) => <div data-testid="pie" {...props} />,
+  Cell: ({ ...props }: any) => <div data-testid="cell" {...props} />,
+  Line: ({ ...props }: any) => <div data-testid="line" {...props} />,
+  Legend: ({ ...props }: any) => <div data-testid="legend" {...props} />,
+}));
+
+// Mock localStorage
+const localStorageMock = {
+  getItem: jest.fn(),
+  setItem: jest.fn(),
+  removeItem: jest.fn(),
+  clear: jest.fn(),
+};
+Object.defineProperty(window, 'localStorage', { value: localStorageMock });
+
+// Create a test wrapper with QueryClient
+const createWrapper = () => {
+  const queryClient = new QueryClient({
+    defaultOptions: {
+      queries: {
+        retry: false,
+      },
+    },
+  });
+  return ({ children }: { children: React.ReactNode }) => (
+    <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
+  );
+};
+
 // Mock API calls
 global.fetch = jest.fn(() =>
   Promise.resolve({
     ok: true,
     json: () => Promise.resolve({ data: {} }),
-  })) as jest.Mock
-);
+  })
+) as jest.Mock;
 
 describe('MainDashboardClient', () => {
   beforeEach(() => {
     jest.clearAllMocks();
+    localStorageMock.getItem.mockReturnValue(JSON.stringify({ name: 'Test User' }));
   });
 
   afterEach(() => {
@@ -45,27 +97,39 @@ describe('MainDashboardClient', () => {
   });
 
   describe('Rendering', () => {
-    it('should render without crashing', () => {
+    it('should render without crashing', async () => {
       // Given
-      const { container } = render(<MainDashboardClient />);
+      const { container } = render(<MainDashboardClient />, { wrapper: createWrapper() });
 
-      // Then
-      expect(container).toBeInTheDocument();
+      // Wait for mounted state
+      await waitFor(() => {
+        expect(container.querySelector('.max-w-7xl')).toBeInTheDocument();
+      });
     });
 
     it('should display loading state initially', async () => {
       // Given
-      render(<MainDashboardClient />);
+      render(<MainDashboardClient />, { wrapper: createWrapper() });
 
       // Then - Check for loading indicators
-      // expect(screen.getByTestId('loading-spinner')).toBeInTheDocument();
+      expect(screen.getByText(/Loading dashboard/i)).toBeInTheDocument();
+    });
+
+    it('should display dashboard content after loading', async () => {
+      // Given
+      render(<MainDashboardClient />, { wrapper: createWrapper() });
+
+      // Then - Wait for content to load
+      await waitFor(() => {
+        expect(screen.getByText(/Main Dashboard/i)).toBeInTheDocument();
+      });
     });
   });
 
   describe('State Management', () => {
     it('should manage mounted state', async () => {
       // Given
-      render(<MainDashboardClient />);
+      render(<MainDashboardClient />, { wrapper: createWrapper() });
 
       // When
       // Interact with component to change mounted
@@ -76,7 +140,7 @@ describe('MainDashboardClient', () => {
 
     it('should manage userName state', async () => {
       // Given
-      render(<MainDashboardClient />);
+      render(<MainDashboardClient />, { wrapper: createWrapper() });
 
       // When
       // Interact with component to change userName
@@ -91,7 +155,7 @@ describe('MainDashboardClient', () => {
     it('should handle button clicks', async () => {
       // Given
       const user = userEvent.setup();
-      render(<MainDashboardClient />);
+      render(<MainDashboardClient />, { wrapper: createWrapper() });
 
       // When
       // const button = screen.getByRole('button', { name: /action/i });
@@ -104,7 +168,7 @@ describe('MainDashboardClient', () => {
     it('should handle keyboard navigation', async () => {
       // Given
       const user = userEvent.setup();
-      render(<MainDashboardClient />);
+      render(<MainDashboardClient />, { wrapper: createWrapper() });
 
       // When
       // await user.keyboard('{Tab}');
@@ -117,7 +181,7 @@ describe('MainDashboardClient', () => {
   describe('Accessibility', () => {
     it('should have proper ARIA labels', () => {
       // Given
-      render(<MainDashboardClient />);
+      render(<MainDashboardClient />, { wrapper: createWrapper() });
 
       // Then
       // Check for ARIA attributes
@@ -127,7 +191,7 @@ describe('MainDashboardClient', () => {
     it('should support keyboard navigation', async () => {
       // Given
       const user = userEvent.setup();
-      render(<MainDashboardClient />);
+      render(<MainDashboardClient />, { wrapper: createWrapper() });
 
       // When
       await user.tab();
@@ -138,7 +202,7 @@ describe('MainDashboardClient', () => {
 
     it('should announce dynamic content changes', async () => {
       // Given
-      render(<MainDashboardClient />);
+      render(<MainDashboardClient />, { wrapper: createWrapper() });
 
       // Then
       // Check for live regions
@@ -158,7 +222,7 @@ describe('MainDashboardClient', () => {
 
     it('should recover from errors', async () => {
       // Given
-      render(<MainDashboardClient />);
+      render(<MainDashboardClient />, { wrapper: createWrapper() });
 
       // When
       // Trigger error and recovery
@@ -185,7 +249,7 @@ describe('MainDashboardClient', () => {
       });
 
       // When
-      render(<MainDashboardClient />);
+      render(<MainDashboardClient />, { wrapper: createWrapper() });
 
       // Then
       await waitFor(() => {
@@ -202,7 +266,7 @@ describe('MainDashboardClient', () => {
       });
 
       // When
-      render(<MainDashboardClient />);
+      render(<MainDashboardClient />, { wrapper: createWrapper() });
 
       // Then
       await waitFor(() => {
@@ -212,7 +276,7 @@ describe('MainDashboardClient', () => {
 
     it('should handle concurrent updates', async () => {
       // Given
-      render(<MainDashboardClient />);
+      render(<MainDashboardClient />, { wrapper: createWrapper() });
 
       // When
       // Trigger multiple concurrent updates
