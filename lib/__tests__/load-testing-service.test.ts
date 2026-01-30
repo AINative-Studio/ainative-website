@@ -48,7 +48,7 @@ describe('LoadTestingService', () => {
 
       const result = await loadTestingService.getScenarios();
 
-      expect(mockApiClient.get).toHaveBeenCalledWith('/v1/load-testing/scenarios');
+      expect(mockApiClient.get).toHaveBeenCalledWith('/v1/public/load-testing/scenarios');
       expect(result).toEqual(mockScenarios.scenarios);
     });
 
@@ -102,7 +102,7 @@ describe('LoadTestingService', () => {
 
       const result = await loadTestingService.createTest(createRequest);
 
-      expect(mockApiClient.post).toHaveBeenCalledWith('/v1/load-testing/create', createRequest);
+      expect(mockApiClient.post).toHaveBeenCalledWith('/v1/public/load-testing/create', createRequest);
       expect(result).toEqual(mockTest);
     });
 
@@ -157,7 +157,7 @@ describe('LoadTestingService', () => {
 
       const result = await loadTestingService.getTest('test-1');
 
-      expect(mockApiClient.get).toHaveBeenCalledWith('/v1/load-testing/test-1');
+      expect(mockApiClient.get).toHaveBeenCalledWith('/v1/public/load-testing/test-1');
       expect(result).toEqual(mockTest);
       expect(result.result?.summary.totalRequests).toBe(10000);
     });
@@ -184,7 +184,7 @@ describe('LoadTestingService', () => {
 
       const result = await loadTestingService.runTest(runRequest);
 
-      expect(mockApiClient.post).toHaveBeenCalledWith('/v1/load-testing/run', runRequest);
+      expect(mockApiClient.post).toHaveBeenCalledWith('/v1/public/load-testing/run', runRequest);
       expect(result.status).toBe('running');
     });
 
@@ -202,7 +202,7 @@ describe('LoadTestingService', () => {
 
       const result = await loadTestingService.runTest(runRequest);
 
-      expect(mockApiClient.post).toHaveBeenCalledWith('/v1/load-testing/run', runRequest);
+      expect(mockApiClient.post).toHaveBeenCalledWith('/v1/public/load-testing/run', runRequest);
       expect(result.status).toBe('scheduled');
     });
 
@@ -252,7 +252,7 @@ describe('LoadTestingService', () => {
 
       const result = await loadTestingService.getTestMetrics('test-1');
 
-      expect(mockApiClient.get).toHaveBeenCalledWith('/v1/load-testing/test-1/metrics');
+      expect(mockApiClient.get).toHaveBeenCalledWith('/v1/public/load-testing/test-1/metrics');
       expect(result).toEqual(mockMetrics);
       expect(result.dataPoints.length).toBe(2);
     });
@@ -274,7 +274,7 @@ describe('LoadTestingService', () => {
 
       const result = await loadTestingService.cancelTest('test-1');
 
-      expect(mockApiClient.post).toHaveBeenCalledWith('/v1/load-testing/test-1/cancel');
+      expect(mockApiClient.post).toHaveBeenCalledWith('/v1/public/load-testing/test-1/cancel');
       expect(result.status).toBe('cancelled');
     });
 
@@ -321,7 +321,7 @@ describe('LoadTestingService', () => {
 
       const result = await loadTestingService.getTestHistory();
 
-      expect(mockApiClient.get).toHaveBeenCalledWith('/v1/load-testing/history');
+      expect(mockApiClient.get).toHaveBeenCalledWith('/v1/public/load-testing/results');
       expect(result).toEqual(mockTests.tests);
       expect(result.length).toBe(2);
     });
@@ -349,7 +349,7 @@ describe('LoadTestingService', () => {
 
       await loadTestingService.deleteTest('test-1');
 
-      expect(mockApiClient.delete).toHaveBeenCalledWith('/v1/load-testing/test-1');
+      expect(mockApiClient.delete).toHaveBeenCalledWith('/v1/public/load-testing/test-1');
     });
 
     it('handles errors when deleting test', async () => {

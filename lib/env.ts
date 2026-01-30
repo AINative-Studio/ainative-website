@@ -51,6 +51,7 @@ const clientEnvSchema = z.object({
   NEXT_PUBLIC_ENABLE_QUANTUM_FEATURES: z.coerce.boolean().default(false),
   NEXT_PUBLIC_ENABLE_EXPERIMENTAL_FEATURES: z.coerce.boolean().default(false),
   NEXT_PUBLIC_ENABLE_BETA_FEATURES: z.coerce.boolean().default(false),
+  NEXT_PUBLIC_ENABLE_NOTIFICATIONS_API: z.coerce.boolean().default(false),
 });
 
 // ===========================================
@@ -128,6 +129,7 @@ export const env = clientEnvSchema.parse({
   NEXT_PUBLIC_ENABLE_QUANTUM_FEATURES: process.env.NEXT_PUBLIC_ENABLE_QUANTUM_FEATURES,
   NEXT_PUBLIC_ENABLE_EXPERIMENTAL_FEATURES: process.env.NEXT_PUBLIC_ENABLE_EXPERIMENTAL_FEATURES,
   NEXT_PUBLIC_ENABLE_BETA_FEATURES: process.env.NEXT_PUBLIC_ENABLE_BETA_FEATURES,
+  NEXT_PUBLIC_ENABLE_NOTIFICATIONS_API: process.env.NEXT_PUBLIC_ENABLE_NOTIFICATIONS_API,
 });
 
 /**
