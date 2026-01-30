@@ -4,6 +4,22 @@
  */
 
 import apiClient from './api-client';
+import { env } from './env';
+
+// Custom Error Classes
+export class NotificationAPIError extends Error {
+  constructor(message: string, public readonly statusCode?: number, public readonly originalError?: unknown) {
+    super(message);
+    this.name = 'NotificationAPIError';
+  }
+}
+
+export class NotificationServiceError extends Error {
+  constructor(message: string, public readonly originalError?: unknown) {
+    super(message);
+    this.name = 'NotificationServiceError';
+  }
+}
 
 // Types
 export interface Notification {
@@ -62,7 +78,7 @@ export interface NotificationStats {
   byCategory: Record<string, number>;
 }
 
-// Mock Data Generator
+// Mock Data Generator (Development Only)
 function generateMockNotifications(): Notification[] {
   const now = new Date();
   const notifications: Notification[] = [
@@ -162,6 +178,11 @@ function generateMockNotifications(): Notification[] {
   return notifications;
 }
 
+// Helper to determine if mock mode is enabled
+function isDevMockEnabled(): boolean {
+  return env.NEXT_PUBLIC_ENVIRONMENT === 'development' && !env.NEXT_PUBLIC_ENABLE_NOTIFICATIONS_API;
+}
+
 // Notification Service
 const notificationService = {
   /**
@@ -173,18 +194,26 @@ const notificationService = {
       const response = await apiClient.get<{ notifications: Notification[] }>(`/v1/notifications${params}`);
       return response.data.notifications || [];
     } catch (error) {
-      console.warn('Failed to fetch notifications from API, using mock data:', error);
+      // Only use mock data in development mode when API is disabled
+      if (isDevMockEnabled()) {
+        console.warn('[DEV MODE] Failed to fetch notifications from API, using mock data:', error);
+        const mockNotifications = generateMockNotifications();
 
-      // Return mock data as fallback
-      const mockNotifications = generateMockNotifications();
+        if (filter === 'unread') {
+          return mockNotifications.filter(n => !n.read);
+        } else if (filter === 'read') {
+          return mockNotifications.filter(n => n.read);
+        }
 
-      if (filter === 'unread') {
-        return mockNotifications.filter(n => !n.read);
-      } else if (filter === 'read') {
-        return mockNotifications.filter(n => n.read);
+        return mockNotifications;
       }
 
-      return mockNotifications;
+      // Production mode: throw proper error
+      throw new NotificationAPIError(
+        'Failed to fetch notifications',
+        (error as { status?: number }).status,
+        error
+      );
     }
   },
 
@@ -196,17 +225,25 @@ const notificationService = {
       const response = await apiClient.get<Notification>(`/v1/notifications/${id}`);
       return response.data;
     } catch (error) {
-      console.warn('Failed to fetch notification from API, using mock data:', error);
+      // Only use mock data in development mode when API is disabled
+      if (isDevMockEnabled()) {
+        console.warn('[DEV MODE] Failed to fetch notification from API, using mock data:', error);
+        const mockNotifications = generateMockNotifications();
+        const notification = mockNotifications.find(n => n.id === id);
 
-      // Return mock data as fallback
-      const mockNotifications = generateMockNotifications();
-      const notification = mockNotifications.find(n => n.id === id);
+        if (!notification) {
+          throw new NotificationServiceError('Notification not found');
+        }
 
-      if (!notification) {
-        throw new Error('Notification not found');
+        return notification;
       }
 
-      return notification;
+      // Production mode: throw proper error
+      throw new NotificationAPIError(
+        `Failed to fetch notification with id ${id}`,
+        (error as { status?: number }).status,
+        error
+      );
     }
   },
 
@@ -218,21 +255,29 @@ const notificationService = {
       const response = await apiClient.put<Notification>(`/v1/notifications/${id}/read`);
       return response.data;
     } catch (error) {
-      console.warn('Failed to mark notification as read via API:', error);
+      // Only use mock data in development mode when API is disabled
+      if (isDevMockEnabled()) {
+        console.warn('[DEV MODE] Failed to mark notification as read via API, using mock data:', error);
+        const mockNotifications = generateMockNotifications();
+        const notification = mockNotifications.find(n => n.id === id);
 
-      // Simulate success for mock data
-      const mockNotifications = generateMockNotifications();
-      const notification = mockNotifications.find(n => n.id === id);
+        if (!notification) {
+          throw new NotificationServiceError('Notification not found');
+        }
 
-      if (!notification) {
-        throw new Error('Notification not found');
+        return {
+          ...notification,
+          read: true,
+          readAt: new Date().toISOString(),
+        };
       }
 
-      return {
-        ...notification,
-        read: true,
-        readAt: new Date().toISOString(),
-      };
+      // Production mode: throw proper error
+      throw new NotificationAPIError(
+        `Failed to mark notification ${id} as read`,
+        (error as { status?: number }).status,
+        error
+      );
     }
   },
 
@@ -244,21 +289,29 @@ const notificationService = {
       const response = await apiClient.put<Notification>(`/v1/notifications/${id}/unread`);
       return response.data;
     } catch (error) {
-      console.warn('Failed to mark notification as unread via API:', error);
+      // Only use mock data in development mode when API is disabled
+      if (isDevMockEnabled()) {
+        console.warn('[DEV MODE] Failed to mark notification as unread via API, using mock data:', error);
+        const mockNotifications = generateMockNotifications();
+        const notification = mockNotifications.find(n => n.id === id);
 
-      // Simulate success for mock data
-      const mockNotifications = generateMockNotifications();
-      const notification = mockNotifications.find(n => n.id === id);
+        if (!notification) {
+          throw new NotificationServiceError('Notification not found');
+        }
 
-      if (!notification) {
-        throw new Error('Notification not found');
+        return {
+          ...notification,
+          read: false,
+          readAt: undefined,
+        };
       }
 
-      return {
-        ...notification,
-        read: false,
-        readAt: undefined,
-      };
+      // Production mode: throw proper error
+      throw new NotificationAPIError(
+        `Failed to mark notification ${id} as unread`,
+        (error as { status?: number }).status,
+        error
+      );
     }
   },
 
@@ -269,8 +322,18 @@ const notificationService = {
     try {
       await apiClient.delete(`/v1/notifications/${id}`);
     } catch (error) {
-      console.warn('Failed to delete notification via API:', error);
-      // Simulate success for mock data
+      // Only silently succeed in development mode when API is disabled
+      if (isDevMockEnabled()) {
+        console.warn('[DEV MODE] Failed to delete notification via API, simulating success:', error);
+        return;
+      }
+
+      // Production mode: throw proper error
+      throw new NotificationAPIError(
+        `Failed to delete notification ${id}`,
+        (error as { status?: number }).status,
+        error
+      );
     }
   },
 
@@ -282,16 +345,24 @@ const notificationService = {
       const response = await apiClient.put<{ success: boolean; count: number }>('/v1/notifications/mark-all-read');
       return response.data;
     } catch (error) {
-      console.warn('Failed to mark all as read via API:', error);
+      // Only use mock data in development mode when API is disabled
+      if (isDevMockEnabled()) {
+        console.warn('[DEV MODE] Failed to mark all as read via API, using mock data:', error);
+        const mockNotifications = generateMockNotifications();
+        const unreadCount = mockNotifications.filter(n => !n.read).length;
 
-      // Simulate success for mock data
-      const mockNotifications = generateMockNotifications();
-      const unreadCount = mockNotifications.filter(n => !n.read).length;
+        return {
+          success: true,
+          count: unreadCount,
+        };
+      }
 
-      return {
-        success: true,
-        count: unreadCount,
-      };
+      // Production mode: throw proper error
+      throw new NotificationAPIError(
+        'Failed to mark all notifications as read',
+        (error as { status?: number }).status,
+        error
+      );
     }
   },
 
@@ -303,35 +374,44 @@ const notificationService = {
       const response = await apiClient.get<NotificationPreferences>('/v1/notifications/preferences');
       return response.data;
     } catch (error) {
-      console.warn('Failed to fetch preferences from API, using defaults:', error);
+      // Only use default preferences in development mode when API is disabled
+      if (isDevMockEnabled()) {
+        console.warn('[DEV MODE] Failed to fetch preferences from API, using defaults:', error);
 
-      // Return default preferences
-      return {
-        email: {
-          enabled: true,
-          system: true,
-          billing: true,
-          security: true,
-          feature: true,
-          marketing: false,
-        },
-        inApp: {
-          enabled: true,
-          system: true,
-          billing: true,
-          security: true,
-          feature: true,
-          marketing: true,
-        },
-        push: {
-          enabled: false,
-          system: false,
-          billing: false,
-          security: false,
-          feature: false,
-          marketing: false,
-        },
-      };
+        return {
+          email: {
+            enabled: true,
+            system: true,
+            billing: true,
+            security: true,
+            feature: true,
+            marketing: false,
+          },
+          inApp: {
+            enabled: true,
+            system: true,
+            billing: true,
+            security: true,
+            feature: true,
+            marketing: true,
+          },
+          push: {
+            enabled: false,
+            system: false,
+            billing: false,
+            security: false,
+            feature: false,
+            marketing: false,
+          },
+        };
+      }
+
+      // Production mode: throw proper error
+      throw new NotificationAPIError(
+        'Failed to fetch notification preferences',
+        (error as { status?: number }).status,
+        error
+      );
     }
   },
 
@@ -343,10 +423,18 @@ const notificationService = {
       const response = await apiClient.put<NotificationPreferences>('/v1/notifications/preferences', preferences);
       return response.data;
     } catch (error) {
-      console.warn('Failed to update preferences via API:', error);
+      // Only simulate success in development mode when API is disabled
+      if (isDevMockEnabled()) {
+        console.warn('[DEV MODE] Failed to update preferences via API, simulating success:', error);
+        return preferences;
+      }
 
-      // Return the preferences as-is (simulating success)
-      return preferences;
+      // Production mode: throw proper error
+      throw new NotificationAPIError(
+        'Failed to update notification preferences',
+        (error as { status?: number }).status,
+        error
+      );
     }
   },
 
@@ -358,13 +446,21 @@ const notificationService = {
       const response = await apiClient.post<{ success: boolean; message: string }>('/v1/notifications/subscribe', subscription);
       return response.data;
     } catch (error) {
-      console.warn('Failed to subscribe to push notifications via API:', error);
+      // Only simulate success in development mode when API is disabled
+      if (isDevMockEnabled()) {
+        console.warn('[DEV MODE] Failed to subscribe to push notifications via API, simulating success:', error);
+        return {
+          success: true,
+          message: 'Push notifications enabled (development mock)',
+        };
+      }
 
-      // Simulate success
-      return {
-        success: true,
-        message: 'Push notifications enabled (mock)',
-      };
+      // Production mode: throw proper error
+      throw new NotificationAPIError(
+        'Failed to subscribe to push notifications',
+        (error as { status?: number }).status,
+        error
+      );
     }
   },
 
@@ -376,23 +472,31 @@ const notificationService = {
       const response = await apiClient.get<NotificationStats>('/v1/notifications/stats');
       return response.data;
     } catch (error) {
-      console.warn('Failed to fetch stats from API, calculating from mock data:', error);
+      // Only calculate from mock data in development mode when API is disabled
+      if (isDevMockEnabled()) {
+        console.warn('[DEV MODE] Failed to fetch stats from API, calculating from mock data:', error);
+        const mockNotifications = generateMockNotifications();
 
-      // Calculate stats from mock data
-      const mockNotifications = generateMockNotifications();
+        return {
+          total: mockNotifications.length,
+          unread: mockNotifications.filter(n => !n.read).length,
+          byType: mockNotifications.reduce((acc, n) => {
+            acc[n.type] = (acc[n.type] || 0) + 1;
+            return acc;
+          }, {} as Record<string, number>),
+          byCategory: mockNotifications.reduce((acc, n) => {
+            acc[n.category] = (acc[n.category] || 0) + 1;
+            return acc;
+          }, {} as Record<string, number>),
+        };
+      }
 
-      return {
-        total: mockNotifications.length,
-        unread: mockNotifications.filter(n => !n.read).length,
-        byType: mockNotifications.reduce((acc, n) => {
-          acc[n.type] = (acc[n.type] || 0) + 1;
-          return acc;
-        }, {} as Record<string, number>),
-        byCategory: mockNotifications.reduce((acc, n) => {
-          acc[n.category] = (acc[n.category] || 0) + 1;
-          return acc;
-        }, {} as Record<string, number>),
-      };
+      // Production mode: throw proper error
+      throw new NotificationAPIError(
+        'Failed to fetch notification statistics',
+        (error as { status?: number }).status,
+        error
+      );
     }
   },
 };
