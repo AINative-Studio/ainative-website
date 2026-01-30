@@ -1,4 +1,5 @@
 import { Metadata } from 'next';
+import DashboardLayout from '@/components/layout/DashboardLayout';
 import DashboardClient from './DashboardClient';
 
 export const metadata: Metadata = {
@@ -11,5 +12,9 @@ export const metadata: Metadata = {
 };
 
 export default function DashboardPage() {
-  return <DashboardClient />;
+  return (
+    <DashboardLayout>
+      <DashboardClient />
+    </DashboardLayout>
+  );
 }

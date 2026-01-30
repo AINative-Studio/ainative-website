@@ -5,6 +5,7 @@ import { usePathname } from 'next/navigation';
 import { Menu } from 'lucide-react';
 import Header from './Header';
 import Sidebar from './Sidebar';
+import Footer from './Footer';
 
 interface DashboardLayoutProps {
   children: React.ReactNode;
@@ -64,7 +65,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
   };
 
   return (
-    <div className="min-h-screen bg-vite-bg text-white">
+    <div className="min-h-screen bg-vite-bg text-white flex flex-col">
       {/* Header */}
       <div className="relative">
         {/* Desktop Header */}
@@ -94,7 +95,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
       )}
 
       {/* Layout Body */}
-      <div className="flex pt-16 md:pt-20">
+      <div className="flex flex-1 pt-16 md:pt-20">
         {/* Desktop Sidebar */}
         <div className="hidden md:block fixed left-0 top-0 h-full z-20">
           <Sidebar />
@@ -104,6 +105,11 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
         <main className="flex-1 p-4 md:p-6 overflow-y-auto w-full md:ml-72">
           <div className="max-w-7xl mx-auto">{children}</div>
         </main>
+      </div>
+
+      {/* Footer with offset for sidebar on desktop */}
+      <div className="md:ml-72">
+        <Footer />
       </div>
     </div>
   );
