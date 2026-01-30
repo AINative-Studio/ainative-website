@@ -83,7 +83,7 @@ const nextConfig: NextConfig = {
       },
       // Cache OG images
       {
-        source: '/og-:slug*.png',
+        source: '/og-:slug(.+).png',
         headers: [
           {
             key: 'Cache-Control',
@@ -124,6 +124,7 @@ const nextConfig: NextConfig = {
   webpack: (config, { isServer }) => {
     // Bundle analyzer (enabled with ANALYZE=true)
     if (process.env.ANALYZE === 'true') {
+      // eslint-disable-next-line @typescript-eslint/no-require-imports
       const { BundleAnalyzerPlugin } = require('webpack-bundle-analyzer');
       config.plugins.push(
         new BundleAnalyzerPlugin({
