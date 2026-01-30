@@ -65,7 +65,7 @@ const fadeInUp = {
 export default function DocsClient() {
   return (
     <div className="min-h-screen bg-vite-bg">
-      <div className="container mx-auto px-4 py-16">
+      <div className="container mx-auto px-4 pt-24 pb-16">
         <div className="max-w-5xl mx-auto">
           {/* Hero Section */}
           <motion.div
@@ -95,7 +95,7 @@ export default function DocsClient() {
               },
             }}
           >
-            {sections.map((section, index) => (
+            {sections.map((section) => (
               <motion.div key={section.title} variants={fadeInUp}>
                 <Card className="h-full border-[#2D333B] bg-[#161B22] backdrop-blur-sm hover:border-[#4B6FED]/50 transition-all">
                   <CardHeader>
