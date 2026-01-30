@@ -1,0 +1,32 @@
+{
+  "project": "ainative-website-nextjs-staging",
+  "version": "1.0.0",
+  "standards": {
+    "tdd": {
+      "enabled": true,
+      "minimumCoverage": 80,
+      "framework": "jest",
+      "preCommitTests": true
+    },
+    "git": {
+      "zeroToleranceRules": true,
+      "noAIAttribution": true,
+      "preCommitChecks": [
+        "npm run lint",
+        "npm run type-check",
+        "npm run build",
+        "npm test"
+      ]
+    },
+    "development": {
+      "port": 3000,
+      "framework": "Next.js 16",
+      "typescript": true,
+      "tailwind": true
+    }
+  },
+  "parallelAgents": {
+    "maxConcurrent": 10,
+    "enabled": true
+  }
+}

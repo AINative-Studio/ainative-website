@@ -1,0 +1,57 @@
+#!/usr/bin/env sh
+. "$(dirname -- "$0")/_/husky.sh"
+
+# Pre-commit hook for AINative Studio Next.js
+# Enforces code quality and testing standards
+
+echo "Running pre-commit checks..."
+
+# Run lint-staged for code formatting and linting
+npx lint-staged
+
+# Type checking
+echo "Running TypeScript type checking..."
+npm run type-check || {
+  echo "Type check failed. Please fix type errors before committing."
+  exit 1
+}
+
+# Run tests with coverage
+echo "Running tests with coverage..."
+npm run test:coverage -- --passWithNoTests || {
+  echo "Tests failed. Please fix failing tests before committing."
+  exit 1
+}
+
+# Check coverage threshold (80%)
+echo "Checking test coverage threshold..."
+COVERAGE_FILE="coverage/coverage-summary.json"
+if [ -f "$COVERAGE_FILE" ]; then
+  COVERAGE=$(node -p "
+    const coverage = require('./$COVERAGE_FILE');
+    const total = coverage.total;
+    Math.min(
+      total.lines.pct,
+      total.statements.pct,
+      total.functions.pct,
+      total.branches.pct
+    );
+  ")
+
+  if [ "$(echo "$COVERAGE < 80" | bc -l)" -eq 1 ]; then
+    echo "Coverage is below 80% threshold (current: $COVERAGE%)"
+    echo "Please add more tests to meet the coverage requirement."
+    exit 1
+  fi
+
+  echo "Coverage check passed: $COVERAGE%"
+fi
+
+# Build verification
+echo "Running build verification..."
+npm run build || {
+  echo "Build failed. Please fix build errors before committing."
+  exit 1
+}
+
+echo "All pre-commit checks passed!"

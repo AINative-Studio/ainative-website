@@ -6,9 +6,9 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
-import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { Switch } from '@/components/ui/switch';
+import { AIKitTextField } from '@/src/components/aikit/AIKitTextField';
 import {
   Dialog,
   DialogContent,
@@ -171,28 +171,25 @@ export default function WebhooksClient() {
                   </DialogDescription>
                 </DialogHeader>
                 <div className="space-y-4 py-4">
-                  <div className="space-y-2">
-                    <Label htmlFor="url">Webhook URL</Label>
-                    <Input
-                      id="url"
-                      placeholder="https://example.com/webhook"
-                      value={formData.url}
-                      onChange={(e) => setFormData({ ...formData, url: e.target.value })}
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="secret">Secret (optional)</Label>
-                    <Input
-                      id="secret"
-                      type="password"
-                      placeholder="webhook-secret-key"
-                      value={formData.secret}
-                      onChange={(e) => setFormData({ ...formData, secret: e.target.value })}
-                    />
-                    <p className="text-xs text-muted-foreground">
-                      Used to verify webhook authenticity
-                    </p>
-                  </div>
+                  <AIKitTextField
+                    id="url"
+                    label="Webhook URL"
+                    placeholder="https://example.com/webhook"
+                    value={formData.url}
+                    onChange={(e) => setFormData({ ...formData, url: e.target.value })}
+                    type="url"
+                    fullWidth
+                  />
+                  <AIKitTextField
+                    id="secret"
+                    label="Secret (optional)"
+                    type="password"
+                    placeholder="webhook-secret-key"
+                    value={formData.secret}
+                    onChange={(e) => setFormData({ ...formData, secret: e.target.value })}
+                    helperText="Used to verify webhook authenticity"
+                    fullWidth
+                  />
                   <div className="space-y-2">
                     <Label>Events to Subscribe</Label>
                     <div className="grid grid-cols-1 gap-2 max-h-64 overflow-y-auto p-4 border rounded-md">

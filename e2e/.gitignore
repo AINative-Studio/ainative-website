@@ -1,0 +1,27 @@
+# Playwright E2E Test Artifacts
+
+# Screenshots (keep baseline images, ignore runtime screenshots)
+screenshots/*
+!screenshots/.gitkeep
+!screenshots/baselines/
+
+# Test results
+test-results/
+playwright-report/
+
+# Trace files
+*.zip
+
+# Video recordings
+*.webm
+
+# Debug logs
+*.log
+
+# Temporary files
+tmp/
+temp/
+
+# OS files
+.DS_Store
+Thumbs.db

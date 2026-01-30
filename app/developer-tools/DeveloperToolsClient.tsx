@@ -131,7 +131,7 @@ export default function DeveloperToolsClient() {
     const fetchStats = async () => {
       try {
         // API keys count (keeping hardcoded for now)
-        let apiKeysCount = 3;
+        const apiKeysCount = 3;
 
         // Fetch MCP instances
         const mcpResponse = await apiClient.get('/v1/public/mcp/instances');

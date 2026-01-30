@@ -151,7 +151,7 @@ async function runChatWithTools(userMessage: string) {
     { role: 'user', content: userMessage },
   ];
 
-  let maxIterations = 5;
+  const maxIterations = 5;
   let iteration = 0;
 
   while (iteration < maxIterations) {

@@ -1474,7 +1474,7 @@ export default function BacklogReview({
 
     // Filtered and sorted issues
     const filteredAndSortedIssues = useMemo(() => {
-        let filtered = localIssues.filter((issue) => {
+        const filtered = localIssues.filter((issue) => {
             if (typeFilter !== 'all' && issue.type !== typeFilter) return false;
             if (priorityFilter !== 'all' && issue.priority !== priorityFilter) return false;
             if (pointsFilter !== 'all' && issue.storyPoints !== pointsFilter) return false;

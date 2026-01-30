@@ -1,0 +1,50 @@
+#!/usr/bin/env sh
+. "$(dirname -- "$0")/_/husky.sh"
+
+# Commit message validation
+# Enforces ZERO TOLERANCE for AI attribution
+
+COMMIT_MSG_FILE=$1
+COMMIT_MSG=$(cat "$COMMIT_MSG_FILE")
+
+echo "Validating commit message..."
+
+# ZERO TOLERANCE: Check for forbidden AI attribution
+FORBIDDEN_PATTERNS=(
+  "Claude"
+  "Anthropic"
+  "claude.com"
+  "Claude Code"
+  "Generated with Claude"
+  "Co-Authored-By: Claude"
+  "noreply@anthropic.com"
+  "🤖 Generated"
+)
+
+for PATTERN in "${FORBIDDEN_PATTERNS[@]}"; do
+  if echo "$COMMIT_MSG" | grep -qi "$PATTERN"; then
+    echo "ERROR: Commit message contains forbidden AI attribution: '$PATTERN'"
+    echo ""
+    echo "ZERO TOLERANCE VIOLATION"
+    echo "See .claude/rules/git-rules.md for proper commit format"
+    echo ""
+    echo "Your commit message:"
+    echo "$COMMIT_MSG"
+    exit 1
+  fi
+done
+
+# Check for minimum commit message length
+if [ ${#COMMIT_MSG} -lt 10 ]; then
+  echo "ERROR: Commit message too short (minimum 10 characters)"
+  exit 1
+fi
+
+# Check for proper format (title line not too long)
+FIRST_LINE=$(echo "$COMMIT_MSG" | head -n 1)
+if [ ${#FIRST_LINE} -gt 72 ]; then
+  echo "WARNING: First line should be 72 characters or less"
+  echo "Current length: ${#FIRST_LINE}"
+fi
+
+echo "Commit message validation passed!"

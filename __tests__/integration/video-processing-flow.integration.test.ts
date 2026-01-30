@@ -254,7 +254,7 @@ describe('Video Upload and Processing Flow Integration Tests', () => {
       await testUtils.waitFor(100);
 
       // Step 3: Check processing status
-      let status = await mockVideoService.getVideoStatus(upload.videoId);
+      const status = await mockVideoService.getVideoStatus(upload.videoId);
       expect(status.status).toBeTruthy();
 
       // Step 4: Poll until ready (simulated)
