@@ -8,6 +8,7 @@ import Footer from './Footer';
  * ConditionalLayout - Renders Header and Footer conditionally based on route
  *
  * Issue #466: Dashboard footer hidden behind sidebar
+ * Issue #472: Double footer rendering on dashboard pages
  *
  * This component prevents Header/Footer from rendering on dashboard routes
  * where DashboardLayout handles its own Header and Footer placement.
@@ -29,23 +30,38 @@ interface ConditionalLayoutProps {
   children: React.ReactNode;
 }
 
+// Routes where DashboardLayout handles its own Header/Footer
+// Keep in sync with layouts that use DashboardLayout
+const DASHBOARD_ROUTE_PREFIXES = [
+  '/dashboard',
+  '/plan',
+  '/billing',
+  '/developer-settings',
+  '/api-keys',
+  '/settings',
+  '/refills',
+  '/purchase-credits',
+  '/account',
+  '/credit-history',
+  '/invoices',
+  '/profile',
+  '/team',
+];
+
+function isDashboardPath(path: string | null): boolean {
+  if (!path) return false;
+  const normalizedPath = path.toLowerCase();
+  return DASHBOARD_ROUTE_PREFIXES.some(prefix =>
+    normalizedPath === prefix || normalizedPath.startsWith(prefix + '/')
+  );
+}
+
 export default function ConditionalLayout({ children }: ConditionalLayoutProps) {
   const pathname = usePathname();
 
-  // Dashboard routes where Header/Footer should NOT be rendered
-  const isDashboardRoute = pathname && (
-    pathname.toLowerCase().startsWith('/dashboard') ||
-    pathname === '/plan' ||
-    pathname === '/billing' ||
-    pathname === '/developer-settings' ||
-    pathname === '/api-keys' ||
-    pathname === '/settings' ||
-    pathname === '/refills' ||
-    pathname === '/purchase-credits'
-  );
-
   // On dashboard routes, only render children (no Header/Footer)
-  if (isDashboardRoute) {
+  // DashboardLayout handles its own Header and Footer
+  if (isDashboardPath(pathname)) {
     return <>{children}</>;
   }
 
