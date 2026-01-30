@@ -85,7 +85,7 @@ export interface QueryResponse {
 export interface VectorEntry {
   id: string;
   namespace: string;
-  metadata?: Record<string, any>;
+  metadata?: Record<string, unknown>;
   created_at: string;
 }
 
@@ -106,7 +106,7 @@ export interface ListVectorsParams {
   namespace: string;
   page?: number;
   page_size?: number;
-  filter?: Record<string, any>;
+  filter?: Record<string, unknown>;
 }
 
 export interface DeleteVectorResponse {
@@ -136,7 +136,7 @@ export interface ExportRequest {
   namespace: string;
   format: DataFormat;
   include_vectors?: boolean;
-  filter?: Record<string, any>;
+  filter?: Record<string, unknown>;
 }
 
 export interface ExportResponse {
@@ -156,7 +156,7 @@ export interface CreateIndexRequest {
   namespace: string;
   index_type: IndexType;
   metric: MetricType;
-  params?: Record<string, any>;
+  params?: Record<string, unknown>;
 }
 
 export interface IndexResponse {
@@ -188,7 +188,7 @@ class ZeroDBService {
    * List all namespaces
    */
   async listNamespaces(): Promise<NamespacesListResponse> {
-    const response = await apiClient.get<NamespacesListResponse>('/v1/zerodb/namespaces');
+    const response = await apiClient.get<NamespacesListResponse>('/v1/public/zerodb/namespaces');
     return response.data;
   }
 
@@ -196,7 +196,7 @@ class ZeroDBService {
    * Create a new namespace
    */
   async createNamespace(data: CreateNamespaceData): Promise<Namespace> {
-    const response = await apiClient.post<Namespace>('/v1/zerodb/namespaces', data);
+    const response = await apiClient.post<Namespace>('/v1/public/zerodb/namespaces', data);
     return response.data;
   }
 
@@ -205,7 +205,7 @@ class ZeroDBService {
    */
   async deleteNamespace(name: string): Promise<DeleteNamespaceResponse> {
     const response = await apiClient.delete<DeleteNamespaceResponse>(
-      `/v1/zerodb/namespaces/${name}`
+      `/v1/public/zerodb/namespaces/${name}`
     );
     return response.data;
   }
@@ -217,8 +217,8 @@ class ZeroDBService {
    */
   async getStats(namespace?: string): Promise<DatabaseStats | NamespaceDetailStats> {
     const endpoint = namespace
-      ? `/v1/zerodb/stats?namespace=${namespace}`
-      : '/v1/zerodb/stats';
+      ? `/v1/public/zerodb/stats?namespace=${namespace}`
+      : '/v1/public/zerodb/stats';
     const response = await apiClient.get<DatabaseStats | NamespaceDetailStats>(endpoint);
     return response.data;
   }
@@ -229,7 +229,7 @@ class ZeroDBService {
    * Execute a vector similarity query
    */
   async executeQuery(query: VectorQuery): Promise<QueryResponse> {
-    const response = await apiClient.post<QueryResponse>('/v1/zerodb/query', query);
+    const response = await apiClient.post<QueryResponse>('/v1/public/zerodb/query', query);
     return response.data;
   }
 
@@ -248,7 +248,7 @@ class ZeroDBService {
       queryParams.set('page_size', String(params.page_size));
     }
 
-    const endpoint = `/v1/zerodb/vectors?${queryParams.toString()}`;
+    const endpoint = `/v1/public/zerodb/vectors?${queryParams.toString()}`;
     const response = await apiClient.get<VectorsListResponse>(endpoint);
     return response.data;
   }
@@ -258,7 +258,7 @@ class ZeroDBService {
    */
   async getVector(vectorId: string, namespace: string): Promise<VectorDetail> {
     const response = await apiClient.get<VectorDetail>(
-      `/v1/zerodb/vectors/${vectorId}?namespace=${namespace}`
+      `/v1/public/zerodb/vectors/${vectorId}?namespace=${namespace}`
     );
     return response.data;
   }
@@ -268,7 +268,7 @@ class ZeroDBService {
    */
   async deleteVector(vectorId: string, namespace: string): Promise<DeleteVectorResponse> {
     const response = await apiClient.delete<DeleteVectorResponse>(
-      `/v1/zerodb/vectors/${vectorId}?namespace=${namespace}`
+      `/v1/public/zerodb/vectors/${vectorId}?namespace=${namespace}`
     );
     return response.data;
   }
@@ -279,7 +279,7 @@ class ZeroDBService {
    * Import data into a namespace
    */
   async importData(request: ImportRequest): Promise<ImportResponse> {
-    const response = await apiClient.post<ImportResponse>('/v1/zerodb/import', request);
+    const response = await apiClient.post<ImportResponse>('/v1/public/zerodb/import', request);
     return response.data;
   }
 
@@ -287,7 +287,7 @@ class ZeroDBService {
    * Export data from a namespace
    */
   async exportData(request: ExportRequest): Promise<ExportResponse> {
-    const response = await apiClient.post<ExportResponse>('/v1/zerodb/export', request);
+    const response = await apiClient.post<ExportResponse>('/v1/public/zerodb/export', request);
     return response.data;
   }
 
@@ -297,7 +297,7 @@ class ZeroDBService {
    * Create an index for a namespace
    */
   async createIndex(request: CreateIndexRequest): Promise<IndexResponse> {
-    const response = await apiClient.post<IndexResponse>('/v1/zerodb/index', request);
+    const response = await apiClient.post<IndexResponse>('/v1/public/zerodb/index', request);
     return response.data;
   }
 
@@ -306,7 +306,7 @@ class ZeroDBService {
    */
   async getIndexStatus(namespace: string): Promise<IndexStatus> {
     const response = await apiClient.get<IndexStatus>(
-      `/v1/zerodb/index/status?namespace=${namespace}`
+      `/v1/public/zerodb/index/status?namespace=${namespace}`
     );
     return response.data;
   }
