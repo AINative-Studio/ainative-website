@@ -341,14 +341,14 @@ export default function DashboardClient() {
 
   return (
     <motion.div
-      className="max-w-5xl mx-auto"
+      className="w-full space-y-6 p-8"
       initial="hidden"
       animate="visible"
       variants={fadeIn}
     >
       {/* Welcome Card - Only shown to new users or until dismissed */}
       {showWelcome && (
-        <motion.div className="mb-8" variants={fadeUp}>
+        <motion.div variants={fadeUp}>
           <BrandedWelcome
             title="Welcome to AI Native Studio"
             description="Get started by creating your first API key and explore our powerful AI development tools. Build faster with our comprehensive suite of APIs and services."
@@ -365,7 +365,7 @@ export default function DashboardClient() {
       )}
 
       {/* Usage Header */}
-      <motion.div className="mb-10" variants={fadeUp}>
+      <motion.div variants={fadeUp}>
         <div className="flex justify-between items-center flex-wrap gap-4">
           <div className="flex items-center gap-3">
             <div className="flex items-center gap-2">
@@ -428,7 +428,7 @@ export default function DashboardClient() {
       {/* Usage Summary Cards */}
       <motion.div variants={stagger}>
         <motion.div variants={fadeUp}>
-          <Card className="mb-6 border-none bg-[#161B22] shadow-lg overflow-hidden">
+          <Card className="border-none bg-[#161B22] shadow-lg overflow-hidden">
             <CardHeader className="border-b border-gray-800">
               <CardTitle className="text-xl flex items-center gap-2 text-white">
                 <RefreshCcw className="h-5 w-5 text-[#4B6FED]" />
@@ -528,7 +528,7 @@ export default function DashboardClient() {
 
         {/* Cost Breakdown Section */}
         {costData && (
-          <motion.div variants={fadeUp} className="mt-6">
+          <motion.div variants={fadeUp}>
             <Card className="border-none bg-[#161B22] shadow-lg overflow-hidden">
               <CardHeader className="border-b border-gray-800">
                 <CardTitle className="text-xl flex items-center gap-2 text-white">
@@ -578,7 +578,7 @@ export default function DashboardClient() {
 
         {/* AI Metrics Section */}
         {aiMetrics && (
-          <motion.div variants={fadeUp} className="mt-6">
+          <motion.div variants={fadeUp}>
             <Card className="border-none bg-[#161B22] shadow-lg overflow-hidden">
               <CardHeader className="border-b border-gray-800">
                 <CardTitle className="text-xl flex items-center gap-2 text-white">
