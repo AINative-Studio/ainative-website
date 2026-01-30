@@ -1,6 +1,7 @@
 /**
  * Organization Service
  * Handles all organization-related API calls for creating, managing, and administering organizations
+ * Fixed in Bug #438: All endpoints now use /v1/public/ prefix
  */
 
 import apiClient from './api-client';
@@ -66,7 +67,7 @@ class OrganizationService {
    * Create a new organization
    */
   async createOrganization(data: CreateOrganizationData): Promise<Organization> {
-    const response = await apiClient.post<Organization>('/v1/organizations', data);
+    const response = await apiClient.post<Organization>('/v1/public/organizations', data);
     return response.data;
   }
 
@@ -74,7 +75,7 @@ class OrganizationService {
    * List all organizations for the current user
    */
   async listOrganizations(): Promise<OrganizationsResponse> {
-    const response = await apiClient.get<OrganizationsResponse>('/v1/organizations');
+    const response = await apiClient.get<OrganizationsResponse>('/v1/public/organizations');
     return response.data;
   }
 
@@ -82,7 +83,7 @@ class OrganizationService {
    * Get organization details by ID
    */
   async getOrganization(id: number): Promise<Organization> {
-    const response = await apiClient.get<Organization>(`/v1/organizations/${id}`);
+    const response = await apiClient.get<Organization>(`/v1/public/organizations/${id}`);
     return response.data;
   }
 
@@ -90,7 +91,7 @@ class OrganizationService {
    * Update organization details
    */
   async updateOrganization(id: number, data: UpdateOrganizationData): Promise<Organization> {
-    const response = await apiClient.put<Organization>(`/v1/organizations/${id}`, data);
+    const response = await apiClient.put<Organization>(`/v1/public/organizations/${id}`, data);
     return response.data;
   }
 
@@ -98,7 +99,7 @@ class OrganizationService {
    * Delete an organization
    */
   async deleteOrganization(id: number): Promise<DeleteResponse> {
-    const response = await apiClient.delete<DeleteResponse>(`/v1/organizations/${id}`);
+    const response = await apiClient.delete<DeleteResponse>(`/v1/public/organizations/${id}`);
     return response.data;
   }
 
@@ -107,7 +108,7 @@ class OrganizationService {
    */
   async addMember(organizationId: number, data: AddMemberData): Promise<OrganizationMember> {
     const response = await apiClient.post<OrganizationMember>(
-      `/v1/organizations/${organizationId}/members`,
+      `/v1/public/organizations/${organizationId}/members`,
       data
     );
     return response.data;
@@ -118,7 +119,7 @@ class OrganizationService {
    */
   async listMembers(organizationId: number): Promise<MembersResponse> {
     const response = await apiClient.get<MembersResponse>(
-      `/v1/organizations/${organizationId}/members`
+      `/v1/public/organizations/${organizationId}/members`
     );
     return response.data;
   }
@@ -128,7 +129,7 @@ class OrganizationService {
    */
   async removeMember(organizationId: number, userId: number): Promise<DeleteResponse> {
     const response = await apiClient.delete<DeleteResponse>(
-      `/v1/organizations/${organizationId}/members/${userId}`
+      `/v1/public/organizations/${organizationId}/members/${userId}`
     );
     return response.data;
   }
