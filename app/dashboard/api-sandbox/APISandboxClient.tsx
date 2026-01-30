@@ -360,7 +360,7 @@ export default function APISandboxClient() {
                     <SelectValue placeholder="Select environment..." />
                   </SelectTrigger>
                   <SelectContent>
-                    {(environments || mockEnvironments).map((env) => (
+                    {(Array.isArray(environments) ? environments : mockEnvironments).map((env) => (
                       <SelectItem key={env.id} value={env.id}>
                         <div className="flex items-center gap-2">
                           <Code className="h-4 w-4" />
