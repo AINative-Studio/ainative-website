@@ -2,13 +2,12 @@
 
 import { Suspense, useState } from 'react';
 import Link from 'next/link';
-import Image from 'next/image';
 import { useSearchParams, useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Github, ArrowRight } from 'lucide-react';
-import { authService } from '@/services/AuthService';
+import { authService } from '@/services/authService';
 
 function LoginForm() {
   const searchParams = useSearchParams();
@@ -58,12 +57,6 @@ function LoginForm() {
     <div className="w-full max-w-md">
       {/* Header */}
       <div className="text-center mb-8">
-        <Link href="/" className="inline-flex items-center justify-center gap-3 mb-6">
-          <Image src="/ainative-icon.svg" alt="AINative Studio" width={48} height={48} className="h-12 w-auto" />
-          <span className="text-2xl font-bold uppercase">
-            <span className="text-white">AI</span><span className="text-[#5867EF]">NATIVE</span>
-          </span>
-        </Link>
         <h1 className="text-2xl font-bold mb-2 text-white">Welcome back</h1>
         <p className="text-gray-400">Sign in to your account to continue</p>
       </div>
@@ -169,12 +162,6 @@ function LoginFormFallback() {
   return (
     <div className="w-full max-w-md">
       <div className="text-center mb-8">
-        <div className="inline-flex items-center justify-center gap-3 mb-6">
-          <Image src="/ainative-icon.svg" alt="AINative Studio" width={48} height={48} className="h-12 w-auto" />
-          <span className="text-2xl font-bold uppercase">
-            <span className="text-white">AI</span><span className="text-[#5867EF]">NATIVE</span>
-          </span>
-        </div>
         <h1 className="text-2xl font-bold mb-2 text-white">Welcome back</h1>
         <p className="text-gray-400">Sign in to your account to continue</p>
       </div>
@@ -193,7 +180,7 @@ function LoginFormFallback() {
 
 export default function LoginPage() {
   return (
-    <div className="min-h-screen bg-vite-bg text-white flex items-center justify-center px-4 pt-16">
+    <div className="min-h-screen bg-vite-bg text-white flex items-center justify-center px-4 pt-16 pb-16">
       <Suspense fallback={<LoginFormFallback />}>
         <LoginForm />
       </Suspense>
