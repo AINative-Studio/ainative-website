@@ -15,7 +15,6 @@
  *   const { data, isLoading, error } = useSearchSuggestions({
  *     query: debouncedQuery,
  *     options: { limit: 5, minQueryLength: 2 },
- *     useMockData: false, // Set to true for development
  *   });
  *
  *   return (
@@ -47,29 +46,26 @@ import type { SearchSuggestionsOptions } from '@/types/search';
 interface UseSearchSuggestionsParams {
   query: string;
   options?: SearchSuggestionsOptions;
-  useMockData?: boolean; // Flag to use mock data during development
+  
 }
 
 /**
- * Hook for fetching search suggestions
+ * Hook for fetching search suggestions from ZeroDB vector search API
  * @param query - Search query string
  * @param options - Optional configuration
- * @param useMockData - Whether to use mock data (for development)
+ * 
  * @returns React Query result with suggestions
  */
 export function useSearchSuggestions({
   query,
   options = {},
-  useMockData = false,
+  
 }: UseSearchSuggestionsParams) {
   const { limit = 5, minQueryLength = 2 } = options;
 
   return useQuery({
     queryKey: ['search', 'suggestions', query, limit],
     queryFn: async () => {
-      if (useMockData) {
-        return semanticSearchService.getMockSuggestions(query, limit);
-      }
       return semanticSearchService.getSuggestions(query, { limit, minQueryLength });
     },
     enabled: query.length >= minQueryLength,
