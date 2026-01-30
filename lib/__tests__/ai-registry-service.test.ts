@@ -228,7 +228,7 @@ describe('AIRegistryService', () => {
 
       const result = await aiRegistryService.getUsageSummary();
 
-      expect(mockApiClient.get).toHaveBeenCalledWith('/v1/ai-usage/summary');
+      expect(mockApiClient.get).toHaveBeenCalledWith('/v1/public/ai-usage/aggregate');
       expect(result).toEqual(mockSummary);
     });
 
@@ -260,7 +260,7 @@ describe('AIRegistryService', () => {
 
       const result = await aiRegistryService.getUsageSummary(params);
 
-      expect(mockApiClient.get).toHaveBeenCalledWith('/v1/ai-usage/summary?start_date=2025-12-01&end_date=2025-12-21');
+      expect(mockApiClient.get).toHaveBeenCalledWith('/v1/public/ai-usage/aggregate?start_date=2025-12-01&end_date=2025-12-21');
       expect(result).toEqual(mockSummary);
     });
 
@@ -305,7 +305,7 @@ describe('AIRegistryService', () => {
 
       const result = await aiRegistryService.getUsageByModel();
 
-      expect(mockApiClient.get).toHaveBeenCalledWith('/v1/ai-usage/models');
+      expect(mockApiClient.get).toHaveBeenCalledWith('/v1/public/ai-usage/by-model');
       expect(result).toEqual(mockUsageByModel);
     });
 
@@ -338,7 +338,7 @@ describe('AIRegistryService', () => {
 
       const result = await aiRegistryService.getUsageByModel(params);
 
-      expect(mockApiClient.get).toHaveBeenCalledWith('/v1/ai-usage/models?start_date=2025-12-01&end_date=2025-12-21');
+      expect(mockApiClient.get).toHaveBeenCalledWith('/v1/public/ai-usage/by-model?start_date=2025-12-01&end_date=2025-12-21');
       expect(result).toEqual(mockUsageByModel);
     });
 
@@ -386,7 +386,7 @@ describe('AIRegistryService', () => {
 
       const result = await aiRegistryService.getDailyUsage();
 
-      expect(mockApiClient.get).toHaveBeenCalledWith('/v1/ai-usage/daily');
+      expect(mockApiClient.get).toHaveBeenCalledWith('/v1/public/ai-usage/daily');
       expect(result).toEqual(mockDailyUsage);
     });
 
@@ -425,7 +425,7 @@ describe('AIRegistryService', () => {
 
       const result = await aiRegistryService.getDailyUsage(params);
 
-      expect(mockApiClient.get).toHaveBeenCalledWith('/v1/ai-usage/daily?start_date=2025-12-01&end_date=2025-12-21');
+      expect(mockApiClient.get).toHaveBeenCalledWith('/v1/public/ai-usage/daily?start_date=2025-12-01&end_date=2025-12-21');
       expect(result).toEqual(mockDailyUsage);
     });
 

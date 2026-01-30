@@ -209,8 +209,8 @@ class AIRegistryService {
       }, {} as Record<string, string>)
     );
     const endpoint = queryParams.toString()
-      ? `/v1/ai-usage/summary?${queryParams.toString()}`
-      : '/v1/ai-usage/summary';
+      ? `/v1/public/ai-usage/aggregate?${queryParams.toString()}`
+      : '/v1/public/ai-usage/aggregate';
     const response = await apiClient.get<UsageSummary>(endpoint);
     return response.data;
   }
@@ -228,8 +228,8 @@ class AIRegistryService {
       }, {} as Record<string, string>)
     );
     const endpoint = queryParams.toString()
-      ? `/v1/ai-usage/models?${queryParams.toString()}`
-      : '/v1/ai-usage/models';
+      ? `/v1/public/ai-usage/by-model?${queryParams.toString()}`
+      : '/v1/public/ai-usage/by-model';
     const response = await apiClient.get<UsageByModelResponse>(endpoint);
     return response.data;
   }
@@ -247,8 +247,8 @@ class AIRegistryService {
       }, {} as Record<string, string>)
     );
     const endpoint = queryParams.toString()
-      ? `/v1/ai-usage/daily?${queryParams.toString()}`
-      : '/v1/ai-usage/daily';
+      ? `/v1/public/ai-usage/daily?${queryParams.toString()}`
+      : '/v1/public/ai-usage/daily';
     const response = await apiClient.get<DailyUsageResponse>(endpoint);
     return response.data;
   }
