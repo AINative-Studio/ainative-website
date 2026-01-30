@@ -163,7 +163,7 @@ class AIRegistryService {
    * List all registered AI models
    */
   async listModels(): Promise<ModelsResponse> {
-    const response = await apiClient.get<ModelsResponse>('/v1/ai-registry/models');
+    const response = await apiClient.get<ModelsResponse>('/v1/public/multi-model/models');
     return response.data;
   }
 
@@ -171,7 +171,7 @@ class AIRegistryService {
    * Register a new AI model
    */
   async registerModel(data: RegisterModelData): Promise<AIModel> {
-    const response = await apiClient.post<AIModel>('/v1/ai-registry/models', data);
+    const response = await apiClient.post<AIModel>('/v1/public/multi-model/models', data);
     return response.data;
   }
 
@@ -179,7 +179,7 @@ class AIRegistryService {
    * Get model details by ID
    */
   async getModelDetails(id: number): Promise<AIModel> {
-    const response = await apiClient.get<AIModel>(`/v1/ai-registry/models/${id}`);
+    const response = await apiClient.get<AIModel>(`/v1/public/multi-model/models/${id}`);
     return response.data;
   }
 
@@ -188,7 +188,7 @@ class AIRegistryService {
    */
   async switchDefaultModel(id: number): Promise<SwitchModelResponse> {
     const response = await apiClient.post<SwitchModelResponse>(
-      `/v1/ai-registry/models/${id}/switch`,
+      `/v1/public/multi-model/models/${id}/switch`,
       {}
     );
     return response.data;
@@ -209,8 +209,8 @@ class AIRegistryService {
       }, {} as Record<string, string>)
     );
     const endpoint = queryParams.toString()
-      ? `/v1/ai-usage/summary?${queryParams.toString()}`
-      : '/v1/ai-usage/summary';
+      ? `/v1/public/ai-usage/aggregate?${queryParams.toString()}`
+      : '/v1/public/ai-usage/aggregate';
     const response = await apiClient.get<UsageSummary>(endpoint);
     return response.data;
   }
@@ -228,8 +228,8 @@ class AIRegistryService {
       }, {} as Record<string, string>)
     );
     const endpoint = queryParams.toString()
-      ? `/v1/ai-usage/models?${queryParams.toString()}`
-      : '/v1/ai-usage/models';
+      ? `/v1/public/ai-usage/by-model?${queryParams.toString()}`
+      : '/v1/public/ai-usage/by-model';
     const response = await apiClient.get<UsageByModelResponse>(endpoint);
     return response.data;
   }
@@ -247,8 +247,8 @@ class AIRegistryService {
       }, {} as Record<string, string>)
     );
     const endpoint = queryParams.toString()
-      ? `/v1/ai-usage/daily?${queryParams.toString()}`
-      : '/v1/ai-usage/daily';
+      ? `/v1/public/ai-usage/daily?${queryParams.toString()}`
+      : '/v1/public/ai-usage/daily';
     const response = await apiClient.get<DailyUsageResponse>(endpoint);
     return response.data;
   }
@@ -257,7 +257,7 @@ class AIRegistryService {
    * Export usage data
    */
   async exportUsageData(params: ExportUsageParams): Promise<ExportResponse> {
-    const response = await apiClient.post<ExportResponse>('/v1/ai-usage/export', params);
+    const response = await apiClient.post<ExportResponse>('/v1/public/ai-usage/export', params);
     return response.data;
   }
 
@@ -267,7 +267,7 @@ class AIRegistryService {
    * Load context from vector database
    */
   async loadContext(query: ContextQuery): Promise<ContextResponse> {
-    const response = await apiClient.post<ContextResponse>('/v1/ai-context/load', query);
+    const response = await apiClient.post<ContextResponse>('/v1/public/ai-context/contexts', query);
     return response.data;
   }
 
@@ -278,7 +278,7 @@ class AIRegistryService {
    */
   async multiModelInference(request: MultiModelInferenceRequest): Promise<MultiModelInferenceResponse> {
     const response = await apiClient.post<MultiModelInferenceResponse>(
-      '/v1/ai-orchestration/multi-model',
+      '/v1/public/multi-model/inference',
       request
     );
     return response.data;
