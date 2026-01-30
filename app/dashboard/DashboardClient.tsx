@@ -4,7 +4,7 @@ import { useCallback, useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
-import { Button } from '@/components/ui/button';
+import { AIKitButton } from '@/components/aikit/AIKitButton';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { BrandedWelcome } from '@/components/branding/BrandedWelcome';
 import {
@@ -372,44 +372,44 @@ export default function DashboardClient() {
               <BarChart2 className="text-[#4B6FED] h-6 w-6" />
               <h2 className="text-2xl font-bold">Usage</h2>
             </div>
-            <Button
+            <AIKitButton
               variant="ghost"
               size="icon"
               onClick={handleRefresh}
               disabled={isRefreshing}
-              className="text-gray-400 hover:text-white hover:bg-gray-800"
+              className="text-gray-400 hover:text-white"
               title="Refresh data"
             >
               <RefreshCcw className={`h-4 w-4 ${isRefreshing ? 'animate-spin' : ''}`} />
-            </Button>
+            </AIKitButton>
           </div>
           <div className="flex items-center gap-3 flex-wrap">
-            <Button
+            <AIKitButton
               variant="outline"
               size="sm"
               onClick={() => handleExportUsage('csv')}
-              className="border-gray-700 hover:bg-gray-800 text-white flex items-center gap-2"
+              className="flex items-center gap-2"
             >
               <Download className="h-4 w-4" />
               Export CSV
-            </Button>
-            <Button
+            </AIKitButton>
+            <AIKitButton
               variant="outline"
               size="sm"
               onClick={() => handleExportUsage('json')}
-              className="border-gray-700 hover:bg-gray-800 text-white flex items-center gap-2"
+              className="flex items-center gap-2"
             >
               <Download className="h-4 w-4" />
               Export JSON
-            </Button>
+            </AIKitButton>
             <Link href="/pricing">
-              <Button
+              <AIKitButton
                 variant="link"
-                className="text-[#4B6FED] hover:text-[#6B8AF8] flex items-center gap-1"
+                className="flex items-center gap-1"
               >
                 See updates to pricing structure
                 <ChevronRight className="h-4 w-4" />
-              </Button>
+              </AIKitButton>
             </Link>
           </div>
         </div>
@@ -439,14 +439,13 @@ export default function DashboardClient() {
               {!usageData ? (
                 <div className="text-center py-8">
                   <p className="text-gray-400 mb-4">Unable to load credit information</p>
-                  <Button
+                  <AIKitButton
                     onClick={handleRefresh}
                     variant="secondary"
-                    className="bg-gray-800 hover:bg-gray-700"
                   >
                     <RefreshCcw className="h-4 w-4 mr-2" />
                     Retry
-                  </Button>
+                  </AIKitButton>
                 </div>
               ) : (
                 <>
@@ -504,18 +503,17 @@ export default function DashboardClient() {
 
                   <div className="mt-8 flex flex-wrap gap-4">
                     <Link href="/refills">
-                      <Button className="bg-[#4B6FED] hover:bg-[#3A56D3] text-white font-medium">
+                      <AIKitButton className="font-medium">
                         <Settings className="h-4 w-4 mr-2" />
                         Setup automatic refills
-                      </Button>
+                      </AIKitButton>
                     </Link>
-                    <Button
+                    <AIKitButton
                       variant="outline"
-                      className="border-gray-700 hover:bg-gray-800 text-white"
                       onClick={handlePurchaseCredits}
                     >
                       Purchase credits
-                    </Button>
+                    </AIKitButton>
                   </div>
 
                   <div className="mt-8 flex items-center gap-2 p-3 border border-[#4B6FED]/20 rounded-md bg-[#4B6FED]/5">

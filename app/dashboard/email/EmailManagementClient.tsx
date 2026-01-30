@@ -5,8 +5,9 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { motion } from 'framer-motion';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Label } from '@/components/ui/label';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { AIKitTextField } from '@/src/components/aikit/AIKitTextField';
 import {
   Mail,
   Plus,
@@ -649,28 +650,24 @@ export default function EmailManagementClient() {
             </DialogDescription>
           </DialogHeader>
           <div className="space-y-4">
-            <div className="space-y-2">
-              <Label htmlFor="template-name">Template Name</Label>
-              <input
-                id="template-name"
-                type="text"
-                value={templateForm.name}
-                onChange={(e) => setTemplateForm({ ...templateForm, name: e.target.value })}
-                className="w-full px-3 py-2 bg-gray-800 border border-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                placeholder="Welcome Email"
-              />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="template-subject">Subject</Label>
-              <input
-                id="template-subject"
-                type="text"
-                value={templateForm.subject}
-                onChange={(e) => setTemplateForm({ ...templateForm, subject: e.target.value })}
-                className="w-full px-3 py-2 bg-gray-800 border border-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                placeholder="Welcome to AINative Studio"
-              />
-            </div>
+            <AIKitTextField
+              id="template-name"
+              label="Template Name"
+              value={templateForm.name}
+              onChange={(e) => setTemplateForm({ ...templateForm, name: e.target.value })}
+              placeholder="Welcome Email"
+              variant="filled"
+              fullWidth
+            />
+            <AIKitTextField
+              id="template-subject"
+              label="Subject"
+              value={templateForm.subject}
+              onChange={(e) => setTemplateForm({ ...templateForm, subject: e.target.value })}
+              placeholder="Welcome to AINative Studio"
+              variant="filled"
+              fullWidth
+            />
             <div className="space-y-2">
               <Label htmlFor="template-body">Body</Label>
               <textarea
@@ -743,28 +740,25 @@ export default function EmailManagementClient() {
             <DialogDescription>Send a test email to verify your configuration</DialogDescription>
           </DialogHeader>
           <div className="space-y-4">
-            <div className="space-y-2">
-              <Label htmlFor="send-to">To</Label>
-              <input
-                id="send-to"
-                type="email"
-                value={sendForm.to}
-                onChange={(e) => setSendForm({ ...sendForm, to: e.target.value })}
-                className="w-full px-3 py-2 bg-gray-800 border border-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                placeholder="user@example.com"
-              />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="send-subject">Subject</Label>
-              <input
-                id="send-subject"
-                type="text"
-                value={sendForm.subject}
-                onChange={(e) => setSendForm({ ...sendForm, subject: e.target.value })}
-                className="w-full px-3 py-2 bg-gray-800 border border-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                placeholder="Test Email"
-              />
-            </div>
+            <AIKitTextField
+              id="send-to"
+              label="To"
+              type="email"
+              value={sendForm.to}
+              onChange={(e) => setSendForm({ ...sendForm, to: e.target.value })}
+              placeholder="user@example.com"
+              variant="filled"
+              fullWidth
+            />
+            <AIKitTextField
+              id="send-subject"
+              label="Subject"
+              value={sendForm.subject}
+              onChange={(e) => setSendForm({ ...sendForm, subject: e.target.value })}
+              placeholder="Test Email"
+              variant="filled"
+              fullWidth
+            />
             <div className="space-y-2">
               <Label htmlFor="send-body">Body</Label>
               <textarea

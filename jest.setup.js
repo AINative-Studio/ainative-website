@@ -3,22 +3,23 @@
 import '@testing-library/jest-dom';
 
 // MSW (Mock Service Worker) Setup for API Mocking
-import { server, setupMockServer, resetMockHandlers } from './mocks/server';
+// Note: MSW has ESM compatibility issues with Jest. Re-enable when resolved.
+// import { server, setupMockServer, resetMockHandlers } from './mocks/server';
 
-// Start the MSW server before all tests
-beforeAll(() => {
-  setupMockServer();
-});
+// // Start the MSW server before all tests
+// beforeAll(() => {
+//   setupMockServer();
+// });
 
-// Reset handlers after each test to ensure test isolation
-afterEach(() => {
-  resetMockHandlers();
-});
+// // Reset handlers after each test to ensure test isolation
+// afterEach(() => {
+//   resetMockHandlers();
+// });
 
-// Clean up after all tests
-afterAll(() => {
-  server.close();
-});
+// // Clean up after all tests
+// afterAll(() => {
+//   server.close();
+// });
 
 // Mock Next.js router
 jest.mock('next/navigation', () => ({
@@ -89,3 +90,19 @@ Object.defineProperty(window, 'ResizeObserver', {
   configurable: true,
   value: MockResizeObserver,
 });
+
+// Mock framer-motion
+jest.mock('framer-motion', () => ({
+  motion: {
+    div: ({ children, className, initial, animate, whileInView, viewport, transition, variants, ...props }) => (
+      <div className={className} {...props}>{children}</div>
+    ),
+    section: ({ children, className, initial, animate, whileInView, viewport, transition, variants, ...props }) => (
+      <section className={className} {...props}>{children}</section>
+    ),
+    article: ({ children, className, initial, animate, whileInView, viewport, transition, variants, exit, ...props }) => (
+      <article className={className} {...props}>{children}</article>
+    ),
+  },
+  AnimatePresence: ({ children, mode }) => <>{children}</>,
+}));

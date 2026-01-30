@@ -25,7 +25,7 @@ export default function AnalyticsVerifyClient() {
   // Run verification on mount
   useEffect(() => {
     runVerification();
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+   
   }, []);
 
   const testGTMEvent = () => {

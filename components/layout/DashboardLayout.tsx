@@ -34,7 +34,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
       setSidebarOpen(false);
     }
   // Intentionally calling setState on route/mobile changes
-  // eslint-disable-next-line react-hooks/set-state-in-effect
+   
   }, [pathname, isMobile]);
 
   // Close if clicking outside on mobile

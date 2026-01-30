@@ -51,7 +51,7 @@ export function useCodeSync({
 
     setActiveSnippets(active);
   // Intentionally updating state based on time/snippet changes
-  // eslint-disable-next-line react-hooks/set-state-in-effect
+   
   }, [currentTime, codeSnippets, enabled]);
 
   /**

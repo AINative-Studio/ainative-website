@@ -18,6 +18,7 @@ const customJestConfig = {
     '^@/lib/(.*)$': '<rootDir>/lib/$1',
     '^@/services/(.*)$': '<rootDir>/services/$1',
     '^@/app/(.*)$': '<rootDir>/app/$1',
+    '^@/src/(.*)$': '<rootDir>/src/$1',
   },
 
   // Test matching patterns
@@ -33,6 +34,7 @@ const customJestConfig = {
     'lib/**/*.{js,jsx,ts,tsx}',
     'services/**/*.{js,jsx,ts,tsx}',
     'utils/**/*.{js,jsx,ts,tsx}',
+    'src/**/*.{js,jsx,ts,tsx}',
     '!**/*.d.ts',
     '!**/node_modules/**',
     '!**/__tests__/**',
@@ -71,7 +73,7 @@ const customJestConfig = {
 
   // Transform ignore patterns (for node_modules that need transformation)
   transformIgnorePatterns: [
-    '/node_modules/(?!(@radix-ui|@tanstack|axios|msw|@mswjs|until-async)/)',
+    '/node_modules/(?!(@radix-ui|@tanstack|axios|msw|@mswjs|until-async|@testing-library|lucide-react)/)',
   ],
 
   // Performance optimizations

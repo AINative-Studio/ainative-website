@@ -35,6 +35,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import AIKitShowcase from '@/components/ai-kit/AIKitShowcase';
 
 // AI Kit packages data
 interface AIKitPackage {
@@ -609,10 +610,11 @@ export default function AIKitClient() {
           </motion.div>
 
           <Tabs defaultValue="react" className="w-full">
-            <TabsList className="grid w-full grid-cols-3 mb-6 bg-[#1C2128]">
+            <TabsList className="grid w-full grid-cols-4 mb-6 bg-[#1C2128]">
               <TabsTrigger value="react">React</TabsTrigger>
               <TabsTrigger value="vue">Vue</TabsTrigger>
               <TabsTrigger value="cli">CLI</TabsTrigger>
+              <TabsTrigger value="components">Components</TabsTrigger>
             </TabsList>
 
             <TabsContent value="react">
@@ -676,6 +678,10 @@ export default function AIKitClient() {
                   </pre>
                 </CardContent>
               </Card>
+            </TabsContent>
+
+            <TabsContent value="components">
+              <AIKitShowcase />
             </TabsContent>
           </Tabs>
         </div>

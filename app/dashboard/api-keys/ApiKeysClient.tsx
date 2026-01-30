@@ -4,11 +4,10 @@ import * as React from 'react';
 import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { AlertCircle, Copy, Key, RefreshCw, CheckCircle2, X } from 'lucide-react';
 import { apiKeyService, type ApiKey } from '@/services/apiKeyService';
+import { AIKitTextField } from '@/src/components/aikit/AIKitTextField';
 
 // Simple dialog component
 const Dialog = ({
@@ -197,16 +196,15 @@ const ApiKeysClient: React.FC = () => {
             {!newKeyGenerated ? (
               <>
                 <div className="grid gap-4 py-4">
-                  <div className="grid gap-2">
-                    <Label htmlFor="name">API Key Name</Label>
-                    <Input
-                      id="name"
-                      placeholder="e.g. Production API Key"
-                      value={newKeyName}
-                      onChange={(e) => setNewKeyName(e.target.value)}
-                      className="bg-vite-bg border-[#1E262F] text-white"
-                    />
-                  </div>
+                  <AIKitTextField
+                    id="name"
+                    label="API Key Name"
+                    placeholder="e.g. Production API Key"
+                    value={newKeyName}
+                    onChange={(e) => setNewKeyName(e.target.value)}
+                    className="bg-vite-bg border-[#1E262F] text-white"
+                    fullWidth
+                  />
                 </div>
                 <DialogFooter>
                   <Button type="button" onClick={handleCreateKey} disabled={isCreatingKey}>
