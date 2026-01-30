@@ -64,7 +64,7 @@ const fadeInUp = {
 
 export default function DocsClient() {
   return (
-    <div className="min-h-screen bg-vite-bg">
+    <div className="min-h-screen bg-vite-bg pt-24">
       <div className="container mx-auto px-4 py-16">
         <div className="max-w-5xl mx-auto">
           {/* Hero Section */}
