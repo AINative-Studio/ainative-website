@@ -98,69 +98,87 @@ export interface RunTestRequest {
   };
 }
 
+// Base path for load testing endpoints
+const BASE_PATH = '/v1/public/load-testing';
+
 // Load Testing Service
 const loadTestingService = {
   /**
    * Get list of available test scenarios
+   * Backend endpoint: GET /v1/public/load-testing/scenarios (confirmed working)
    */
   async getScenarios(): Promise<LoadTestScenario[]> {
-    const response = await apiClient.get<{ scenarios: LoadTestScenario[] }>('/v1/load-testing/scenarios');
+    const response = await apiClient.get<{ scenarios: LoadTestScenario[] }>(`${BASE_PATH}/scenarios`);
     return response.data.scenarios || [];
   },
 
   /**
    * Create a new load test
+   * TODO: Backend endpoint /v1/public/load-testing/create not yet implemented
+   * This method will fail until the backend endpoint is available
    */
   async createTest(request: CreateTestRequest): Promise<LoadTest> {
-    const response = await apiClient.post<LoadTest>('/v1/load-testing/create', request);
+    const response = await apiClient.post<LoadTest>(`${BASE_PATH}/create`, request);
     return response.data;
   },
 
   /**
    * Get test details and results
+   * TODO: Backend endpoint /v1/public/load-testing/{testId} not yet implemented
+   * This method will fail until the backend endpoint is available
    */
   async getTest(testId: string): Promise<LoadTest & { result?: LoadTestResult }> {
-    const response = await apiClient.get<LoadTest & { result?: LoadTestResult }>(`/v1/load-testing/${testId}`);
+    const response = await apiClient.get<LoadTest & { result?: LoadTestResult }>(`${BASE_PATH}/${testId}`);
     return response.data;
   },
 
   /**
    * Run a load test
+   * TODO: Backend endpoint /v1/public/load-testing/run not yet implemented
+   * This method will fail until the backend endpoint is available
    */
   async runTest(request: RunTestRequest): Promise<{ status: string; testId: string }> {
-    const response = await apiClient.post<{ status: string; testId: string }>('/v1/load-testing/run', request);
+    const response = await apiClient.post<{ status: string; testId: string }>(`${BASE_PATH}/run`, request);
     return response.data;
   },
 
   /**
    * Get performance metrics for a test
+   * TODO: Backend endpoint /v1/public/load-testing/{testId}/metrics not yet implemented
+   * This method will fail until the backend endpoint is available
    */
   async getTestMetrics(testId: string): Promise<LoadTestMetrics> {
-    const response = await apiClient.get<LoadTestMetrics>(`/v1/load-testing/${testId}/metrics`);
+    const response = await apiClient.get<LoadTestMetrics>(`${BASE_PATH}/${testId}/metrics`);
     return response.data;
   },
 
   /**
    * Cancel a running test
+   * TODO: Backend endpoint /v1/public/load-testing/{testId}/cancel not yet implemented
+   * This method will fail until the backend endpoint is available
    */
   async cancelTest(testId: string): Promise<{ status: string }> {
-    const response = await apiClient.post<{ status: string }>(`/v1/load-testing/${testId}/cancel`);
+    const response = await apiClient.post<{ status: string }>(`${BASE_PATH}/${testId}/cancel`);
     return response.data;
   },
 
   /**
-   * Get list of all tests (history)
+   * Get list of all tests (history/results)
+   * Backend endpoint: GET /v1/public/load-testing/results (confirmed working)
+   * Note: Maps to /results endpoint instead of /history
    */
   async getTestHistory(): Promise<LoadTest[]> {
-    const response = await apiClient.get<{ tests: LoadTest[] }>('/v1/load-testing/history');
+    const response = await apiClient.get<{ tests: LoadTest[] }>(`${BASE_PATH}/results`);
     return response.data.tests || [];
   },
 
   /**
    * Delete a test
+   * TODO: Backend endpoint /v1/public/load-testing/{testId} DELETE not yet implemented
+   * This method will fail until the backend endpoint is available
    */
   async deleteTest(testId: string): Promise<void> {
-    await apiClient.delete(`/v1/load-testing/${testId}`);
+    await apiClient.delete(`${BASE_PATH}/${testId}`);
   },
 };
 

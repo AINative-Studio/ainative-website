@@ -65,7 +65,7 @@ export class UserSettingsService {
   async getNotificationPreferences(): Promise<NotificationPreference> {
     try {
       const response = await apiClient.get<ApiResponse<NotificationPreference>>(
-        '/api/v1/settings/notifications/preferences'
+        '/v1/public/settings/notifications/preferences'
       );
 
       if (!response.data.success || !response.data.data) {
@@ -87,7 +87,7 @@ export class UserSettingsService {
   ): Promise<OperationResult> {
     try {
       const response = await apiClient.put<ApiResponse<{ message: string }>>(
-        '/api/v1/settings/notifications/preferences',
+        '/v1/public/settings/notifications/preferences',
         preferences
       );
 
@@ -108,7 +108,7 @@ export class UserSettingsService {
   async getCommunicationSettings(): Promise<CommunicationSettings> {
     try {
       const response = await apiClient.get<ApiResponse<CommunicationSettings>>(
-        '/api/v1/settings/communication'
+        '/v1/public/settings/communication'
       );
 
       if (!response.data.success || !response.data.data) {
@@ -130,7 +130,7 @@ export class UserSettingsService {
   ): Promise<OperationResult> {
     try {
       const response = await apiClient.put<ApiResponse<{ message: string }>>(
-        '/api/v1/settings/communication',
+        '/v1/public/settings/communication',
         settings
       );
 
@@ -156,7 +156,7 @@ export class UserSettingsService {
    */
   async getUserProfile(): Promise<UserProfile | null> {
     try {
-      const response = await apiClient.get<ApiResponse<UserProfile>>('/api/v1/profile');
+      const response = await apiClient.get<ApiResponse<UserProfile>>('/v1/public/profile/');
 
       if (!response.data.success || !response.data.data) {
         throw new Error(response.data.message || 'Failed to fetch user profile');
@@ -177,7 +177,7 @@ export class UserSettingsService {
   ): Promise<OperationResult> {
     try {
       const response = await apiClient.put<ApiResponse<{ message: string }>>(
-        '/api/v1/profile',
+        '/v1/public/profile/',
         profileData
       );
 
@@ -200,7 +200,7 @@ export class UserSettingsService {
    */
   async getUserStats(): Promise<UserStats | null> {
     try {
-      const response = await apiClient.get<ApiResponse<UserStats>>('/api/v1/profile/stats');
+      const response = await apiClient.get<ApiResponse<UserStats>>('/v1/public/profile/stats');
 
       if (!response.data.success || !response.data.data) {
         throw new Error(response.data.message || 'Failed to fetch user stats');

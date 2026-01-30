@@ -141,7 +141,7 @@ describe('RLHFService', () => {
       const invalidRating = {
         prompt: 'Test',
         response: 'Test',
-        rating: 6, // Invalid: out of range
+        rating: 6 as 1 | 2 | 3 | 4 | 5, // Invalid: out of range
       };
 
       await expect(rlhfService.submitRating(invalidRating)).rejects.toThrow(

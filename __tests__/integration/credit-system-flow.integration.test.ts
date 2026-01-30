@@ -3,8 +3,8 @@
  * Tests complete credit workflows including balance checking, purchases, usage tracking, and auto-refill
  */
 
-import { creditService } from '@/services/creditService';
-import { usageService } from '@/services/usageService';
+import { creditService } from '../../services/creditService';
+import { usageService } from '../../services/usageService';
 import { setupIntegrationTest, testUtils, mockCredits } from './setup';
 
 describe('Credit System Integration Tests', () => {
@@ -209,7 +209,7 @@ describe('Credit System Integration Tests', () => {
 
       // When: User makes API calls (simulated via usage service)
       // Note: This would typically trigger credit deduction
-      const usageData = await usageService.getUsage();
+      const usageData = await usageService.getRealtimeUsage();
 
       // Then: Usage is tracked
       expect(usageData).toBeDefined();
@@ -409,7 +409,7 @@ describe('Credit System Integration Tests', () => {
       // When: Checking both credits and usage
       const [credits, usage] = await Promise.all([
         creditService.getCredits(),
-        usageService.getUsage(),
+        usageService.getRealtimeUsage(),
       ]);
 
       // Then: Both are tracked correctly

@@ -3,7 +3,6 @@
 import { useState, useEffect } from 'react';
 import { usePathname } from 'next/navigation';
 import { Menu } from 'lucide-react';
-import Header from './Header';
 import Sidebar from './Sidebar';
 
 interface DashboardLayoutProps {
@@ -34,7 +33,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
       setSidebarOpen(false);
     }
   // Intentionally calling setState on route/mobile changes
-  // eslint-disable-next-line react-hooks/set-state-in-effect
+   
   }, [pathname, isMobile]);
 
   // Close if clicking outside on mobile
@@ -51,41 +50,17 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, [sidebarOpen, isMobile]);
 
-  // Get page title from pathname
-  const getPageTitle = () => {
-    if (pathname === '/dashboard') return 'Overview';
-    if (pathname === '/dashboard/main') return 'Main Dashboard';
-    if (pathname === '/plan') return 'Plan Management';
-    if (pathname === '/billing') return 'Billing';
-    if (pathname.includes('agent-swarm')) return 'Agent Swarm';
-    if (pathname.includes('zerodb')) return 'ZeroDB';
-    if (pathname.includes('qnn')) return 'QNN';
-    return 'AINative';
-  };
-
   return (
     <div className="min-h-screen bg-vite-bg text-white">
-      {/* Header */}
-      <div className="relative">
-        {/* Desktop Header */}
-        <div className="hidden md:block">
-          <Header />
-        </div>
-
-        {/* Mobile Header */}
-        <div className="md:hidden fixed top-0 left-0 right-0 z-30 bg-[#161B22] border-b border-gray-800 flex items-center h-16 px-4">
-          <button
-            onClick={toggleSidebar}
-            className="rounded-md text-gray-400 hover:text-white hover:bg-gray-700 p-2"
-            aria-label="Toggle menu"
-          >
-            <Menu className="h-6 w-6" />
-          </button>
-          <div className="flex-1 text-center text-lg font-semibold">
-            {getPageTitle()}
-          </div>
-          <div className="w-10"></div> {/* Right-side spacer */}
-        </div>
+      {/* Mobile Menu Button - positioned below the global header */}
+      <div className="md:hidden fixed top-24 left-4 z-30">
+        <button
+          onClick={toggleSidebar}
+          className="rounded-md bg-[#161B22] text-gray-400 hover:text-white hover:bg-gray-700 p-2 border border-gray-800"
+          aria-label="Toggle menu"
+        >
+          <Menu className="h-6 w-6" />
+        </button>
       </div>
 
       {/* Mobile Sidebar */}
@@ -93,18 +68,15 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
         <Sidebar isMobile onClose={() => setSidebarOpen(false)} />
       )}
 
-      {/* Layout Body */}
-      <div className="flex pt-16 md:pt-20">
-        {/* Desktop Sidebar */}
-        <div className="hidden md:block fixed left-0 top-0 h-full z-20">
-          <Sidebar />
-        </div>
+      {/* Desktop Sidebar - fixed position */}
+      <aside className="hidden md:flex fixed left-0 top-20 w-72 h-[calc(100vh-5rem)] bg-vite-bg border-r border-[#1C2128] flex-col overflow-y-auto p-5 text-white z-20">
+        <Sidebar />
+      </aside>
 
-        {/* Main Content */}
-        <main className="flex-1 p-4 md:p-6 overflow-y-auto w-full md:ml-72">
-          <div className="max-w-7xl mx-auto">{children}</div>
-        </main>
-      </div>
+      {/* Main Content - offset for sidebar on desktop */}
+      <main className="p-4 md:p-6 md:ml-72">
+        <div className="max-w-7xl mx-auto">{children}</div>
+      </main>
     </div>
   );
 }

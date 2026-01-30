@@ -32,8 +32,8 @@ global.fetch = jest.fn(() =>
   Promise.resolve({
     ok: true,
     json: () => Promise.resolve({ data: {} }),
-  })) as jest.Mock
-);
+  })
+) as jest.Mock;
 
 describe('VideoDetailClient', () => {
   beforeEach(() => {
@@ -47,7 +47,7 @@ describe('VideoDetailClient', () => {
   describe('Rendering', () => {
     it('should render without crashing', () => {
       // Given
-      const { container } = render(<VideoDetailClient />);
+      const { container } = render(<VideoDetailClient slug="test-video" />);
 
       // Then
       expect(container).toBeInTheDocument();
@@ -55,7 +55,7 @@ describe('VideoDetailClient', () => {
 
     it('should display loading state initially', async () => {
       // Given
-      render(<VideoDetailClient />);
+      render(<VideoDetailClient slug="test-video" />);
 
       // Then - Check for loading indicators
       // expect(screen.getByTestId('loading-spinner')).toBeInTheDocument();
@@ -65,7 +65,7 @@ describe('VideoDetailClient', () => {
   describe('State Management', () => {
     it('should manage liked state', async () => {
       // Given
-      render(<VideoDetailClient />);
+      render(<VideoDetailClient slug="test-video" />);
 
       // When
       // Interact with component to change liked
@@ -76,7 +76,7 @@ describe('VideoDetailClient', () => {
 
     it('should manage likeCount state', async () => {
       // Given
-      render(<VideoDetailClient />);
+      render(<VideoDetailClient slug="test-video" />);
 
       // When
       // Interact with component to change likeCount
@@ -87,7 +87,7 @@ describe('VideoDetailClient', () => {
 
     it('should manage bookmarked state', async () => {
       // Given
-      render(<VideoDetailClient />);
+      render(<VideoDetailClient slug="test-video" />);
 
       // When
       // Interact with component to change bookmarked
@@ -102,7 +102,7 @@ describe('VideoDetailClient', () => {
     it('should handle button clicks', async () => {
       // Given
       const user = userEvent.setup();
-      render(<VideoDetailClient />);
+      render(<VideoDetailClient slug="test-video" />);
 
       // When
       // const button = screen.getByRole('button', { name: /action/i });
@@ -115,7 +115,7 @@ describe('VideoDetailClient', () => {
     it('should handle keyboard navigation', async () => {
       // Given
       const user = userEvent.setup();
-      render(<VideoDetailClient />);
+      render(<VideoDetailClient slug="test-video" />);
 
       // When
       // await user.keyboard('{Tab}');
@@ -128,7 +128,7 @@ describe('VideoDetailClient', () => {
   describe('Accessibility', () => {
     it('should have proper ARIA labels', () => {
       // Given
-      render(<VideoDetailClient />);
+      render(<VideoDetailClient slug="test-video" />);
 
       // Then
       // Check for ARIA attributes
@@ -138,7 +138,7 @@ describe('VideoDetailClient', () => {
     it('should support keyboard navigation', async () => {
       // Given
       const user = userEvent.setup();
-      render(<VideoDetailClient />);
+      render(<VideoDetailClient slug="test-video" />);
 
       // When
       await user.tab();
@@ -149,7 +149,7 @@ describe('VideoDetailClient', () => {
 
     it('should announce dynamic content changes', async () => {
       // Given
-      render(<VideoDetailClient />);
+      render(<VideoDetailClient slug="test-video" />);
 
       // Then
       // Check for live regions
@@ -169,7 +169,7 @@ describe('VideoDetailClient', () => {
 
     it('should recover from errors', async () => {
       // Given
-      render(<VideoDetailClient />);
+      render(<VideoDetailClient slug="test-video" />);
 
       // When
       // Trigger error and recovery
@@ -182,7 +182,7 @@ describe('VideoDetailClient', () => {
   describe('Edge Cases', () => {
     it('should handle null props gracefully', () => {
       // Given/When
-      const { container } = render(<VideoDetailClient />);
+      const { container } = render(<VideoDetailClient slug="test-video" />);
 
       // Then
       expect(container).toBeInTheDocument();
@@ -196,7 +196,7 @@ describe('VideoDetailClient', () => {
       });
 
       // When
-      render(<VideoDetailClient />);
+      render(<VideoDetailClient slug="test-video" />);
 
       // Then
       await waitFor(() => {
@@ -213,7 +213,7 @@ describe('VideoDetailClient', () => {
       });
 
       // When
-      render(<VideoDetailClient />);
+      render(<VideoDetailClient slug="test-video" />);
 
       // Then
       await waitFor(() => {
@@ -223,7 +223,7 @@ describe('VideoDetailClient', () => {
 
     it('should handle concurrent updates', async () => {
       // Given
-      render(<VideoDetailClient />);
+      render(<VideoDetailClient slug="test-video" />);
 
       // When
       // Trigger multiple concurrent updates

@@ -6,7 +6,22 @@
 import apiClient from '@/lib/api-client';
 
 /**
- * Represents an API key entity
+ * Represents an API key entity from the backend
+ */
+export interface ApiKeyBackend {
+  id: string;
+  user_id?: string;
+  user_email?: string;
+  name: string;
+  prefix: string;
+  is_active: boolean;
+  created_at?: string;
+  last_used_at?: string | null;
+  usage_count?: number;
+}
+
+/**
+ * Represents an API key entity for the frontend
  */
 export interface ApiKey {
   id: string;
@@ -70,7 +85,21 @@ export interface UpdateApiKeyRequest {
  * ApiKeyService provides methods for managing API keys
  */
 export class ApiKeyService {
-  private readonly basePath = '/api/v1/api-keys';
+  private readonly basePath = '/v1/public/api-keys/';
+
+  /**
+   * Transform backend API key format to frontend format
+   */
+  private transformApiKey(backendKey: ApiKeyBackend): ApiKey {
+    return {
+      id: backendKey.id,
+      name: backendKey.name,
+      key: backendKey.prefix ? `${backendKey.prefix}...` : '',
+      created: backendKey.created_at || new Date().toISOString(),
+      lastUsed: backendKey.last_used_at || 'Never',
+      status: backendKey.is_active ? 'active' : 'inactive'
+    };
+  }
 
   /**
    * Get all API keys for the current user
@@ -79,15 +108,36 @@ export class ApiKeyService {
    */
   async listApiKeys(): Promise<ApiKey[]> {
     try {
-      const response = await apiClient.get<ApiKeyApiResponse<{ keys: ApiKey[] }>>(
+      // API returns a direct array, not wrapped in success/data
+      const response = await apiClient.get<ApiKeyBackend[]>(
         this.basePath
       );
 
-      if (!response.data.success || !response.data.data?.keys) {
-        throw new Error(response.data.message || 'Failed to fetch API keys');
+      // Debug: log response to understand structure
+      console.log('API Keys response:', JSON.stringify(response.data, null, 2));
+
+      // Handle both direct array response and wrapped response formats
+      const data = response.data;
+
+      if (Array.isArray(data)) {
+        return data.map(key => this.transformApiKey(key));
       }
 
-      return response.data.data.keys;
+      // Check for wrapped response with success/data structure
+      const wrappedData = data as unknown as ApiKeyApiResponse<{ keys: ApiKeyBackend[] } | ApiKeyBackend[]>;
+      if (wrappedData.success) {
+        // Handle { success: true, data: [...] } format
+        if (Array.isArray(wrappedData.data)) {
+          return (wrappedData.data as ApiKeyBackend[]).map(key => this.transformApiKey(key));
+        }
+        // Handle { success: true, data: { keys: [...] } } format
+        if (wrappedData.data && typeof wrappedData.data === 'object' && 'keys' in wrappedData.data) {
+          return (wrappedData.data as { keys: ApiKeyBackend[] }).keys.map(key => this.transformApiKey(key));
+        }
+      }
+
+      console.error('Unexpected API response format:', data);
+      throw new Error('Failed to fetch API keys - unexpected response format');
     } catch (error) {
       console.error('Error fetching API keys:', error);
       throw error;

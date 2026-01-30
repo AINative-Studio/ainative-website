@@ -31,7 +31,7 @@ export function getIpAddress(request: NextRequest): string | null {
     return realIp.trim();
   }
 
-  return request.ip || null;
+  return null;
 }
 
 export function createRateLimitHeaders(

@@ -8,7 +8,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Github, ArrowRight, Check } from 'lucide-react';
-import { authService } from '@/services/authService';
+import { authService } from '@/services/AuthService';
 
 export default function SignupPage() {
   const [name, setName] = useState('');

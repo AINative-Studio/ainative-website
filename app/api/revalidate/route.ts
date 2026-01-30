@@ -27,12 +27,6 @@ import {
   revalidateByPath,
 } from '@/lib/cache-revalidation';
 
-// Use Edge Runtime for faster response times
-export const runtime = 'edge';
-
-// Maximum duration for edge function (5 seconds)
-export const maxDuration = 5;
-
 interface RevalidateRequest {
   type?: 'blog' | 'tutorial' | 'webinar' | 'video' | 'showcase' | 'all' | 'marketing' | 'pricing' | 'home';
   slug?: string;
@@ -64,9 +58,9 @@ export async function POST(request: NextRequest) {
     } else if (path) {
       // Revalidate by path
       result = await revalidateByPath(path);
-    } else if (type && slug) {
+    } else if (type && slug && ['blog', 'tutorial', 'webinar', 'video', 'showcase'].includes(type)) {
       // Revalidate specific content item
-      result = await revalidateContent(type, slug);
+      result = await revalidateContent(type as 'blog' | 'tutorial' | 'webinar' | 'video' | 'showcase', slug);
     } else if (type === 'all') {
       // Revalidate all content
       result = await revalidateAllContent();

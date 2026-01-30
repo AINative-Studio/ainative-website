@@ -34,7 +34,7 @@ import {
   Tooltip
 } from 'recharts';
 import {
-  analyzeCodeMock,
+  analyzeCode as analyzeCodeApi,
   validateAnalysisRequest,
   formatApiError,
   type AnalysisResult,
@@ -151,21 +151,21 @@ export default function CodeQualityAssessment() {
   // Generate suggestions based on metrics
   const generateSuggestions = useCallback((metrics: CodeMetrics, language: string): string[] => {
     const suggestions: string[] = [];
-    const commentRatio = metrics.comment_count / Math.max(metrics.line_count, 1);
+    const commentRatio = metrics.commentCount / Math.max(metrics.lineCount, 1);
 
     if (commentRatio < 0.1) {
       suggestions.push('Add more comments to improve code readability and maintainability');
     }
 
-    if (metrics.avg_function_length > 20) {
+    if (metrics.avgFunctionLength > 20) {
       suggestions.push('Consider breaking down long functions into smaller, more focused functions');
     }
 
-    if (metrics.function_count === 0 && metrics.line_count > 50) {
+    if (metrics.functionCount === 0 && metrics.lineCount > 50) {
       suggestions.push('Organize code into functions for better structure and reusability');
     }
 
-    if (metrics.class_count === 0 && metrics.line_count > 100) {
+    if (metrics.classCount === 0 && metrics.lineCount > 100) {
       suggestions.push('Consider using classes or modules to organize related functionality');
     }
 
@@ -173,7 +173,7 @@ export default function CodeQualityAssessment() {
       suggestions.push('Review excessive comments - ensure code is self-documenting where possible');
     }
 
-    if (metrics.avg_function_length < 3 && metrics.function_count > 10) {
+    if (metrics.avgFunctionLength < 3 && metrics.functionCount > 10) {
       suggestions.push('Some functions may be too granular - consider consolidating related logic');
     }
 
@@ -189,8 +189,8 @@ export default function CodeQualityAssessment() {
       throw new Error(validation.errors.join('; '));
     }
 
-    // Use mock implementation (replace with actual API call)
-    return await analyzeCodeMock(code, language);
+    // Use actual API call
+    return await analyzeCodeApi({ code, language });
 
     // Example of actual API integration (uncomment when ready):
     // import { analyzeCode as apiAnalyzeCode } from '@/services/qnn/code-analysis';
@@ -279,7 +279,7 @@ export default function CodeQualityAssessment() {
     const report = {
       timestamp: analysisResult.timestamp,
       language: analysisResult.language,
-      quality_score: analysisResult.quality_score,
+      qualityScore: analysisResult.qualityScore,
       metrics: analysisResult.features,
       suggestions: analysisResult.suggestions,
     };
@@ -316,15 +316,15 @@ export default function CodeQualityAssessment() {
 
   // Prepare radar chart data
   const getRadarData = () => {
-    if (!analysisResult?.normalized_features) return [];
+    if (!analysisResult?.normalizedFeatures) return [];
 
     return [
-      { metric: 'Code Size', value: analysisResult.normalized_features[0] * 100 },
-      { metric: 'Comments', value: analysisResult.normalized_features[1] * 100 },
-      { metric: 'Functions', value: analysisResult.normalized_features[2] * 100 },
-      { metric: 'Classes', value: analysisResult.normalized_features[3] * 100 },
-      { metric: 'Structure', value: analysisResult.normalized_features[4] * 100 },
-      { metric: 'Quality', value: analysisResult.normalized_features[5] * 100 },
+      { metric: 'Code Size', value: analysisResult.normalizedFeatures[0] * 100 },
+      { metric: 'Comments', value: analysisResult.normalizedFeatures[1] * 100 },
+      { metric: 'Functions', value: analysisResult.normalizedFeatures[2] * 100 },
+      { metric: 'Classes', value: analysisResult.normalizedFeatures[3] * 100 },
+      { metric: 'Structure', value: analysisResult.normalizedFeatures[4] * 100 },
+      { metric: 'Quality', value: analysisResult.normalizedFeatures[5] * 100 },
     ];
   };
 
@@ -589,31 +589,31 @@ export default function CodeQualityAssessment() {
             className="space-y-6"
           >
             {/* Quality Score Header */}
-            <Card className={`border ${getQualityBg(analysisResult.quality_score)}`}>
+            <Card className={`border ${getQualityBg(analysisResult.qualityScore)}`}>
               <CardContent className="p-6">
                 <div className="flex items-start justify-between">
                   <div className="space-y-3 flex-1">
                     <div className="flex items-center gap-3">
-                      {analysisResult.quality_score >= 0.8 ? (
+                      {analysisResult.qualityScore >= 0.8 ? (
                         <CheckCircle2 className="h-8 w-8 text-green-600" />
-                      ) : analysisResult.quality_score >= 0.6 ? (
+                      ) : analysisResult.qualityScore >= 0.6 ? (
                         <AlertCircle className="h-8 w-8 text-yellow-600" />
                       ) : (
                         <AlertCircle className="h-8 w-8 text-red-600" />
                       )}
                       <div>
                         <h3 className="text-2xl font-bold">
-                          <span className={getQualityColor(analysisResult.quality_score)}>
-                            {(analysisResult.quality_score * 100).toFixed(0)}%
+                          <span className={getQualityColor(analysisResult.qualityScore)}>
+                            {(analysisResult.qualityScore * 100).toFixed(0)}%
                           </span>
                         </h3>
                         <p className="text-sm text-muted-foreground">
-                          {getQualityLabel(analysisResult.quality_score)}
+                          {getQualityLabel(analysisResult.qualityScore)}
                         </p>
                       </div>
                     </div>
                     <Progress
-                      value={analysisResult.quality_score * 100}
+                      value={analysisResult.qualityScore * 100}
                       className="h-3"
                     />
                   </div>
@@ -652,44 +652,44 @@ export default function CodeQualityAssessment() {
                       <TableRow>
                         <TableCell className="font-medium">File Size</TableCell>
                         <TableCell className="text-right font-mono">
-                          {analysisResult.features.file_size_bytes} bytes
+                          {analysisResult.features.fileSizeBytes} bytes
                         </TableCell>
                       </TableRow>
                       <TableRow>
                         <TableCell className="font-medium">Lines of Code</TableCell>
                         <TableCell className="text-right font-mono">
-                          {analysisResult.features.line_count}
+                          {analysisResult.features.lineCount}
                         </TableCell>
                       </TableRow>
                       <TableRow>
                         <TableCell className="font-medium">Comments</TableCell>
                         <TableCell className="text-right font-mono">
-                          {analysisResult.features.comment_count}
+                          {analysisResult.features.commentCount}
                         </TableCell>
                       </TableRow>
                       <TableRow>
                         <TableCell className="font-medium">Functions</TableCell>
                         <TableCell className="text-right font-mono">
-                          {analysisResult.features.function_count}
+                          {analysisResult.features.functionCount}
                         </TableCell>
                       </TableRow>
                       <TableRow>
                         <TableCell className="font-medium">Classes</TableCell>
                         <TableCell className="text-right font-mono">
-                          {analysisResult.features.class_count}
+                          {analysisResult.features.classCount}
                         </TableCell>
                       </TableRow>
                       <TableRow>
                         <TableCell className="font-medium">Avg Function Length</TableCell>
                         <TableCell className="text-right font-mono">
-                          {analysisResult.features.avg_function_length} lines
+                          {analysisResult.features.avgFunctionLength} lines
                         </TableCell>
                       </TableRow>
-                      {analysisResult.features.comment_ratio !== undefined && (
+                      {analysisResult.features.commentRatio !== undefined && (
                         <TableRow>
                           <TableCell className="font-medium">Comment Ratio</TableCell>
                           <TableCell className="text-right font-mono">
-                            {(analysisResult.features.comment_ratio * 100).toFixed(1)}%
+                            {(analysisResult.features.commentRatio * 100).toFixed(1)}%
                           </TableCell>
                         </TableRow>
                       )}

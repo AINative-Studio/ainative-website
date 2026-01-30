@@ -1,6 +1,18 @@
 /**
  * AI Registry Service
  * Handles all AI model registry, usage analytics, and orchestration API calls
+ *
+ * Backend API Endpoints Reference:
+ * - /v1/public/ai-usage/aggregate - Usage summary/aggregation
+ * - /v1/public/ai-usage/costs - Cost data
+ * - /v1/public/ai-usage/export - Export usage data
+ * - /v1/public/ai-usage/logs - Usage logs
+ * - /v1/public/ai-usage/requests - Usage requests
+ * - /v1/public/ai-context/contexts - Context loading
+ * - /v1/public/ai-context/conversations - Conversation contexts
+ * - /v1/public/ai-orchestration/requests - Orchestration requests
+ * - /v1/public/multi-model/models - Model listing
+ * - /v1/public/multi-model/providers - Provider listing
  */
 
 import apiClient from './api-client';
@@ -161,34 +173,43 @@ class AIRegistryService {
 
   /**
    * List all registered AI models
+   * Backend endpoint: GET /v1/public/multi-model/models
+   * Note: Response structure may differ from frontend interface
    */
   async listModels(): Promise<ModelsResponse> {
-    const response = await apiClient.get<ModelsResponse>('/v1/ai-registry/models');
+    const response = await apiClient.get<ModelsResponse>('/v1/public/multi-model/models');
     return response.data;
   }
 
   /**
    * Register a new AI model
+   * Backend endpoint: POST /v1/public/multi-model/models
+   * Note: Response structure may differ from frontend interface
    */
   async registerModel(data: RegisterModelData): Promise<AIModel> {
-    const response = await apiClient.post<AIModel>('/v1/ai-registry/models', data);
+    const response = await apiClient.post<AIModel>('/v1/public/multi-model/models', data);
     return response.data;
   }
 
   /**
    * Get model details by ID
+   * Backend endpoint: GET /v1/public/multi-model/models/{id}
+   * Note: Response structure may differ from frontend interface
    */
   async getModelDetails(id: number): Promise<AIModel> {
-    const response = await apiClient.get<AIModel>(`/v1/ai-registry/models/${id}`);
+    const response = await apiClient.get<AIModel>(`/v1/public/multi-model/models/${id}`);
     return response.data;
   }
 
   /**
    * Switch the default AI model
+   * Backend endpoint: POST /v1/public/multi-model/models/{id}/switch
+   * TODO: Verify this endpoint exists on the backend - may need adjustment
+   * Note: Response structure may differ from frontend interface
    */
   async switchDefaultModel(id: number): Promise<SwitchModelResponse> {
     const response = await apiClient.post<SwitchModelResponse>(
-      `/v1/ai-registry/models/${id}/switch`,
+      `/v1/public/multi-model/models/${id}/switch`,
       {}
     );
     return response.data;
@@ -198,6 +219,8 @@ class AIRegistryService {
 
   /**
    * Get usage summary with optional date range
+   * Backend endpoint: GET /v1/public/ai-usage/aggregate
+   * Note: Response structure may differ - backend returns aggregate data
    */
   async getUsageSummary(params: UsageQueryParams = {}): Promise<UsageSummary> {
     const queryParams = new URLSearchParams(
@@ -209,14 +232,17 @@ class AIRegistryService {
       }, {} as Record<string, string>)
     );
     const endpoint = queryParams.toString()
-      ? `/v1/ai-usage/summary?${queryParams.toString()}`
-      : '/v1/ai-usage/summary';
+      ? `/v1/public/ai-usage/aggregate?${queryParams.toString()}`
+      : '/v1/public/ai-usage/aggregate';
     const response = await apiClient.get<UsageSummary>(endpoint);
     return response.data;
   }
 
   /**
    * Get usage breakdown by model
+   * TODO: No direct backend endpoint for model-specific usage breakdown
+   * Using /v1/public/ai-usage/costs as closest alternative
+   * Note: Response structure may differ significantly - may need data transformation
    */
   async getUsageByModel(params: UsageQueryParams = {}): Promise<UsageByModelResponse> {
     const queryParams = new URLSearchParams(
@@ -228,14 +254,18 @@ class AIRegistryService {
       }, {} as Record<string, string>)
     );
     const endpoint = queryParams.toString()
-      ? `/v1/ai-usage/models?${queryParams.toString()}`
-      : '/v1/ai-usage/models';
+      ? `/v1/public/ai-usage/costs?${queryParams.toString()}`
+      : '/v1/public/ai-usage/costs';
     const response = await apiClient.get<UsageByModelResponse>(endpoint);
     return response.data;
   }
 
   /**
    * Get daily usage trends
+   * TODO: No direct backend endpoint for daily usage trends
+   * Using /v1/public/ai-usage/logs as closest alternative
+   * Note: Response structure will differ - backend returns logs, not daily aggregates
+   * Frontend may need to aggregate log data by date for daily trends
    */
   async getDailyUsage(params: UsageQueryParams = {}): Promise<DailyUsageResponse> {
     const queryParams = new URLSearchParams(
@@ -247,17 +277,19 @@ class AIRegistryService {
       }, {} as Record<string, string>)
     );
     const endpoint = queryParams.toString()
-      ? `/v1/ai-usage/daily?${queryParams.toString()}`
-      : '/v1/ai-usage/daily';
+      ? `/v1/public/ai-usage/logs?${queryParams.toString()}`
+      : '/v1/public/ai-usage/logs';
     const response = await apiClient.get<DailyUsageResponse>(endpoint);
     return response.data;
   }
 
   /**
    * Export usage data
+   * Backend endpoint: POST /v1/public/ai-usage/export
+   * Note: Response structure may differ from frontend interface
    */
   async exportUsageData(params: ExportUsageParams): Promise<ExportResponse> {
-    const response = await apiClient.post<ExportResponse>('/v1/ai-usage/export', params);
+    const response = await apiClient.post<ExportResponse>('/v1/public/ai-usage/export', params);
     return response.data;
   }
 
@@ -265,9 +297,11 @@ class AIRegistryService {
 
   /**
    * Load context from vector database
+   * Backend endpoint: POST /v1/public/ai-context/contexts
+   * Note: Response structure may differ from frontend interface
    */
   async loadContext(query: ContextQuery): Promise<ContextResponse> {
-    const response = await apiClient.post<ContextResponse>('/v1/ai-context/load', query);
+    const response = await apiClient.post<ContextResponse>('/v1/public/ai-context/contexts', query);
     return response.data;
   }
 
@@ -275,10 +309,12 @@ class AIRegistryService {
 
   /**
    * Perform multi-model inference
+   * Backend endpoint: POST /v1/public/ai-orchestration/requests
+   * Note: Response structure may differ from frontend interface
    */
   async multiModelInference(request: MultiModelInferenceRequest): Promise<MultiModelInferenceResponse> {
     const response = await apiClient.post<MultiModelInferenceResponse>(
-      '/v1/ai-orchestration/multi-model',
+      '/v1/public/ai-orchestration/requests',
       request
     );
     return response.data;

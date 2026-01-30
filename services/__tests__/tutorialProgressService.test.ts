@@ -4,19 +4,14 @@
  * Tests persistent storage, retry logic, fallback mechanisms, and migration utilities
  */
 
-import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
+
 import TutorialProgressService from '../tutorialProgressService';
-import apiClient from '@/utils/apiClient';
+import apiClient from '@/lib/api-client';
 import type { TutorialProgress, ChapterProgress, QuizScore } from '@/types/tutorial';
 
 // Mock apiClient
-vi.mock('@/utils/apiClient', () => ({
-  default: {
-    get: vi.fn(),
-    post: vi.fn(),
-    delete: vi.fn(),
-  },
-}));
+jest.mock('@/lib/api-client');
+const mockedApiClient = apiClient as jest.Mocked<typeof apiClient>;
 
 // Mock localStorage
 const localStorageMock = (() => {
@@ -45,12 +40,12 @@ describe('TutorialProgressService', () => {
   const userId = 'user-456';
 
   beforeEach(() => {
-    vi.clearAllMocks();
+    jest.clearAllMocks();
     localStorageMock.clear();
   });
 
   afterEach(() => {
-    vi.clearAllMocks();
+    jest.clearAllMocks();
   });
 
   describe('getProgress', () => {
@@ -69,7 +64,7 @@ describe('TutorialProgressService', () => {
         lastWatchedAt: new Date(),
       };
 
-      vi.mocked(apiClient.get).mockResolvedValue({ data: mockProgress });
+      mockedApiClient.get.mockResolvedValue({ data: mockProgress , status: 200, statusText: 'OK' });
 
       const result = await TutorialProgressService.getProgress(tutorialId, userId);
 
@@ -102,7 +97,7 @@ describe('TutorialProgressService', () => {
       );
 
       // Mock API failure
-      vi.mocked(apiClient.get).mockRejectedValue(new Error('Network error'));
+      mockedApiClient.get.mockRejectedValue(new Error('Network error'));
 
       const result = await TutorialProgressService.getProgress(tutorialId, userId);
 
@@ -110,7 +105,7 @@ describe('TutorialProgressService', () => {
     });
 
     it('should return default progress when no data exists', async () => {
-      vi.mocked(apiClient.get).mockRejectedValue(new Error('Not found'));
+      mockedApiClient.get.mockRejectedValue(new Error('Not found'));
 
       const result = await TutorialProgressService.getProgress(tutorialId, userId);
 
@@ -145,10 +140,10 @@ describe('TutorialProgressService', () => {
       };
 
       // Fail twice, succeed on third attempt
-      vi.mocked(apiClient.get)
+      mockedApiClient.get
         .mockRejectedValueOnce(new Error('Network error'))
         .mockRejectedValueOnce(new Error('Network error'))
-        .mockResolvedValueOnce({ data: mockProgress });
+        .mockResolvedValueOnce({ data: mockProgress, status: 200, statusText: 'OK' });
 
       const result = await TutorialProgressService.getProgress(tutorialId, userId);
 
@@ -180,7 +175,7 @@ describe('TutorialProgressService', () => {
         lastWatchedAt: new Date(),
       };
 
-      vi.mocked(apiClient.post).mockResolvedValue({ data: mockProgress });
+      mockedApiClient.post.mockResolvedValue({ data: mockProgress , status: 200, statusText: 'OK' });
 
       const result = await TutorialProgressService.updateChapterProgress(
         tutorialId,
@@ -207,7 +202,7 @@ describe('TutorialProgressService', () => {
         lastPosition: 300,
       };
 
-      vi.mocked(apiClient.post).mockRejectedValue(new Error('Network error'));
+      mockedApiClient.post.mockRejectedValue(new Error('Network error'));
 
       await expect(
         TutorialProgressService.updateChapterProgress(tutorialId, userId, chapterUpdate)
@@ -252,7 +247,7 @@ describe('TutorialProgressService', () => {
         lastWatchedAt: new Date(),
       };
 
-      vi.mocked(apiClient.post).mockResolvedValue({ data: mockProgress });
+      mockedApiClient.post.mockResolvedValue({ data: mockProgress , status: 200, statusText: 'OK' });
 
       const result = await TutorialProgressService.updateQuizScore(
         tutorialId,
@@ -301,7 +296,7 @@ describe('TutorialProgressService', () => {
       );
 
       // Mock API failure to trigger localStorage fallback
-      vi.mocked(apiClient.post).mockRejectedValue(new Error('Network error'));
+      mockedApiClient.post.mockRejectedValue(new Error('Network error'));
 
       const secondAttempt: QuizScore = {
         quizId: 'quiz-1',
@@ -342,7 +337,7 @@ describe('TutorialProgressService', () => {
         lastWatchedAt: new Date(),
       };
 
-      vi.mocked(apiClient.post).mockResolvedValue({ data: mockProgress });
+      mockedApiClient.post.mockResolvedValue({ data: mockProgress , status: 200, statusText: 'OK' });
 
       const result = await TutorialProgressService.completeTutorial(tutorialId, userId);
 
@@ -357,7 +352,7 @@ describe('TutorialProgressService', () => {
 
   describe('resetProgress', () => {
     it('should reset progress successfully', async () => {
-      vi.mocked(apiClient.delete).mockResolvedValue({});
+      mockedApiClient.delete.mockResolvedValue({ data: {}, status: 200, statusText: 'OK' });
 
       await TutorialProgressService.resetProgress(tutorialId, userId);
 
@@ -371,7 +366,7 @@ describe('TutorialProgressService', () => {
       // Add data to localStorage
       localStorageMock.setItem(`tutorial_progress_${tutorialId}_${userId}`, 'test-data');
 
-      vi.mocked(apiClient.delete).mockResolvedValue({});
+      mockedApiClient.delete.mockResolvedValue({ data: {}, status: 200, statusText: 'OK' });
 
       await TutorialProgressService.resetProgress(tutorialId, userId);
 
@@ -419,8 +414,8 @@ describe('TutorialProgressService', () => {
       );
 
       // Mock API calls
-      vi.mocked(apiClient.get).mockRejectedValue(new Error('Not found'));
-      vi.mocked(apiClient.post).mockResolvedValue({ data: localProgress });
+      mockedApiClient.get.mockRejectedValue(new Error('Not found'));
+      mockedApiClient.post.mockResolvedValue({ data: localProgress , status: 200, statusText: 'OK' });
 
       const result = await TutorialProgressService.migrateLocalStorageToBackend(
         tutorialId,
@@ -458,7 +453,7 @@ describe('TutorialProgressService', () => {
         JSON.stringify(localProgress)
       );
 
-      vi.mocked(apiClient.get).mockResolvedValue({ data: backendProgress });
+      mockedApiClient.get.mockResolvedValue({ data: backendProgress , status: 200, statusText: 'OK' });
 
       const result = await TutorialProgressService.migrateLocalStorageToBackend(
         tutorialId,

@@ -5,6 +5,9 @@
 
 import apiClient from './api-client';
 
+// Base path for organization endpoints
+const ORGANIZATIONS_BASE = '/v1/public/organizations';
+
 // Type definitions
 export interface CreateOrganizationData {
   name: string;
@@ -66,7 +69,7 @@ class OrganizationService {
    * Create a new organization
    */
   async createOrganization(data: CreateOrganizationData): Promise<Organization> {
-    const response = await apiClient.post<Organization>('/v1/organizations', data);
+    const response = await apiClient.post<Organization>(`${ORGANIZATIONS_BASE}/`, data);
     return response.data;
   }
 
@@ -74,7 +77,7 @@ class OrganizationService {
    * List all organizations for the current user
    */
   async listOrganizations(): Promise<OrganizationsResponse> {
-    const response = await apiClient.get<OrganizationsResponse>('/v1/organizations');
+    const response = await apiClient.get<OrganizationsResponse>(`${ORGANIZATIONS_BASE}/`);
     return response.data;
   }
 
@@ -82,7 +85,7 @@ class OrganizationService {
    * Get organization details by ID
    */
   async getOrganization(id: number): Promise<Organization> {
-    const response = await apiClient.get<Organization>(`/v1/organizations/${id}`);
+    const response = await apiClient.get<Organization>(`${ORGANIZATIONS_BASE}/${id}/`);
     return response.data;
   }
 
@@ -90,7 +93,7 @@ class OrganizationService {
    * Update organization details
    */
   async updateOrganization(id: number, data: UpdateOrganizationData): Promise<Organization> {
-    const response = await apiClient.put<Organization>(`/v1/organizations/${id}`, data);
+    const response = await apiClient.put<Organization>(`${ORGANIZATIONS_BASE}/${id}/`, data);
     return response.data;
   }
 
@@ -98,16 +101,17 @@ class OrganizationService {
    * Delete an organization
    */
   async deleteOrganization(id: number): Promise<DeleteResponse> {
-    const response = await apiClient.delete<DeleteResponse>(`/v1/organizations/${id}`);
+    const response = await apiClient.delete<DeleteResponse>(`${ORGANIZATIONS_BASE}/${id}/`);
     return response.data;
   }
 
   /**
    * Add a member to an organization
+   * TODO: Verify backend endpoint exists at /v1/public/organizations/{id}/members/
    */
   async addMember(organizationId: number, data: AddMemberData): Promise<OrganizationMember> {
     const response = await apiClient.post<OrganizationMember>(
-      `/v1/organizations/${organizationId}/members`,
+      `${ORGANIZATIONS_BASE}/${organizationId}/members/`,
       data
     );
     return response.data;
@@ -115,20 +119,22 @@ class OrganizationService {
 
   /**
    * List all members of an organization
+   * TODO: Verify backend endpoint exists at /v1/public/organizations/{id}/members/
    */
   async listMembers(organizationId: number): Promise<MembersResponse> {
     const response = await apiClient.get<MembersResponse>(
-      `/v1/organizations/${organizationId}/members`
+      `${ORGANIZATIONS_BASE}/${organizationId}/members/`
     );
     return response.data;
   }
 
   /**
    * Remove a member from an organization
+   * TODO: Verify backend endpoint exists at /v1/public/organizations/{id}/members/{userId}/
    */
   async removeMember(organizationId: number, userId: number): Promise<DeleteResponse> {
     const response = await apiClient.delete<DeleteResponse>(
-      `/v1/organizations/${organizationId}/members/${userId}`
+      `${ORGANIZATIONS_BASE}/${organizationId}/members/${userId}/`
     );
     return response.data;
   }

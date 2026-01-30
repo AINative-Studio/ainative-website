@@ -3,7 +3,7 @@
  * Tests complete RLHF workflows including feedback submission, statistics, and agent improvement
  */
 
-import { rlhfService } from '@/services/RLHFService';
+import { rlhfService } from '../../services/RLHFService';
 import { setupIntegrationTest, testUtils } from './setup';
 
 describe('RLHF Feedback Collection Flow Integration Tests', () => {
@@ -19,10 +19,11 @@ describe('RLHF Feedback Collection Flow Integration Tests', () => {
     it('should submit positive feedback for agent output', async () => {
       // Given: User interacts with AI agent
       const feedbackData = {
-        type: 'agent_output',
+        type: 'agent_output_feedback' as const,
         prompt: 'Write a function to calculate fibonacci',
         response: 'def fibonacci(n): ...',
-        rating: 1, // positive
+        rating: 1 as const, // positive
+        timestamp: new Date().toISOString(),
         stepNumber: 1,
         stepName: 'Code Generation',
         workflowId: 'workflow-123',
@@ -43,10 +44,11 @@ describe('RLHF Feedback Collection Flow Integration Tests', () => {
     it('should submit negative feedback with details', async () => {
       // Given: User finds issue with agent output
       const feedbackData = {
-        type: 'agent_output',
+        type: 'agent_output_feedback' as const,
         prompt: 'Explain quantum computing',
         response: 'Quantum computing uses quantum mechanics...',
-        rating: -1, // negative
+        rating: -1 as const, // negative
+        timestamp: new Date().toISOString(),
         stepNumber: 2,
         stepName: 'Explanation Generation',
         workflowId: 'workflow-123',
@@ -86,10 +88,11 @@ describe('RLHF Feedback Collection Flow Integration Tests', () => {
       const results = await Promise.all(
         steps.map(step =>
           rlhfService.submitFeedback(projectId, {
-            type: 'workflow_step',
+            type: 'workflow_step_feedback' as const,
             prompt: `Step ${step.stepNumber}`,
             response: 'Output',
-            rating: step.rating,
+            rating: step.rating as 1 | -1,
+            timestamp: new Date().toISOString(),
             stepNumber: step.stepNumber,
             stepName: step.stepName,
             workflowId: 'workflow-123',
@@ -109,10 +112,11 @@ describe('RLHF Feedback Collection Flow Integration Tests', () => {
     it('should include metadata in feedback', async () => {
       // Given: Feedback with rich metadata
       const feedbackData = {
-        type: 'agent_output',
+        type: 'agent_output_feedback' as const,
         prompt: 'Generate API endpoint',
         response: '@app.route("/api/users")',
-        rating: 1,
+        rating: 1 as const,
+        timestamp: new Date().toISOString(),
         stepNumber: 1,
         stepName: 'API Generation',
         workflowId: 'workflow-123',
@@ -251,10 +255,11 @@ describe('RLHF Feedback Collection Flow Integration Tests', () => {
     it('should handle complete feedback collection workflow', async () => {
       // Step 1: Agent generates output
       const agentOutput = {
-        type: 'agent_output',
+        type: 'agent_output_feedback' as const,
         prompt: 'Create React component for user profile',
         response: 'const UserProfile = () => { ... }',
-        rating: 1,
+        rating: 1 as const,
+        timestamp: new Date().toISOString(),
         stepNumber: 1,
         stepName: 'Component Generation',
         workflowId: 'workflow-complete-123',
@@ -292,9 +297,10 @@ describe('RLHF Feedback Collection Flow Integration Tests', () => {
     it('should handle multiple users providing feedback', async () => {
       // Given: Same agent output reviewed by multiple users
       const baseData = {
-        type: 'agent_output',
+        type: 'agent_output_feedback' as const,
         prompt: 'Optimize database query',
         response: 'SELECT * FROM users WHERE ...',
+        timestamp: new Date().toISOString(),
         stepNumber: 1,
         stepName: 'Query Optimization',
         workflowId: 'workflow-123',
@@ -304,9 +310,9 @@ describe('RLHF Feedback Collection Flow Integration Tests', () => {
 
       // When: Multiple users submit feedback
       const feedbacks = await Promise.all([
-        rlhfService.submitFeedback(projectId, { ...baseData, rating: 1 }),
-        rlhfService.submitFeedback(projectId, { ...baseData, rating: 1 }),
-        rlhfService.submitFeedback(projectId, { ...baseData, rating: -1 }),
+        rlhfService.submitFeedback(projectId, { ...baseData, rating: 1 as const }),
+        rlhfService.submitFeedback(projectId, { ...baseData, rating: 1 as const }),
+        rlhfService.submitFeedback(projectId, { ...baseData, rating: -1 as const }),
       ]);
 
       // Then: All feedback is recorded
@@ -329,10 +335,11 @@ describe('RLHF Feedback Collection Flow Integration Tests', () => {
     it('should track agent improvements after feedback', async () => {
       // Given: Agent receives negative feedback
       await rlhfService.submitFeedback(projectId, {
-        type: 'agent_output',
+        type: 'agent_output_feedback' as const,
         prompt: 'Write test cases',
         response: 'Initial tests...',
-        rating: -1,
+        rating: -1 as const,
+        timestamp: new Date().toISOString(),
         stepNumber: 1,
         stepName: 'Test Generation',
         workflowId: 'workflow-improve-123',
@@ -342,10 +349,11 @@ describe('RLHF Feedback Collection Flow Integration Tests', () => {
 
       // When: Agent is improved and generates new output
       const improvedFeedback = await rlhfService.submitFeedback(projectId, {
-        type: 'agent_output',
+        type: 'agent_output_feedback' as const,
         prompt: 'Write test cases',
         response: 'Improved tests with better coverage...',
-        rating: 1,
+        rating: 1 as const,
+        timestamp: new Date().toISOString(),
         stepNumber: 1,
         stepName: 'Test Generation',
         workflowId: 'workflow-improve-456',
@@ -379,6 +387,7 @@ describe('RLHF Feedback Collection Flow Integration Tests', () => {
         prompt: '',
         response: '',
         rating: 999,
+        timestamp: new Date().toISOString(),
         stepNumber: -1,
         stepName: '',
         workflowId: '',
@@ -387,7 +396,7 @@ describe('RLHF Feedback Collection Flow Integration Tests', () => {
       };
 
       // When: Submitting invalid feedback
-      const result = await rlhfService.submitFeedback('invalid-project', invalidData);
+      const result = await rlhfService.submitFeedback('invalid-project', invalidData as any);
 
       // Then: Error is handled gracefully
       expect(result).toBeDefined();
@@ -397,10 +406,11 @@ describe('RLHF Feedback Collection Flow Integration Tests', () => {
     it('should handle concurrent feedback submissions', async () => {
       // Given: Multiple simultaneous feedback submissions
       const feedbacks = Array.from({ length: 5 }, (_, i) => ({
-        type: 'agent_output',
+        type: 'agent_output_feedback' as const,
         prompt: `Prompt ${i}`,
         response: `Response ${i}`,
-        rating: 1,
+        rating: 1 as const,
+        timestamp: new Date().toISOString(),
         stepNumber: i + 1,
         stepName: `Step ${i + 1}`,
         workflowId: 'workflow-123',
@@ -423,10 +433,11 @@ describe('RLHF Feedback Collection Flow Integration Tests', () => {
     it('should handle missing project ID', async () => {
       // Given: Invalid project ID
       const feedbackData = {
-        type: 'agent_output',
+        type: 'agent_output_feedback' as const,
         prompt: 'Test',
         response: 'Test response',
-        rating: 1,
+        rating: 1 as const,
+        timestamp: new Date().toISOString(),
         stepNumber: 1,
         stepName: 'Test',
         workflowId: 'workflow-123',
@@ -444,10 +455,11 @@ describe('RLHF Feedback Collection Flow Integration Tests', () => {
     it('should handle network failures during feedback', async () => {
       // Given: Network might be unstable
       const feedbackData = {
-        type: 'agent_output',
+        type: 'agent_output_feedback' as const,
         prompt: 'Test',
         response: 'Test',
-        rating: 1,
+        rating: 1 as const,
+        timestamp: new Date().toISOString(),
         stepNumber: 1,
         stepName: 'Test',
         workflowId: 'workflow-123',

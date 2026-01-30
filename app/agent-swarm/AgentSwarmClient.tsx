@@ -119,7 +119,7 @@ export default function AgentSwarmClient() {
       </div>
 
       {/* Hero Section */}
-      <section className="full-width-section relative min-h-[80vh] flex items-center justify-center pt-20 pb-12 z-10">
+      <section className="full-width-section relative min-h-[80vh] flex items-center justify-center pb-12 z-10">
         <div className="container-custom max-w-6xl mx-auto px-4 relative z-10">
           <motion.div
             initial={{ opacity: 0, y: 20 }}

@@ -273,15 +273,23 @@ export function markTutorialComplete(tutorialId: string): void {
     if (!progress) {
         // Create new progress if doesn't exist
         const newProgress: TutorialProgress = {
+            tutorialId,
+            userId: null,
+            completionPercentage: 100,
+            chaptersCompleted: 0,
+            totalChapters: 0,
+            chapterProgress: [],
+            quizScores: [],
+            certificateEligible: true,
+            certificateEarned: true,
+            totalWatchTime: 0,
+            lastWatchedAt: null,
             videoId: tutorialId,
             completedChapters: [],
             currentChapter: null,
             lastWatchedTime: 0,
-            quizScores: [],
             notes: [],
             bookmarks: [],
-            completionPercentage: 100,
-            certificateEarned: true,
             lastUpdated: Date.now(),
         };
         saveTutorialProgress(newProgress);

@@ -1,324 +1,81 @@
 /**
- * QNN Code Analysis API Service
+ * QNN Code Analysis Service
  *
- * This service handles communication with the QNN API for code quality analysis.
- * Replace the mock implementation with actual API calls when backend is ready.
+ * Connects to the QNN API for code quality analysis using real ML-powered
+ * feature extraction and quality assessment.
+ *
+ * Refs #435
  */
 
+import { QNNApiClient, QNNError, QNNValidationError, QNNNetworkError, QNNTimeoutError } from '@/services/QNNApiClient';
+import type { RepositoryAnalysis } from '@/types/qnn.types';
+
+// ============================================================================
+// Type Definitions
+// ============================================================================
+
 export interface CodeMetrics {
-  file_size_bytes: number;
-  line_count: number;
-  comment_count: number;
-  function_count: number;
-  class_count: number;
-  avg_function_length: number;
-  cyclomatic_complexity?: number;
-  comment_ratio?: number;
+    fileSizeBytes: number;
+    lineCount: number;
+    commentCount: number;
+    functionCount: number;
+    classCount: number;
+    avgFunctionLength: number;
+    cyclomaticComplexity?: number;
+    commentRatio?: number;
 }
 
 export interface AnalysisResult {
-  quality_score: number;
-  features: CodeMetrics;
-  normalized_features?: number[];
-  suggestions?: string[];
-  language: string;
-  timestamp: string;
+    qualityScore: number;
+    features: CodeMetrics;
+    normalizedFeatures?: number[];
+    suggestions?: string[];
+    language: string;
+    timestamp: string;
+    repositoryId?: string;
 }
 
 export interface AnalyzeCodeRequest {
-  code: string;
-  language: string;
+    code: string;
+    language: string;
+    repositoryId?: string;
 }
 
-export interface ApiError {
-  message: string;
-  code: string;
-  details?: Record<string, unknown>;
+export interface RepositoryAnalyzeRequest {
+    repositoryId: string;
 }
 
-/**
- * QNN API configuration
- */
-const API_CONFIG = {
-  baseUrl: process.env.VITE_QNN_API_URL || 'http://localhost:8000',
-  endpoints: {
-    extractFeatures: '/api/v1/features/extract-from-code',
-    analyzeQuality: '/api/v1/quality/analyze',
-  },
-  timeout: 30000, // 30 seconds
-};
-
-/**
- * Get authorization token from storage or environment
- */
-const getAuthToken = (): string | null => {
-  // Check localStorage first
-  const token = localStorage.getItem('qnn_api_token');
-  if (token) return token;
-
-  // Fallback to environment variable for development
-  return process.env.VITE_QNN_API_TOKEN || null;
-};
-
-/**
- * Make authenticated API request
- */
-async function apiRequest<T>(
-  endpoint: string,
-  options: RequestInit = {}
-): Promise<T> {
-  const token = getAuthToken();
-  const url = `${API_CONFIG.baseUrl}${endpoint}`;
-
-  const headers: Record<string, string> = {
-    'Content-Type': 'application/json',
-    ...(options.headers as Record<string, string>),
-  };
-
-  // Add authorization if token exists
-  if (token) {
-    headers['Authorization'] = `Bearer ${token}`;
-  }
-
-  const controller = new AbortController();
-  const timeoutId = setTimeout(() => controller.abort(), API_CONFIG.timeout);
-
-  try {
-    const response = await fetch(url, {
-      ...options,
-      headers,
-      signal: controller.signal,
-    });
-
-    clearTimeout(timeoutId);
-
-    // Handle non-OK responses
-    if (!response.ok) {
-      const error = await response.json().catch(() => ({
-        message: `HTTP ${response.status}: ${response.statusText}`,
-        code: 'HTTP_ERROR',
-      }));
-
-      throw {
-        message: error.message || 'API request failed',
-        code: error.code || `HTTP_${response.status}`,
-        details: error,
-      } as ApiError;
-    }
-
-    return await response.json();
-  } catch (error) {
-    clearTimeout(timeoutId);
-
-    // Handle abort/timeout
-    if (error instanceof Error && error.name === 'AbortError') {
-      throw {
-        message: 'Request timeout - analysis took too long',
-        code: 'TIMEOUT',
-      } as ApiError;
-    }
-
-    // Handle network errors
-    if (error instanceof TypeError) {
-      throw {
-        message: 'Network error - unable to reach API server',
-        code: 'NETWORK_ERROR',
-        details: { originalError: error.message },
-      } as ApiError;
-    }
-
-    // Re-throw API errors
-    throw error;
-  }
+export interface CodeAnalysisApiError {
+    message: string;
+    code: string;
+    details?: Record<string, unknown>;
 }
 
-/**
- * Analyze code quality using QNN API
- */
-export async function analyzeCode(
-  request: AnalyzeCodeRequest
-): Promise<AnalysisResult> {
-  try {
-    const result = await apiRequest<AnalysisResult>(
-      API_CONFIG.endpoints.extractFeatures,
-      {
-        method: 'POST',
-        body: JSON.stringify(request),
-      }
-    );
-
-    return result;
-  } catch (error) {
-    console.error('Code analysis failed:', error);
-    throw error;
-  }
+// API Response types for code analysis endpoint
+interface CodeAnalysisApiResponse {
+    quality_score: number;
+    features: {
+        file_size_bytes: number;
+        line_count: number;
+        comment_count: number;
+        function_count: number;
+        class_count: number;
+        avg_function_length: number;
+        cyclomatic_complexity?: number;
+        comment_ratio?: number;
+    };
+    normalized_features?: number[];
+    suggestions?: string[];
+    language: string;
+    timestamp: string;
+    repository_id?: string;
 }
 
-/**
- * Mock implementation for development/testing
- * Remove this when connecting to real API
- */
-export async function analyzeCodeMock(
-  code: string,
-  language: string
-): Promise<AnalysisResult> {
-  // Simulate API delay
-  await new Promise(resolve => setTimeout(resolve, 1500));
+// ============================================================================
+// Supported Languages
+// ============================================================================
 
-  // Calculate basic metrics
-  const lines = code.split('\n');
-  const lineCount = lines.filter(line => line.trim().length > 0).length;
-
-  // Count comments (basic pattern matching)
-  const commentCount = lines.filter(line => {
-    const trimmed = line.trim();
-    return trimmed.startsWith('//') ||
-           trimmed.startsWith('#') ||
-           trimmed.startsWith('/*') ||
-           trimmed.startsWith('*');
-  }).length;
-
-  // Count functions (basic pattern matching)
-  const functionPatterns = {
-    python: /def\s+\w+/g,
-    javascript: /function\s+\w+/g,
-    typescript: /function\s+\w+/g,
-    java: /(public|private|protected)?\s*(static)?\s*\w+\s+\w+\s*\(/g,
-    cpp: /\w+\s+\w+\s*\(/g,
-    go: /func\s+\w+/g,
-    rust: /fn\s+\w+/g,
-  };
-
-  const functionPattern = functionPatterns[language as keyof typeof functionPatterns] || /function\s+\w+/g;
-  const functionMatches = code.match(functionPattern);
-  const functionCount = functionMatches ? functionMatches.length : 0;
-
-  // Count classes
-  const classMatches = code.match(/class\s+\w+/g);
-  const classCount = classMatches ? classMatches.length : 0;
-
-  // Calculate average function length
-  const avgFunctionLength = functionCount > 0 ? lineCount / functionCount : 0;
-
-  // Calculate comment ratio
-  const commentRatio = commentCount / Math.max(lineCount, 1);
-
-  // Calculate quality score (0-1 scale)
-  let qualityScore = 0.5; // Base score
-
-  // Adjust based on comment ratio (ideal: 10-30%)
-  if (commentRatio >= 0.1 && commentRatio <= 0.3) {
-    qualityScore += 0.15;
-  } else if (commentRatio > 0) {
-    qualityScore += 0.05;
-  }
-
-  // Adjust based on function length (ideal: 5-20 lines)
-  if (avgFunctionLength > 5 && avgFunctionLength < 20) {
-    qualityScore += 0.15;
-  } else if (avgFunctionLength > 0 && avgFunctionLength <= 30) {
-    qualityScore += 0.08;
-  }
-
-  // Bonus for having functions
-  if (functionCount > 0) qualityScore += 0.1;
-
-  // Bonus for having classes
-  if (classCount > 0) qualityScore += 0.05;
-
-  // Bonus for reasonable file size
-  if (lineCount > 10 && lineCount < 500) qualityScore += 0.05;
-
-  // Cap at 1.0
-  qualityScore = Math.min(qualityScore, 1.0);
-
-  // Normalize features for radar chart (0-1 scale)
-  const normalizedFeatures = [
-    Math.min(lineCount / 100, 1),      // Code size (0-100 lines as reference)
-    Math.min(commentRatio * 10, 1),    // Comments (0-10% as reference)
-    Math.min(functionCount / 10, 1),   // Functions (0-10 as reference)
-    Math.min(classCount / 5, 1),       // Classes (0-5 as reference)
-    Math.min(avgFunctionLength / 30, 1), // Structure (0-30 lines as reference)
-    qualityScore,                      // Overall quality
-  ];
-
-  // Generate suggestions
-  const suggestions: string[] = [];
-
-  if (commentRatio < 0.1) {
-    suggestions.push('Add more comments to improve code readability and maintainability');
-  }
-
-  if (avgFunctionLength > 20) {
-    suggestions.push('Consider breaking down long functions into smaller, more focused functions');
-  }
-
-  if (functionCount === 0 && lineCount > 50) {
-    suggestions.push('Organize code into functions for better structure and reusability');
-  }
-
-  if (classCount === 0 && lineCount > 100) {
-    suggestions.push('Consider using classes or modules to organize related functionality');
-  }
-
-  if (commentRatio > 0.5) {
-    suggestions.push('Review excessive comments - ensure code is self-documenting where possible');
-  }
-
-  if (avgFunctionLength < 3 && functionCount > 10) {
-    suggestions.push('Some functions may be too granular - consider consolidating related logic');
-  }
-
-  if (lineCount > 500) {
-    suggestions.push('Large file detected - consider splitting into multiple modules');
-  }
-
-  // Build metrics object
-  const metrics: CodeMetrics = {
-    file_size_bytes: code.length,
-    line_count: lineCount,
-    comment_count: commentCount,
-    function_count: functionCount,
-    class_count: classCount,
-    avg_function_length: parseFloat(avgFunctionLength.toFixed(1)),
-    comment_ratio: parseFloat(commentRatio.toFixed(3)),
-  };
-
-  return {
-    quality_score: parseFloat(qualityScore.toFixed(2)),
-    features: metrics,
-    normalized_features: normalizedFeatures,
-    suggestions,
-    language,
-    timestamp: new Date().toISOString(),
-  };
-}
-
-/**
- * Validate code before analysis
- */
-export function validateCode(code: string): { valid: boolean; error?: string } {
-  if (!code || typeof code !== 'string') {
-    return { valid: false, error: 'Code must be a non-empty string' };
-  }
-
-  const trimmedCode = code.trim();
-  if (trimmedCode.length === 0) {
-    return { valid: false, error: 'Code cannot be empty or whitespace only' };
-  }
-
-  if (code.length > 1024 * 1024) { // 1MB limit
-    return { valid: false, error: 'Code exceeds maximum size of 1MB' };
-  }
-
-  return { valid: true };
-}
-
-/**
- * Validate language parameter
- */
-export function validateLanguage(language: string): { valid: boolean; error?: string } {
-  const supportedLanguages = [
+const SUPPORTED_LANGUAGES = [
     'python',
     'javascript',
     'typescript',
@@ -327,63 +84,396 @@ export function validateLanguage(language: string): { valid: boolean; error?: st
     'c++',
     'go',
     'rust',
-  ];
+] as const;
 
-  if (!language || typeof language !== 'string') {
-    return { valid: false, error: 'Language must be specified' };
-  }
+export type SupportedLanguage = typeof SUPPORTED_LANGUAGES[number];
 
-  const normalizedLang = language.toLowerCase();
-  if (!supportedLanguages.includes(normalizedLang)) {
-    return {
-      valid: false,
-      error: `Unsupported language: ${language}. Supported: ${supportedLanguages.join(', ')}`,
-    };
-  }
+// ============================================================================
+// Code Analysis Service Class
+// ============================================================================
 
-  return { valid: true };
+/**
+ * Code Analysis Service
+ *
+ * Provides methods for analyzing code quality using the QNN API.
+ * Uses the QNNApiClient for proper authentication, retries, and error handling.
+ */
+export class CodeAnalysisService {
+    private readonly apiClient: QNNApiClient;
+    private readonly maxCodeSize: number = 1024 * 1024; // 1MB limit
+
+    constructor(apiClient?: QNNApiClient) {
+        this.apiClient = apiClient || new QNNApiClient();
+    }
+
+    /**
+     * Analyze code quality using QNN API
+     *
+     * @param request - The code analysis request containing code and language
+     * @returns Promise resolving to analysis results
+     * @throws QNNValidationError if input validation fails
+     * @throws QNNNetworkError if network request fails
+     * @throws QNNTimeoutError if request times out
+     */
+    async analyzeCode(request: AnalyzeCodeRequest): Promise<AnalysisResult> {
+        // Validate request before sending to API
+        const validation = this.validateAnalysisRequest(request);
+        if (!validation.valid) {
+            throw new QNNValidationError(
+                `Invalid request: ${validation.errors.join(', ')}`,
+                { errors: validation.errors }
+            );
+        }
+
+        try {
+            // Call the QNN API to analyze code
+            const response = await this.callCodeAnalysisApi(request);
+
+            // Transform API response to our internal format
+            return this.transformApiResponse(response);
+        } catch (error) {
+            // Re-throw QNN errors as-is
+            if (error instanceof QNNError) {
+                throw error;
+            }
+
+            // Wrap unknown errors
+            throw new QNNNetworkError(
+                'Code analysis request failed',
+                { originalError: String(error) }
+            );
+        }
+    }
+
+    /**
+     * Analyze repository code quality
+     *
+     * Triggers a full repository analysis using the QNN API.
+     *
+     * @param repositoryId - The repository ID to analyze
+     * @returns Promise resolving to repository analysis
+     */
+    async analyzeRepository(repositoryId: string): Promise<RepositoryAnalysis> {
+        if (!repositoryId || typeof repositoryId !== 'string') {
+            throw new QNNValidationError('Repository ID must be a non-empty string');
+        }
+
+        const response = await this.apiClient.analyzeRepository(repositoryId);
+        return response.data;
+    }
+
+    /**
+     * Get existing repository analysis
+     *
+     * @param repositoryId - The repository ID
+     * @returns Promise resolving to repository analysis
+     */
+    async getRepositoryAnalysis(repositoryId: string): Promise<RepositoryAnalysis> {
+        if (!repositoryId || typeof repositoryId !== 'string') {
+            throw new QNNValidationError('Repository ID must be a non-empty string');
+        }
+
+        return this.apiClient.getRepositoryAnalysis(repositoryId);
+    }
+
+    /**
+     * Validate code input
+     *
+     * @param code - The code string to validate
+     * @returns Validation result
+     */
+    validateCode(code: string): { valid: boolean; error?: string } {
+        if (!code || typeof code !== 'string') {
+            return { valid: false, error: 'Code must be a non-empty string' };
+        }
+
+        const trimmedCode = code.trim();
+        if (trimmedCode.length === 0) {
+            return { valid: false, error: 'Code cannot be empty or whitespace only' };
+        }
+
+        if (code.length > this.maxCodeSize) {
+            return { valid: false, error: 'Code exceeds maximum size of 1MB' };
+        }
+
+        return { valid: true };
+    }
+
+    /**
+     * Validate language parameter
+     *
+     * @param language - The programming language
+     * @returns Validation result
+     */
+    validateLanguage(language: string): { valid: boolean; error?: string } {
+        if (!language || typeof language !== 'string') {
+            return { valid: false, error: 'Language must be specified' };
+        }
+
+        const normalizedLang = language.toLowerCase();
+        if (!SUPPORTED_LANGUAGES.includes(normalizedLang as SupportedLanguage)) {
+            return {
+                valid: false,
+                error: `Unsupported language: ${language}. Supported: ${SUPPORTED_LANGUAGES.join(', ')}`,
+            };
+        }
+
+        return { valid: true };
+    }
+
+    /**
+     * Comprehensive validation for analysis request
+     *
+     * @param request - The analysis request to validate
+     * @returns Validation result with all errors
+     */
+    validateAnalysisRequest(
+        request: AnalyzeCodeRequest
+    ): { valid: boolean; errors: string[] } {
+        const errors: string[] = [];
+
+        const codeValidation = this.validateCode(request.code);
+        if (!codeValidation.valid && codeValidation.error) {
+            errors.push(codeValidation.error);
+        }
+
+        const langValidation = this.validateLanguage(request.language);
+        if (!langValidation.valid && langValidation.error) {
+            errors.push(langValidation.error);
+        }
+
+        return {
+            valid: errors.length === 0,
+            errors,
+        };
+    }
+
+    /**
+     * Format API error for display
+     *
+     * @param error - The error to format
+     * @returns Human-readable error message
+     */
+    formatApiError(error: unknown): string {
+        if (typeof error === 'string') {
+            return error;
+        }
+
+        if (error instanceof QNNError) {
+            return error.message;
+        }
+
+        if (error && typeof error === 'object' && 'message' in error) {
+            return (error as CodeAnalysisApiError).message;
+        }
+
+        return 'An unexpected error occurred during analysis';
+    }
+
+    /**
+     * Get list of supported languages
+     *
+     * @returns Array of supported language names
+     */
+    getSupportedLanguages(): readonly string[] {
+        return SUPPORTED_LANGUAGES;
+    }
+
+    // =========================================================================
+    // Private Methods
+    // =========================================================================
+
+    /**
+     * Call the QNN code analysis API endpoint
+     */
+    private async callCodeAnalysisApi(
+        request: AnalyzeCodeRequest
+    ): Promise<CodeAnalysisApiResponse> {
+        // The QNN API expects snake_case for the request body
+        const apiRequest = {
+            code: request.code,
+            language: request.language.toLowerCase(),
+            repository_id: request.repositoryId,
+        };
+
+        // Use the underlying axios client from QNNApiClient
+        // We access the client directly for custom endpoints
+        const client = (this.apiClient as unknown as { client: import('axios').AxiosInstance }).client;
+
+        if (!client) {
+            // Fallback: use fetch if client is not accessible
+            return this.callCodeAnalysisApiFetch(apiRequest);
+        }
+
+        const response = await client.post<CodeAnalysisApiResponse>(
+            '/v1/code/analyze',
+            apiRequest
+        );
+
+        return response.data;
+    }
+
+    /**
+     * Fallback fetch implementation for code analysis API
+     */
+    private async callCodeAnalysisApiFetch(
+        request: { code: string; language: string; repository_id?: string }
+    ): Promise<CodeAnalysisApiResponse> {
+        const baseUrl = process.env.NEXT_PUBLIC_QNN_API_URL || 'https://qnn-api.ainative.studio';
+        const token = typeof window !== 'undefined'
+            ? localStorage.getItem('access_token')
+            : null;
+
+        const headers: Record<string, string> = {
+            'Content-Type': 'application/json',
+            'Accept': 'application/json',
+        };
+
+        if (token) {
+            headers['Authorization'] = `Bearer ${token}`;
+        }
+
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 30000);
+
+        try {
+            const response = await fetch(`${baseUrl}/v1/code/analyze`, {
+                method: 'POST',
+                headers,
+                body: JSON.stringify(request),
+                signal: controller.signal,
+            });
+
+            clearTimeout(timeoutId);
+
+            if (!response.ok) {
+                const error = await response.json().catch(() => ({
+                    message: `HTTP ${response.status}: ${response.statusText}`,
+                    code: 'HTTP_ERROR',
+                }));
+
+                throw new QNNValidationError(
+                    error.message || 'API request failed',
+                    error.details
+                );
+            }
+
+            return await response.json();
+        } catch (error) {
+            clearTimeout(timeoutId);
+
+            if (error instanceof Error && error.name === 'AbortError') {
+                throw new QNNTimeoutError('Request timeout - analysis took too long');
+            }
+
+            if (error instanceof QNNError) {
+                throw error;
+            }
+
+            throw new QNNNetworkError(
+                'Network error - unable to reach API server',
+                { originalError: String(error) }
+            );
+        }
+    }
+
+    /**
+     * Transform API response from snake_case to camelCase
+     */
+    private transformApiResponse(response: CodeAnalysisApiResponse): AnalysisResult {
+        return {
+            qualityScore: response.quality_score,
+            features: {
+                fileSizeBytes: response.features.file_size_bytes,
+                lineCount: response.features.line_count,
+                commentCount: response.features.comment_count,
+                functionCount: response.features.function_count,
+                classCount: response.features.class_count,
+                avgFunctionLength: response.features.avg_function_length,
+                cyclomaticComplexity: response.features.cyclomatic_complexity,
+                commentRatio: response.features.comment_ratio,
+            },
+            normalizedFeatures: response.normalized_features,
+            suggestions: response.suggestions,
+            language: response.language,
+            timestamp: response.timestamp,
+            repositoryId: response.repository_id,
+        };
+    }
+}
+
+// ============================================================================
+// Singleton Instance
+// ============================================================================
+
+/**
+ * Default code analysis service instance
+ * Use this for most cases throughout the application
+ */
+export const codeAnalysisService = new CodeAnalysisService();
+
+// ============================================================================
+// Convenience Functions (Backward Compatibility)
+// ============================================================================
+
+/**
+ * Analyze code quality using QNN API
+ *
+ * @param request - The code analysis request
+ * @returns Promise resolving to analysis results
+ */
+export async function analyzeCode(request: AnalyzeCodeRequest): Promise<AnalysisResult> {
+    return codeAnalysisService.analyzeCode(request);
+}
+
+/**
+ * Validate code before analysis
+ *
+ * @param code - The code string to validate
+ * @returns Validation result
+ */
+export function validateCode(code: string): { valid: boolean; error?: string } {
+    return codeAnalysisService.validateCode(code);
+}
+
+/**
+ * Validate language parameter
+ *
+ * @param language - The programming language
+ * @returns Validation result
+ */
+export function validateLanguage(language: string): { valid: boolean; error?: string } {
+    return codeAnalysisService.validateLanguage(language);
 }
 
 /**
  * Comprehensive validation for analysis request
+ *
+ * @param request - The analysis request to validate
+ * @returns Validation result with all errors
  */
 export function validateAnalysisRequest(
-  request: AnalyzeCodeRequest
+    request: AnalyzeCodeRequest
 ): { valid: boolean; errors: string[] } {
-  const errors: string[] = [];
-
-  const codeValidation = validateCode(request.code);
-  if (!codeValidation.valid && codeValidation.error) {
-    errors.push(codeValidation.error);
-  }
-
-  const langValidation = validateLanguage(request.language);
-  if (!langValidation.valid && langValidation.error) {
-    errors.push(langValidation.error);
-  }
-
-  return {
-    valid: errors.length === 0,
-    errors,
-  };
+    return codeAnalysisService.validateAnalysisRequest(request);
 }
 
 /**
  * Format API error for display
+ *
+ * @param error - The error to format
+ * @returns Human-readable error message
  */
 export function formatApiError(error: unknown): string {
-  if (typeof error === 'string') {
-    return error;
-  }
-
-  if (error && typeof error === 'object' && 'message' in error) {
-    return (error as ApiError).message;
-  }
-
-  return 'An unexpected error occurred during analysis';
+    return codeAnalysisService.formatApiError(error);
 }
 
-/**
- * Export configuration for external use
- */
-export const config = API_CONFIG;
+// ============================================================================
+// Export Configuration
+// ============================================================================
+
+export const config = {
+    supportedLanguages: SUPPORTED_LANGUAGES,
+    maxCodeSize: 1024 * 1024,
+    apiEndpoint: '/v1/code/analyze',
+};

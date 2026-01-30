@@ -202,7 +202,7 @@ export class UserService {
       formData.append('file', file);
 
       // Create a custom fetch request for file upload
-      const token = typeof window !== 'undefined' ? localStorage.getItem('accessToken') : null;
+      const token = typeof window !== 'undefined' ? (localStorage.getItem('access_token') || localStorage.getItem('accessToken')) : null;
 
       const headers: HeadersInit = {};
       if (token) {
@@ -251,8 +251,9 @@ export class UserService {
         throw new Error(response.data.message || 'Failed to delete account');
       }
 
-      // Clear authentication token on successful account deletion
+      // Clear authentication tokens on successful account deletion
       if (typeof window !== 'undefined') {
+        localStorage.removeItem('access_token');
         localStorage.removeItem('accessToken');
       }
 

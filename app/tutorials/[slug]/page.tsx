@@ -1,7 +1,6 @@
 import { Metadata } from 'next';
 import TutorialDetailClient from './TutorialDetailClient';
 import { HowToSchema, BreadcrumbSchema } from '@/components/seo/StructuredData';
-import { getRevalidateTime, getCacheTags } from '@/lib/cache-config';
 
 interface TutorialDetailPageProps {
   params: Promise<{
@@ -10,10 +9,7 @@ interface TutorialDetailPageProps {
 }
 
 // Enable ISR with 10-minute revalidation
-export const revalidate = getRevalidateTime('content', 'tutorial'); // 600 seconds (10 minutes)
-
-// Add cache tags for on-demand revalidation
-export const tags = getCacheTags('tutorial');
+export const revalidate = 300; // 600 seconds (10 minutes)
 
 export async function generateMetadata({ params }: TutorialDetailPageProps): Promise<Metadata> {
   const resolvedParams = await params;

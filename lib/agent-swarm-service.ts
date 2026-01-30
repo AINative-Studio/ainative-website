@@ -60,17 +60,21 @@ export interface ProjectMetrics {
  */
 export class AgentSwarmService {
   private readonly baseUrl = '/v1/public/agent-swarms';
+  private readonly adminBaseUrl = '/v1/admin/agent-swarm';
 
   /**
    * Health check for agent swarms module
+   * Note: Health endpoint only exists on admin path
    */
   async healthCheck(): Promise<{ status: string; message: string }> {
     try {
-      const response = await apiClient.get<{ status: string; message: string }>(`${this.baseUrl}/health`);
+      // Health check is admin-only endpoint
+      const response = await apiClient.get<{ status: string; message: string }>(`${this.adminBaseUrl}/health`);
       return response.data;
     } catch (error) {
-      console.error('Agent swarm health check failed:', error);
-      throw error;
+      // Gracefully handle if user doesn't have admin access
+      console.warn('Agent swarm health check failed (may require admin access):', error);
+      return { status: 'unknown', message: 'Health check unavailable' };
     }
   }
 
@@ -133,14 +137,22 @@ export class AgentSwarmService {
 
   /**
    * Get details for a specific project
+   * Note: Uses swarm_id endpoint as there's no direct project/{id} endpoint
    */
   async getProject(projectId: string): Promise<AgentSwarmProject> {
     try {
-      const response = await apiClient.get(`${this.baseUrl}/projects/${projectId}`);
+      // Try public swarm endpoint first
+      const response = await apiClient.get(`${this.baseUrl}/${projectId}`);
       return this.transformProject(response.data);
     } catch (error) {
-      console.error(`Failed to get project ${projectId}:`, error);
-      throw error;
+      // Fallback to admin endpoint
+      try {
+        const adminResponse = await apiClient.get(`${this.adminBaseUrl}/projects/${projectId}`);
+        return this.transformProject(adminResponse.data);
+      } catch {
+        console.error(`Failed to get project ${projectId}:`, error);
+        throw error;
+      }
     }
   }
 
@@ -169,54 +181,68 @@ export class AgentSwarmService {
 
   /**
    * Get project logs
+   * Note: Logs endpoint is admin-only
    */
   async getProjectLogs(projectId: string, limit: number = 100): Promise<ProjectLog[]> {
     try {
-      const endpoint = `${this.baseUrl}/projects/${projectId}/logs?limit=${limit}`;
+      // Logs are admin-only endpoint
+      const endpoint = `${this.adminBaseUrl}/projects/${projectId}/logs?limit=${limit}`;
       const response = await apiClient.get<{ logs: ProjectLog[] }>(endpoint);
       return response.data.logs || [];
     } catch (error) {
-      console.error(`Failed to get logs for project ${projectId}:`, error);
+      console.warn(`Failed to get logs for project ${projectId} (may require admin access):`, error);
       return [];
     }
   }
 
   /**
    * Stop a running project
+   * Note: Stop endpoint is admin-only
    */
   async stopProject(projectId: string): Promise<{ message: string }> {
     try {
-      const response = await apiClient.post<{ message: string }>(`${this.baseUrl}/projects/${projectId}/stop`);
+      // Stop is admin-only endpoint
+      const response = await apiClient.post<{ message: string }>(`${this.adminBaseUrl}/projects/${projectId}/stop`);
       return response.data;
     } catch (error) {
-      console.error(`Failed to stop project ${projectId}:`, error);
+      console.error(`Failed to stop project ${projectId} (may require admin access):`, error);
       throw error;
     }
   }
 
   /**
    * Restart a paused or failed project
+   * Note: Restart endpoint is admin-only
    */
   async restartProject(projectId: string): Promise<{ message: string }> {
     try {
-      const response = await apiClient.post<{ message: string }>(`${this.baseUrl}/projects/${projectId}/restart`);
+      // Restart is admin-only endpoint
+      const response = await apiClient.post<{ message: string }>(`${this.adminBaseUrl}/projects/${projectId}/restart`);
       return response.data;
     } catch (error) {
-      console.error(`Failed to restart project ${projectId}:`, error);
+      console.error(`Failed to restart project ${projectId} (may require admin access):`, error);
       throw error;
     }
   }
 
   /**
    * Get metrics for all agent swarm projects
+   * Note: Metrics endpoint is admin-only
    */
   async getMetrics(): Promise<ProjectMetrics> {
     try {
-      const response = await apiClient.get<ProjectMetrics>(`${this.baseUrl}/metrics`);
+      // Metrics are admin-only endpoint
+      const response = await apiClient.get<ProjectMetrics>(`${this.adminBaseUrl}/metrics`);
       return response.data;
     } catch (error) {
-      console.error('Failed to get agent swarm metrics:', error);
-      throw error;
+      console.warn('Failed to get agent swarm metrics (may require admin access):', error);
+      // Return empty metrics on failure
+      return {
+        total_projects: 0,
+        active_projects: 0,
+        completed_projects: 0,
+        failed_projects: 0,
+      };
     }
   }
 

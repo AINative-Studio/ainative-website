@@ -4,7 +4,8 @@
  * Comprehensive test suite for benchmark hooks with React Query integration.
  */
 
-import { renderHook, waitFor } from '@testing-library/react';
+import { renderHook } from '@testing-library/react';
+import { waitFor } from '@testing-library/dom';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { ReactNode } from 'react';
 import {
@@ -151,7 +152,7 @@ describe('useBenchmarks', () => {
         wrapper: createWrapper(),
       });
 
-      await waitFor(() => expect(result.current.isPending).toBe(false));
+      await waitFor(() => expect(result.current.fetchStatus).toBe('idle'));
 
       expect(qnnApiClient.getBenchmarkMetrics).not.toHaveBeenCalled();
       expect(result.current.data).toBeUndefined();

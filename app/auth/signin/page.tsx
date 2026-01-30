@@ -1,4 +1,5 @@
 import { Metadata } from 'next';
+import { Suspense } from 'react';
 import SignInClient from './SignInClient';
 
 export const metadata: Metadata = {
@@ -10,6 +11,20 @@ export const metadata: Metadata = {
   },
 };
 
+function SignInFallback() {
+  return (
+    <div className="min-h-screen flex items-center justify-center bg-vite-bg">
+      <div className="animate-pulse">
+        <div className="h-8 w-8 border-4 border-primary border-t-transparent rounded-full animate-spin" />
+      </div>
+    </div>
+  );
+}
+
 export default function SignInPage() {
-  return <SignInClient />;
+  return (
+    <Suspense fallback={<SignInFallback />}>
+      <SignInClient />
+    </Suspense>
+  );
 }

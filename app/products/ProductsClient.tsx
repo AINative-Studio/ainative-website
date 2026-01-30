@@ -108,7 +108,7 @@ export default function ProductsClient() {
       <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24 md:py-32 space-y-24 md:space-y-32">
         {/* Hero Section */}
         <motion.div
-          className="text-center max-w-4xl mx-auto pt-16"
+          className="text-center max-w-4xl mx-auto"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8 }}

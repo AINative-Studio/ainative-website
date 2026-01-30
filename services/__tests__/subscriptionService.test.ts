@@ -89,6 +89,8 @@ describe('SubscriptionService', () => {
           message: 'Success',
           data: { subscription: mockSubscription },
         },
+        status: 200,
+        statusText: 'OK',
       });
 
       const result = await subscriptionService.getCurrentSubscription();
@@ -104,6 +106,8 @@ describe('SubscriptionService', () => {
           message: 'No subscription found',
           data: null,
         },
+        status: 200,
+        statusText: 'OK',
       });
 
       await expect(subscriptionService.getCurrentSubscription()).rejects.toThrow('No subscription found');
@@ -118,6 +122,8 @@ describe('SubscriptionService', () => {
           message: 'Success',
           data: { plans: [mockPlan] },
         },
+        status: 200,
+        statusText: 'OK',
       });
 
       const result = await subscriptionService.getAvailablePlans();
@@ -143,6 +149,8 @@ describe('SubscriptionService', () => {
           message: 'Subscribed',
           data: { subscription: mockSubscription },
         },
+        status: 200,
+        statusText: 'OK',
       });
 
       const result = await subscriptionService.subscribe('plan-pro', 'pm-123');
@@ -161,6 +169,8 @@ describe('SubscriptionService', () => {
           message: 'Payment failed',
           data: null,
         },
+        status: 200,
+        statusText: 'OK',
       });
 
       const result = await subscriptionService.subscribe('plan-pro');
@@ -178,6 +188,8 @@ describe('SubscriptionService', () => {
           message: 'Updated',
           data: { subscription: mockSubscription },
         },
+        status: 200,
+        statusText: 'OK',
       });
 
       const result = await subscriptionService.updateSubscription('plan-enterprise');
@@ -197,6 +209,8 @@ describe('SubscriptionService', () => {
           message: 'Canceled',
           data: { subscription: { ...mockSubscription, cancel_at_period_end: true } },
         },
+        status: 200,
+        statusText: 'OK',
       });
 
       const result = await subscriptionService.cancelSubscription();
@@ -215,6 +229,8 @@ describe('SubscriptionService', () => {
           message: 'Canceled',
           data: { subscription: mockSubscription },
         },
+        status: 200,
+        statusText: 'OK',
       });
 
       const result = await subscriptionService.cancelSubscription(false);
@@ -234,6 +250,8 @@ describe('SubscriptionService', () => {
           message: 'Reactivated',
           data: { subscription: mockSubscription },
         },
+        status: 200,
+        statusText: 'OK',
       });
 
       const result = await subscriptionService.reactivateSubscription();
@@ -251,6 +269,8 @@ describe('SubscriptionService', () => {
           message: 'Success',
           data: { invoices: [mockInvoice] },
         },
+        status: 200,
+        statusText: 'OK',
       });
 
       const result = await subscriptionService.getInvoices();
@@ -266,6 +286,8 @@ describe('SubscriptionService', () => {
           message: 'Success',
           data: { invoices: [mockInvoice] },
         },
+        status: 200,
+        statusText: 'OK',
       });
 
       await subscriptionService.getInvoices(25);
@@ -290,6 +312,8 @@ describe('SubscriptionService', () => {
           message: 'Success',
           data: { payment_methods: [mockPaymentMethod] },
         },
+        status: 200,
+        statusText: 'OK',
       });
 
       const result = await subscriptionService.getPaymentMethods();
@@ -307,6 +331,8 @@ describe('SubscriptionService', () => {
           message: 'Added',
           data: { payment_method: mockPaymentMethod },
         },
+        status: 200,
+        statusText: 'OK',
       });
 
       const result = await subscriptionService.addPaymentMethod('pm-new-123');
@@ -326,6 +352,8 @@ describe('SubscriptionService', () => {
           message: 'Removed',
           data: { success: true },
         },
+        status: 200,
+        statusText: 'OK',
       });
 
       const result = await subscriptionService.removePaymentMethod('pm-123');
@@ -343,6 +371,8 @@ describe('SubscriptionService', () => {
           message: 'Updated',
           data: { success: true },
         },
+        status: 200,
+        statusText: 'OK',
       });
 
       const result = await subscriptionService.setDefaultPaymentMethod('pm-123');
@@ -368,6 +398,8 @@ describe('SubscriptionService', () => {
           message: 'Success',
           data: { usage: mockUsage },
         },
+        status: 200,
+        statusText: 'OK',
       });
 
       const result = await subscriptionService.getUsage();
@@ -393,6 +425,8 @@ describe('SubscriptionService', () => {
           message: 'Success',
           data: { subscription: mockSubscription },
         },
+        status: 200,
+        statusText: 'OK',
       });
 
       const result = await subscriptionService.getCurrentPlan();
@@ -411,6 +445,8 @@ describe('SubscriptionService', () => {
           message: 'Success',
           data: { subscription: mockSubscription },
         },
+        status: 200,
+        statusText: 'OK',
       });
 
       const result = await subscriptionService.hasActiveSubscription();
@@ -425,6 +461,8 @@ describe('SubscriptionService', () => {
           message: 'Success',
           data: { subscription: { ...mockSubscription, status: 'trialing' } },
         },
+        status: 200,
+        statusText: 'OK',
       });
 
       const result = await subscriptionService.hasActiveSubscription();
@@ -439,6 +477,8 @@ describe('SubscriptionService', () => {
           message: 'Success',
           data: { subscription: { ...mockSubscription, status: 'canceled' } },
         },
+        status: 200,
+        statusText: 'OK',
       });
 
       const result = await subscriptionService.hasActiveSubscription();
@@ -466,6 +506,7 @@ describe('SubscriptionService', () => {
       });
 
       it('should return raw status for unknown status', () => {
+        // @ts-expect-error Testing with invalid status
         expect(subscriptionService.getStatusDisplayText('unknown')).toBe('unknown');
       });
     });

@@ -5,13 +5,13 @@
  * to improve AI agent performance through human feedback.
  */
 
-import apiClient from '@/utils/apiClient';
+import apiClient from '../utils/apiClient';
 import type {
   RLHFFeedbackData,
   RLHFFeedbackResponse,
   RLHFFeedbackStats,
   RLHFInteractionPayload,
-} from '@/types/rlhf';
+} from '../types/rlhf';
 
 class RLHFService {
   private baseUrl = '/v1/public';

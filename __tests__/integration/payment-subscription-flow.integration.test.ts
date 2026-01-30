@@ -3,8 +3,8 @@
  * Tests complete payment flows including Stripe checkout, subscription management, and payment methods
  */
 
-import { pricingService } from '@/services/pricingService';
-import { subscriptionService } from '@/services/subscriptionService';
+import { pricingService } from '../../services/pricingService';
+import { subscriptionService } from '../../services/subscriptionService';
 import { setupIntegrationTest, testUtils, mockSubscription, mockPaymentMethod } from './setup';
 
 describe('Payment and Subscription Workflow Integration Tests', () => {
@@ -338,7 +338,13 @@ describe('Payment and Subscription Workflow Integration Tests', () => {
 
     it('should display correct subscription status text', () => {
       // Given: Various statuses
-      const statuses = ['active', 'past_due', 'canceled', 'trialing', 'unpaid'];
+      const statuses: Array<'active' | 'past_due' | 'canceled' | 'trialing' | 'unpaid'> = [
+        'active',
+        'past_due',
+        'canceled',
+        'trialing',
+        'unpaid'
+      ];
 
       // When: Getting display text
       const displayTexts = statuses.map(status =>

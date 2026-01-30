@@ -70,7 +70,7 @@ export class ReviewService {
     const reviewId = this.generateReviewId();
 
     let files: string[] = [];
-    let fileContents: Map<string, string> = new Map();
+    const fileContents: Map<string, string> = new Map();
 
     // Get files to review
     if (config.gitDiff) {

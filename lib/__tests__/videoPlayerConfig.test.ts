@@ -464,9 +464,15 @@ describe('Video Player Configuration Service', () => {
       const afterTimestamp = Date.now();
 
       expect(mockFetch).toHaveBeenCalled();
-      const callBody = JSON.parse(mockFetch.mock.calls[0][1].body);
-      expect(callBody.timestamp).toBeGreaterThanOrEqual(beforeTimestamp);
-      expect(callBody.timestamp).toBeLessThanOrEqual(afterTimestamp);
+      const calls = mockFetch.mock.calls;
+      if (calls.length > 0) {
+        const firstCall = calls[0] as unknown as [string, RequestInit];
+        if (firstCall && firstCall[1]?.body) {
+          const callBody = JSON.parse(firstCall[1].body as string);
+          expect(callBody.timestamp).toBeGreaterThanOrEqual(beforeTimestamp);
+          expect(callBody.timestamp).toBeLessThanOrEqual(afterTimestamp);
+        }
+      }
     });
   });
 

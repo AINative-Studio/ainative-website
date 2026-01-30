@@ -198,7 +198,9 @@ class ConversionTrackingService {
         ...params,
       };
 
-      await apiClient.post('/v1/events/track', payload);
+      // Backend API endpoint for conversion event tracking
+      // Maps to: POST /v1/events/conversions (previously /v1/events/track)
+      await apiClient.post('/v1/events/conversions', payload);
 
       // Fire pixel events
       if (params.event_type) {
@@ -226,7 +228,10 @@ class ConversionTrackingService {
         utm_params: this.utmParams,
       };
 
-      await apiClient.post('/v1/events/funnel', payload);
+      // Backend API endpoint for funnel stage reconciliation
+      // Maps to: POST /v1/events/reconcile (previously /v1/events/funnel)
+      // This endpoint reconciles funnel stages with conversion data
+      await apiClient.post('/v1/events/reconcile', payload);
     } catch (error) {
       console.error('Failed to update funnel:', error);
     }

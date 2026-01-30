@@ -1,9 +1,8 @@
 import { Metadata } from 'next';
 import ProductsClient from './ProductsClient';
-import { getRevalidateTime } from '@/lib/cache-config';
 
 // Enable ISR with 30-minute revalidation for products page
-export const revalidate = getRevalidateTime('marketing', 'products'); // 1800 seconds (30 minutes)
+export const revalidate = 1800; // 1800 seconds (30 minutes)
 
 export const metadata: Metadata = {
   title: 'Products | AINative Studio - AI-Powered Developer Tools',

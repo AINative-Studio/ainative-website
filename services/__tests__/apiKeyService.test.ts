@@ -47,6 +47,8 @@ describe('ApiKeyService', () => {
           message: 'Success',
           data: { keys: [mockApiKey] },
         },
+        status: 200,
+        statusText: 'OK',
       });
 
       const result = await apiKeyService.listApiKeys();
@@ -62,6 +64,8 @@ describe('ApiKeyService', () => {
           message: 'Unauthorized',
           data: null,
         },
+        status: 200,
+        statusText: 'OK',
       });
 
       await expect(apiKeyService.listApiKeys()).rejects.toThrow('Unauthorized');
@@ -80,6 +84,8 @@ describe('ApiKeyService', () => {
           message: '',
           data: {},
         },
+        status: 200,
+        statusText: 'OK',
       });
 
       await expect(apiKeyService.listApiKeys()).rejects.toThrow('Failed to fetch API keys');
@@ -95,6 +101,8 @@ describe('ApiKeyService', () => {
           message: 'API key created',
           data: createResponse,
         },
+        status: 200,
+        statusText: 'OK',
       });
 
       const result = await apiKeyService.createApiKey('My New Key');
@@ -110,6 +118,8 @@ describe('ApiKeyService', () => {
           message: 'Rate limit exceeded',
           data: null,
         },
+        status: 200,
+        statusText: 'OK',
       });
 
       await expect(apiKeyService.createApiKey('Test')).rejects.toThrow('Rate limit exceeded');
@@ -131,6 +141,8 @@ describe('ApiKeyService', () => {
           message: 'API key regenerated',
           data: regenerateResponse,
         },
+        status: 200,
+        statusText: 'OK',
       });
 
       const result = await apiKeyService.regenerateApiKey('key-123');
@@ -146,6 +158,8 @@ describe('ApiKeyService', () => {
           message: 'Key not found',
           data: null,
         },
+        status: 200,
+        statusText: 'OK',
       });
 
       await expect(apiKeyService.regenerateApiKey('invalid-id')).rejects.toThrow('Key not found');
@@ -160,6 +174,8 @@ describe('ApiKeyService', () => {
           message: 'API key deleted',
           data: { success: true },
         },
+        status: 200,
+        statusText: 'OK',
       });
 
       const result = await apiKeyService.deleteApiKey('key-123');
@@ -176,6 +192,8 @@ describe('ApiKeyService', () => {
           message: 'Cannot delete active key',
           data: null,
         },
+        status: 200,
+        statusText: 'OK',
       });
 
       await expect(apiKeyService.deleteApiKey('key-123')).rejects.toThrow('Cannot delete active key');
@@ -191,6 +209,8 @@ describe('ApiKeyService', () => {
           message: 'API key updated',
           data: updatedKey,
         },
+        status: 200,
+        statusText: 'OK',
       });
 
       const result = await apiKeyService.updateApiKey('key-123', { name: 'Updated Name' });
@@ -207,6 +227,8 @@ describe('ApiKeyService', () => {
           message: 'API key updated',
           data: updatedKey,
         },
+        status: 200,
+        statusText: 'OK',
       });
 
       const result = await apiKeyService.updateApiKey('key-123', { status: 'inactive' });
@@ -221,6 +243,8 @@ describe('ApiKeyService', () => {
           message: 'Validation failed',
           data: null,
         },
+        status: 200,
+        statusText: 'OK',
       });
 
       await expect(apiKeyService.updateApiKey('key-123', { name: '' })).rejects.toThrow('Validation failed');
@@ -235,6 +259,8 @@ describe('ApiKeyService', () => {
           message: 'Success',
           data: mockUsageStats,
         },
+        status: 200,
+        statusText: 'OK',
       });
 
       const result = await apiKeyService.getApiKeyUsage('key-123');
@@ -250,6 +276,8 @@ describe('ApiKeyService', () => {
           message: 'Usage data unavailable',
           data: null,
         },
+        status: 200,
+        statusText: 'OK',
       });
 
       await expect(apiKeyService.getApiKeyUsage('key-123')).rejects.toThrow('Usage data unavailable');
@@ -264,6 +292,8 @@ describe('ApiKeyService', () => {
           message: 'Success',
           data: mockApiKey,
         },
+        status: 200,
+        statusText: 'OK',
       });
 
       const result = await apiKeyService.getApiKey('key-123');
@@ -279,6 +309,8 @@ describe('ApiKeyService', () => {
           message: 'API key not found',
           data: null,
         },
+        status: 200,
+        statusText: 'OK',
       });
 
       await expect(apiKeyService.getApiKey('invalid-id')).rejects.toThrow('API key not found');

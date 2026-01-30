@@ -53,8 +53,8 @@ export async function revalidateContent(
     revalidatePath(`/${type}`);
 
     // Revalidate by tag
-    revalidateTag(type);
-    revalidateTag('content');
+    revalidateTag(type, 'default');
+    revalidateTag('content', 'default');
 
     return { success: true, message: `Revalidated ${type} content: ${slug}` };
   } catch (error) {
@@ -73,8 +73,8 @@ export async function revalidateContent(
 export async function revalidateBlogPosts() {
   try {
     revalidatePath('/blog');
-    revalidateTag(CacheTags.BLOG);
-    revalidateTag(CacheTags.CONTENT);
+    revalidateTag(CacheTags.BLOG, 'default');
+    revalidateTag(CacheTags.CONTENT, 'default');
     return { success: true, message: 'Revalidated all blog posts' };
   } catch (error) {
     console.error('Error revalidating blog posts:', error);
@@ -88,8 +88,8 @@ export async function revalidateBlogPosts() {
 export async function revalidateTutorials() {
   try {
     revalidatePath('/tutorials');
-    revalidateTag(CacheTags.TUTORIAL);
-    revalidateTag(CacheTags.CONTENT);
+    revalidateTag(CacheTags.TUTORIAL, 'default');
+    revalidateTag(CacheTags.CONTENT, 'default');
     return { success: true, message: 'Revalidated all tutorials' };
   } catch (error) {
     console.error('Error revalidating tutorials:', error);
@@ -103,8 +103,8 @@ export async function revalidateTutorials() {
 export async function revalidateWebinars() {
   try {
     revalidatePath('/webinars');
-    revalidateTag(CacheTags.WEBINAR);
-    revalidateTag(CacheTags.CONTENT);
+    revalidateTag(CacheTags.WEBINAR, 'default');
+    revalidateTag(CacheTags.CONTENT, 'default');
     return { success: true, message: 'Revalidated all webinars' };
   } catch (error) {
     console.error('Error revalidating webinars:', error);
@@ -118,9 +118,9 @@ export async function revalidateWebinars() {
 export async function revalidateCommunityVideos() {
   try {
     revalidatePath('/community/videos');
-    revalidateTag(CacheTags.VIDEO);
-    revalidateTag(CacheTags.COMMUNITY);
-    revalidateTag(CacheTags.CONTENT);
+    revalidateTag(CacheTags.VIDEO, 'default');
+    revalidateTag(CacheTags.COMMUNITY, 'default');
+    revalidateTag(CacheTags.CONTENT, 'default');
     return { success: true, message: 'Revalidated all community videos' };
   } catch (error) {
     console.error('Error revalidating community videos:', error);
@@ -136,7 +136,7 @@ export async function revalidateMarketingPages() {
     const paths = ['/', '/pricing', '/products', '/about', '/faq', '/contact'];
     paths.forEach((path) => revalidatePath(path));
 
-    revalidateTag(CacheTags.MARKETING);
+    revalidateTag(CacheTags.MARKETING, 'default');
     return { success: true, message: 'Revalidated marketing pages' };
   } catch (error) {
     console.error('Error revalidating marketing pages:', error);
@@ -154,8 +154,8 @@ export async function revalidateMarketingPages() {
 export async function revalidatePricing() {
   try {
     revalidatePath('/pricing');
-    revalidateTag(CacheTags.PRICING);
-    revalidateTag(CacheTags.MARKETING);
+    revalidateTag(CacheTags.PRICING, 'default');
+    revalidateTag(CacheTags.MARKETING, 'default');
     return { success: true, message: 'Revalidated pricing page' };
   } catch (error) {
     console.error('Error revalidating pricing:', error);
@@ -169,8 +169,8 @@ export async function revalidatePricing() {
 export async function revalidateHome() {
   try {
     revalidatePath('/');
-    revalidateTag(CacheTags.HOME);
-    revalidateTag(CacheTags.MARKETING);
+    revalidateTag(CacheTags.HOME, 'default');
+    revalidateTag(CacheTags.MARKETING, 'default');
     return { success: true, message: 'Revalidated home page' };
   } catch (error) {
     console.error('Error revalidating home page:', error);
@@ -191,12 +191,12 @@ export async function revalidateAllContent() {
     revalidatePath('/showcases');
 
     // Revalidate all content tags
-    revalidateTag(CacheTags.CONTENT);
-    revalidateTag(CacheTags.BLOG);
-    revalidateTag(CacheTags.TUTORIAL);
-    revalidateTag(CacheTags.WEBINAR);
-    revalidateTag(CacheTags.VIDEO);
-    revalidateTag(CacheTags.SHOWCASE);
+    revalidateTag(CacheTags.CONTENT, 'default');
+    revalidateTag(CacheTags.BLOG, 'default');
+    revalidateTag(CacheTags.TUTORIAL, 'default');
+    revalidateTag(CacheTags.WEBINAR, 'default');
+    revalidateTag(CacheTags.VIDEO, 'default');
+    revalidateTag(CacheTags.SHOWCASE, 'default');
 
     return { success: true, message: 'Revalidated all content' };
   } catch (error) {
@@ -210,7 +210,7 @@ export async function revalidateAllContent() {
  */
 export async function revalidateByTag(tag: CacheTag | string) {
   try {
-    revalidateTag(tag);
+    revalidateTag(tag, 'default');
     return { success: true, message: `Revalidated tag: ${tag}` };
   } catch (error) {
     console.error(`Error revalidating tag ${tag}:`, error);

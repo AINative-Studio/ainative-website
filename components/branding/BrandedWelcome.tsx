@@ -7,8 +7,8 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 
-// Pre-create motion component to avoid React lint error
-const MotionCard = motion(Card);
+// Pre-create motion component using motion.create() (motion() is deprecated)
+const MotionCard = motion.create(Card);
 
 export interface BrandedWelcomeProps {
   /**
@@ -133,7 +133,7 @@ export const BrandedWelcome = React.forwardRef<HTMLDivElement, BrandedWelcomePro
         scale: 1,
         transition: {
           duration: 0.5,
-          ease: [0.25, 0.46, 0.45, 0.94] as unknown as number[],
+          ease: [0.25, 0.46, 0.45, 0.94] as [number, number, number, number],
           staggerChildren: 0.1
         }
       },
@@ -143,10 +143,10 @@ export const BrandedWelcome = React.forwardRef<HTMLDivElement, BrandedWelcomePro
         scale: 0.95,
         transition: {
           duration: 0.3,
-          ease: [0.25, 0.46, 0.45, 0.94] as unknown as number[]
+          ease: [0.25, 0.46, 0.45, 0.94] as [number, number, number, number]
         }
       }
-    } as const;
+    };
 
     const itemVariants = {
       hidden: { opacity: 0, y: 10 },
@@ -183,7 +183,7 @@ export const BrandedWelcome = React.forwardRef<HTMLDivElement, BrandedWelcomePro
               alt=""
               fill
               className="object-cover object-center"
-              priority={false}
+              priority={true}
               quality={90}
               sizes="100vw"
             />

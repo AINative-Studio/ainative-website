@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono, Poppins } from "next/font/google";
 import { QueryProvider } from "@/components/providers/QueryProvider";
 import SessionProvider from "@/components/providers/session-provider";
+import AINativeProvider from "@/components/providers/AINativeProvider";
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
 import GoogleTagManager, { GoogleTagManagerNoscript } from "@/components/analytics/GoogleTagManager";
@@ -221,9 +222,11 @@ export default function RootLayout({
 
         <SessionProvider>
           <QueryProvider>
-            <Header />
-            <main className="min-h-screen">{children}</main>
-            <Footer />
+            <AINativeProvider>
+              <Header />
+              <main className="min-h-screen pt-20">{children}</main>
+              <Footer />
+            </AINativeProvider>
           </QueryProvider>
         </SessionProvider>
 

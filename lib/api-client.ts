@@ -26,7 +26,8 @@ class ApiClient {
 
   private getAuthToken(): string | null {
     if (typeof window === 'undefined') return null;
-    return localStorage.getItem('accessToken');
+    // Check both keys for compatibility (access_token is the primary key used by authCookies)
+    return localStorage.getItem('access_token') || localStorage.getItem('accessToken');
   }
 
   private async request<T>(
@@ -65,8 +66,9 @@ class ApiClient {
 
       // Handle 401 unauthorized - could trigger token refresh here
       if (response.status === 401) {
-        // Clear token on 401
+        // Clear tokens on 401
         if (typeof window !== 'undefined') {
+          localStorage.removeItem('access_token');
           localStorage.removeItem('accessToken');
         }
       }

@@ -54,6 +54,8 @@ describe('UserSettingsService', () => {
           message: 'Success',
           data: mockNotificationPreferences,
         },
+        status: 200,
+        statusText: 'OK',
       });
 
       const result = await userSettingsService.getNotificationPreferences();
@@ -69,6 +71,8 @@ describe('UserSettingsService', () => {
           message: 'Unauthorized',
           data: null,
         },
+        status: 401,
+        statusText: 'Unauthorized',
       });
 
       await expect(userSettingsService.getNotificationPreferences()).rejects.toThrow('Unauthorized');
@@ -89,6 +93,8 @@ describe('UserSettingsService', () => {
           message: 'Preferences updated',
           data: { message: 'Preferences updated' },
         },
+        status: 200,
+        statusText: 'OK',
       });
 
       const result = await userSettingsService.updateNotificationPreferences({
@@ -109,6 +115,8 @@ describe('UserSettingsService', () => {
           message: 'Update failed',
           data: null,
         },
+        status: 400,
+        statusText: 'Bad Request',
       });
 
       await expect(
@@ -123,6 +131,8 @@ describe('UserSettingsService', () => {
           message: 'Updated',
           data: { message: 'Updated' },
         },
+        status: 200,
+        statusText: 'OK',
       });
 
       const updates = {
@@ -149,6 +159,8 @@ describe('UserSettingsService', () => {
           message: 'Success',
           data: mockCommunicationSettings,
         },
+        status: 200,
+        statusText: 'OK',
       });
 
       const result = await userSettingsService.getCommunicationSettings();
@@ -164,6 +176,8 @@ describe('UserSettingsService', () => {
           message: 'Settings not found',
           data: null,
         },
+        status: 404,
+        statusText: 'Not Found',
       });
 
       await expect(userSettingsService.getCommunicationSettings()).rejects.toThrow('Settings not found');
@@ -178,6 +192,8 @@ describe('UserSettingsService', () => {
           message: 'Settings updated',
           data: { message: 'Settings updated' },
         },
+        status: 200,
+        statusText: 'OK',
       });
 
       const result = await userSettingsService.updateCommunicationSettings({
@@ -198,6 +214,8 @@ describe('UserSettingsService', () => {
           message: 'Invalid timezone',
           data: null,
         },
+        status: 400,
+        statusText: 'Bad Request',
       });
 
       const result = await userSettingsService.updateCommunicationSettings({
@@ -226,6 +244,8 @@ describe('UserSettingsService', () => {
           message: 'Updated',
           data: { message: 'Updated' },
         },
+        status: 200,
+        statusText: 'OK',
       });
 
       await userSettingsService.updateCommunicationSettings({
@@ -247,6 +267,8 @@ describe('UserSettingsService', () => {
           message: 'Success',
           data: mockUserProfile,
         },
+        status: 200,
+        statusText: 'OK',
       });
 
       const result = await userSettingsService.getUserProfile();
@@ -270,6 +292,8 @@ describe('UserSettingsService', () => {
           message: 'Not found',
           data: null,
         },
+        status: 404,
+        statusText: 'Not Found',
       });
 
       const result = await userSettingsService.getUserProfile();
@@ -286,6 +310,8 @@ describe('UserSettingsService', () => {
           message: 'Profile updated',
           data: { message: 'Profile updated' },
         },
+        status: 200,
+        statusText: 'OK',
       });
 
       const result = await userSettingsService.updateUserProfile({
@@ -303,6 +329,8 @@ describe('UserSettingsService', () => {
           message: 'Email already taken',
           data: null,
         },
+        status: 400,
+        statusText: 'Bad Request',
       });
 
       const result = await userSettingsService.updateUserProfile({
@@ -328,6 +356,8 @@ describe('UserSettingsService', () => {
           message: 'Updated',
           data: { message: 'Updated' },
         },
+        status: 200,
+        statusText: 'OK',
       });
 
       await userSettingsService.updateUserProfile({
@@ -348,6 +378,8 @@ describe('UserSettingsService', () => {
           message: 'Success',
           data: mockUserStats,
         },
+        status: 200,
+        statusText: 'OK',
       });
 
       const result = await userSettingsService.getUserStats();
@@ -371,6 +403,8 @@ describe('UserSettingsService', () => {
           message: 'Stats unavailable',
           data: null,
         },
+        status: 404,
+        statusText: 'Not Found',
       });
 
       const result = await userSettingsService.getUserStats();

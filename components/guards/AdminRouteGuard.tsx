@@ -29,7 +29,7 @@ export function AdminRouteGuard({ children }: AdminRouteGuardProps) {
   useEffect(() => {
     checkAdminStatus();
     // checkAdminStatus is intentionally not included in deps - only runs on mount
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+   
   }, []);
 
   const checkAdminStatus = () => {

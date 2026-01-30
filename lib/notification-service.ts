@@ -1,6 +1,7 @@
 /**
  * Notification Service - Backend integration for Notification Center
  * Integrates with all backend notification endpoints
+ * Refs #436
  */
 
 import apiClient from './api-client';
@@ -62,339 +63,387 @@ export interface NotificationStats {
   byCategory: Record<string, number>;
 }
 
-// Mock Data Generator
-function generateMockNotifications(): Notification[] {
-  const now = new Date();
-  const notifications: Notification[] = [
-    {
-      id: '1',
-      title: 'Welcome to AI Native Studio',
-      message: 'Your account has been successfully created. Start building with AI-native tools.',
-      type: 'success',
-      category: 'system',
-      read: false,
-      actionUrl: '/getting-started',
-      actionLabel: 'Get Started',
-      createdAt: new Date(now.getTime() - 5 * 60000).toISOString(),
-    },
-    {
-      id: '2',
-      title: 'QNN Training Complete',
-      message: 'Your quantum neural network training job has completed successfully with 94% accuracy.',
-      type: 'success',
-      category: 'feature',
-      read: false,
-      actionUrl: '/products/qnn',
-      actionLabel: 'View Results',
-      createdAt: new Date(now.getTime() - 30 * 60000).toISOString(),
-    },
-    {
-      id: '3',
-      title: 'Security Alert',
-      message: 'New login detected from Chrome on Linux. If this was not you, please secure your account.',
-      type: 'warning',
-      category: 'security',
-      read: false,
-      actionUrl: '/settings/security',
-      actionLabel: 'Review Activity',
-      createdAt: new Date(now.getTime() - 2 * 3600000).toISOString(),
-    },
-    {
-      id: '4',
-      title: 'Invoice Available',
-      message: 'Your monthly invoice for $49.99 is now available for download.',
-      type: 'info',
-      category: 'billing',
-      read: true,
-      actionUrl: '/billing',
-      actionLabel: 'View Invoice',
-      createdAt: new Date(now.getTime() - 24 * 3600000).toISOString(),
-      readAt: new Date(now.getTime() - 22 * 3600000).toISOString(),
-    },
-    {
-      id: '5',
-      title: 'New Feature: Agent Swarm',
-      message: 'Check out our new Agent Swarm feature for multi-agent development workflows.',
-      type: 'update',
-      category: 'feature',
-      read: true,
-      actionUrl: '/agent-swarm',
-      actionLabel: 'Learn More',
-      createdAt: new Date(now.getTime() - 3 * 24 * 3600000).toISOString(),
-      readAt: new Date(now.getTime() - 2 * 24 * 3600000).toISOString(),
-    },
-    {
-      id: '6',
-      title: 'Limited Time Offer',
-      message: 'Upgrade to Pro and get 50% off your first 3 months. Offer ends soon!',
-      type: 'promotion',
-      category: 'marketing',
-      read: false,
-      actionUrl: '/pricing',
-      actionLabel: 'Upgrade Now',
-      createdAt: new Date(now.getTime() - 5 * 24 * 3600000).toISOString(),
-    },
-    {
-      id: '7',
-      title: 'API Key Expiring Soon',
-      message: 'Your API key will expire in 7 days. Rotate your key to maintain access.',
-      type: 'warning',
-      category: 'security',
-      read: false,
-      actionUrl: '/settings/api-keys',
-      actionLabel: 'Rotate Key',
-      createdAt: new Date(now.getTime() - 7 * 24 * 3600000).toISOString(),
-    },
-    {
-      id: '8',
-      title: 'System Maintenance Scheduled',
-      message: 'Scheduled maintenance on Dec 25, 2025 from 2:00 AM - 4:00 AM UTC. Services may be unavailable.',
-      type: 'info',
-      category: 'system',
-      read: true,
-      actionUrl: '/status',
-      actionLabel: 'View Status',
-      createdAt: new Date(now.getTime() - 10 * 24 * 3600000).toISOString(),
-      readAt: new Date(now.getTime() - 9 * 24 * 3600000).toISOString(),
-    },
-  ];
-
-  return notifications;
+// Custom Error Classes for proper error handling
+export class NotificationServiceError extends Error {
+    constructor(
+        message: string,
+        public readonly code: string,
+        public readonly statusCode?: number,
+        public readonly originalError?: unknown
+    ) {
+        super(message);
+        this.name = 'NotificationServiceError';
+    }
 }
+
+export class NotificationNotFoundError extends NotificationServiceError {
+    constructor(id: string) {
+        super(`Notification with id '${id}' not found`, 'NOTIFICATION_NOT_FOUND', 404);
+        this.name = 'NotificationNotFoundError';
+    }
+}
+
+export class NotificationNetworkError extends NotificationServiceError {
+    constructor(operation: string, originalError?: unknown) {
+        super(
+            `Network error during ${operation}. Please check your connection and try again.`,
+            'NETWORK_ERROR',
+            undefined,
+            originalError
+        );
+        this.name = 'NotificationNetworkError';
+    }
+}
+
+// Helper to check if we're in development mode with mock enabled
+const isDevMockEnabled = (): boolean => {
+    return process.env.NODE_ENV === 'development' &&
+           process.env.NEXT_PUBLIC_USE_MOCK_NOTIFICATIONS === 'true';
+};
+
+// Development-only mock data generator (only used when explicitly enabled)
+function generateDevMockNotifications(): Notification[] {
+    if (!isDevMockEnabled()) {
+        return [];
+    }
+
+    const now = new Date();
+    return [
+        {
+            id: 'dev-1',
+            title: '[DEV] Welcome to AI Native Studio',
+            message: 'Your account has been successfully created. Start building with AI-native tools.',
+            type: 'success',
+            category: 'system',
+            read: false,
+            actionUrl: '/getting-started',
+            actionLabel: 'Get Started',
+            createdAt: new Date(now.getTime() - 5 * 60000).toISOString(),
+        },
+        {
+            id: 'dev-2',
+            title: '[DEV] QNN Training Complete',
+            message: 'Your quantum neural network training job has completed successfully with 94% accuracy.',
+            type: 'success',
+            category: 'feature',
+            read: false,
+            actionUrl: '/products/qnn',
+            actionLabel: 'View Results',
+            createdAt: new Date(now.getTime() - 30 * 60000).toISOString(),
+        },
+        {
+            id: 'dev-3',
+            title: '[DEV] Security Alert',
+            message: 'New login detected from Chrome on Linux. If this was not you, please secure your account.',
+            type: 'warning',
+            category: 'security',
+            read: false,
+            actionUrl: '/settings/security',
+            actionLabel: 'Review Activity',
+            createdAt: new Date(now.getTime() - 2 * 3600000).toISOString(),
+        },
+        {
+            id: 'dev-4',
+            title: '[DEV] Invoice Available',
+            message: 'Your monthly invoice for $49.99 is now available for download.',
+            type: 'info',
+            category: 'billing',
+            read: true,
+            actionUrl: '/billing',
+            actionLabel: 'View Invoice',
+            createdAt: new Date(now.getTime() - 24 * 3600000).toISOString(),
+            readAt: new Date(now.getTime() - 22 * 3600000).toISOString(),
+        },
+    ];
+}
+
+// Default notification preferences
+const DEFAULT_PREFERENCES: NotificationPreferences = {
+    email: {
+        enabled: true,
+        system: true,
+        billing: true,
+        security: true,
+        feature: true,
+        marketing: false,
+    },
+    inApp: {
+        enabled: true,
+        system: true,
+        billing: true,
+        security: true,
+        feature: true,
+        marketing: true,
+    },
+    push: {
+        enabled: false,
+        system: false,
+        billing: false,
+        security: false,
+        feature: false,
+        marketing: false,
+    },
+};
 
 // Notification Service
 const notificationService = {
-  /**
-   * Get list of notifications with optional filtering
-   */
-  async getNotifications(filter?: 'all' | 'unread' | 'read'): Promise<Notification[]> {
-    try {
-      const params = filter ? `?filter=${filter}` : '';
-      const response = await apiClient.get<{ notifications: Notification[] }>(`/v1/notifications${params}`);
-      return response.data.notifications || [];
-    } catch (error) {
-      console.warn('Failed to fetch notifications from API, using mock data:', error);
+    /**
+     * Get list of notifications with optional filtering
+     * @throws {NotificationNetworkError} When API call fails
+     */
+    async getNotifications(filter?: 'all' | 'unread' | 'read'): Promise<Notification[]> {
+        // Development mock mode - only when explicitly enabled
+        if (isDevMockEnabled()) {
+            console.info('[DEV] Using mock notifications data');
+            const mockNotifications = generateDevMockNotifications();
+            if (filter === 'unread') {
+                return mockNotifications.filter(n => !n.read);
+            } else if (filter === 'read') {
+                return mockNotifications.filter(n => n.read);
+            }
+            return mockNotifications;
+        }
 
-      // Return mock data as fallback
-      const mockNotifications = generateMockNotifications();
+        try {
+            const params = filter ? `?filter=${filter}` : '';
+            const response = await apiClient.get<{ notifications: Notification[] }>(`/v1/notifications${params}`);
+            return response.data.notifications || [];
+        } catch (error) {
+            console.error('Failed to fetch notifications:', error);
+            throw new NotificationNetworkError('fetching notifications', error);
+        }
+    },
 
-      if (filter === 'unread') {
-        return mockNotifications.filter(n => !n.read);
-      } else if (filter === 'read') {
-        return mockNotifications.filter(n => n.read);
-      }
+    /**
+     * Get a specific notification by ID
+     * @throws {NotificationNotFoundError} When notification doesn't exist
+     * @throws {NotificationNetworkError} When API call fails
+     */
+    async getNotification(id: string): Promise<Notification> {
+        // Development mock mode
+        if (isDevMockEnabled()) {
+            const mockNotifications = generateDevMockNotifications();
+            const notification = mockNotifications.find(n => n.id === id);
+            if (!notification) {
+                throw new NotificationNotFoundError(id);
+            }
+            return notification;
+        }
 
-      return mockNotifications;
-    }
-  },
+        try {
+            const response = await apiClient.get<Notification>(`/v1/notifications/${id}`);
+            return response.data;
+        } catch (error) {
+            // Check if it's a 404 error
+            if (error && typeof error === 'object' && 'status' in error && error.status === 404) {
+                throw new NotificationNotFoundError(id);
+            }
+            console.error(`Failed to fetch notification ${id}:`, error);
+            throw new NotificationNetworkError('fetching notification', error);
+        }
+    },
 
-  /**
-   * Get a specific notification by ID
-   */
-  async getNotification(id: string): Promise<Notification> {
-    try {
-      const response = await apiClient.get<Notification>(`/v1/notifications/${id}`);
-      return response.data;
-    } catch (error) {
-      console.warn('Failed to fetch notification from API, using mock data:', error);
+    /**
+     * Mark notification as read
+     * @throws {NotificationNotFoundError} When notification doesn't exist
+     * @throws {NotificationNetworkError} When API call fails
+     */
+    async markAsRead(id: string): Promise<Notification> {
+        // Development mock mode
+        if (isDevMockEnabled()) {
+            const mockNotifications = generateDevMockNotifications();
+            const notification = mockNotifications.find(n => n.id === id);
+            if (!notification) {
+                throw new NotificationNotFoundError(id);
+            }
+            return {
+                ...notification,
+                read: true,
+                readAt: new Date().toISOString(),
+            };
+        }
 
-      // Return mock data as fallback
-      const mockNotifications = generateMockNotifications();
-      const notification = mockNotifications.find(n => n.id === id);
+        try {
+            const response = await apiClient.put<Notification>(`/v1/notifications/${id}/read`);
+            return response.data;
+        } catch (error) {
+            if (error && typeof error === 'object' && 'status' in error && error.status === 404) {
+                throw new NotificationNotFoundError(id);
+            }
+            console.error(`Failed to mark notification ${id} as read:`, error);
+            throw new NotificationNetworkError('marking notification as read', error);
+        }
+    },
 
-      if (!notification) {
-        throw new Error('Notification not found');
-      }
+    /**
+     * Mark notification as unread
+     * @throws {NotificationNotFoundError} When notification doesn't exist
+     * @throws {NotificationNetworkError} When API call fails
+     */
+    async markAsUnread(id: string): Promise<Notification> {
+        // Development mock mode
+        if (isDevMockEnabled()) {
+            const mockNotifications = generateDevMockNotifications();
+            const notification = mockNotifications.find(n => n.id === id);
+            if (!notification) {
+                throw new NotificationNotFoundError(id);
+            }
+            return {
+                ...notification,
+                read: false,
+                readAt: undefined,
+            };
+        }
 
-      return notification;
-    }
-  },
+        try {
+            const response = await apiClient.put<Notification>(`/v1/notifications/${id}/unread`);
+            return response.data;
+        } catch (error) {
+            if (error && typeof error === 'object' && 'status' in error && error.status === 404) {
+                throw new NotificationNotFoundError(id);
+            }
+            console.error(`Failed to mark notification ${id} as unread:`, error);
+            throw new NotificationNetworkError('marking notification as unread', error);
+        }
+    },
 
-  /**
-   * Mark notification as read
-   */
-  async markAsRead(id: string): Promise<Notification> {
-    try {
-      const response = await apiClient.put<Notification>(`/v1/notifications/${id}/read`);
-      return response.data;
-    } catch (error) {
-      console.warn('Failed to mark notification as read via API:', error);
+    /**
+     * Delete a notification
+     * @throws {NotificationNotFoundError} When notification doesn't exist
+     * @throws {NotificationNetworkError} When API call fails
+     */
+    async deleteNotification(id: string): Promise<void> {
+        // Development mock mode - simulate success
+        if (isDevMockEnabled()) {
+            console.info(`[DEV] Simulating delete for notification ${id}`);
+            return;
+        }
 
-      // Simulate success for mock data
-      const mockNotifications = generateMockNotifications();
-      const notification = mockNotifications.find(n => n.id === id);
+        try {
+            await apiClient.delete(`/v1/notifications/${id}`);
+        } catch (error) {
+            if (error && typeof error === 'object' && 'status' in error && error.status === 404) {
+                throw new NotificationNotFoundError(id);
+            }
+            console.error(`Failed to delete notification ${id}:`, error);
+            throw new NotificationNetworkError('deleting notification', error);
+        }
+    },
 
-      if (!notification) {
-        throw new Error('Notification not found');
-      }
+    /**
+     * Mark all notifications as read
+     * @throws {NotificationNetworkError} When API call fails
+     */
+    async markAllAsRead(): Promise<{ success: boolean; count: number }> {
+        // Development mock mode
+        if (isDevMockEnabled()) {
+            const mockNotifications = generateDevMockNotifications();
+            const unreadCount = mockNotifications.filter(n => !n.read).length;
+            return { success: true, count: unreadCount };
+        }
 
-      return {
-        ...notification,
-        read: true,
-        readAt: new Date().toISOString(),
-      };
-    }
-  },
+        try {
+            const response = await apiClient.put<{ success: boolean; count: number }>('/v1/notifications/mark-all-read');
+            return response.data;
+        } catch (error) {
+            console.error('Failed to mark all notifications as read:', error);
+            throw new NotificationNetworkError('marking all notifications as read', error);
+        }
+    },
 
-  /**
-   * Mark notification as unread
-   */
-  async markAsUnread(id: string): Promise<Notification> {
-    try {
-      const response = await apiClient.put<Notification>(`/v1/notifications/${id}/unread`);
-      return response.data;
-    } catch (error) {
-      console.warn('Failed to mark notification as unread via API:', error);
+    /**
+     * Get notification preferences
+     * Returns default preferences if API fails (graceful degradation for preferences)
+     */
+    async getPreferences(): Promise<NotificationPreferences> {
+        // Development mock mode
+        if (isDevMockEnabled()) {
+            return DEFAULT_PREFERENCES;
+        }
 
-      // Simulate success for mock data
-      const mockNotifications = generateMockNotifications();
-      const notification = mockNotifications.find(n => n.id === id);
+        try {
+            const response = await apiClient.get<NotificationPreferences>('/v1/notifications/preferences');
+            return response.data;
+        } catch (error) {
+            // For preferences, we allow graceful degradation to defaults
+            // since this doesn't show fake user data
+            console.warn('Failed to fetch preferences, using defaults:', error);
+            return DEFAULT_PREFERENCES;
+        }
+    },
 
-      if (!notification) {
-        throw new Error('Notification not found');
-      }
+    /**
+     * Update notification preferences
+     * @throws {NotificationNetworkError} When API call fails
+     */
+    async updatePreferences(preferences: NotificationPreferences): Promise<NotificationPreferences> {
+        // Development mock mode
+        if (isDevMockEnabled()) {
+            console.info('[DEV] Simulating preferences update');
+            return preferences;
+        }
 
-      return {
-        ...notification,
-        read: false,
-        readAt: undefined,
-      };
-    }
-  },
+        try {
+            const response = await apiClient.put<NotificationPreferences>('/v1/notifications/preferences', preferences);
+            return response.data;
+        } catch (error) {
+            console.error('Failed to update preferences:', error);
+            throw new NotificationNetworkError('updating preferences', error);
+        }
+    },
 
-  /**
-   * Delete a notification
-   */
-  async deleteNotification(id: string): Promise<void> {
-    try {
-      await apiClient.delete(`/v1/notifications/${id}`);
-    } catch (error) {
-      console.warn('Failed to delete notification via API:', error);
-      // Simulate success for mock data
-    }
-  },
+    /**
+     * Subscribe to push notifications
+     * @throws {NotificationNetworkError} When API call fails
+     */
+    async subscribeToPush(subscription: PushSubscription): Promise<{ success: boolean; message: string }> {
+        // Development mock mode
+        if (isDevMockEnabled()) {
+            return {
+                success: true,
+                message: '[DEV] Push notifications enabled (mock)',
+            };
+        }
 
-  /**
-   * Mark all notifications as read
-   */
-  async markAllAsRead(): Promise<{ success: boolean; count: number }> {
-    try {
-      const response = await apiClient.put<{ success: boolean; count: number }>('/v1/notifications/mark-all-read');
-      return response.data;
-    } catch (error) {
-      console.warn('Failed to mark all as read via API:', error);
+        try {
+            const response = await apiClient.post<{ success: boolean; message: string }>('/v1/notifications/subscribe', subscription);
+            return response.data;
+        } catch (error) {
+            console.error('Failed to subscribe to push notifications:', error);
+            throw new NotificationNetworkError('subscribing to push notifications', error);
+        }
+    },
 
-      // Simulate success for mock data
-      const mockNotifications = generateMockNotifications();
-      const unreadCount = mockNotifications.filter(n => !n.read).length;
+    /**
+     * Get notification statistics
+     * @throws {NotificationNetworkError} When API call fails
+     */
+    async getStats(): Promise<NotificationStats> {
+        // Development mock mode
+        if (isDevMockEnabled()) {
+            const mockNotifications = generateDevMockNotifications();
+            return {
+                total: mockNotifications.length,
+                unread: mockNotifications.filter(n => !n.read).length,
+                byType: mockNotifications.reduce((acc, n) => {
+                    acc[n.type] = (acc[n.type] || 0) + 1;
+                    return acc;
+                }, {} as Record<string, number>),
+                byCategory: mockNotifications.reduce((acc, n) => {
+                    acc[n.category] = (acc[n.category] || 0) + 1;
+                    return acc;
+                }, {} as Record<string, number>),
+            };
+        }
 
-      return {
-        success: true,
-        count: unreadCount,
-      };
-    }
-  },
-
-  /**
-   * Get notification preferences
-   */
-  async getPreferences(): Promise<NotificationPreferences> {
-    try {
-      const response = await apiClient.get<NotificationPreferences>('/v1/notifications/preferences');
-      return response.data;
-    } catch (error) {
-      console.warn('Failed to fetch preferences from API, using defaults:', error);
-
-      // Return default preferences
-      return {
-        email: {
-          enabled: true,
-          system: true,
-          billing: true,
-          security: true,
-          feature: true,
-          marketing: false,
-        },
-        inApp: {
-          enabled: true,
-          system: true,
-          billing: true,
-          security: true,
-          feature: true,
-          marketing: true,
-        },
-        push: {
-          enabled: false,
-          system: false,
-          billing: false,
-          security: false,
-          feature: false,
-          marketing: false,
-        },
-      };
-    }
-  },
-
-  /**
-   * Update notification preferences
-   */
-  async updatePreferences(preferences: NotificationPreferences): Promise<NotificationPreferences> {
-    try {
-      const response = await apiClient.put<NotificationPreferences>('/v1/notifications/preferences', preferences);
-      return response.data;
-    } catch (error) {
-      console.warn('Failed to update preferences via API:', error);
-
-      // Return the preferences as-is (simulating success)
-      return preferences;
-    }
-  },
-
-  /**
-   * Subscribe to push notifications
-   */
-  async subscribeToPush(subscription: PushSubscription): Promise<{ success: boolean; message: string }> {
-    try {
-      const response = await apiClient.post<{ success: boolean; message: string }>('/v1/notifications/subscribe', subscription);
-      return response.data;
-    } catch (error) {
-      console.warn('Failed to subscribe to push notifications via API:', error);
-
-      // Simulate success
-      return {
-        success: true,
-        message: 'Push notifications enabled (mock)',
-      };
-    }
-  },
-
-  /**
-   * Get notification statistics
-   */
-  async getStats(): Promise<NotificationStats> {
-    try {
-      const response = await apiClient.get<NotificationStats>('/v1/notifications/stats');
-      return response.data;
-    } catch (error) {
-      console.warn('Failed to fetch stats from API, calculating from mock data:', error);
-
-      // Calculate stats from mock data
-      const mockNotifications = generateMockNotifications();
-
-      return {
-        total: mockNotifications.length,
-        unread: mockNotifications.filter(n => !n.read).length,
-        byType: mockNotifications.reduce((acc, n) => {
-          acc[n.type] = (acc[n.type] || 0) + 1;
-          return acc;
-        }, {} as Record<string, number>),
-        byCategory: mockNotifications.reduce((acc, n) => {
-          acc[n.category] = (acc[n.category] || 0) + 1;
-          return acc;
-        }, {} as Record<string, number>),
-      };
-    }
-  },
+        try {
+            const response = await apiClient.get<NotificationStats>('/v1/notifications/stats');
+            return response.data;
+        } catch (error) {
+            console.error('Failed to fetch notification stats:', error);
+            throw new NotificationNetworkError('fetching notification statistics', error);
+        }
+    },
 };
 
 export default notificationService;

@@ -1,12 +1,13 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   Database, Layers, Search, Plus, Trash2, RefreshCw, Download,
   Upload, Play, AlertCircle, X, ChevronRight, Activity, Settings,
   Folder, FileText, Clock, HardDrive, Zap, Eye, Copy, Check
 } from 'lucide-react';
+import { useAINative } from '@/components/providers/AINativeProvider';
 import {
   Namespace,
   DatabaseStats,
@@ -87,6 +88,9 @@ const mockQueryResults: QueryResult[] = [
 type Tab = 'namespaces' | 'query' | 'vectors' | 'import-export';
 
 export default function ZeroDBClient() {
+  // AINative SDK client for ZeroDB operations
+  const { client } = useAINative();
+
   const [namespaces, setNamespaces] = useState<Namespace[]>(mockNamespaces);
   const [stats, setStats] = useState<DatabaseStats>(mockStats);
   const [vectors, setVectors] = useState<VectorEntry[]>(mockVectors);
@@ -96,6 +100,7 @@ export default function ZeroDBClient() {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [copiedId, setCopiedId] = useState<string | null>(null);
+  const [projectId, setProjectId] = useState<string>('');
 
   // Modal states
   const [showCreateNamespace, setShowCreateNamespace] = useState(false);
@@ -103,6 +108,26 @@ export default function ZeroDBClient() {
   const [newNamespaceDimensions, setNewNamespaceDimensions] = useState(1536);
   const [queryText, setQueryText] = useState('');
   const [topK, setTopK] = useState(10);
+
+  // Get project ID from localStorage on mount
+  useEffect(() => {
+    const storedProjectId = localStorage.getItem('zerodb_project_id');
+    if (storedProjectId) {
+      setProjectId(storedProjectId);
+    }
+  }, []);
+
+  // Example: Use SDK client for vector search (when API key is configured)
+  // const searchVectors = async (queryVector: number[]) => {
+  //   if (projectId && client) {
+  //     const result = await client.zerodb.vectors.search(projectId, {
+  //       queryVector,
+  //       namespace: selectedNamespace,
+  //       topK,
+  //     });
+  //     return result.data;
+  //   }
+  // };
 
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleString();

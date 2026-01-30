@@ -89,8 +89,14 @@ export default function AdminDashboardClient() {
     },
   };
 
-  const displayData = summary || mockSummary;
-  const alerts = alertsData?.alerts.slice(0, 5) || [];
+  // Merge with mock data to ensure all properties exist even if API returns partial data
+  const displayData = {
+    health: summary?.health || mockSummary.health,
+    metrics: summary?.metrics || mockSummary.metrics,
+    alerts: summary?.alerts || mockSummary.alerts,
+    stats: summary?.stats || mockSummary.stats,
+  };
+  const alerts = alertsData?.alerts?.slice(0, 5) || [];
 
   const getStatusColor = (status: string) => {
     switch (status) {

@@ -112,6 +112,8 @@ describe('BillingService', () => {
           message: 'Success',
           data: mockBillingInfo,
         },
+        status: 200,
+        statusText: 'OK',
       });
 
       const result = await billingService.getBillingInfo();
@@ -127,6 +129,8 @@ describe('BillingService', () => {
           message: 'Billing info unavailable',
           data: null,
         },
+        status: 200,
+        statusText: 'OK',
       });
 
       await expect(billingService.getBillingInfo()).rejects.toThrow('Billing info unavailable');
@@ -147,6 +151,8 @@ describe('BillingService', () => {
           message: 'Success',
           data: { items: [mockInvoice] },
         },
+        status: 200,
+        statusText: 'OK',
       });
 
       const result = await billingService.getInvoices();
@@ -170,6 +176,8 @@ describe('BillingService', () => {
           message: 'Success',
           data: { items: [] },
         },
+        status: 200,
+        statusText: 'OK',
       });
 
       const result = await billingService.getInvoices();
@@ -186,6 +194,8 @@ describe('BillingService', () => {
           message: 'Success',
           data: mockInvoice,
         },
+        status: 200,
+        statusText: 'OK',
       });
 
       const result = await billingService.getInvoiceById('inv-123');
@@ -201,6 +211,8 @@ describe('BillingService', () => {
           message: 'Not found',
           data: null,
         },
+        status: 200,
+        statusText: 'OK',
       });
 
       const result = await billingService.getInvoiceById('invalid');
@@ -225,6 +237,8 @@ describe('BillingService', () => {
           message: 'Added',
           data: { payment_method: mockPaymentMethod },
         },
+        status: 200,
+        statusText: 'OK',
       });
 
       const result = await billingService.addPaymentMethod('pm_stripe_token');
@@ -242,6 +256,8 @@ describe('BillingService', () => {
           message: 'Card declined',
           data: null,
         },
+        status: 200,
+        statusText: 'OK',
       });
 
       const result = await billingService.addPaymentMethod('pm_invalid');
@@ -274,6 +290,8 @@ describe('BillingService', () => {
           message: 'Success',
           data: { subscription: mockSubscription },
         },
+        status: 200,
+        statusText: 'OK',
       });
 
       const result = await billingService.getSubscription();
@@ -289,6 +307,8 @@ describe('BillingService', () => {
           message: 'No subscription',
           data: null,
         },
+        status: 200,
+        statusText: 'OK',
       });
 
       const result = await billingService.getSubscription();
@@ -305,6 +325,8 @@ describe('BillingService', () => {
           message: 'Updated',
           data: { subscription: mockSubscription },
         },
+        status: 200,
+        statusText: 'OK',
       });
 
       const result = await billingService.updateSubscription({ plan_id: 'plan-enterprise' });
@@ -322,6 +344,8 @@ describe('BillingService', () => {
           message: 'Downgrade not allowed',
           data: null,
         },
+        status: 200,
+        statusText: 'OK',
       });
 
       const result = await billingService.updateSubscription({ plan_id: 'plan-basic' });
@@ -339,6 +363,8 @@ describe('BillingService', () => {
           message: 'Success',
           data: { plans: [mockSubscriptionPlan] },
         },
+        status: 200,
+        statusText: 'OK',
       });
 
       const result = await billingService.getSubscriptionPlans();
@@ -364,6 +390,8 @@ describe('BillingService', () => {
           message: 'Success',
           data: { balance: mockCreditBalance },
         },
+        status: 200,
+        statusText: 'OK',
       });
 
       const result = await billingService.getCreditBalance();
@@ -389,6 +417,8 @@ describe('BillingService', () => {
           message: 'Purchased',
           data: { transaction_id: 'txn-new' },
         },
+        status: 200,
+        statusText: 'OK',
       });
 
       const result = await billingService.purchaseCredits(5000, 'pm-123');
@@ -407,6 +437,8 @@ describe('BillingService', () => {
           message: 'Insufficient funds',
           data: null,
         },
+        status: 200,
+        statusText: 'OK',
       });
 
       const result = await billingService.purchaseCredits(5000);
@@ -439,6 +471,8 @@ describe('BillingService', () => {
           message: 'Success',
           data: { usage: mockCreditUsage },
         },
+        status: 200,
+        statusText: 'OK',
       });
 
       const result = await billingService.getCreditUsage();
@@ -464,6 +498,8 @@ describe('BillingService', () => {
           message: 'Success',
           data: { transactions: [mockCreditTransaction] },
         },
+        status: 200,
+        statusText: 'OK',
       });
 
       const result = await billingService.getCreditTransactions();
@@ -489,6 +525,8 @@ describe('BillingService', () => {
           message: 'Success',
           data: { auto_refill: mockAutoRefillSettings },
         },
+        status: 200,
+        statusText: 'OK',
       });
 
       const result = await billingService.getAutoRefillSettings();
@@ -514,6 +552,8 @@ describe('BillingService', () => {
           message: 'Updated',
           data: { success: true },
         },
+        status: 200,
+        statusText: 'OK',
       });
 
       const result = await billingService.updateAutoRefillSettings({
@@ -537,6 +577,8 @@ describe('BillingService', () => {
           message: 'Invalid threshold',
           data: null,
         },
+        status: 200,
+        statusText: 'OK',
       });
 
       const result = await billingService.updateAutoRefillSettings({
@@ -560,6 +602,7 @@ describe('BillingService', () => {
       });
 
       it('should return raw status for unknown status', () => {
+        // @ts-expect-error Testing with invalid status
         expect(billingService.getStatusDisplayText('unknown')).toBe('unknown');
       });
     });

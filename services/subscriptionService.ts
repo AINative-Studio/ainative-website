@@ -166,7 +166,8 @@ export interface CurrentPlanInfo {
  * Manages all subscription-related API operations
  */
 export class SubscriptionService {
-  private readonly basePath = '/api/v1/subscription';
+  private readonly basePath = '/v1/public/subscription';
+  private readonly billingPath = '/v1/public/billing';
 
   /**
    * Get current subscription details
@@ -325,7 +326,7 @@ export class SubscriptionService {
   async getInvoices(limit: number = 10): Promise<SubscriptionInvoice[]> {
     try {
       const response = await apiClient.get<ApiResponse<{ invoices: SubscriptionInvoice[] }>>(
-        `${this.basePath}/invoices?limit=${limit}`
+        `${this.billingPath}/invoices?limit=${limit}`
       );
 
       if (!response.data.success || !response.data.data?.invoices) {
@@ -345,7 +346,7 @@ export class SubscriptionService {
   async getPaymentMethods(): Promise<PaymentMethod[]> {
     try {
       const response = await apiClient.get<ApiResponse<{ payment_methods: PaymentMethod[] }>>(
-        `${this.basePath}/payment-methods`
+        `${this.billingPath}/payment-methods`
       );
 
       if (!response.data.success || !response.data.data?.payment_methods) {

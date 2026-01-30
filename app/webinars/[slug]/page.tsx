@@ -1,7 +1,6 @@
 import { Metadata } from 'next';
 import WebinarDetailClient from './WebinarDetailClient';
 import { VideoSchema, BreadcrumbSchema } from '@/components/seo/StructuredData';
-import { getRevalidateTime, getCacheTags } from '@/lib/cache-config';
 
 interface WebinarDetailPageProps {
   params: Promise<{
@@ -10,10 +9,7 @@ interface WebinarDetailPageProps {
 }
 
 // Enable ISR with 5-minute revalidation (time-sensitive content)
-export const revalidate = getRevalidateTime('content', 'webinar'); // 300 seconds (5 minutes)
-
-// Add cache tags for on-demand revalidation
-export const tags = getCacheTags('webinar');
+export const revalidate = 300; // 300 seconds (5 minutes)
 
 export async function generateMetadata({ params }: WebinarDetailPageProps): Promise<Metadata> {
   const resolvedParams = await params;

@@ -400,7 +400,7 @@ export default function NotificationsClient() {
         variants={fadeUp}
         initial="hidden"
         animate="show"
-        className="container max-w-6xl mx-auto px-4 pt-24 pb-8"
+        className="container max-w-6xl mx-auto px-4 pb-8"
       >
         <div className="flex items-start justify-between">
           <div>
@@ -429,7 +429,7 @@ export default function NotificationsClient() {
               <div className="flex items-center gap-3">
                 <Bell className="w-8 h-8 text-blue-400" />
                 <div>
-                  <p className="text-2xl font-bold text-white">{stats.total}</p>
+                  <p className="text-2xl font-bold text-white">{stats.total ?? 0}</p>
                   <p className="text-sm text-gray-300">Total Notifications</p>
                 </div>
               </div>
@@ -439,7 +439,7 @@ export default function NotificationsClient() {
               <div className="flex items-center gap-3">
                 <BellOff className="w-8 h-8 text-purple-400" />
                 <div>
-                  <p className="text-2xl font-bold text-white">{stats.unread}</p>
+                  <p className="text-2xl font-bold text-white">{stats.unread ?? 0}</p>
                   <p className="text-sm text-gray-300">Unread</p>
                 </div>
               </div>
@@ -449,7 +449,7 @@ export default function NotificationsClient() {
               <div className="flex items-center gap-3">
                 <CheckCheck className="w-8 h-8 text-green-400" />
                 <div>
-                  <p className="text-2xl font-bold text-white">{stats.total - stats.unread}</p>
+                  <p className="text-2xl font-bold text-white">{(stats.total ?? 0) - (stats.unread ?? 0)}</p>
                   <p className="text-sm text-gray-300">Read</p>
                 </div>
               </div>

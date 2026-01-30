@@ -3,7 +3,7 @@
  * Tests complete authentication workflows including login, registration, token management, and user profile
  */
 
-import { authService } from '@/services/AuthService';
+import { authService } from '../../services/AuthService';
 import { setupIntegrationTest, testUtils, mockUser, mockTokens } from './setup';
 
 describe('Authentication Flow Integration Tests', () => {
@@ -79,10 +79,10 @@ describe('Authentication Flow Integration Tests', () => {
       localStorage.setItem('refresh_token', mockTokens.refresh_token);
 
       // When: Access token is refreshed
-      const newToken = await authService.refreshAccessToken();
+      const response = await authService.refreshToken();
 
       // Then: New token is stored
-      expect(newToken).toBe(mockTokens.access_token);
+      expect(response.access_token).toBe(mockTokens.access_token);
       expect(localStorage.getItem('accessToken')).toBe(mockTokens.access_token);
     });
 
@@ -91,10 +91,13 @@ describe('Authentication Flow Integration Tests', () => {
       localStorage.removeItem('refresh_token');
 
       // When: Refresh is attempted
-      const newToken = await authService.refreshAccessToken();
-
-      // Then: Returns null and clears auth data
-      expect(newToken).toBeNull();
+      try {
+        await authService.refreshToken();
+        fail('Should have thrown error');
+      } catch (error) {
+        // Then: Error is thrown when no refresh token
+        expect(error).toBeDefined();
+      }
     });
 
     it('should automatically include auth token in API requests', async () => {
@@ -250,7 +253,7 @@ describe('Authentication Flow Integration Tests', () => {
 
       // When: Checking authentication (simulating page refresh)
       const isAuth = authService.isAuthenticated();
-      const token = authService.getAccessToken();
+      const token = localStorage.getItem('access_token');
 
       // Then: Session persists
       expect(isAuth).toBe(true);

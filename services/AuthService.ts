@@ -1,20 +1,34 @@
-/**
- * Authentication Service
- * Handles user authentication, token management, and user profile operations
- * Compatible with AINative API and cross-subdomain SSO
- */
+import apiClient from '@/lib/api-client';
+import { appConfig } from '@/lib/config/app';
+import { setAuthToken, setAuthUser, clearAuthData } from '@/utils/authCookies';
 
-import { setAuthToken, setAuthUser, clearAuthData, getAuthToken } from '@/utils/authCookies';
+export interface LoginData {
+  email: string;
+  password: string;
+}
 
-export interface LoginResponse {
+export interface RegisterData {
+  email: string;
+  password: string;
+  preferred_name?: string;
+}
+
+export interface AuthResponse {
   access_token: string;
   refresh_token?: string;
   token_type: string;
   expires_in?: number;
   user_id?: string;
   email?: string;
-  user?: UserProfile;
+  user?: {
+    id: string;
+    email: string;
+    preferred_name?: string;
+    roles?: string[];
+  };
 }
+
+export interface LoginResponse extends AuthResponse {}
 
 export interface UserProfile {
   id: string;
@@ -27,56 +41,25 @@ export interface UserProfile {
   roles?: string[];
 }
 
-export interface RegisterData {
-  email: string;
-  password: string;
-  preferred_name?: string;
-}
-
-class AuthService {
-  private readonly baseURL: string;
+export class AuthService {
+  private baseUrl: string;
 
   constructor() {
-    this.baseURL = process.env.NEXT_PUBLIC_API_BASE_URL || 'https://api.ainative.studio';
+    this.baseUrl = appConfig.api.baseUrl;
   }
 
   /**
-   * Get the current access token
+   * Login user with email and password
+   * Uses URLSearchParams for form data as required by the API
    */
-  getAccessToken(): string | null {
-    return getAuthToken();
-  }
-
-  /**
-   * Get the current refresh token from localStorage
-   */
-  getRefreshToken(): string | null {
-    if (typeof window === 'undefined') return null;
-    return localStorage.getItem('refresh_token');
-  }
-
-  /**
-   * Check if user is authenticated
-   */
-  isAuthenticated(): boolean {
-    return this.getAccessToken() !== null;
-  }
-
-  /**
-   * Login with email and password
-   * Uses URLSearchParams for form data as required by the OAuth2 API
-   */
-  async login(email: string, password: string): Promise<LoginResponse> {
+  async login(email: string, password: string): Promise<AuthResponse> {
     try {
-      // OAuth2 style form data
       const formData = new URLSearchParams();
       formData.append('username', email); // API expects 'username', not 'email'
       formData.append('password', password);
-      formData.append('grant_type', 'password');
+      formData.append('grant_type', 'password'); // OAuth2 requires this field
 
-      const fullURL = `${this.baseURL}/v1/public/auth/login`;
-
-      console.log('Auth Debug: Making login request to:', fullURL);
+      const fullURL = `${this.baseUrl}/v1/public/auth/login`;
 
       const response = await fetch(fullURL, {
         method: 'POST',
@@ -84,7 +67,7 @@ class AuthService {
           'Content-Type': 'application/x-www-form-urlencoded',
         },
         body: formData.toString(),
-        credentials: 'include',
+        credentials: 'include', // Include cookies for CORS requests
       });
 
       if (!response.ok) {
@@ -92,15 +75,16 @@ class AuthService {
         throw new Error(errorData.detail || 'Login failed');
       }
 
-      const data: LoginResponse = await response.json();
+      const data = await response.json();
 
       // Store tokens in localStorage AND cookies for cross-subdomain SSO
       if (data.access_token) {
+        // Set token in cookie and localStorage for SSO
         setAuthToken(data.access_token);
 
-        // Fetch user info from /auth/me endpoint
+        // Fetch user info with role from /auth/me endpoint
         try {
-          const userInfoResponse = await fetch(`${this.baseURL}/v1/auth/me`, {
+          const userInfoResponse = await fetch(`${this.baseUrl}/v1/public/auth/me`, {
             headers: {
               'Authorization': `Bearer ${data.access_token}`,
             },
@@ -108,35 +92,76 @@ class AuthService {
 
           if (userInfoResponse.ok) {
             const userInfo = await userInfoResponse.json();
+            // Set user in cookie and localStorage for SSO
             setAuthUser(userInfo);
-            console.log('User info fetched and stored:', userInfo);
           }
         } catch (e) {
-          console.error('Failed to fetch user info:', e);
+          // Silent: failed to fetch user info
         }
       }
-
-      if (data.refresh_token && typeof window !== 'undefined') {
+      if (data.refresh_token) {
         localStorage.setItem('refresh_token', data.refresh_token);
       }
-
-      if (data.user) {
-        setAuthUser(data.user as unknown as Record<string, unknown>);
+      if (data.user_info || data.user) {
+        // Set user in cookie and localStorage for SSO
+        setAuthUser(data.user_info || data.user);
       }
 
       return data;
     } catch (error) {
-      console.error('Login error:', error);
+      // Rethrow for caller to handle
       throw error;
     }
   }
 
   /**
-   * Register new user
+   * Admin auto-login - DEPRECATED for security reasons
    */
-  async register(userData: RegisterData): Promise<LoginResponse> {
+  async adminAutoLogin(): Promise<void> {
+    return Promise.resolve();
+  }
+
+  /**
+   * Test login method using the test-auth endpoint
+   */
+  async testLogin(email: string, password: string): Promise<AuthResponse> {
     try {
-      const response = await fetch(`${this.baseURL}/v1/public/auth/register`, {
+      const response = await fetch(`${this.baseUrl}/v1/test-auth/test-login`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          email: email,
+          password: password,
+        }),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.detail || 'Test login failed');
+      }
+
+      const data = await response.json();
+
+      // Store tokens in cookie and localStorage for SSO
+      if (data.access_token) {
+        setAuthToken(data.access_token);
+      }
+
+      return data;
+    } catch (error) {
+      // Rethrow for caller to handle
+      throw error;
+    }
+  }
+
+  /**
+   * Register new user using the proper public auth endpoint
+   */
+  async register(userData: RegisterData): Promise<AuthResponse> {
+    try {
+      const response = await fetch(`${this.baseUrl}/v1/public/auth/register`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -156,75 +181,74 @@ class AuthService {
       // Registration successful, now log them in
       return await this.login(userData.email, userData.password);
     } catch (error) {
-      console.error('Registration error:', error);
+      // Rethrow for caller to handle
       throw error;
     }
   }
 
   /**
-   * Exchange OAuth authorization code for access tokens
+   * Verify email address with token from verification email
    */
-  async handleOAuthCallback(code: string, state?: string | null): Promise<LoginResponse> {
+  async verifyEmail(token: string): Promise<{ message: string }> {
     try {
-      const redirectUri = typeof window !== 'undefined'
-        ? `${window.location.origin}/login/callback`
-        : '';
-
-      const response = await fetch(`${this.baseURL}/v1/public/auth/github/callback`, {
+      const response = await fetch(`${this.baseUrl}/v1/public/auth/verify-email`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({
-          code,
-          state,
-          redirect_uri: redirectUri,
-        }),
+        body: JSON.stringify({ token }),
       });
 
       if (!response.ok) {
         const errorData = await response.json();
-        throw new Error(errorData.detail || 'GitHub authentication failed');
+        throw new Error(errorData.detail || 'Email verification failed');
       }
 
-      const data: LoginResponse = await response.json();
-
-      if (data.access_token) {
-        setAuthToken(data.access_token);
-        if (data.refresh_token && typeof window !== 'undefined') {
-          localStorage.setItem('refresh_token', data.refresh_token);
-        }
-      }
-
+      const data = await response.json();
       return data;
     } catch (error) {
-      console.error('GitHub OAuth exchange error:', error);
+      // Rethrow for caller to handle
       throw error;
     }
   }
 
   /**
-   * Get current user profile
+   * Get current user info
    */
-  async getCurrentUser(): Promise<UserProfile | null> {
+  async getCurrentUser(): Promise<UserProfile> {
     try {
-      const token = this.getAccessToken();
-      if (!token) return null;
+      const response = await apiClient.get<UserProfile>('/v1/public/auth/me');
+      return response.data;
+    } catch (error) {
+      // Rethrow for caller to handle
+      throw error;
+    }
+  }
 
-      const response = await fetch(`${this.baseURL}/v1/auth/me`, {
-        headers: {
-          'Authorization': `Bearer ${token}`,
-        },
-      });
-
-      if (!response.ok) {
-        return null;
+  /**
+   * Refresh access token
+   */
+  async refreshToken(): Promise<AuthResponse> {
+    try {
+      const refreshToken = localStorage.getItem('refresh_token');
+      if (!refreshToken) {
+        throw new Error('No refresh token available');
       }
 
-      return await response.json();
+      const response = await apiClient.post<AuthResponse>('/v1/public/auth/refresh', {
+        refresh_token: refreshToken,
+      });
+
+      const data = response.data;
+      if (data.access_token) {
+        // Set token in cookie and localStorage for SSO
+        setAuthToken(data.access_token);
+      }
+
+      return data;
     } catch (error) {
-      console.error('Get current user error:', error);
-      return null;
+      // Rethrow for caller to handle
+      throw error;
     }
   }
 
@@ -233,85 +257,60 @@ class AuthService {
    */
   async logout(): Promise<void> {
     try {
-      const token = this.getAccessToken();
-      if (token) {
-        await fetch(`${this.baseURL}/v1/auth/logout`, {
-          method: 'POST',
-          headers: {
-            'Authorization': `Bearer ${token}`,
-          },
-        });
+      // Try to call logout endpoint if available
+      try {
+        await apiClient.post('/v1/public/auth/logout');
+      } catch {
+        // If logout endpoint fails, still clear local tokens
       }
-    } catch (error) {
-      console.warn('Logout endpoint failed, clearing local tokens:', error);
     } finally {
+      // Clear all auth data (cookies and localStorage) for SSO logout
       clearAuthData();
     }
   }
 
   /**
-   * Refresh access token using refresh token
+   * Check if user is authenticated
    */
-  async refreshAccessToken(): Promise<string | null> {
-    const refreshToken = this.getRefreshToken();
-    if (!refreshToken) {
-      return null;
-    }
+  isAuthenticated(): boolean {
+    if (typeof window === 'undefined') return false;
+    const token = localStorage.getItem('access_token');
+    return !!token;
+  }
 
+  /**
+   * Handle OAuth callback and exchange code for tokens
+   */
+  async handleOAuthCallback(code: string, state?: string): Promise<AuthResponse> {
     try {
-      const response = await fetch(`${this.baseURL}/v1/public/auth/refresh`, {
+      const response = await fetch(`${this.baseUrl}/v1/public/auth/oauth/callback`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({
-          refresh_token: refreshToken,
-        }),
-      });
-
-      if (!response.ok) {
-        clearAuthData();
-        return null;
-      }
-
-      const data: LoginResponse = await response.json();
-
-      if (data.access_token) {
-        setAuthToken(data.access_token);
-        if (data.refresh_token && typeof window !== 'undefined') {
-          localStorage.setItem('refresh_token', data.refresh_token);
-        }
-        return data.access_token;
-      }
-
-      return null;
-    } catch (error) {
-      console.error('Token refresh failed:', error);
-      clearAuthData();
-      return null;
-    }
-  }
-
-  /**
-   * Verify email with token
-   */
-  async verifyEmail(token: string): Promise<{ message: string }> {
-    try {
-      const response = await fetch(`${this.baseURL}/v1/public/auth/verify-email?token=${encodeURIComponent(token)}`, {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        body: JSON.stringify({ code, state }),
+        credentials: 'include',
       });
 
       if (!response.ok) {
         const errorData = await response.json();
-        throw new Error(errorData.detail || errorData.message || 'Email verification failed');
+        throw new Error(errorData.detail || 'OAuth callback failed');
       }
 
-      return await response.json();
+      const data = await response.json();
+
+      if (data.access_token) {
+        setAuthToken(data.access_token);
+      }
+      if (data.refresh_token) {
+        localStorage.setItem('refresh_token', data.refresh_token);
+      }
+      if (data.user) {
+        setAuthUser(data.user);
+      }
+
+      return data;
     } catch (error) {
-      console.error('Email verification error:', error);
       throw error;
     }
   }
@@ -320,21 +319,80 @@ class AuthService {
    * Get GitHub OAuth authorization URL
    */
   getGitHubAuthUrl(returnTo?: string): string {
-    const clientId = process.env.NEXT_PUBLIC_GITHUB_CLIENT_ID || 'Ov23li0zGXukHTHcQNrP';
-    const redirectUri = typeof window !== 'undefined'
-      ? `${window.location.origin}/login/callback`
-      : '';
+    const clientId = process.env.NEXT_PUBLIC_GITHUB_CLIENT_ID || '';
+    const redirectUri = `${typeof window !== 'undefined' ? window.location.origin : ''}/login/callback`;
+    const state = returnTo ? btoa(JSON.stringify({ returnTo })) : '';
 
-    let stateParam = '';
-    if (returnTo) {
-      // Encode return URL in state parameter for cross-subdomain SSO
-      const stateObj = { returnTo };
-      const stateJson = JSON.stringify(stateObj);
-      const stateB64 = btoa(stateJson).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
-      stateParam = `&state=${stateB64}`;
+    const params = new URLSearchParams({
+      client_id: clientId,
+      redirect_uri: redirectUri,
+      scope: 'user:email',
+      ...(state && { state }),
+    });
+
+    return `https://github.com/login/oauth/authorize?${params.toString()}`;
+  }
+
+  /**
+   * Request password reset email
+   */
+  async requestPasswordReset(email: string): Promise<{ message: string }> {
+    try {
+      const response = await fetch(`${this.baseUrl}/v1/public/auth/password-reset/request`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ email }),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.detail || 'Failed to request password reset');
+      }
+
+      return await response.json();
+    } catch (error) {
+      throw error;
     }
+  }
 
-    return `https://github.com/login/oauth/authorize?client_id=${clientId}&redirect_uri=${encodeURIComponent(redirectUri)}&scope=read:user,user:email${stateParam}`;
+  /**
+   * Reset password with token
+   */
+  async resetPassword(token: string, newPassword: string): Promise<{ message: string }> {
+    try {
+      const response = await fetch(`${this.baseUrl}/v1/public/auth/password-reset/confirm`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ token, new_password: newPassword }),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.detail || 'Failed to reset password');
+      }
+
+      return await response.json();
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  /**
+   * Delete user account
+   */
+  async deleteAccount(): Promise<void> {
+    try {
+      await apiClient.delete('/v1/public/auth/account');
+      // Clear local storage after successful deletion
+      await this.logout();
+    } catch (error) {
+      // Rethrow for caller to handle
+      throw error;
+    }
   }
 }
 

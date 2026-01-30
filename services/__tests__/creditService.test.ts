@@ -77,6 +77,8 @@ describe('CreditService', () => {
           message: 'Success',
           data: { balance: mockCreditBalance },
         },
+        status: 200,
+        statusText: 'OK',
       });
 
       const result = await creditService.getCreditBalance();
@@ -100,6 +102,8 @@ describe('CreditService', () => {
           message: 'Error',
           data: null,
         },
+        status: 200,
+        statusText: 'OK',
       });
 
       const result = await creditService.getCreditBalance();
@@ -116,6 +120,8 @@ describe('CreditService', () => {
           message: 'Success',
           data: { transactions: [mockCreditTransaction], total: 1 },
         },
+        status: 200,
+        statusText: 'OK',
       });
 
       const result = await creditService.getTransactionHistory();
@@ -132,6 +138,8 @@ describe('CreditService', () => {
           message: 'Success',
           data: { transactions: [mockCreditTransaction], total: 50 },
         },
+        status: 200,
+        statusText: 'OK',
       });
 
       await creditService.getTransactionHistory({ page: 2, limit: 10 });
@@ -151,6 +159,8 @@ describe('CreditService', () => {
           message: 'Success',
           data: { transactions: [], total: 0 },
         },
+        status: 200,
+        statusText: 'OK',
       });
 
       await creditService.getTransactionHistory({ type: 'purchase' });
@@ -167,6 +177,8 @@ describe('CreditService', () => {
           message: 'Success',
           data: { transactions: [], total: 0 },
         },
+        status: 200,
+        statusText: 'OK',
       });
 
       await creditService.getTransactionHistory({
@@ -199,6 +211,8 @@ describe('CreditService', () => {
           message: 'Success',
           data: { packages: [mockCreditPackage] },
         },
+        status: 200,
+        statusText: 'OK',
       });
 
       const result = await creditService.getCreditPackages();
@@ -214,6 +228,8 @@ describe('CreditService', () => {
           message: 'Packages unavailable',
           data: null,
         },
+        status: 200,
+        statusText: 'OK',
       });
 
       await expect(creditService.getCreditPackages()).rejects.toThrow('Packages unavailable');
@@ -234,6 +250,8 @@ describe('CreditService', () => {
           message: 'Purchased',
           data: { transaction_id: 'txn-new' },
         },
+        status: 200,
+        statusText: 'OK',
       });
 
       const result = await creditService.purchaseCredits('pkg-starter', 'pm-123');
@@ -253,6 +271,8 @@ describe('CreditService', () => {
           message: 'Purchased',
           data: { transaction_id: 'txn-new' },
         },
+        status: 200,
+        statusText: 'OK',
       });
 
       await creditService.purchaseCredits('pkg-starter');
@@ -270,6 +290,8 @@ describe('CreditService', () => {
           message: 'Payment declined',
           data: null,
         },
+        status: 200,
+        statusText: 'OK',
       });
 
       const result = await creditService.purchaseCredits('pkg-starter');
@@ -296,6 +318,8 @@ describe('CreditService', () => {
           message: 'Success',
           data: mockCreditBalanceResponse,
         },
+        status: 200,
+        statusText: 'OK',
       });
 
       const result = await creditService.getCredits();
@@ -311,6 +335,8 @@ describe('CreditService', () => {
           message: 'Credits unavailable',
           data: null,
         },
+        status: 200,
+        statusText: 'OK',
       });
 
       await expect(creditService.getCredits()).rejects.toThrow('Credits unavailable');
@@ -362,6 +388,8 @@ describe('CreditService', () => {
           message: 'Configured',
           data: { auto_refill: mockAutoRefillConfig },
         },
+        status: 200,
+        statusText: 'OK',
       });
 
       const result = await creditService.setupAutomaticRefill({
@@ -387,6 +415,8 @@ describe('CreditService', () => {
           message: 'Disabled',
           data: { auto_refill: { enabled: false } },
         },
+        status: 200,
+        statusText: 'OK',
       });
 
       const result = await creditService.setupAutomaticRefill({
@@ -403,6 +433,8 @@ describe('CreditService', () => {
           message: 'Invalid configuration',
           data: null,
         },
+        status: 200,
+        statusText: 'OK',
       });
 
       const result = await creditService.setupAutomaticRefill({
@@ -423,6 +455,8 @@ describe('CreditService', () => {
           message: 'Success',
           data: { auto_refill: mockAutoRefillConfig },
         },
+        status: 200,
+        statusText: 'OK',
       });
 
       const result = await creditService.getAutoRefillSettings();
@@ -443,18 +477,18 @@ describe('CreditService', () => {
   describe('Utility Methods', () => {
     describe('calculateUsagePercentage()', () => {
       it('should calculate usage percentage correctly', () => {
-        expect(creditService.calculateUsagePercentage({ used: 50, total: 100 })).toBe(50);
-        expect(creditService.calculateUsagePercentage({ used: 75, total: 100 })).toBe(75);
-        expect(creditService.calculateUsagePercentage({ used: 0, total: 100 })).toBe(0);
+        expect(creditService.calculateUsagePercentage({ available: 50, used: 50, total: 100, currency: 'USD' })).toBe(50);
+        expect(creditService.calculateUsagePercentage({ available: 25, used: 75, total: 100, currency: 'USD' })).toBe(75);
+        expect(creditService.calculateUsagePercentage({ available: 100, used: 0, total: 100, currency: 'USD' })).toBe(0);
       });
 
       it('should return 0 when total is 0', () => {
-        expect(creditService.calculateUsagePercentage({ used: 0, total: 0 })).toBe(0);
+        expect(creditService.calculateUsagePercentage({ available: 0, used: 0, total: 0, currency: 'USD' })).toBe(0);
       });
 
       it('should round to nearest integer', () => {
-        expect(creditService.calculateUsagePercentage({ used: 33, total: 100 })).toBe(33);
-        expect(creditService.calculateUsagePercentage({ used: 1, total: 3 })).toBe(33);
+        expect(creditService.calculateUsagePercentage({ available: 67, used: 33, total: 100, currency: 'USD' })).toBe(33);
+        expect(creditService.calculateUsagePercentage({ available: 2, used: 1, total: 3, currency: 'USD' })).toBe(33);
       });
     });
 
@@ -481,6 +515,7 @@ describe('CreditService', () => {
       });
 
       it('should return raw type for unknown type', () => {
+        // @ts-expect-error Testing with invalid type
         expect(creditService.getTransactionTypeDisplay('unknown')).toBe('unknown');
       });
     });
@@ -495,6 +530,7 @@ describe('CreditService', () => {
       });
 
       it('should return gray for unknown type', () => {
+        // @ts-expect-error Testing with invalid type
         expect(creditService.getTransactionTypeColorClass('unknown')).toContain('gray');
       });
     });

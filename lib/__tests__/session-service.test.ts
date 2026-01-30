@@ -63,7 +63,7 @@ describe('SessionService', () => {
     it('fetches sessions with filters', async () => {
       const params = {
         agent_id: 'agent-1',
-        status: 'active',
+        status: 'active' as const,
         page: 2,
         page_size: 10,
       };

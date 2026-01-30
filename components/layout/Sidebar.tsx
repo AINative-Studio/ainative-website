@@ -2,6 +2,8 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import { signOut } from 'next-auth/react';
+import { clearAuthData } from '@/utils/authCookies';
 import {
   BarChart2, CreditCard, LogOut, Settings, User,
   Bell, Repeat, FileText, Sliders, X,
@@ -95,8 +97,13 @@ export default function Sidebar({ isMobile = false, onClose }: SidebarProps) {
   };
 
   const handleLogout = () => {
-    localStorage.clear();
-    window.location.href = '/login';
+    // Clear all auth data (cookies and localStorage)
+    clearAuthData();
+    // Sign out from NextAuth
+    signOut({ callbackUrl: '/login', redirect: false }).then(() => {
+      // Force redirect after signOut completes
+      window.location.href = '/login';
+    });
   };
 
   const sidebarContent = (
@@ -211,10 +218,6 @@ export default function Sidebar({ isMobile = false, onClose }: SidebarProps) {
     );
   }
 
-  // Desktop sidebar
-  return (
-    <aside className="w-72 bg-vite-bg border-r border-[#1C2128] h-[calc(100vh-64px)] sticky top-[64px] hidden md:flex flex-col overflow-y-auto p-5 text-white">
-      {sidebarContent}
-    </aside>
-  );
+  // Desktop sidebar - returns just the content (wrapper provided by DashboardLayout)
+  return sidebarContent;
 }

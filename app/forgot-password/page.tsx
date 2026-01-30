@@ -20,7 +20,7 @@ export default function ForgotPasswordPage() {
     setError('');
 
     try {
-      const { authService } = await import('@/services/authService');
+      const { authService } = await import('@/services/AuthService');
       await authService.requestPasswordReset(email);
       setIsSubmitted(true);
     } catch (err) {

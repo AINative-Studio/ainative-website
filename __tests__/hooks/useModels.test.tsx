@@ -9,7 +9,8 @@
  * Refs #422
  */
 
-import { renderHook, waitFor, act } from '@testing-library/react';
+import { renderHook, act } from '@testing-library/react';
+import { waitFor } from '@testing-library/dom';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import React from 'react';
 import {
@@ -23,7 +24,7 @@ import {
   modelKeys,
 } from '@/hooks/useModels';
 import { qnnApiClient } from '@/services/QNNApiClient';
-import { Model, CreateModelRequest, UpdateModelRequest, PaginatedResponse } from '@/types/qnn.types';
+import { Model, CreateModelRequest, UpdateModelRequest, PaginatedResponse, ModelStatus, ModelArchitecture } from '@/types/qnn.types';
 
 // Mock the QNN API Client module
 jest.mock('@/services/QNNApiClient', () => ({
@@ -113,7 +114,7 @@ describe('useModels Hook', () => {
 
     it('should pass filters to the API when provided', async () => {
       // Given
-      const filters = { status: ['ready', 'trained'] as const, architecture: ['quantum-cnn'] as const };
+      const filters = { status: ['ready', 'trained'] as ModelStatus[], architecture: ['quantum-cnn'] as ModelArchitecture[] };
       (qnnApiClient.listModels as jest.Mock).mockResolvedValueOnce([mockModel]);
 
       // When
@@ -160,7 +161,7 @@ describe('useModels Hook', () => {
 
     it('should use correct cache key for models list', () => {
       // Given
-      const filters = { status: ['ready'] as const };
+      const filters = { status: ['ready'] as ModelStatus[] };
 
       // When
       const key = modelKeys.list(filters);
@@ -440,7 +441,7 @@ describe('useModels Hook', () => {
   describe('useDeleteModel - Delete Model', () => {
     it('should delete a model successfully', async () => {
       // Given
-      (qnnApiClient.deleteModel as jest.Mock).mockResolvedValueOnce();
+      (qnnApiClient.deleteModel as jest.Mock).mockResolvedValueOnce(undefined);
 
       // When
       const { result } = renderHook(() => useDeleteModel(), { wrapper: createWrapper() });
@@ -473,7 +474,7 @@ describe('useModels Hook', () => {
 
     it('should implement optimistic deletion', async () => {
       // Given
-      (qnnApiClient.deleteModel as jest.Mock).mockResolvedValueOnce();
+      (qnnApiClient.deleteModel as jest.Mock).mockResolvedValueOnce(undefined);
 
       // When
       const { result } = renderHook(() => useDeleteModel(), { wrapper: createWrapper() });
@@ -506,7 +507,7 @@ describe('useModels Hook', () => {
 
     it('should invalidate queries after successful deletion', async () => {
       // Given
-      (qnnApiClient.deleteModel as jest.Mock).mockResolvedValueOnce();
+      (qnnApiClient.deleteModel as jest.Mock).mockResolvedValueOnce(undefined);
 
       // When
       const { result } = renderHook(() => useDeleteModel(), { wrapper: createWrapper() });

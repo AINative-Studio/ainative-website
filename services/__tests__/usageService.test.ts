@@ -61,6 +61,8 @@ describe('UsageService', () => {
           message: 'Success',
           data: { metrics: mockUsageMetrics },
         },
+        status: 200,
+        statusText: 'OK',
       });
 
       const result = await usageService.getUsageMetrics();
@@ -76,8 +78,11 @@ describe('UsageService', () => {
           message: 'Success',
           data: { metrics: mockUsageMetrics },
         },
+        status: 200,
+        statusText: 'OK',
       });
 
+      // @ts-expect-error Testing with custom period
       await usageService.getUsageMetrics('7d');
 
       expect(mockedApiClient.get).toHaveBeenCalledWith('/api/v1/usage/metrics?period=7d');
@@ -90,8 +95,11 @@ describe('UsageService', () => {
           message: 'Success',
           data: { metrics: mockUsageMetrics },
         },
+        status: 200,
+        statusText: 'OK',
       });
 
+      // @ts-expect-error Testing with custom period
       await usageService.getUsageMetrics('90d');
 
       expect(mockedApiClient.get).toHaveBeenCalledWith('/api/v1/usage/metrics?period=90d');
@@ -112,6 +120,8 @@ describe('UsageService', () => {
           message: 'Metrics unavailable',
           data: null,
         },
+        status: 200,
+        statusText: 'OK',
       });
 
       const result = await usageService.getUsageMetrics();
@@ -126,6 +136,8 @@ describe('UsageService', () => {
           message: 'Success',
           data: {},
         },
+        status: 200,
+        statusText: 'OK',
       });
 
       const result = await usageService.getUsageMetrics();
@@ -142,6 +154,8 @@ describe('UsageService', () => {
           message: 'Success',
           data: { limits: mockUsageLimits },
         },
+        status: 200,
+        statusText: 'OK',
       });
 
       const result = await usageService.getUsageLimits();
@@ -165,6 +179,8 @@ describe('UsageService', () => {
           message: 'Limits unavailable',
           data: null,
         },
+        status: 200,
+        statusText: 'OK',
       });
 
       const result = await usageService.getUsageLimits();
@@ -181,6 +197,8 @@ describe('UsageService', () => {
           message: 'Success',
           data: mockRealtimeUsage,
         },
+        status: 200,
+        statusText: 'OK',
       });
 
       const result = await usageService.getRealtimeUsage();
@@ -204,6 +222,8 @@ describe('UsageService', () => {
           message: 'Real-time data unavailable',
           data: null,
         },
+        status: 200,
+        statusText: 'OK',
       });
 
       const result = await usageService.getRealtimeUsage();

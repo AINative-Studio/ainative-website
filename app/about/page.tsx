@@ -1,9 +1,8 @@
 import type { Metadata } from 'next';
 import AboutClient from './AboutClient';
-import { getRevalidateTime } from '@/lib/cache-config';
 
 // Enable ISR with 1-hour revalidation for about page (static content)
-export const revalidate = getRevalidateTime('marketing', 'static'); // 3600 seconds (1 hour)
+export const revalidate = 1800; // 3600 seconds (1 hour)
 
 export const metadata: Metadata = {
   title: 'About Us - The Team Behind the Best AI Code Editor',

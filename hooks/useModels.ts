@@ -42,7 +42,7 @@ export function useModels(filters?: ModelFilters) {
     queryKey: modelKeys.list(filters),
     queryFn: async (): Promise<PaginatedResponse<Model>> => {
       try {
-        const models = await qnnApiClient.listModels(filters);
+        const models = await qnnApiClient.listModels(filters as Record<string, unknown> | undefined);
         return {
           items: models,
           total: models.length,

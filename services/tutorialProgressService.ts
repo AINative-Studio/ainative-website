@@ -137,9 +137,8 @@ export class TutorialProgressService {
   ): Promise<TutorialProgress> {
     try {
       const response = await withRetry(async () => {
-        return await apiClient.get(`${API_BASE}/${tutorialId}`, {
-          params: { userId },
-        });
+        const queryParams = userId ? `?userId=${encodeURIComponent(userId)}` : '';
+        return await apiClient.get(`${API_BASE}/${tutorialId}${queryParams}`);
       });
 
       const progress = response.data as TutorialProgress;
@@ -333,9 +332,8 @@ export class TutorialProgressService {
   ): Promise<void> {
     try {
       await withRetry(async () => {
-        return await apiClient.delete(`${API_BASE}/${tutorialId}`, {
-          params: { userId },
-        });
+        const queryParams = userId ? `?userId=${encodeURIComponent(userId)}` : '';
+        return await apiClient.delete(`${API_BASE}/${tutorialId}${queryParams}`);
       });
 
       // Clear local storage cache

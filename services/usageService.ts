@@ -64,31 +64,39 @@ export interface RealtimeUsage {
 /**
  * Usage period options
  */
-export type UsagePeriod = '7d' | '30d' | '90d';
+export type UsagePeriod = 'current' | 'month' | 'year';
 
 /**
  * Usage Service Class
  * Manages all usage-related API operations
  */
 export class UsageService {
-  private readonly basePath = '/api/v1/usage';
+  private readonly basePath = '/v1/public/ai-usage';
 
   /**
    * Get usage metrics for a specified period
-   * @param period - Time period for metrics (7d, 30d, or 90d)
+   * @param period - Time period for metrics (current, month, or year)
    * @returns Usage metrics or null if request fails
    */
-  async getUsageMetrics(period: UsagePeriod = '30d'): Promise<UsageMetrics | null> {
+  async getUsageMetrics(period: 'current' | 'month' | 'year' = 'current'): Promise<UsageMetrics | null> {
     try {
-      const response = await apiClient.get<ApiResponse<{ metrics: UsageMetrics }>>(
-        `${this.basePath}/metrics?period=${period}`
+      const response = await apiClient.get<Record<string, unknown>>(
+        `${this.basePath}/aggregate?period=${period}`
       );
 
-      if (!response.data.success || !response.data.data?.metrics) {
-        throw new Error(response.data.message || 'Failed to fetch usage metrics');
-      }
+      const data = response.data;
 
-      return response.data.data.metrics;
+      // Transform response to match UsageMetrics interface
+      return {
+        period: {
+          start: (data.period_start as string) || new Date().toISOString(),
+          end: (data.period_end as string) || new Date().toISOString()
+        },
+        total_credits_used: (data.total_tokens as number) || 0,
+        credits_remaining: 0,
+        daily_usage: [],
+        by_feature: []
+      };
     } catch (error) {
       console.error('Error fetching usage metrics:', error);
       return null;
@@ -101,15 +109,21 @@ export class UsageService {
    */
   async getUsageLimits(): Promise<UsageLimits | null> {
     try {
-      const response = await apiClient.get<ApiResponse<{ limits: UsageLimits }>>(
-        `${this.basePath}/limits`
+      const response = await apiClient.get<Record<string, unknown>>(
+        `${this.basePath}/costs?period=current`
       );
 
-      if (!response.data.success || !response.data.data?.limits) {
-        throw new Error(response.data.message || 'Failed to fetch usage limits');
-      }
+      const data = response.data;
+      const breakdown = data.breakdown as Record<string, unknown> | undefined;
 
-      return response.data.data.limits;
+      // Transform response to match UsageLimits interface
+      return {
+        monthly_credits: (breakdown?.included_credits as number) || 0,
+        credits_used: (breakdown?.credits_used as number) || 0,
+        credits_remaining: (breakdown?.credits_remaining as number) || 0,
+        reset_date: (data.period_end as string) || new Date().toISOString(),
+        features: []
+      };
     } catch (error) {
       console.error('Error fetching usage limits:', error);
       return null;
@@ -122,15 +136,16 @@ export class UsageService {
    */
   async getRealtimeUsage(): Promise<RealtimeUsage | null> {
     try {
-      const response = await apiClient.get<ApiResponse<RealtimeUsage>>(
-        `${this.basePath}/current`
+      const response = await apiClient.get<Record<string, unknown>>(
+        `${this.basePath}/aggregate?period=current`
       );
 
-      if (!response.data.success) {
-        throw new Error(response.data.message || 'Failed to fetch real-time usage');
-      }
+      const data = response.data;
 
-      return response.data.data;
+      return {
+        current_usage: (data.total_tokens as number) || 0,
+        limit: 10000 // Default limit, should come from subscription
+      };
     } catch (error) {
       console.error('Error fetching real-time usage:', error);
       return null;

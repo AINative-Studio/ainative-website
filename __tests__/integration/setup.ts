@@ -3,7 +3,7 @@
  * Configures test environment and mock server infrastructure
  */
 
-import { rest } from 'msw';
+import { http, HttpResponse } from 'msw';
 import { setupServer } from 'msw/node';
 
 // Base API URL for tests
@@ -100,92 +100,91 @@ export const mockVideo = {
 // Define MSW request handlers
 export const handlers = [
   // Auth endpoints
-  rest.post(`${API_BASE_URL}/v1/public/auth/login`, (req, res, ctx) => {
-    return res(
-      ctx.status(200),
-      ctx.json({
+  http.post(`${API_BASE_URL}/v1/public/auth/login`, () => {
+    return HttpResponse.json(
+      {
         ...mockTokens,
         user: mockUser,
-      })
+      },
+      { status: 200 }
     );
   }),
 
-  rest.post(`${API_BASE_URL}/v1/public/auth/register`, (req, res, ctx) => {
-    return res(
-      ctx.status(200),
-      ctx.json({
+  http.post(`${API_BASE_URL}/v1/public/auth/register`, () => {
+    return HttpResponse.json(
+      {
         success: true,
         message: 'Registration successful',
-      })
+      },
+      { status: 200 }
     );
   }),
 
-  rest.get(`${API_BASE_URL}/v1/auth/me`, (req, res, ctx) => {
-    const authHeader = req.headers.get('Authorization');
+  http.get(`${API_BASE_URL}/v1/auth/me`, ({ request }) => {
+    const authHeader = request.headers.get('Authorization');
     if (!authHeader || !authHeader.startsWith('Bearer ')) {
-      return res(ctx.status(401), ctx.json({ detail: 'Unauthorized' }));
+      return HttpResponse.json({ detail: 'Unauthorized' }, { status: 401 });
     }
-    return res(ctx.status(200), ctx.json(mockUser));
+    return HttpResponse.json(mockUser, { status: 200 });
   }),
 
-  rest.post(`${API_BASE_URL}/v1/auth/logout`, (req, res, ctx) => {
-    return res(ctx.status(200), ctx.json({ success: true }));
+  http.post(`${API_BASE_URL}/v1/auth/logout`, () => {
+    return HttpResponse.json({ success: true }, { status: 200 });
   }),
 
-  rest.post(`${API_BASE_URL}/v1/public/auth/refresh`, (req, res, ctx) => {
-    return res(ctx.status(200), ctx.json(mockTokens));
+  http.post(`${API_BASE_URL}/v1/public/auth/refresh`, () => {
+    return HttpResponse.json(mockTokens, { status: 200 });
   }),
 
   // Subscription endpoints
-  rest.get(`${API_BASE_URL}/api/v1/subscription`, (req, res, ctx) => {
-    return res(
-      ctx.status(200),
-      ctx.json({
+  http.get(`${API_BASE_URL}/api/v1/subscription`, () => {
+    return HttpResponse.json(
+      {
         success: true,
         message: 'Success',
         data: { subscription: mockSubscription },
-      })
+      },
+      { status: 200 }
     );
   }),
 
-  rest.get(`${API_BASE_URL}/api/v1/subscription/plans`, (req, res, ctx) => {
-    return res(
-      ctx.status(200),
-      ctx.json({
+  http.get(`${API_BASE_URL}/api/v1/subscription/plans`, () => {
+    return HttpResponse.json(
+      {
         success: true,
         message: 'Success',
         data: { plans: [mockSubscription.plan] },
-      })
+      },
+      { status: 200 }
     );
   }),
 
-  rest.post(`${API_BASE_URL}/api/v1/subscription/subscribe`, (req, res, ctx) => {
-    return res(
-      ctx.status(200),
-      ctx.json({
+  http.post(`${API_BASE_URL}/api/v1/subscription/subscribe`, () => {
+    return HttpResponse.json(
+      {
         success: true,
         message: 'Subscribed successfully',
         data: { subscription: mockSubscription },
-      })
+      },
+      { status: 200 }
     );
   }),
 
   // Credit endpoints
-  rest.get(`${API_BASE_URL}/api/v1/credits/balance`, (req, res, ctx) => {
-    return res(
-      ctx.status(200),
-      ctx.json({
+  http.get(`${API_BASE_URL}/api/v1/credits/balance`, () => {
+    return HttpResponse.json(
+      {
         success: true,
         message: 'Success',
         data: { balance: mockCredits },
-      })
+      },
+      { status: 200 }
     );
   }),
 
-  rest.get(`${API_BASE_URL}/api/v1/credits`, (req, res, ctx) => {
-    return res(
-      ctx.status(200),
-      ctx.json({
+  http.get(`${API_BASE_URL}/api/v1/credits`, () => {
+    return HttpResponse.json(
+      {
         success: true,
         message: 'Success',
         data: {
@@ -196,25 +195,25 @@ export const handlers = [
           next_refresh: '2025-02-01T00:00:00Z',
           period_start: '2025-01-01T00:00:00Z',
         },
-      })
+      },
+      { status: 200 }
     );
   }),
 
-  rest.post(`${API_BASE_URL}/api/v1/credits/purchase`, (req, res, ctx) => {
-    return res(
-      ctx.status(200),
-      ctx.json({
+  http.post(`${API_BASE_URL}/api/v1/credits/purchase`, () => {
+    return HttpResponse.json(
+      {
         success: true,
         message: 'Credits purchased successfully',
         data: { transaction_id: 'txn-123' },
-      })
+      },
+      { status: 200 }
     );
   }),
 
-  rest.get(`${API_BASE_URL}/api/v1/credits/transactions`, (req, res, ctx) => {
-    return res(
-      ctx.status(200),
-      ctx.json({
+  http.get(`${API_BASE_URL}/api/v1/credits/transactions`, () => {
+    return HttpResponse.json(
+      {
         success: true,
         message: 'Success',
         data: {
@@ -238,108 +237,109 @@ export const handlers = [
           ],
           total: 2,
         },
-      })
+      },
+      { status: 200 }
     );
   }),
 
   // Payment endpoints
-  rest.get(`${API_BASE_URL}/api/v1/subscription/payment-methods`, (req, res, ctx) => {
-    return res(
-      ctx.status(200),
-      ctx.json({
+  http.get(`${API_BASE_URL}/api/v1/subscription/payment-methods`, () => {
+    return HttpResponse.json(
+      {
         success: true,
         message: 'Success',
         data: { payment_methods: [mockPaymentMethod] },
-      })
+      },
+      { status: 200 }
     );
   }),
 
-  rest.post(`${API_BASE_URL}/api/v1/subscription/payment-methods`, (req, res, ctx) => {
-    return res(
-      ctx.status(200),
-      ctx.json({
+  http.post(`${API_BASE_URL}/api/v1/subscription/payment-methods`, () => {
+    return HttpResponse.json(
+      {
         success: true,
         message: 'Payment method added',
         data: { payment_method: mockPaymentMethod },
-      })
+      },
+      { status: 200 }
     );
   }),
 
   // Pricing/checkout endpoints
-  rest.post(`${API_BASE_URL}/v1/public/pricing/checkout`, (req, res, ctx) => {
-    return res(
-      ctx.status(200),
-      ctx.json({
+  http.post(`${API_BASE_URL}/v1/public/pricing/checkout`, () => {
+    return HttpResponse.json(
+      {
         success: true,
         message: 'Checkout session created',
         data: {
           sessionUrl: 'https://checkout.stripe.com/test-session',
           sessionId: 'cs_test_123',
         },
-      })
+      },
+      { status: 200 }
     );
   }),
 
   // Video endpoints
-  rest.post(`${API_BASE_URL}/api/v1/videos/upload`, (req, res, ctx) => {
-    return res(
-      ctx.status(200),
-      ctx.json({
+  http.post(`${API_BASE_URL}/api/v1/videos/upload`, () => {
+    return HttpResponse.json(
+      {
         success: true,
         message: 'Upload initiated',
         data: {
           uploadUrl: 'https://storage.example.com/upload',
           videoId: 'video-123',
         },
-      })
+      },
+      { status: 200 }
     );
   }),
 
-  rest.get(`${API_BASE_URL}/api/v1/videos/:videoId`, (req, res, ctx) => {
-    return res(
-      ctx.status(200),
-      ctx.json({
+  http.get(`${API_BASE_URL}/api/v1/videos/:videoId`, () => {
+    return HttpResponse.json(
+      {
         success: true,
         message: 'Success',
         data: { video: mockVideo },
-      })
+      },
+      { status: 200 }
     );
   }),
 
-  rest.get(`${API_BASE_URL}/api/v1/videos/:videoId/status`, (req, res, ctx) => {
-    return res(
-      ctx.status(200),
-      ctx.json({
+  http.get(`${API_BASE_URL}/api/v1/videos/:videoId/status`, () => {
+    return HttpResponse.json(
+      {
         success: true,
         message: 'Success',
         data: {
           status: 'ready',
           progress: 100,
         },
-      })
+      },
+      { status: 200 }
     );
   }),
 
   // RLHF endpoints
-  rest.post(`${API_BASE_URL}/v1/public/:projectId/database/rlhf/interactions`, (req, res, ctx) => {
-    return res(
-      ctx.status(200),
-      ctx.json({
+  http.post(`${API_BASE_URL}/v1/public/:projectId/database/rlhf/interactions`, () => {
+    return HttpResponse.json(
+      {
         id: 'feedback-123',
         timestamp: new Date().toISOString(),
-      })
+      },
+      { status: 200 }
     );
   }),
 
-  rest.get(`${API_BASE_URL}/v1/public/:projectId/database/rlhf/stats`, (req, res, ctx) => {
-    return res(
-      ctx.status(200),
-      ctx.json({
+  http.get(`${API_BASE_URL}/v1/public/:projectId/database/rlhf/stats`, () => {
+    return HttpResponse.json(
+      {
         total: 10,
         positive: 8,
         negative: 2,
         positivePercentage: 80,
-      })
+      },
+      { status: 200 }
     );
   }),
 ];

@@ -42,7 +42,6 @@ export function SearchSuggestionsDropdown({
   const { data, isLoading, error } = useSearchSuggestions({
     query,
     options: { limit: 5, minQueryLength: 2 },
-    useMockData,
   });
 
   const suggestions = data?.suggestions || [];

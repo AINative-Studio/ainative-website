@@ -106,7 +106,7 @@ export interface TransactionHistoryParams {
  * Manages all credit-related API operations
  */
 export class CreditService {
-  private readonly basePath = '/api/v1/credits';
+  private readonly basePath = '/v1/public/credits';
 
   /**
    * Get current credit balance

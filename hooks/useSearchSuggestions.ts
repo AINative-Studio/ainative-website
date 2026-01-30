@@ -1,6 +1,7 @@
 /**
  * useSearchSuggestions Hook
- * React Query hook for fetching search suggestions with debouncing
+ * React Query hook for fetching search suggestions from ZeroDB with debouncing
+ * Refs #434
  *
  * @example
  * ```tsx
@@ -15,7 +16,6 @@
  *   const { data, isLoading, error } = useSearchSuggestions({
  *     query: debouncedQuery,
  *     options: { limit: 5, minQueryLength: 2 },
- *     useMockData: false, // Set to true for development
  *   });
  *
  *   return (
@@ -27,6 +27,7 @@
  *         placeholder="Search..."
  *       />
  *       {isLoading && <div>Loading...</div>}
+ *       {error && <div>Search unavailable</div>}
  *       {data && data.suggestions.length > 0 && (
  *         <ul>
  *           {data.suggestions.map((suggestion, idx) => (
@@ -41,41 +42,39 @@
  */
 
 import { useQuery } from '@tanstack/react-query';
-import { semanticSearchService } from '@/services/SemanticSearchService';
-import type { SearchSuggestionsOptions } from '@/types/search';
+import { semanticSearchService, SemanticSearchError } from '@/services/SemanticSearchService';
+import type { SearchSuggestionsOptions, SearchSuggestionsResponse } from '@/types/search';
 
 interface UseSearchSuggestionsParams {
-  query: string;
-  options?: SearchSuggestionsOptions;
-  useMockData?: boolean; // Flag to use mock data during development
+    query: string;
+    options?: SearchSuggestionsOptions;
+    /** Enable or disable the query (default: true when query meets minimum length) */
+    enabled?: boolean;
 }
 
 /**
- * Hook for fetching search suggestions
+ * Hook for fetching search suggestions from ZeroDB
  * @param query - Search query string
- * @param options - Optional configuration
- * @param useMockData - Whether to use mock data (for development)
+ * @param options - Optional configuration including limit and minQueryLength
+ * @param enabled - Override for query enabled state
  * @returns React Query result with suggestions
  */
 export function useSearchSuggestions({
-  query,
-  options = {},
-  useMockData = false,
+    query,
+    options = {},
+    enabled,
 }: UseSearchSuggestionsParams) {
-  const { limit = 5, minQueryLength = 2 } = options;
+    const { limit = 5, minQueryLength = 2 } = options;
+    const queryEnabled = enabled ?? query.length >= minQueryLength;
 
-  return useQuery({
-    queryKey: ['search', 'suggestions', query, limit],
-    queryFn: async () => {
-      if (useMockData) {
-        return semanticSearchService.getMockSuggestions(query, limit);
-      }
-      return semanticSearchService.getSuggestions(query, { limit, minQueryLength });
-    },
-    enabled: query.length >= minQueryLength,
-    staleTime: 5 * 60 * 1000, // 5 minutes
-    gcTime: 10 * 60 * 1000, // 10 minutes (formerly cacheTime)
-    retry: 1, // Only retry once on failure
-    retryDelay: 1000, // Wait 1 second before retry
-  });
+    return useQuery<SearchSuggestionsResponse, SemanticSearchError>({
+        queryKey: ['search', 'suggestions', query, limit],
+        queryFn: async () => {
+            return semanticSearchService.getSuggestions(query, { limit, minQueryLength });
+        },
+        enabled: queryEnabled,
+        staleTime: 5 * 60 * 1000, // 5 minutes
+        gcTime: 10 * 60 * 1000, // 10 minutes
+        retry: false, // Service already has built-in retry logic
+    });
 }

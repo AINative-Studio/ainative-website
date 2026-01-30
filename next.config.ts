@@ -14,6 +14,7 @@ const nextConfig: NextConfig = {
 
   // Image optimization for external domains
   images: {
+    qualities: [75, 90],
     remotePatterns: [
       {
         protocol: 'https',
@@ -83,7 +84,7 @@ const nextConfig: NextConfig = {
       },
       // Cache OG images
       {
-        source: '/og-:slug*.png',
+        source: '/:path(og-.*\\.png)',
         headers: [
           {
             key: 'Cache-Control',

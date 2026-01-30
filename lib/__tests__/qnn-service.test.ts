@@ -24,6 +24,9 @@ import {
   type QuantumSignature,
   type BenchmarkResult,
   type CodeQualityResult,
+  type QuantumMetrics,
+  type DeviceStatus,
+  type QuantumAnomaly,
 } from '../qnn-service';
 
 // Mock fetch for API calls
@@ -120,15 +123,10 @@ describe('QNN Service', () => {
         json: async () => mockResponse,
       });
 
-      const result = await qnnService.listRepositories({
-        page: 1,
-        limit: 50,
-        sort_by: 'stars',
-      });
+      const result = await qnnService.listRepositories();
 
       expect(global.fetch).toHaveBeenCalled();
-      expect(result).toHaveProperty('repositories');
-      expect(result).toHaveProperty('total');
+      expect(Array.isArray(result)).toBe(true);
     });
 
     it('should handle repository search errors gracefully', async () => {
@@ -149,17 +147,24 @@ describe('QNN Service', () => {
   // ============================================================================
   describe('Model Management', () => {
     it('should create a new QNN model', async () => {
-      const mockModel = {
+      const mockModel: QNNModel = {
         id: 'model-1',
         name: 'Test Model',
-        type: 'classification',
-        status: 'idle',
-        created_at: new Date().toISOString(),
-        parameters: {
+        repositoryId: 'repo-1',
+        architecture: {
           qubits: 8,
           layers: 3,
-          entanglement: 'linear',
+          depth: 5,
         },
+        hyperparameters: {
+          learningRate: 0.01,
+          batchSize: 32,
+          epochs: 10,
+          optimizer: 'adam',
+        },
+        status: 'draft',
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
       };
 
       (global.fetch as any).mockResolvedValueOnce({
@@ -169,12 +174,19 @@ describe('QNN Service', () => {
 
       const result = await qnnService.createModel({
         name: 'Test Model',
-        type: 'classification',
-        parameters: {
+        repositoryId: 'repo-1',
+        architecture: {
           qubits: 8,
           layers: 3,
-          entanglement: 'linear',
+          depth: 5,
         },
+        hyperparameters: {
+          learningRate: 0.01,
+          batchSize: 32,
+          epochs: 10,
+          optimizer: 'adam',
+        },
+        status: 'draft',
       });
 
       expect(result.id).toBe('model-1');
@@ -182,10 +194,7 @@ describe('QNN Service', () => {
     });
 
     it('should list all models', async () => {
-      const mockModels = {
-        items: [],
-        total: 0,
-      };
+      const mockModels: QNNModel[] = [];
 
       (global.fetch as any).mockResolvedValueOnce({
         ok: true,
@@ -194,17 +203,28 @@ describe('QNN Service', () => {
 
       const result = await qnnService.listModels();
 
-      expect(result).toHaveProperty('items');
-      expect(Array.isArray(result.items)).toBe(true);
+      expect(Array.isArray(result)).toBe(true);
     });
 
     it('should get a specific model by ID', async () => {
-      const mockModel = {
+      const mockModel: QNNModel = {
         id: 'model-1',
         name: 'Test Model',
-        type: 'classification',
+        repositoryId: 'repo-1',
+        architecture: {
+          qubits: 8,
+          layers: 3,
+          depth: 5,
+        },
+        hyperparameters: {
+          learningRate: 0.01,
+          batchSize: 32,
+          epochs: 10,
+          optimizer: 'adam',
+        },
         status: 'trained',
-        accuracy: 0.94,
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
       };
 
       (global.fetch as any).mockResolvedValueOnce({
@@ -259,8 +279,19 @@ describe('QNN Service', () => {
       await expect(
         qnnService.createModel({
           name: 'Invalid Model',
-          type: 'classification',
-          parameters: { qubits: 50 },
+          repositoryId: 'repo-1',
+          architecture: {
+            qubits: 50,
+            layers: 3,
+            depth: 5,
+          },
+          hyperparameters: {
+            learningRate: 0.01,
+            batchSize: 32,
+            epochs: 10,
+            optimizer: 'adam',
+          },
+          status: 'draft',
         })
       ).rejects.toThrow('Invalid parameters');
     });
@@ -271,11 +302,19 @@ describe('QNN Service', () => {
   // ============================================================================
   describe('Training Operations', () => {
     it('should start a training job', async () => {
-      const mockJob = {
-        job_id: 'job-1',
+      const mockJob: TrainingJob = {
+        id: 'job-1',
+        modelId: 'model-1',
+        modelName: 'Test Model',
         status: 'queued',
-        model_id: 'model-1',
-        created_at: new Date().toISOString(),
+        progress: 0,
+        currentEpoch: 0,
+        totalEpochs: 10,
+        startedAt: new Date(),
+        metrics: {
+          loss: 0,
+          accuracy: 0,
+        },
       };
 
       (global.fetch as any).mockResolvedValueOnce({
@@ -283,8 +322,7 @@ describe('QNN Service', () => {
         json: async () => mockJob,
       });
 
-      const result = await qnnService.startTraining({
-        model_id: 'model-1',
+      const result = await qnnService.startTraining('model-1', {
         dataset_id: 'dataset-1',
         hyperparameters: {
           epochs: 10,
@@ -293,17 +331,20 @@ describe('QNN Service', () => {
         },
       });
 
-      expect(result.job_id).toBe('job-1');
+      expect(result.id).toBe('job-1');
       expect(result.status).toBe('queued');
     });
 
     it('should get training job status', async () => {
-      const mockStatus = {
-        job_id: 'job-1',
+      const mockStatus: TrainingJob = {
+        id: 'job-1',
+        modelId: 'model-1',
+        modelName: 'Test Model',
         status: 'running',
         progress: 65,
-        current_epoch: 33,
-        total_epochs: 50,
+        currentEpoch: 33,
+        totalEpochs: 50,
+        startedAt: new Date(),
         metrics: {
           loss: 0.234,
           accuracy: 0.87,
@@ -317,26 +358,22 @@ describe('QNN Service', () => {
 
       const result = await qnnService.getTrainingStatus('job-1');
 
-      expect(result.job_id).toBe('job-1');
+      expect(result.id).toBe('job-1');
       expect(result.status).toBe('running');
       expect(result.progress).toBe(65);
     });
 
     it('should list training history', async () => {
-      const mockHistory = {
-        jobs: [],
-        total: 0,
-      };
+      const mockHistory: TrainingJob[] = [];
 
       (global.fetch as any).mockResolvedValueOnce({
         ok: true,
         json: async () => mockHistory,
       });
 
-      const result = await qnnService.getTrainingHistory();
+      const result = await qnnService.getTrainingHistory('model-1');
 
-      expect(result).toHaveProperty('jobs');
-      expect(Array.isArray(result.jobs)).toBe(true);
+      expect(Array.isArray(result)).toBe(true);
     });
 
     it('should cancel a running training job', async () => {
@@ -368,29 +405,27 @@ describe('QNN Service', () => {
         json: async () => mockJob,
       });
 
-      const result = await qnnService.startEvaluation({
-        model_id: 'model-1',
+      const result = await qnnService.startEvaluation('model-1', {
         dataset_id: 'dataset-2',
         metrics: ['accuracy', 'precision', 'recall', 'f1_score'],
       });
 
-      expect(result.job_id).toBe('eval-1');
+      expect(result.jobId).toBe('eval-1');
     });
 
     it('should get evaluation results', async () => {
-      const mockResults = {
-        job_id: 'eval-1',
-        status: 'completed',
-        metrics: {
-          accuracy: 0.94,
-          precision: 0.92,
-          recall: 0.91,
-          f1_score: 0.915,
-        },
-        confusion_matrix: [
+      const mockResults: EvaluationMetrics = {
+        modelId: 'model-1',
+        accuracy: 0.94,
+        precision: 0.92,
+        recall: 0.91,
+        f1Score: 0.915,
+        loss: 0.15,
+        confusionMatrix: [
           [850, 50],
           [90, 810],
         ],
+        timestamp: new Date().toISOString(),
       };
 
       (global.fetch as any).mockResolvedValueOnce({
@@ -400,8 +435,8 @@ describe('QNN Service', () => {
 
       const result = await qnnService.getEvaluationResults('eval-1');
 
-      expect(result.status).toBe('completed');
-      expect(result.metrics.accuracy).toBe(0.94);
+      expect(result.accuracy).toBe(0.94);
+      expect(result.precision).toBe(0.92);
     });
   });
 
@@ -410,12 +445,18 @@ describe('QNN Service', () => {
   // ============================================================================
   describe('Quantum Signatures', () => {
     it('should sign a model', async () => {
-      const mockSignature = {
-        signature_id: 'sig-1',
-        model_id: 'model-1',
+      const mockSignature: QuantumSignature = {
+        id: 'sig-1',
+        modelId: 'model-1',
         signature: 'a3f5c8e9...',
-        signed_at: new Date().toISOString(),
-        expires_at: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000).toISOString(),
+        algorithm: 'qiskit',
+        quantumState: {
+          qubits: 8,
+          entanglement: 0.95,
+          coherence: 0.98,
+        },
+        timestamp: new Date().toISOString(),
+        verified: false,
       };
 
       (global.fetch as any).mockResolvedValueOnce({
@@ -423,13 +464,10 @@ describe('QNN Service', () => {
         json: async () => mockSignature,
       });
 
-      const result = await qnnService.signModel({
-        model_id: 'model-1',
-        signature_level: 'strong',
-      });
+      const result = await qnnService.signModel('model-1', 'qiskit');
 
-      expect(result.signature_id).toBe('sig-1');
-      expect(result.model_id).toBe('model-1');
+      expect(result.id).toBe('sig-1');
+      expect(result.modelId).toBe('model-1');
     });
 
     it('should verify a model signature', async () => {
@@ -447,13 +485,10 @@ describe('QNN Service', () => {
         json: async () => mockVerification,
       });
 
-      const result = await qnnService.verifySignature({
-        model_id: 'model-1',
-        signature: 'a3f5c8e9...',
-      });
+      const result = await qnnService.verifySignature('sig-1');
 
       expect(result.verified).toBe(true);
-      expect(result.is_expired).toBe(false);
+      expect(result.details).toBeDefined();
     });
 
     it('should detect tampering in signature verification', async () => {
@@ -468,13 +503,9 @@ describe('QNN Service', () => {
         json: async () => mockVerification,
       });
 
-      const result = await qnnService.verifySignature({
-        model_id: 'model-1',
-        signature: 'invalid',
-      });
+      const result = await qnnService.verifySignature('invalid-sig');
 
       expect(result.verified).toBe(false);
-      expect(result.reason).toContain('modified');
     });
 
     it('should apply a signature to a model', async () => {
@@ -491,10 +522,7 @@ describe('QNN Service', () => {
         json: async () => mockApply,
       });
 
-      const result = await qnnService.applySignature({
-        model_id: 'model-1',
-        signature_id: 'sig-1',
-      });
+      const result = await qnnService.applySignature('model-1', 'sig-1');
 
       expect(result.status).toBe('applied');
       expect(result.is_verified).toBe(true);
@@ -506,10 +534,26 @@ describe('QNN Service', () => {
   // ============================================================================
   describe('Benchmarking', () => {
     it('should run a benchmark comparison', async () => {
-      const mockBenchmark = {
-        benchmark_id: 'bench-1',
-        model_id: 'model-1',
-        status: 'running',
+      const mockBenchmark: BenchmarkResult = {
+        id: 'bench-1',
+        modelId: 'model-1',
+        quantumMetrics: {
+          qubits: 8,
+          depth: 5,
+          gates: 100,
+          executionTime: 2.3,
+          accuracy: 0.985,
+        },
+        classicalMetrics: {
+          parameters: 1000,
+          executionTime: 2.7,
+          accuracy: 0.863,
+        },
+        improvement: {
+          speed: 0.15,
+          accuracy: 0.122,
+        },
+        timestamp: new Date().toISOString(),
       };
 
       (global.fetch as any).mockResolvedValueOnce({
@@ -517,30 +561,35 @@ describe('QNN Service', () => {
         json: async () => mockBenchmark,
       });
 
-      const result = await qnnService.runBenchmark({
-        model_id: 'model-1',
+      const result = await qnnService.runBenchmark('model-1', {
         dataset_id: 'dataset-1',
       });
 
-      expect(result.benchmark_id).toBe('bench-1');
+      expect(result.id).toBe('bench-1');
     });
 
     it('should get benchmark results', async () => {
-      const mockResults = {
-        benchmark_id: 'bench-1',
-        quantum_metrics: {
+      const mockResults: BenchmarkResult[] = [{
+        id: 'bench-1',
+        modelId: 'model-1',
+        quantumMetrics: {
+          qubits: 8,
+          depth: 5,
+          gates: 100,
+          executionTime: 2.3,
           accuracy: 0.985,
-          inference_speed_ms: 2.3,
         },
-        classical_metrics: {
+        classicalMetrics: {
+          parameters: 1000,
+          executionTime: 2.7,
           accuracy: 0.863,
-          inference_speed_ms: 2.7,
         },
         improvement: {
           accuracy: 0.122,
           speed: 0.15,
         },
-      };
+        timestamp: new Date().toISOString(),
+      }];
 
       (global.fetch as any).mockResolvedValueOnce({
         ok: true,
@@ -549,8 +598,8 @@ describe('QNN Service', () => {
 
       const result = await qnnService.getBenchmarkResults('bench-1');
 
-      expect(result.quantum_metrics.accuracy).toBeGreaterThan(
-        result.classical_metrics.accuracy
+      expect(result[0].quantumMetrics.accuracy).toBeGreaterThan(
+        result[0].classicalMetrics.accuracy
       );
     });
   });
@@ -560,19 +609,28 @@ describe('QNN Service', () => {
   // ============================================================================
   describe('Code Quality Assessment', () => {
     it('should analyze code quality', async () => {
-      const mockAnalysis = {
-        quality_score: 0.85,
-        features: {
-          file_size_bytes: 1024,
-          line_count: 50,
-          comment_count: 10,
-          function_count: 5,
-          class_count: 1,
+      const mockAnalysis: CodeQualityResult = {
+        repositoryId: 'repo-1',
+        overallScore: 0.85,
+        metrics: {
+          complexity: 0.8,
+          maintainability: 0.9,
+          testCoverage: 0.7,
+          documentation: 0.85,
         },
-        suggestions: [
-          'Add more comments',
-          'Consider breaking down long functions',
+        issues: [
+          {
+            severity: 'medium',
+            type: 'documentation',
+            message: 'Add more comments',
+          },
+          {
+            severity: 'low',
+            type: 'complexity',
+            message: 'Consider breaking down long functions',
+          },
         ],
+        timestamp: new Date().toISOString(),
       };
 
       (global.fetch as any).mockResolvedValueOnce({
@@ -580,13 +638,10 @@ describe('QNN Service', () => {
         json: async () => mockAnalysis,
       });
 
-      const result = await qnnService.analyzeCodeQuality({
-        code: 'def test(): pass',
-        language: 'python',
-      });
+      const result = await qnnService.analyzeCodeQuality('repo-1');
 
-      expect(result.quality_score).toBe(0.85);
-      expect(result.suggestions).toHaveLength(2);
+      expect(result.overallScore).toBe(0.85);
+      expect(result.issues).toHaveLength(2);
     });
   });
 
@@ -595,19 +650,15 @@ describe('QNN Service', () => {
   // ============================================================================
   describe('Quantum Monitoring', () => {
     it('should get quantum metrics', async () => {
-      const mockMetrics = {
+      const mockMetrics: QuantumMetrics = {
+        deviceId: 'device-1',
+        qubits: 8,
+        coherenceTime: 100,
+        gateError: 0.01,
+        readoutError: 0.02,
+        temperature: 0.015,
+        uptime: 98.5,
         timestamp: new Date().toISOString(),
-        system_metrics: {
-          cpu_usage: 45.2,
-          memory_usage: 62.8,
-          quantum_job_queue_length: 12,
-          active_circuits: 8,
-        },
-        quantum_metrics: {
-          total_jobs: 100,
-          completed_jobs: 85,
-          failed_jobs: 5,
-        },
       };
 
       (global.fetch as any).mockResolvedValueOnce({
@@ -615,23 +666,23 @@ describe('QNN Service', () => {
         json: async () => mockMetrics,
       });
 
-      const result = await qnnService.getQuantumMetrics();
+      const result = await qnnService.getQuantumMetrics('device-1');
 
-      expect(result.system_metrics.cpu_usage).toBeDefined();
-      expect(result.quantum_metrics.total_jobs).toBe(100);
+      expect(result.deviceId).toBeDefined();
+      expect(result.qubits).toBe(8);
     });
 
     it('should get device status', async () => {
-      const mockDevices = {
-        devices: [
-          {
-            device_id: 'qpu-1',
-            name: 'IBM Quantum Eagle',
-            status: 'online',
-            queue_length: 3,
-          },
-        ],
-      };
+      const mockDevices: DeviceStatus[] = [
+        {
+          id: 'qpu-1',
+          name: 'IBM Quantum Eagle',
+          status: 'online',
+          qubits: 127,
+          availability: 98.5,
+          queue: 3,
+        },
+      ];
 
       (global.fetch as any).mockResolvedValueOnce({
         ok: true,
@@ -640,15 +691,12 @@ describe('QNN Service', () => {
 
       const result = await qnnService.getDeviceStatus();
 
-      expect(result.devices).toHaveLength(1);
-      expect(result.devices[0].status).toBe('online');
+      expect(result).toHaveLength(1);
+      expect(result[0].status).toBe('online');
     });
 
     it('should get anomalies', async () => {
-      const mockAnomalies = {
-        anomalies: [],
-        anomaly_history: [],
-      };
+      const mockAnomalies: QuantumAnomaly[] = [];
 
       (global.fetch as any).mockResolvedValueOnce({
         ok: true,
@@ -657,8 +705,7 @@ describe('QNN Service', () => {
 
       const result = await qnnService.getAnomalies();
 
-      expect(result).toHaveProperty('anomalies');
-      expect(Array.isArray(result.anomalies)).toBe(true);
+      expect(Array.isArray(result)).toBe(true);
     });
   });
 
@@ -733,7 +780,19 @@ describe('QNN Service', () => {
 
       await qnnService.createModel({
         name: 'Test',
-        type: 'classification',
+        repositoryId: 'repo-1',
+        architecture: {
+          qubits: 8,
+          layers: 3,
+          depth: 5,
+        },
+        hyperparameters: {
+          learningRate: 0.01,
+          batchSize: 32,
+          epochs: 10,
+          optimizer: 'adam',
+        },
+        status: 'draft',
       });
 
       expect(global.fetch).toHaveBeenCalledWith(

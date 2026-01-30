@@ -46,9 +46,9 @@ const ProjectCard = ({ project, isSelected, onSelect }: ProjectCardProps) => {
         <div className="flex items-center justify-between mb-4">
           <div>
             <h3 className="text-xl font-bold mb-1">{project.name}</h3>
-            <p className="text-sm text-gray-400">
-              Status: <Badge variant="outline">{project.status}</Badge>
-            </p>
+            <div className="text-sm text-gray-400 flex items-center gap-2">
+              <span>Status:</span> <Badge variant="outline">{project.status}</Badge>
+            </div>
           </div>
           <div className="flex items-center gap-2">
             <Button

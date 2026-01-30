@@ -1,4 +1,5 @@
 import { Metadata } from 'next';
+import { Suspense } from 'react';
 import ErrorClient from './ErrorClient';
 
 export const metadata: Metadata = {
@@ -10,6 +11,18 @@ export const metadata: Metadata = {
   },
 };
 
+function LoadingFallback() {
+  return (
+    <div className="min-h-screen flex items-center justify-center bg-vite-bg px-4">
+      <div className="text-center text-gray-400">Loading...</div>
+    </div>
+  );
+}
+
 export default function ErrorPage() {
-  return <ErrorClient />;
+  return (
+    <Suspense fallback={<LoadingFallback />}>
+      <ErrorClient />
+    </Suspense>
+  );
 }

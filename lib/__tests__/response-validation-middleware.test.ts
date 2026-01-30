@@ -3,7 +3,8 @@
  */
 
 import { ResponseValidationMiddleware } from '../response-validation-middleware';
-import type { ModelRequest, ModelResponse, ToolCall, ToolExecutionResult } from '../response-validation-middleware';
+import type { ModelRequest, ModelResponse } from '../response-validation-middleware';
+import type { ToolCall, ToolExecutionResult } from '../tool-execution-service';
 
 describe('ResponseValidationMiddleware', () => {
   let middleware: ResponseValidationMiddleware;

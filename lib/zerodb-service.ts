@@ -1,9 +1,15 @@
 /**
  * ZeroDB Service
  * Handles all ZeroDB vector database API calls
+ *
+ * API Base Path: /v1/public/zerodb
+ * Reference: services/zerodb/ implementations
  */
 
 import apiClient from './api-client';
+
+// Base path for ZeroDB API endpoints
+const ZERODB_BASE_PATH = '/v1/public/zerodb';
 
 // ===== Namespace Types =====
 export interface Namespace {
@@ -186,26 +192,34 @@ class ZeroDBService {
 
   /**
    * List all namespaces
+   * TODO: Verify endpoint exists in backend - may need to use /collections instead
    */
   async listNamespaces(): Promise<NamespacesListResponse> {
-    const response = await apiClient.get<NamespacesListResponse>('/v1/zerodb/namespaces');
+    const response = await apiClient.get<NamespacesListResponse>(
+      `${ZERODB_BASE_PATH}/namespaces`
+    );
     return response.data;
   }
 
   /**
    * Create a new namespace
+   * TODO: Verify endpoint exists in backend - may need to use /collections instead
    */
   async createNamespace(data: CreateNamespaceData): Promise<Namespace> {
-    const response = await apiClient.post<Namespace>('/v1/zerodb/namespaces', data);
+    const response = await apiClient.post<Namespace>(
+      `${ZERODB_BASE_PATH}/namespaces`,
+      data
+    );
     return response.data;
   }
 
   /**
    * Delete a namespace
+   * TODO: Verify endpoint exists in backend - may need to use /collections instead
    */
   async deleteNamespace(name: string): Promise<DeleteNamespaceResponse> {
     const response = await apiClient.delete<DeleteNamespaceResponse>(
-      `/v1/zerodb/namespaces/${name}`
+      `${ZERODB_BASE_PATH}/namespaces/${name}`
     );
     return response.data;
   }
@@ -214,11 +228,12 @@ class ZeroDBService {
 
   /**
    * Get database statistics
+   * Verified: /v1/public/zerodb/stats endpoint exists (see DatabaseService)
    */
   async getStats(namespace?: string): Promise<DatabaseStats | NamespaceDetailStats> {
     const endpoint = namespace
-      ? `/v1/zerodb/stats?namespace=${namespace}`
-      : '/v1/zerodb/stats';
+      ? `${ZERODB_BASE_PATH}/stats?namespace=${namespace}`
+      : `${ZERODB_BASE_PATH}/stats`;
     const response = await apiClient.get<DatabaseStats | NamespaceDetailStats>(endpoint);
     return response.data;
   }
@@ -227,9 +242,14 @@ class ZeroDBService {
 
   /**
    * Execute a vector similarity query
+   * Reference: VectorService uses /v1/public/zerodb/vectors/search for similar functionality
+   * TODO: Verify if /query endpoint exists or should use /vectors/search instead
    */
   async executeQuery(query: VectorQuery): Promise<QueryResponse> {
-    const response = await apiClient.post<QueryResponse>('/v1/zerodb/query', query);
+    const response = await apiClient.post<QueryResponse>(
+      `${ZERODB_BASE_PATH}/query`,
+      query
+    );
     return response.data;
   }
 
@@ -237,6 +257,7 @@ class ZeroDBService {
 
   /**
    * List vectors in a namespace
+   * Reference: VectorService uses /v1/public/zerodb/vectors base path
    */
   async listVectors(params: ListVectorsParams): Promise<VectorsListResponse> {
     const queryParams = new URLSearchParams();
@@ -248,27 +269,29 @@ class ZeroDBService {
       queryParams.set('page_size', String(params.page_size));
     }
 
-    const endpoint = `/v1/zerodb/vectors?${queryParams.toString()}`;
+    const endpoint = `${ZERODB_BASE_PATH}/vectors?${queryParams.toString()}`;
     const response = await apiClient.get<VectorsListResponse>(endpoint);
     return response.data;
   }
 
   /**
    * Get a specific vector by ID
+   * Reference: VectorService uses /v1/public/zerodb/vectors base path
    */
   async getVector(vectorId: string, namespace: string): Promise<VectorDetail> {
     const response = await apiClient.get<VectorDetail>(
-      `/v1/zerodb/vectors/${vectorId}?namespace=${namespace}`
+      `${ZERODB_BASE_PATH}/vectors/${vectorId}?namespace=${namespace}`
     );
     return response.data;
   }
 
   /**
    * Delete a vector by ID
+   * Reference: VectorService uses /v1/public/zerodb/vectors/vectors with DELETE
    */
   async deleteVector(vectorId: string, namespace: string): Promise<DeleteVectorResponse> {
     const response = await apiClient.delete<DeleteVectorResponse>(
-      `/v1/zerodb/vectors/${vectorId}?namespace=${namespace}`
+      `${ZERODB_BASE_PATH}/vectors/${vectorId}?namespace=${namespace}`
     );
     return response.data;
   }
@@ -277,17 +300,25 @@ class ZeroDBService {
 
   /**
    * Import data into a namespace
+   * TODO: Verify endpoint exists in backend - not found in services/zerodb/ implementations
    */
   async importData(request: ImportRequest): Promise<ImportResponse> {
-    const response = await apiClient.post<ImportResponse>('/v1/zerodb/import', request);
+    const response = await apiClient.post<ImportResponse>(
+      `${ZERODB_BASE_PATH}/import`,
+      request
+    );
     return response.data;
   }
 
   /**
    * Export data from a namespace
+   * TODO: Verify endpoint exists in backend - not found in services/zerodb/ implementations
    */
   async exportData(request: ExportRequest): Promise<ExportResponse> {
-    const response = await apiClient.post<ExportResponse>('/v1/zerodb/export', request);
+    const response = await apiClient.post<ExportResponse>(
+      `${ZERODB_BASE_PATH}/export`,
+      request
+    );
     return response.data;
   }
 
@@ -295,18 +326,23 @@ class ZeroDBService {
 
   /**
    * Create an index for a namespace
+   * TODO: Verify endpoint exists in backend - not found in services/zerodb/ implementations
    */
   async createIndex(request: CreateIndexRequest): Promise<IndexResponse> {
-    const response = await apiClient.post<IndexResponse>('/v1/zerodb/index', request);
+    const response = await apiClient.post<IndexResponse>(
+      `${ZERODB_BASE_PATH}/index`,
+      request
+    );
     return response.data;
   }
 
   /**
    * Get index status for a namespace
+   * TODO: Verify endpoint exists in backend - not found in services/zerodb/ implementations
    */
   async getIndexStatus(namespace: string): Promise<IndexStatus> {
     const response = await apiClient.get<IndexStatus>(
-      `/v1/zerodb/index/status?namespace=${namespace}`
+      `${ZERODB_BASE_PATH}/index/status?namespace=${namespace}`
     );
     return response.data;
   }

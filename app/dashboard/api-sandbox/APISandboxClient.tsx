@@ -360,7 +360,7 @@ export default function APISandboxClient() {
                     <SelectValue placeholder="Select environment..." />
                   </SelectTrigger>
                   <SelectContent>
-                    {(environments || mockEnvironments).map((env) => (
+                    {(Array.isArray(environments) ? environments : mockEnvironments).map((env) => (
                       <SelectItem key={env.id} value={env.id}>
                         <div className="flex items-center gap-2">
                           <Code className="h-4 w-4" />
@@ -482,11 +482,11 @@ export default function APISandboxClient() {
                         </div>
                       </div>
 
-                      <div className="rounded-lg border bg-black/5 dark:bg-white/5 p-4 overflow-x-auto">
-                        <pre className="text-xs font-mono">
+                      <div className="rounded-lg border bg-[#282a36] p-4 overflow-x-auto">
+                        <pre className="text-xs font-mono text-[#f8f8f2] whitespace-pre-wrap">
                           {executionResults[0].status === 'failed'
-                            ? executionResults[0].error
-                            : executionResults[0].output}
+                            ? executionResults[0].error || 'Error occurred'
+                            : executionResults[0].output || ''}
                         </pre>
                       </div>
                     </div>
