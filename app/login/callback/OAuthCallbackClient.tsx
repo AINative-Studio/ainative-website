@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { Loader2 } from 'lucide-react';
 import { toast } from 'sonner';
-import { authService } from '@/services/AuthService';
+import { authService } from '@/services/authService';
 import { setAuthUser } from '@/utils/authCookies';
 
 // Real GitHub OAuth implementation integrated with AINative API
