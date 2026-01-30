@@ -1,5 +1,5 @@
 import apiClient from '../api-client';
-import sandboxService from '../sandbox-service';
+import sandboxService, { ExecutionResult } from '../sandbox-service';
 
 // Mock the apiClient
 jest.mock('../api-client', () => ({
@@ -291,7 +291,7 @@ describe('SandboxService', () => {
     });
 
     it('fetches execution history with custom limit', async () => {
-      const mockHistory: any[] = [];
+      const mockHistory: ExecutionResult[] = [];
 
       mockApiClient.get.mockResolvedValueOnce({
         data: mockHistory,
