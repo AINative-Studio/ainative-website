@@ -34,7 +34,7 @@ class AdminApiClient {
   /**
    * POST request to admin API
    */
-  async post<T>(path: string, data?: any, config?: RequestInit): Promise<ApiResponse<T>> {
+  async post<T>(path: string, data?: unknown, config?: RequestInit): Promise<ApiResponse<T>> {
     const response = await apiClient.post<ApiResponse<T>>(this.getPath(path), data, config);
     return response.data;
   }
@@ -42,7 +42,7 @@ class AdminApiClient {
   /**
    * PUT request to admin API
    */
-  async put<T>(path: string, data?: any, config?: RequestInit): Promise<ApiResponse<T>> {
+  async put<T>(path: string, data?: unknown, config?: RequestInit): Promise<ApiResponse<T>> {
     const response = await apiClient.put<ApiResponse<T>>(this.getPath(path), data, config);
     return response.data;
   }
@@ -50,7 +50,7 @@ class AdminApiClient {
   /**
    * PATCH request to admin API
    */
-  async patch<T>(path: string, data?: any, config?: RequestInit): Promise<ApiResponse<T>> {
+  async patch<T>(path: string, data?: unknown, config?: RequestInit): Promise<ApiResponse<T>> {
     const response = await apiClient.patch<ApiResponse<T>>(this.getPath(path), data, config);
     return response.data;
   }
@@ -66,10 +66,10 @@ class AdminApiClient {
   /**
    * Build query string from parameters object
    */
-  buildQueryString(params: Record<string, any>): string {
+  buildQueryString(params: Record<string, unknown> | object): string {
     const filtered = Object.entries(params)
-      .filter(([_, value]) => value !== undefined && value !== null && value !== '')
-      .map(([key, value]) => `${encodeURIComponent(key)}=${encodeURIComponent(value)}`);
+      .filter(([, value]) => value !== undefined && value !== null && value !== '')
+      .map(([key, value]) => `${encodeURIComponent(key)}=${encodeURIComponent(String(value))}`);
 
     return filtered.length > 0 ? `?${filtered.join('&')}` : '';
   }

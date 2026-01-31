@@ -19,7 +19,6 @@ describe('AuthService - Password Reset', () => {
   });
 
   describe('requestPasswordReset', () => {
-<<<<<<< HEAD
     describe('Success Cases', () => {
       it('should successfully request password reset with valid email', async () => {
         // Given
@@ -158,7 +157,6 @@ describe('AuthService - Password Reset', () => {
         // Then
         expect(result).toBeNull();
       });
-=======
     it('should successfully request password reset with valid email', async () => {
       // Given
       const email = 'user@example.com';
@@ -213,12 +211,10 @@ describe('AuthService - Password Reset', () => {
 
       // When/Then
       await expect(authService.requestPasswordReset(email)).rejects.toThrow('Network error');
->>>>>>> f791dac (Implement password reset functionality)
     });
   });
 
   describe('resetPassword', () => {
-<<<<<<< HEAD
     describe('Success Cases', () => {
       it('should successfully reset password with valid token and new password', async () => {
         // Given
@@ -442,7 +438,6 @@ describe('AuthService - Password Reset', () => {
           expect((error as Error).message).not.toContain(newPassword);
         }
       });
-=======
     it('should successfully reset password with valid token and new password', async () => {
       // Given
       const token = 'valid-reset-token-123';
@@ -500,7 +495,6 @@ describe('AuthService - Password Reset', () => {
 
       // When/Then
       await expect(authService.resetPassword(token, newPassword)).rejects.toThrow('Network error');
->>>>>>> f791dac (Implement password reset functionality)
     });
   });
 
@@ -533,7 +527,6 @@ describe('AuthService - Password Reset', () => {
       // Then - Step 2: Verify password reset succeeded
       expect(resetResult.success).toBe(true);
     });
-<<<<<<< HEAD
 
     it('should handle failure at any step of the flow', async () => {
       // Given
@@ -552,7 +545,5 @@ describe('AuthService - Password Reset', () => {
       // Verify that no further calls were made
       expect(global.fetch).toHaveBeenCalledTimes(1);
     });
-=======
->>>>>>> f791dac (Implement password reset functionality)
   });
 });

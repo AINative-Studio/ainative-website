@@ -40,7 +40,7 @@
  */
 
 import { useQuery } from '@tanstack/react-query';
-import { semanticSearchService } from '@/services/SemanticSearchService';
+import { semanticSearchService } from '@/services/semanticSearchService';
 import type { SearchSuggestionsOptions } from '@/types/search';
 
 interface UseSearchSuggestionsParams {

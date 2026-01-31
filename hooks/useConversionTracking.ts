@@ -7,7 +7,7 @@
 'use client';
 
 import { useEffect, useCallback } from 'react';
-import { conversionTracking } from '@/services/ConversionTrackingService';
+import { conversionTracking } from '@/services/conversionTrackingService';
 
 export function useConversionTracking() {
   /**

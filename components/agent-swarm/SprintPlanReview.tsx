@@ -72,7 +72,7 @@ import {
     DialogFooter,
 } from '@/components/ui/dialog';
 import { cn } from '@/lib/utils';
-import { rlhfService } from '@/services/RLHFService';
+import { rlhfService } from '@/services/rlhfService';
 
 // Issue/Story interface for sprint items
 export interface SprintIssue {

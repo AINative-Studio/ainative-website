@@ -273,7 +273,7 @@ it('shows loading spinner', async () => {
 
 ### TypeScript errors
 1. Ensure all factories export proper types
-2. Import types from service files: `import type { UserProfile } from '@/services/UserService'`
+2. Import types from service files: `import type { UserProfile } from '@/services/userService'`
 
 ### Handlers not matching
 1. Check the URL pattern in handlers matches your API calls

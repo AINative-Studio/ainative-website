@@ -17,7 +17,7 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog';
 import { InvoiceStatusBadge } from '@/components/invoices/InvoiceStatusBadge';
-import { Invoice, invoiceService } from '@/services/InvoiceService';
+import { Invoice, invoiceService } from '@/services/invoiceService';
 import { Download, Eye, CreditCard, Loader2, X } from 'lucide-react';
 import { toast } from 'sonner';
 import { format } from 'date-fns';

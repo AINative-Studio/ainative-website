@@ -7,7 +7,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { LineItemEditor } from '@/components/invoices/LineItemEditor';
-import { invoiceService, InvoiceLineItem, InvoiceCreateData } from '@/services/InvoiceService';
+import { invoiceService, InvoiceLineItem, InvoiceCreateData } from '@/services/invoiceService';
 import { ArrowLeft, Save, Send, Loader2 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { toast } from 'sonner';

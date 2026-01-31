@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { CreditCard, Loader2 } from 'lucide-react';
-import { invoiceService } from '@/services/InvoiceService';
+import { invoiceService } from '@/services/invoiceService';
 import { toast } from 'sonner';
 import { useStripe, useElements, CardElement } from '@stripe/react-stripe-js';
 

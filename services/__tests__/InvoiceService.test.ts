@@ -4,7 +4,7 @@
  * Issue #437: Fix Invoice Service API endpoints
  */
 
-import { InvoiceService, Invoice, InvoiceListFilters, PaymentIntentResponse } from '../InvoiceService';
+import { InvoiceService, Invoice, InvoiceListFilters, PaymentIntentResponse } from '../invoiceService';
 import apiClient from '@/utils/apiClient';
 
 // Mock the API client

@@ -3,7 +3,7 @@
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { InvoiceStatusBadge } from './InvoiceStatusBadge';
-import { Invoice, invoiceService } from '@/services/InvoiceService';
+import { Invoice, invoiceService } from '@/services/invoiceService';
 import { FileText, Download, Mail, Eye, DollarSign } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 

@@ -32,8 +32,8 @@ global.fetch = jest.fn(() =>
   Promise.resolve({
     ok: true,
     json: () => Promise.resolve({ data: {} }),
-  })) as jest.Mock
-);
+  }) as any
+) as jest.Mock;
 
 describe('QNNApiClient', () => {
   beforeEach(() => {

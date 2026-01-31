@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { Invoice, invoiceService } from '@/services/InvoiceService';
+import { Invoice, invoiceService } from '@/services/invoiceService';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Alert, AlertDescription } from '@/components/ui/alert';

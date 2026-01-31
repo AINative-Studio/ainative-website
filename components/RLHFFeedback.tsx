@@ -21,7 +21,7 @@ import { useState, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ThumbsUp, ThumbsDown, Check, AlertCircle, Loader2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { rlhfService } from '@/services/RLHFService';
+import { rlhfService } from '@/services/rlhfService';
 import type {
   RLHFFeedbackProps,
   RLHFFeedbackData,

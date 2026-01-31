@@ -7,7 +7,7 @@ import apiClient from '@/lib/api-client';
 jest.mock('@/lib/api-client');
 const mockedApiClient = apiClient as jest.Mocked<typeof apiClient>;
 
-import { semanticSearchService } from '../SemanticSearchService';
+import { semanticSearchService } from '../semanticSearchService';
 
 describe('SemanticSearchService', () => {
   beforeEach(() => {

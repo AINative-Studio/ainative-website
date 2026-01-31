@@ -123,7 +123,7 @@ export class AdminAgentService {
       agent_type: string;
       status: string;
     }>;
-    result?: any;
+    result?: Record<string, unknown>;
   }> {
     try {
       const response = await adminApi.get<{
@@ -135,7 +135,7 @@ export class AdminAgentService {
           agent_type: string;
           status: string;
         }>;
-        result?: any;
+        result?: Record<string, unknown>;
       }>(`${this.basePath}/tasks/${taskId}`);
 
       if (!response.success) {

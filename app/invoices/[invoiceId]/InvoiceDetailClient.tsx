@@ -10,7 +10,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { InvoiceStatusBadge } from '@/components/invoices/InvoiceStatusBadge';
 import { LineItemEditor } from '@/components/invoices/LineItemEditor';
 import { PaymentButton } from '@/components/invoices/PaymentButton';
-import { invoiceService, Invoice } from '@/services/InvoiceService';
+import { invoiceService, Invoice } from '@/services/invoiceService';
 import { ArrowLeft, Download, Mail, Send, CheckCircle, XCircle, Loader2 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { toast } from 'sonner';

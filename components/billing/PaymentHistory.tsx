@@ -1,7 +1,7 @@
 // src/components/billing/PaymentHistory.tsx
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Invoice } from '@/services/InvoiceService';
+import { Invoice } from '@/services/invoiceService';
 import { CheckCircle2, XCircle, Clock, Download } from 'lucide-react';
 import { format } from 'date-fns';
 import { Button } from '@/components/ui/button';

@@ -74,13 +74,13 @@ import {
 } from '@/components/ui/dialog';
 import { Badge } from '@/components/ui/badge';
 import { cn } from '@/lib/utils';
-import { rlhfService } from '@/services/RLHFService';
+import { rlhfService } from '@/services/rlhfService';
 import {
     dataModelChatService,
     ChatMessage,
     DataModel,
     DataModelEntity,
-} from '@/services/DataModelChatService';
+} from '@/services/dataModelChatService';
 
 // Types for internal component state
 interface DataModelVersion {

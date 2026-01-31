@@ -8,7 +8,7 @@
 import { useEffect } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useQNNContext } from '@/contexts/QNNContext';
-import { QNNApiClient } from '@/services/QNNApiClient';
+import { QNNApiClient } from '@/services/qnnApiClient';
 import {
   TrainingJob,
   StartTrainingRequest,

@@ -289,7 +289,7 @@ export interface AuditLogEntry {
   timestamp: string;
   ip_address?: string;
   user_agent?: string;
-  details?: Record<string, any>;
+  details?: Record<string, unknown>;
 }
 
 /**

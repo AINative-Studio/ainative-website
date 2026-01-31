@@ -1,4 +1,4 @@
-import type { LoginResponse, UserProfile } from '@/services/AuthService';
+import type { LoginResponse, UserProfile } from '@/services/authService';
 
 export class AuthFactory {
   static createUserProfile(overrides?: Partial<UserProfile>): UserProfile {

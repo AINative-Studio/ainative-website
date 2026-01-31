@@ -2,7 +2,7 @@
  * Mock data factory for user-related entities
  */
 
-import type { UserProfile, UserPreferences } from '@/services/UserService';
+import type { UserProfile, UserPreferences } from '@/services/userService';
 
 export class UserFactory {
   static createUserProfile(overrides?: Partial<UserProfile>): UserProfile {
