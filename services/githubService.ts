@@ -1,4 +1,4 @@
-// services/GitHubService.ts
+// services/githubService.ts
 import apiClient from '@/utils/apiClient';
 
 // Type for Axios-like errors
