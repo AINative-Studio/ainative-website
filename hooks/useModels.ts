@@ -6,7 +6,7 @@
  */
 
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { qnnApiClient } from '@/services/QNNApiClient';
+import { qnnApiClient } from '@/services/qnnApiClient';
 import {
   Model,
   CreateModelRequest,

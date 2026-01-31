@@ -6,7 +6,7 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent } from '@/components/ui/card';
 import { Plus, Trash2 } from 'lucide-react';
-import { InvoiceLineItem } from '@/services/InvoiceService';
+import { InvoiceLineItem } from '@/services/invoiceService';
 
 interface LineItemEditorProps {
   lineItems: InvoiceLineItem[];

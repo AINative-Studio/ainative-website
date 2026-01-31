@@ -6,7 +6,7 @@
  */
 
 import { useQuery, UseQueryResult } from '@tanstack/react-query';
-import { dashboardService, KongMetricsResponse, SystemHealthResponse, APIUsageResponse } from '@/services/DashboardService';
+import { dashboardService, KongMetricsResponse, SystemHealthResponse, APIUsageResponse } from '@/services/dashboardService';
 
 /**
  * Query key factory for dashboard-related queries

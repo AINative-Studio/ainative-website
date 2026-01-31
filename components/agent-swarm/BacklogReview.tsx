@@ -97,7 +97,7 @@ import {
 } from '@/components/ui/dialog';
 import { Checkbox } from '@/components/ui/checkbox';
 import { cn } from '@/lib/utils';
-import { rlhfService } from '@/services/RLHFService';
+import { rlhfService } from '@/services/rlhfService';
 
 // Issue types following GitHub issue tracking conventions
 type IssueType = 'BUG' | 'FEATURE' | 'TEST' | 'REFACTOR' | 'DOCS' | 'DEVOPS' | 'SECURITY' | 'PERFORMANCE';

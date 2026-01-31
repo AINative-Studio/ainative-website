@@ -29,7 +29,7 @@ import { Badge } from '@/components/ui/badge';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useToast } from '@/hooks/use-toast';
-import { qnnApiClient } from '@/services/QNNApiClient';
+import { qnnApiClient } from '@/services/qnnApiClient';
 import {
   Shield,
   CheckCircle2,

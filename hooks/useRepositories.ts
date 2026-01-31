@@ -13,7 +13,7 @@ import {
   PaginatedResponse,
   ApiResponse,
 } from '@/types/qnn.types';
-import { qnnApiClient } from '@/services/QNNApiClient';
+import { qnnApiClient } from '@/services/qnnApiClient';
 
 // Query keys for React Query cache management
 export const repositoryKeys = {

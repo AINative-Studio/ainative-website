@@ -23,7 +23,7 @@ import {
   Package,
   ArrowRight
 } from 'lucide-react';
-import { qnnApiClient } from '@/services/QNNApiClient';
+import { qnnApiClient } from '@/services/qnnApiClient';
 import { useQNNContext } from '@/contexts/QNNContext';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 
