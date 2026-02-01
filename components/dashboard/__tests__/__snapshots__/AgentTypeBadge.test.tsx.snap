@@ -1,0 +1,69 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`AgentTypeBadge Component Snapshot should match snapshot for all sizes 1`] = `
+<div>
+  <span
+    aria-label="Quantum agent type"
+    class="inline-flex items-center rounded-full font-semibold transition-all duration-200 bg-agent-quantum text-white text-xs px-2 py-0.5 gap-1"
+    role="status"
+  >
+    <span>
+      Quantum
+    </span>
+  </span>
+  <span
+    aria-label="Quantum agent type"
+    class="inline-flex items-center rounded-full font-semibold transition-all duration-200 bg-agent-quantum text-white text-sm px-2.5 py-1 gap-1.5"
+    role="status"
+  >
+    <span>
+      Quantum
+    </span>
+  </span>
+  <span
+    aria-label="Quantum agent type"
+    class="inline-flex items-center rounded-full font-semibold transition-all duration-200 bg-agent-quantum text-white text-base px-3 py-1.5 gap-2"
+    role="status"
+  >
+    <span>
+      Quantum
+    </span>
+  </span>
+</div>
+`;
+
+exports[`AgentTypeBadge Component Snapshot should match snapshot for general type 1`] = `
+<span
+  aria-label="General agent type"
+  class="inline-flex items-center rounded-full font-semibold transition-all duration-200 bg-agent-general text-white text-sm px-2.5 py-1 gap-1.5"
+  role="status"
+>
+  <span>
+    General
+  </span>
+</span>
+`;
+
+exports[`AgentTypeBadge Component Snapshot should match snapshot for ml type 1`] = `
+<span
+  aria-label="ML agent type"
+  class="inline-flex items-center rounded-full font-semibold transition-all duration-200 bg-agent-ml text-white text-sm px-2.5 py-1 gap-1.5"
+  role="status"
+>
+  <span>
+    ML
+  </span>
+</span>
+`;
+
+exports[`AgentTypeBadge Component Snapshot should match snapshot for quantum type 1`] = `
+<span
+  aria-label="Quantum agent type"
+  class="inline-flex items-center rounded-full font-semibold transition-all duration-200 bg-agent-quantum text-white text-sm px-2.5 py-1 gap-1.5"
+  role="status"
+>
+  <span>
+    Quantum
+  </span>
+</span>
+`;

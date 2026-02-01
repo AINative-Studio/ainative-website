@@ -15,15 +15,21 @@ const gradientTextVariants = cva(
         ocean: 'from-[#22BCDE] via-[#338585] to-[#1A7575]',
       },
       size: {
-        sm: 'text-sm',
-        base: 'text-base',
-        lg: 'text-lg',
-        xl: 'text-xl',
-        '2xl': 'text-2xl',
-        '3xl': 'text-3xl',
-        '4xl': 'text-4xl',
-        '5xl': 'text-5xl',
-        '6xl': 'text-6xl',
+        // Display sizes - For hero sections and major page titles
+        'display-1': 'text-display-1', // 72px (48px mobile)
+        'display-2': 'text-display-2', // 60px (40px mobile)
+        'display-3': 'text-display-3', // 48px (36px mobile)
+        // Title sizes - For section headings (mobile-optimized)
+        'title-1': 'text-title-1',     // 28px (24px mobile)
+        'title-2': 'text-title-2',     // 24px (20px mobile)
+        'title-3': 'text-title-3',     // 24px (18px mobile)
+        'title-4': 'text-title-4',     // 20px
+        // Body sizes - For content and paragraphs
+        'body-lg': 'text-body-lg',     // 18px
+        'body': 'text-body',           // 16px (default)
+        'body-sm': 'text-body-sm',     // 14px
+        // UI sizes - For interface elements
+        'ui': 'text-ui',               // 14px
       },
       animated: {
         true: 'bg-[length:200%_auto] animate-gradient-shift',
@@ -32,7 +38,7 @@ const gradientTextVariants = cva(
     },
     defaultVariants: {
       variant: 'primary',
-      size: 'base',
+      size: 'body',
       animated: false,
     },
   }
@@ -48,7 +54,7 @@ const GradientText = React.forwardRef<HTMLElement, GradientTextProps>(
   ({ className, variant, size, animated, as: Comp = 'span', children, ...props }, ref) => {
     return (
       <Comp
-        ref={ref as any}
+        ref={ref as React.Ref<HTMLElement>}
         className={cn(gradientTextVariants({ variant, size, animated, className }))}
         {...props}
       >
