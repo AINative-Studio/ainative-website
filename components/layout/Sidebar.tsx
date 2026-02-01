@@ -121,7 +121,7 @@ export default function Sidebar({ isMobile = false, onClose }: SidebarProps) {
             <p className="text-xs font-semibold uppercase text-gray-400 mb-3 pl-1 tracking-wider">
               {section.title}
             </p>
-            <nav className="space-y-1">
+            <nav className="space-y-1" role="navigation" aria-label={`${section.title} navigation`}>
               {section.links.filter((item) => {
                 // Filter out Invoices menu item for non-admin users
                 if (item.name === 'Invoices' && !isAdmin) {
@@ -140,6 +140,7 @@ export default function Sidebar({ isMobile = false, onClose }: SidebarProps) {
                         : 'text-gray-400 hover:text-white hover:bg-gray-800/40'
                         }`}
                       onClick={isMobile ? onClose : undefined}
+                      aria-current={active ? 'page' : undefined}
                     >
                       <span className="flex items-center gap-3">
                         <Icon className={`w-4 h-4 ${active ? 'text-primary' : ''}`} />

@@ -195,7 +195,7 @@ export default function SignaturesClient() {
         className="grid grid-cols-1 md:grid-cols-3 gap-6"
       >
         <motion.div variants={fadeUp}>
-          <Card className="bg-[#161B22] border-[#2D333B]">
+          <Card className="bg-surface-secondary border-border">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium">Valid Signatures</CardTitle>
               <CheckCircle2 className="h-4 w-4 text-green-400" />
@@ -210,7 +210,7 @@ export default function SignaturesClient() {
         </motion.div>
 
         <motion.div variants={fadeUp}>
-          <Card className="bg-[#161B22] border-[#2D333B]">
+          <Card className="bg-surface-secondary border-border">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium">Expired Signatures</CardTitle>
               <AlertTriangle className="h-4 w-4 text-orange-400" />
@@ -225,7 +225,7 @@ export default function SignaturesClient() {
         </motion.div>
 
         <motion.div variants={fadeUp}>
-          <Card className="bg-[#161B22] border-[#2D333B]">
+          <Card className="bg-surface-secondary border-border">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium">Total Models Signed</CardTitle>
               <Shield className="h-4 w-4 text-[#4B6FED]" />
@@ -255,7 +255,7 @@ export default function SignaturesClient() {
         animate="visible"
         variants={fadeUp}
       >
-        <Card className="bg-[#161B22] border-[#2D333B]">
+        <Card className="bg-surface-secondary border-border">
           <CardHeader>
             <div className="flex items-center justify-between">
               <div>
@@ -272,7 +272,7 @@ export default function SignaturesClient() {
               {signatures.map((signature) => (
                 <div
                   key={signature.id}
-                  className="flex items-start justify-between p-4 bg-vite-bg rounded-lg border border-[#2D333B] hover:border-[#4B6FED]/30 transition-colors"
+                  className="flex items-start justify-between p-4 bg-vite-bg rounded-lg border border-border hover:border-[#4B6FED]/30 transition-colors"
                 >
                   <div className="flex-1 space-y-2">
                     <div className="flex items-center gap-2">

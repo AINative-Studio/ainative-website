@@ -155,7 +155,7 @@ function StatWidget({
 }) {
   return (
     <motion.div variants={fadeUp}>
-      <Card className="border-none bg-[#161B22] shadow-lg overflow-hidden h-full">
+      <Card className="border-none bg-surface-secondary shadow-lg overflow-hidden h-full">
         <CardContent className="p-6">
           {isLoading ? (
             <div className="animate-pulse">
@@ -190,8 +190,8 @@ function StatWidget({
 function UsageChart({ data, isLoading }: { data?: UsageDataPoint[]; isLoading: boolean }) {
   return (
     <motion.div variants={fadeUp}>
-      <Card className="border-none bg-[#161B22] shadow-lg overflow-hidden">
-        <CardHeader className="border-b border-gray-800">
+      <Card className="border-none bg-surface-secondary shadow-lg overflow-hidden">
+        <CardHeader className="border-b border-border">
           <CardTitle className="text-lg flex items-center gap-2 text-white">
             <Activity className="h-5 w-5 text-[#4B6FED]" />
             Weekly Usage Trends
@@ -255,8 +255,8 @@ function UsageChart({ data, isLoading }: { data?: UsageDataPoint[]; isLoading: b
 function ModelUsageChart({ data, isLoading }: { data?: ModelUsageData[]; isLoading: boolean }) {
   return (
     <motion.div variants={fadeUp}>
-      <Card className="border-none bg-[#161B22] shadow-lg overflow-hidden h-full">
-        <CardHeader className="border-b border-gray-800">
+      <Card className="border-none bg-surface-secondary shadow-lg overflow-hidden h-full">
+        <CardHeader className="border-b border-border">
           <CardTitle className="text-lg flex items-center gap-2 text-white">
             <Brain className="h-5 w-5 text-[#4B6FED]" />
             Model Distribution
@@ -307,8 +307,8 @@ function ModelUsageChart({ data, isLoading }: { data?: ModelUsageData[]; isLoadi
 function ProjectActivityChart({ data, isLoading }: { data?: ProjectActivityData[]; isLoading: boolean }) {
   return (
     <motion.div variants={fadeUp}>
-      <Card className="border-none bg-[#161B22] shadow-lg overflow-hidden h-full">
-        <CardHeader className="border-b border-gray-800">
+      <Card className="border-none bg-surface-secondary shadow-lg overflow-hidden h-full">
+        <CardHeader className="border-b border-border">
           <CardTitle className="text-lg flex items-center gap-2 text-white">
             <Code2 className="h-5 w-5 text-[#4B6FED]" />
             Project Activity
@@ -349,8 +349,8 @@ function ProjectActivityChart({ data, isLoading }: { data?: ProjectActivityData[
 function PerformanceChart({ data, isLoading }: { data?: PerformanceData[]; isLoading: boolean }) {
   return (
     <motion.div variants={fadeUp}>
-      <Card className="border-none bg-[#161B22] shadow-lg overflow-hidden">
-        <CardHeader className="border-b border-gray-800">
+      <Card className="border-none bg-surface-secondary shadow-lg overflow-hidden">
+        <CardHeader className="border-b border-border">
           <CardTitle className="text-lg flex items-center gap-2 text-white">
             <Zap className="h-5 w-5 text-[#4B6FED]" />
             System Performance
@@ -573,8 +573,8 @@ export default function MainDashboardClient() {
 
       {/* Quick Actions */}
       <motion.div variants={fadeUp}>
-        <Card className="border-none bg-[#161B22] shadow-lg overflow-hidden">
-          <CardHeader className="border-b border-gray-800">
+        <Card className="border-none bg-surface-secondary shadow-lg overflow-hidden">
+          <CardHeader className="border-b border-border">
             <CardTitle className="text-lg flex items-center gap-2 text-white">
               <AlertCircle className="h-5 w-5 text-[#4B6FED]" />
               Quick Actions

@@ -95,7 +95,7 @@ export default function HomeClient() {
   const y = useTransform(scrollYProgress, [0, 1], [0, 100]);
 
   return (
-    <div ref={targetRef} className="relative flex flex-col min-h-screen bg-vite-bg text-white overflow-hidden">
+    <div ref={targetRef} className="relative flex flex-col min-h-screen bg-vite-bg text-white overflow-hidden pt-24 md:pt-32">
       {/* Enhanced Animated Background */}
       <motion.div
         className="fixed top-0 left-0 w-full h-full -z-10 overflow-hidden"
@@ -133,7 +133,7 @@ export default function HomeClient() {
       </motion.div>
 
       {/* Hero Section */}
-      <section className="full-width-section relative min-h-[70vh] flex items-center justify-center pt-32 pb-12 z-10">
+      <section className="full-width-section relative min-h-[70vh] flex items-center justify-center pb-12 z-10">
         <div className="absolute inset-0 -z-10">
           <div className="absolute inset-0 bg-gradient-to-b from-[#0D1117]/80 via-[#0D1117]/90 to-[#0D1117]/80"></div>
           {/* Center glow effect - matching Vite design */}

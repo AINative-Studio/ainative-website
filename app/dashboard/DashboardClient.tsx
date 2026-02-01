@@ -428,8 +428,8 @@ export default function DashboardClient() {
       {/* Usage Summary Cards */}
       <motion.div variants={stagger}>
         <motion.div variants={fadeUp}>
-          <Card className="mb-6 border-none bg-[#161B22] shadow-lg overflow-hidden">
-            <CardHeader className="border-b border-gray-800">
+          <Card className="mb-6 border-none bg-surface-secondary shadow-lg overflow-hidden">
+            <CardHeader className="border-b border-border">
               <CardTitle className="text-xl flex items-center gap-2 text-white">
                 <RefreshCcw className="h-5 w-5 text-[#4B6FED]" />
                 AINative Usage Summary
@@ -494,7 +494,7 @@ export default function DashboardClient() {
                     <p className="text-xs text-gray-500">Usage since {usageData.usagePeriod.startDate}</p>
                   </div>
 
-                  <div className="mt-8 p-4 bg-[#1C2128] rounded-md border border-gray-800">
+                  <div className="mt-8 p-4 bg-[#1C2128] rounded-md border border-border">
                     <p className="text-sm text-gray-300">
                       Once the usage limit is reached, AINative can continue to be used with the Base
                       model. To continue using premium models, purchase add-on prompt credits.
@@ -529,8 +529,8 @@ export default function DashboardClient() {
         {/* Cost Breakdown Section */}
         {costData && (
           <motion.div variants={fadeUp} className="mt-6">
-            <Card className="border-none bg-[#161B22] shadow-lg overflow-hidden">
-              <CardHeader className="border-b border-gray-800">
+            <Card className="border-none bg-surface-secondary shadow-lg overflow-hidden">
+              <CardHeader className="border-b border-border">
                 <CardTitle className="text-xl flex items-center gap-2 text-white">
                   <BarChart2 className="h-5 w-5 text-[#4B6FED]" />
                   Cost Breakdown
@@ -579,8 +579,8 @@ export default function DashboardClient() {
         {/* AI Metrics Section */}
         {aiMetrics && (
           <motion.div variants={fadeUp} className="mt-6">
-            <Card className="border-none bg-[#161B22] shadow-lg overflow-hidden">
-              <CardHeader className="border-b border-gray-800">
+            <Card className="border-none bg-surface-secondary shadow-lg overflow-hidden">
+              <CardHeader className="border-b border-border">
                 <CardTitle className="text-xl flex items-center gap-2 text-white">
                   <BarChart2 className="h-5 w-5 text-[#4B6FED]" />
                   AI Development Metrics

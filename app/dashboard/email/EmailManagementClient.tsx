@@ -317,7 +317,7 @@ export default function EmailManagementClient() {
             </div>
 
             {templatesLoading ? (
-              <Card className="border-gray-800">
+              <Card className="border-border">
                 <CardContent className="flex items-center justify-center py-12">
                   <Loader2 className="h-8 w-8 animate-spin text-blue-500" />
                 </CardContent>
@@ -332,7 +332,7 @@ export default function EmailManagementClient() {
               <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
                 {templatesData?.templates.map((template) => (
                   <motion.div key={template.id} variants={fadeUp}>
-                    <Card className="border-gray-800 hover:border-blue-500/50 transition-all">
+                    <Card className="border-border hover:border-blue-500/50 transition-all">
                       <CardHeader>
                         <CardTitle className="text-lg">{template.name}</CardTitle>
                         <p className="text-sm text-gray-400 line-clamp-1">{template.subject}</p>
@@ -384,7 +384,7 @@ export default function EmailManagementClient() {
         {/* Settings Tab */}
         <TabsContent value="settings">
           <motion.div variants={fadeUp}>
-            <Card className="border-gray-800 max-w-3xl mx-auto">
+            <Card className="border-border max-w-3xl mx-auto">
               <CardHeader>
                 <CardTitle className="text-2xl">Email Settings</CardTitle>
                 <p className="text-gray-400">Configure SMTP and sender information</p>
@@ -406,7 +406,7 @@ export default function EmailManagementClient() {
                           onChange={(e) =>
                             setSettingsForm({ ...settingsForm, smtpHost: e.target.value })
                           }
-                          className="w-full px-3 py-2 bg-gray-900 border border-gray-800 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                          className="w-full px-3 py-2 bg-gray-900 border border-border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                           placeholder="smtp.gmail.com"
                           readOnly
                         />
@@ -420,7 +420,7 @@ export default function EmailManagementClient() {
                           onChange={(e) =>
                             setSettingsForm({ ...settingsForm, smtpPort: parseInt(e.target.value) })
                           }
-                          className="w-full px-3 py-2 bg-gray-900 border border-gray-800 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                          className="w-full px-3 py-2 bg-gray-900 border border-border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                           readOnly
                         />
                       </div>
@@ -434,7 +434,7 @@ export default function EmailManagementClient() {
                         onChange={(e) =>
                           setSettingsForm({ ...settingsForm, smtpUser: e.target.value })
                         }
-                        className="w-full px-3 py-2 bg-gray-900 border border-gray-800 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        className="w-full px-3 py-2 bg-gray-900 border border-border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                         readOnly
                       />
                     </div>
@@ -448,7 +448,7 @@ export default function EmailManagementClient() {
                           onChange={(e) =>
                             setSettingsForm({ ...settingsForm, fromEmail: e.target.value })
                           }
-                          className="w-full px-3 py-2 bg-gray-900 border border-gray-800 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                          className="w-full px-3 py-2 bg-gray-900 border border-border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                           readOnly
                         />
                       </div>
@@ -461,7 +461,7 @@ export default function EmailManagementClient() {
                           onChange={(e) =>
                             setSettingsForm({ ...settingsForm, fromName: e.target.value })
                           }
-                          className="w-full px-3 py-2 bg-gray-900 border border-gray-800 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                          className="w-full px-3 py-2 bg-gray-900 border border-border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                           readOnly
                         />
                       </div>
@@ -480,7 +480,7 @@ export default function EmailManagementClient() {
         {/* History Tab */}
         <TabsContent value="history">
           <motion.div variants={fadeUp}>
-            <Card className="border-gray-800">
+            <Card className="border-border">
               <CardHeader>
                 <CardTitle className="text-2xl">Email History</CardTitle>
                 <p className="text-gray-400">Recent email activity and delivery status</p>
@@ -495,7 +495,7 @@ export default function EmailManagementClient() {
                     {historyData?.emails.map((email) => (
                       <div
                         key={email.id}
-                        className="flex items-center justify-between p-4 bg-gray-900/50 rounded-lg border border-gray-800 hover:border-gray-700 transition-all"
+                        className="flex items-center justify-between p-4 bg-gray-900/50 rounded-lg border border-border hover:border-gray-700 transition-all"
                       >
                         <div className="flex items-center gap-4 flex-1">
                           {getStatusIcon(email.status)}
@@ -521,7 +521,7 @@ export default function EmailManagementClient() {
         <TabsContent value="analytics">
           <motion.div variants={stagger} className="space-y-6">
             {analyticsLoading ? (
-              <Card className="border-gray-800">
+              <Card className="border-border">
                 <CardContent className="flex items-center justify-center py-12">
                   <Loader2 className="h-8 w-8 animate-spin text-blue-500" />
                 </CardContent>
@@ -531,7 +531,7 @@ export default function EmailManagementClient() {
                 {/* Stats Cards */}
                 <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
                   <motion.div variants={fadeUp}>
-                    <Card className="border-gray-800">
+                    <Card className="border-border">
                       <CardHeader className="flex flex-row items-center justify-between pb-2">
                         <CardTitle className="text-sm font-medium text-gray-400">Total Sent</CardTitle>
                         <Send className="h-4 w-4 text-blue-500" />
@@ -542,7 +542,7 @@ export default function EmailManagementClient() {
                     </Card>
                   </motion.div>
                   <motion.div variants={fadeUp}>
-                    <Card className="border-gray-800">
+                    <Card className="border-border">
                       <CardHeader className="flex flex-row items-center justify-between pb-2">
                         <CardTitle className="text-sm font-medium text-gray-400">Delivered</CardTitle>
                         <CheckCircle className="h-4 w-4 text-green-500" />
@@ -556,7 +556,7 @@ export default function EmailManagementClient() {
                     </Card>
                   </motion.div>
                   <motion.div variants={fadeUp}>
-                    <Card className="border-gray-800">
+                    <Card className="border-border">
                       <CardHeader className="flex flex-row items-center justify-between pb-2">
                         <CardTitle className="text-sm font-medium text-gray-400">Opened</CardTitle>
                         <Eye className="h-4 w-4 text-purple-500" />
@@ -568,7 +568,7 @@ export default function EmailManagementClient() {
                     </Card>
                   </motion.div>
                   <motion.div variants={fadeUp}>
-                    <Card className="border-gray-800">
+                    <Card className="border-border">
                       <CardHeader className="flex flex-row items-center justify-between pb-2">
                         <CardTitle className="text-sm font-medium text-gray-400">Failed</CardTitle>
                         <XCircle className="h-4 w-4 text-red-500" />
@@ -583,7 +583,7 @@ export default function EmailManagementClient() {
 
                 {/* Activity Chart */}
                 <motion.div variants={fadeUp}>
-                  <Card className="border-gray-800">
+                  <Card className="border-border">
                     <CardHeader>
                       <CardTitle className="flex items-center gap-2">
                         <TrendingUp className="h-5 w-5 text-blue-500" />
@@ -640,7 +640,7 @@ export default function EmailManagementClient() {
 
       {/* Template Dialog */}
       <Dialog open={isTemplateDialogOpen} onOpenChange={setIsTemplateDialogOpen}>
-        <DialogContent className="bg-gray-900 border-gray-800">
+        <DialogContent className="bg-gray-900 border-border">
           <DialogHeader>
             <DialogTitle>
               {selectedTemplate ? 'Edit Template' : 'Create Template'}
@@ -711,7 +711,7 @@ export default function EmailManagementClient() {
 
       {/* Preview Dialog */}
       <Dialog open={isPreviewDialogOpen} onOpenChange={setIsPreviewDialogOpen}>
-        <DialogContent className="bg-gray-900 border-gray-800 max-w-2xl">
+        <DialogContent className="bg-gray-900 border-border max-w-2xl">
           <DialogHeader>
             <DialogTitle>Template Preview</DialogTitle>
           </DialogHeader>
@@ -734,7 +734,7 @@ export default function EmailManagementClient() {
 
       {/* Send Email Dialog */}
       <Dialog open={isSendDialogOpen} onOpenChange={setIsSendDialogOpen}>
-        <DialogContent className="bg-gray-900 border-gray-800">
+        <DialogContent className="bg-gray-900 border-border">
           <DialogHeader>
             <DialogTitle>Send Test Email</DialogTitle>
             <DialogDescription>Send a test email to verify your configuration</DialogDescription>

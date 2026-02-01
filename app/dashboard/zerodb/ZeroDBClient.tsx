@@ -534,7 +534,7 @@ export default function ZeroDBClient() {
               </thead>
               <tbody>
                 {vectors.map((vector) => (
-                  <tr key={vector.id} className="border-b border-gray-800 hover:bg-gray-800/50">
+                  <tr key={vector.id} className="border-b border-border hover:bg-gray-800/50">
                     <td className="py-3 px-4">
                       <span className="font-mono text-sm text-white">{vector.id}</span>
                     </td>
