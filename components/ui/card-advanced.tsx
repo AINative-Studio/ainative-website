@@ -10,14 +10,14 @@ const cardVariants = cva(
         default: 'border bg-card text-card-foreground shadow',
         glassmorphism: [
           'border border-primary/20 shadow-xl',
-          'bg-[rgba(34,38,60,0.6)]',
+          'bg-dark-2/60',
           'backdrop-blur-[10px]',
-          'supports-[backdrop-filter]:bg-[rgba(34,38,60,0.6)]',
+          'supports-[backdrop-filter]:bg-dark-2/60',
         ].join(' '),
         'gradient-border': [
           'relative bg-card text-card-foreground shadow-lg',
           'before:absolute before:inset-0 before:rounded-xl before:p-[1px]',
-          'before:bg-gradient-to-r before:from-[#5867EF] before:to-[#9747FF]',
+          'before:bg-gradient-to-r before:from-brand-primary before:to-vite-secondary',
           'before:-z-10',
           'after:absolute after:inset-[1px] after:rounded-[11px] after:bg-card after:-z-10',
         ].join(' '),

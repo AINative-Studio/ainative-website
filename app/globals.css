@@ -417,14 +417,14 @@ a {
 
 /* Title Headings - For section headings and page titles */
 .text-title-1 {
-  font-size: 36px;
+  font-size: 28px;  /* Mobile-optimized */
   line-height: 1.2;
   font-weight: 700;
   letter-spacing: -0.01em;
 }
 
 .text-title-2 {
-  font-size: 30px;
+  font-size: 24px;  /* Mobile-optimized */
   line-height: 1.3;
   font-weight: 700;
   letter-spacing: -0.01em;
@@ -532,16 +532,17 @@ a {
     font-size: 36px;
   }
 
+  /* Title sizes are already mobile-optimized, apply even smaller on mobile */
   .text-title-1 {
-    font-size: 28px;
-  }
-
-  .text-title-2 {
     font-size: 24px;
   }
 
-  .text-title-3 {
+  .text-title-2 {
     font-size: 20px;
+  }
+
+  .text-title-3 {
+    font-size: 18px;
   }
 }
 
@@ -757,23 +758,34 @@ a {
   --shadow-ds-lg: 0 12px 24px rgba(19, 23, 38, 0.15), 0 4px 8px rgba(19, 23, 38, 0.1);
 
   /* Typography Scale - Complete Design System */
+  /* Display Headings - For hero sections */
   --font-size-display-1: 72px;
   --font-size-display-2: 60px;
   --font-size-display-3: 48px;
-  --font-size-title-1: 36px;
-  --font-size-title-2: 30px;
+
+  /* Title Headings - Mobile-optimized (matches requirements) */
+  --font-size-title-1: 28px;  /* Mobile-optimized from 36px */
+  --font-size-title-2: 24px;  /* Mobile-optimized from 30px */
   --font-size-title-3: 24px;
   --font-size-title-4: 20px;
+
+  /* Body Text */
   --font-size-body-lg: 18px;
   --font-size-body: 16px;
   --font-size-body-sm: 14px;
+
+  /* UI Text */
   --font-size-ui-lg: 16px;
   --font-size-ui: 14px;
   --font-size-ui-sm: 12px;
   --font-size-ui-xs: 11px;
+
+  /* Button Text */
   --font-size-button-lg: 16px;
   --font-size-button: 14px;
   --font-size-button-sm: 12px;
+
+  /* Caption Text */
   --font-size-caption: 12px;
   --font-size-caption-sm: 11px;
 

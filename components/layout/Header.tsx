@@ -44,7 +44,7 @@ export default function Header() {
     <header
       className={cn(
         'fixed top-0 left-0 right-0 z-50 transition-all duration-300 border-b',
-        'bg-vite-bg shadow-sm border-[#2D333B]'
+        'bg-dark-1 shadow-sm border-dark-3'
       )}
     >
       <div className="container-custom flex items-center justify-between py-4 px-4 md:px-6">
@@ -86,14 +86,14 @@ export default function Header() {
         {/* Desktop Actions */}
         <div className="hidden md:flex items-center gap-4">
           {isLoading ? (
-            <div className="h-10 w-24 animate-pulse bg-[#2D333B] rounded" />
+            <div className="h-10 w-24 animate-pulse bg-dark-3 rounded" />
           ) : isDashboard ? (
             <>
               {avatar && (
                 <img
                   src={avatar}
                   alt="avatar"
-                  className="w-8 h-8 rounded-full border border-[#4B6FED]"
+                  className="w-8 h-8 rounded-full border border-brand-primary"
                 />
               )}
               <ButtonCustom
@@ -156,7 +156,7 @@ export default function Header() {
 
       {/* Mobile Menu Sheet */}
       {mobileMenuOpen && (
-        <div className="fixed inset-0 z-40 bg-vite-bg animate-in slide-in-from-top p-6 flex flex-col gap-6 md:hidden">
+        <div className="fixed inset-0 z-40 bg-dark-1 animate-in slide-in-from-top p-6 flex flex-col gap-6 md:hidden">
           <div className="flex justify-between items-center">
             <Link href="/" className="flex items-center gap-3" onClick={() => setMobileMenuOpen(false)}>
               <img src="/ainative-icon.svg" alt="AINative Studio" className="h-10 w-auto" />
@@ -206,7 +206,7 @@ export default function Header() {
                   <img
                     src={avatar}
                     alt="avatar"
-                    className="w-8 h-8 rounded-full border border-[#4B6FED] mx-auto mb-2"
+                    className="w-8 h-8 rounded-full border border-brand-primary mx-auto mb-2"
                   />
                 )}
                 <ButtonCustom

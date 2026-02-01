@@ -7,7 +7,7 @@ import {
   Bell, Repeat, FileText, Sliders, X,
   ChevronRight, Database, Zap, Code,
   Server, Wrench, Home, Network, Package, Users, Receipt, GitBranch,
-  Shield, Cpu, Activity, Brain
+  Shield, Cpu, Activity, Brain, DollarSign, Wallet
 } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { useIsAdmin } from '@/components/guards/AdminRouteGuard';
@@ -29,6 +29,8 @@ const menuSections = [
       { name: 'Agent Swarm', to: '/dashboard/agent-swarm', icon: GitBranch },
       { name: 'Developer Settings', to: '/developer-settings', icon: Code },
       { name: 'Developer Tools', to: '/developer-tools', icon: Wrench },
+      { name: 'Earnings', to: '/developer/earnings', icon: DollarSign },
+      { name: 'Payouts', to: '/developer/payouts', icon: Wallet },
       { name: 'MCP Servers', to: '/dashboard/mcp-hosting', icon: Server },
       { name: 'ZeroDB', to: '/dashboard/zerodb', icon: Database },
       { name: 'API Sandbox', to: '/dashboard/api-sandbox', icon: Package },
@@ -190,7 +192,7 @@ export default function Sidebar({ isMobile = false, onClose }: SidebarProps) {
         >
           <div className="flex items-center justify-between mb-8">
             <div className="flex items-center gap-2">
-              <div className="bg-gradient-to-r from-primary to-[#FCAE39] w-8 h-8 rounded-full flex items-center justify-center">
+              <div className="bg-gradient-to-r from-primary to-accent w-8 h-8 rounded-full flex items-center justify-center">
                 <span className="text-white font-bold">A</span>
               </div>
               <Link href="/" className="text-lg font-bold hover:underline">
@@ -213,7 +215,7 @@ export default function Sidebar({ isMobile = false, onClose }: SidebarProps) {
 
   // Desktop sidebar
   return (
-    <aside className="w-72 bg-vite-bg border-r border-[#1C2128] h-[calc(100vh-64px)] sticky top-[64px] hidden md:flex flex-col overflow-y-auto p-5 text-white">
+    <aside className="w-72 bg-dark-1 border-r border-dark-3 h-[calc(100vh-64px)] sticky top-[64px] hidden md:flex flex-col overflow-y-auto p-5 text-white">
       {sidebarContent}
     </aside>
   );
