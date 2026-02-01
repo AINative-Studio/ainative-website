@@ -2,6 +2,9 @@
 // Learn more: https://github.com/testing-library/jest-dom
 import '@testing-library/jest-dom';
 
+// Load global CSS for design tokens
+import './app/globals.css';
+
 // MSW (Mock Service Worker) Setup for API Mocking
 // Note: MSW has ESM compatibility issues with Jest. Re-enable when resolved.
 // import { server, setupMockServer, resetMockHandlers } from './mocks/server';

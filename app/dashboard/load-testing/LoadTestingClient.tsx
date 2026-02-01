@@ -176,7 +176,7 @@ function ScenarioCard({
 }) {
   return (
     <motion.div variants={fadeUp}>
-      <Card className="border-none bg-[#161B22] shadow-lg overflow-hidden h-full hover:bg-[#1C2128] transition-colors">
+      <Card className="border-none bg-surface-secondary shadow-lg overflow-hidden h-full hover:bg-surface-accent transition-colors">
         <CardContent className="p-6">
           <div className="flex items-start justify-between mb-4">
             <div className="flex items-center gap-3">
@@ -200,7 +200,7 @@ function ScenarioCard({
               <span className="text-gray-300">{scenario.config.duration}s</span>
             </div>
           </div>
-          <div className="flex items-center justify-between pt-4 border-t border-gray-800">
+          <div className="flex items-center justify-between pt-4 border-t border-border">
             <span className="text-xs text-gray-500">
               Updated {new Date(scenario.updatedAt).toLocaleDateString()}
             </span>
@@ -232,7 +232,7 @@ function TestCard({
 }) {
   return (
     <motion.div variants={fadeUp}>
-      <Card className="border-none bg-[#161B22] shadow-lg overflow-hidden">
+      <Card className="border-none bg-surface-secondary shadow-lg overflow-hidden">
         <CardContent className="p-6">
           <div className="flex items-center justify-between mb-4">
             <div className="flex items-center gap-3">
@@ -272,7 +272,7 @@ function TestCard({
             </div>
           </div>
 
-          <div className="flex items-center gap-2 pt-4 border-t border-gray-800">
+          <div className="flex items-center gap-2 pt-4 border-t border-border">
             <Button
               size="sm"
               variant="outline"
@@ -320,8 +320,8 @@ function MetricsPanel({
       className="space-y-6"
     >
       {/* Performance Chart */}
-      <Card className="border-none bg-[#161B22] shadow-lg overflow-hidden">
-        <CardHeader className="border-b border-gray-800 flex flex-row items-center justify-between">
+      <Card className="border-none bg-surface-secondary shadow-lg overflow-hidden">
+        <CardHeader className="border-b border-border flex flex-row items-center justify-between">
           <CardTitle className="text-lg flex items-center gap-2 text-white">
             <TrendingUp className="h-5 w-5 text-[#4B6FED]" />
             Performance Metrics
@@ -374,8 +374,8 @@ function MetricsPanel({
       </Card>
 
       {/* Active Users Chart */}
-      <Card className="border-none bg-[#161B22] shadow-lg overflow-hidden">
-        <CardHeader className="border-b border-gray-800">
+      <Card className="border-none bg-surface-secondary shadow-lg overflow-hidden">
+        <CardHeader className="border-b border-border">
           <CardTitle className="text-lg flex items-center gap-2 text-white">
             <Users className="h-5 w-5 text-[#4B6FED]" />
             Active Users & Error Rate
@@ -415,8 +415,8 @@ function MetricsPanel({
       </Card>
 
       {/* Latency Distribution */}
-      <Card className="border-none bg-[#161B22] shadow-lg overflow-hidden">
-        <CardHeader className="border-b border-gray-800">
+      <Card className="border-none bg-surface-secondary shadow-lg overflow-hidden">
+        <CardHeader className="border-b border-border">
           <CardTitle className="text-lg flex items-center gap-2 text-white">
             <Activity className="h-5 w-5 text-[#4B6FED]" />
             Latency Distribution
@@ -592,7 +592,7 @@ export default function LoadTestingClient() {
 
       {/* Tabs */}
       <motion.div variants={fadeUp} className="mb-6">
-        <div className="flex gap-1 p-1 bg-[#161B22] rounded-lg w-fit">
+        <div className="flex gap-1 p-1 bg-surface-secondary rounded-lg w-fit">
           <button
             onClick={() => { setActiveTab('tests'); setSelectedMetrics(null); }}
             className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${
@@ -652,7 +652,7 @@ export default function LoadTestingClient() {
                 </div>
               ) : (
                 <motion.div variants={fadeUp}>
-                  <Card className="border-none bg-[#161B22] shadow-lg">
+                  <Card className="border-none bg-surface-secondary shadow-lg">
                     <CardContent className="py-12 text-center">
                       <Zap className="w-12 h-12 text-gray-600 mx-auto mb-4" />
                       <h3 className="text-lg font-medium text-white mb-2">No tests yet</h3>

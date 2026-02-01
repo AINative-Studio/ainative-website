@@ -9,20 +9,20 @@ const buttonVariants = cva(
   {
     variants: {
       variant: {
-        // Primary: Uses brand-primary token with shadow effects
-        default: "bg-brand-primary hover:bg-vite-primary-hover text-white shadow-lg hover:shadow-xl hover:shadow-brand-primary/20 transform hover:-translate-y-0.5",
+        // Primary: Adapts to light/dark mode using CSS variables
+        default: "bg-brand-primary hover:bg-vite-primary-hover text-white shadow-lg hover:shadow-xl hover:shadow-brand-primary/20 transform hover:-translate-y-0.5 dark:bg-brand-primary dark:hover:bg-vite-primary-hover",
         destructive:
           "bg-destructive text-destructive-foreground shadow-sm hover:bg-destructive/90",
-        // Outline: Uses design tokens for border and hover states
+        // Outline: Adapts border and text colors for light/dark mode
         outline:
-          "border-2 border-dark-2 hover:border-brand-primary/40 bg-transparent hover:bg-dark-3 text-white",
-        // Secondary: Uses vite-secondary token
+          "border-2 border-input hover:border-brand-primary/40 bg-transparent hover:bg-accent text-foreground dark:border-dark-2 dark:hover:bg-dark-3 dark:text-white",
+        // Secondary: Uses semantic color tokens
         secondary:
-          "bg-vite-secondary hover:bg-vite-secondary/80 text-white shadow-sm",
-        // Ghost: Uses dark-3 token for subtle hover
-        ghost: "hover:bg-dark-3 hover:text-white",
-        // Link: Uses brand-primary token for text
-        link: "text-brand-primary underline-offset-4 hover:underline",
+          "bg-secondary text-secondary-foreground shadow-sm hover:bg-secondary/80 dark:bg-vite-secondary dark:text-white dark:hover:bg-vite-secondary/80",
+        // Ghost: Subtle hover with semantic tokens
+        ghost: "hover:bg-accent hover:text-accent-foreground dark:hover:bg-dark-3 dark:hover:text-white",
+        // Link: Uses primary color for text
+        link: "text-primary underline-offset-4 hover:underline dark:text-brand-primary",
       },
       size: {
         default: "h-10 px-4 py-2",

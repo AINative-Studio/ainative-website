@@ -130,7 +130,7 @@ function StatusBadge({ status }: { status: MCPInstance['status'] }) {
 function ServerCard({ server, onDeploy }: { server: MCPServer; onDeploy: (server: MCPServer) => void }) {
   return (
     <motion.div variants={fadeUp}>
-      <Card className="border-none bg-[#161B22] shadow-lg overflow-hidden h-full hover:bg-[#1C2128] transition-colors">
+      <Card className="border-none bg-surface-secondary shadow-lg overflow-hidden h-full hover:bg-surface-accent transition-colors">
         <CardContent className="p-6">
           <div className="flex items-start justify-between mb-4">
             <div className="flex items-center gap-3">
@@ -159,7 +159,7 @@ function ServerCard({ server, onDeploy }: { server: MCPServer; onDeploy: (server
               </span>
             )}
           </div>
-          <div className="flex items-center justify-between pt-4 border-t border-gray-800">
+          <div className="flex items-center justify-between pt-4 border-t border-border">
             <span className="text-sm">
               {server.pricing.type === 'free' ? (
                 <span className="text-green-400">Free</span>
@@ -201,7 +201,7 @@ function InstanceCard({
 }) {
   return (
     <motion.div variants={fadeUp}>
-      <Card className="border-none bg-[#161B22] shadow-lg overflow-hidden">
+      <Card className="border-none bg-surface-secondary shadow-lg overflow-hidden">
         <CardContent className="p-6">
           <div className="flex items-center justify-between mb-4">
             <div className="flex items-center gap-3">
@@ -227,7 +227,7 @@ function InstanceCard({
             </div>
           </div>
 
-          <div className="flex items-center gap-2 pt-4 border-t border-gray-800">
+          <div className="flex items-center gap-2 pt-4 border-t border-border">
             <Button
               size="sm"
               variant="outline"
@@ -287,8 +287,8 @@ function LogsPanel({ logs, onClose }: { logs: MCPServerLog[]; onClose: () => voi
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: 20 }}
     >
-      <Card className="border-none bg-[#161B22] shadow-lg overflow-hidden">
-        <CardHeader className="border-b border-gray-800 flex flex-row items-center justify-between">
+      <Card className="border-none bg-surface-secondary shadow-lg overflow-hidden">
+        <CardHeader className="border-b border-border flex flex-row items-center justify-between">
           <CardTitle className="text-lg flex items-center gap-2 text-white">
             <Terminal className="h-5 w-5 text-[#4B6FED]" />
             Server Logs
@@ -308,7 +308,7 @@ function LogsPanel({ logs, onClose }: { logs: MCPServerLog[]; onClose: () => voi
               <div className="p-4 text-gray-500 text-center">No logs available</div>
             ) : (
               logs.map((log, i) => (
-                <div key={i} className="px-4 py-1.5 hover:bg-gray-800/50 border-b border-gray-800/50">
+                <div key={i} className="px-4 py-1.5 hover:bg-gray-800/50 border-b border-border/50">
                   <span className="text-gray-500 mr-2">
                     {new Date(log.timestamp).toLocaleTimeString()}
                   </span>
@@ -492,7 +492,7 @@ export default function MCPHostingClient() {
 
       {/* Tabs */}
       <motion.div variants={fadeUp} className="mb-6">
-        <div className="flex gap-1 p-1 bg-[#161B22] rounded-lg w-fit">
+        <div className="flex gap-1 p-1 bg-surface-secondary rounded-lg w-fit">
           <button
             onClick={() => setActiveTab('instances')}
             className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${
@@ -546,7 +546,7 @@ export default function MCPHostingClient() {
               </div>
             ) : (
               <motion.div variants={fadeUp}>
-                <Card className="border-none bg-[#161B22] shadow-lg">
+                <Card className="border-none bg-surface-secondary shadow-lg">
                   <CardContent className="py-12 text-center">
                     <Server className="w-12 h-12 text-gray-600 mx-auto mb-4" />
                     <h3 className="text-lg font-medium text-white mb-2">No servers deployed</h3>

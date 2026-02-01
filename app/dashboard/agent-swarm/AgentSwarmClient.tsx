@@ -31,7 +31,7 @@ import { rlhfService } from '@/lib/rlhf-service';
 // Project Card Component
 const ProjectCard = ({ project }: { project: AgentSwarmProject }) => {
   return (
-    <Card className="bg-[#161B22] border-gray-800">
+    <Card className="bg-surface-secondary border-border">
       <CardContent className="p-6">
         <div className="flex items-center justify-between mb-4">
           <div>
@@ -66,7 +66,7 @@ const ProjectCard = ({ project }: { project: AgentSwarmProject }) => {
             {project.agents.map((agent, index) => (
               <div
                 key={index}
-                className="p-3 bg-vite-bg rounded-lg border border-gray-800"
+                className="p-3 bg-vite-bg rounded-lg border border-border"
               >
                 <div className="flex items-center gap-2 mb-2">
                   {agent.status === 'working' && (
@@ -248,7 +248,7 @@ export default function AgentSwarmClient() {
         transition={{ delay: 0.1 }}
         className="mb-8"
       >
-        <Card className="bg-[#161B22] border-gray-800">
+        <Card className="bg-surface-secondary border-border">
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <Sparkles className="w-5 h-5 text-primary" />
@@ -357,7 +357,7 @@ export default function AgentSwarmClient() {
       >
         <h2 className="text-2xl font-bold mb-4">Active Projects</h2>
         {activeProjects.length === 0 ? (
-          <Card className="bg-[#161B22] border-gray-800">
+          <Card className="bg-surface-secondary border-border">
             <CardContent className="py-12 text-center">
               <GitBranch className="w-12 h-12 mx-auto mb-4 text-gray-600" />
               <p className="text-lg text-gray-400 mb-2">No active projects</p>

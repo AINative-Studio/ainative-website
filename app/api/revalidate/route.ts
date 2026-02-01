@@ -64,9 +64,6 @@ export async function POST(request: NextRequest) {
     } else if (path) {
       // Revalidate by path
       result = await revalidateByPath(path);
-    } else if (type && slug) {
-      // Revalidate specific content item
-      result = await revalidateContent(type, slug);
     } else if (type === 'all') {
       // Revalidate all content
       result = await revalidateAllContent();
@@ -79,6 +76,9 @@ export async function POST(request: NextRequest) {
     } else if (type === 'home') {
       // Revalidate home page
       result = await revalidateHome();
+    } else if (type && slug && (type === 'blog' || type === 'tutorial' || type === 'webinar' || type === 'video' || type === 'showcase')) {
+      // Revalidate specific content item
+      result = await revalidateContent(type, slug);
     } else if (type === 'blog') {
       // Revalidate all blog posts
       result = await revalidateBlogPosts();

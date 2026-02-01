@@ -217,7 +217,7 @@ export default function QNNDashboardClient() {
         className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6"
       >
         <motion.div variants={fadeUp}>
-          <Card className="bg-[#161B22] border-[#2D333B]">
+          <Card className="bg-surface-secondary border-border">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium">Total Models</CardTitle>
               <Layers className="h-4 w-4 text-[#4B6FED]" />
@@ -232,7 +232,7 @@ export default function QNNDashboardClient() {
         </motion.div>
 
         <motion.div variants={fadeUp}>
-          <Card className="bg-[#161B22] border-[#2D333B]">
+          <Card className="bg-surface-secondary border-border">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium">Active Training</CardTitle>
               <Activity className="h-4 w-4 text-[#4B6FED]" />
@@ -249,7 +249,7 @@ export default function QNNDashboardClient() {
         </motion.div>
 
         <motion.div variants={fadeUp}>
-          <Card className="bg-[#161B22] border-[#2D333B]">
+          <Card className="bg-surface-secondary border-border">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium">Quantum Fidelity</CardTitle>
               <Zap className="h-4 w-4 text-[#4B6FED]" />
@@ -264,7 +264,7 @@ export default function QNNDashboardClient() {
         </motion.div>
 
         <motion.div variants={fadeUp}>
-          <Card className="bg-[#161B22] border-[#2D333B]">
+          <Card className="bg-surface-secondary border-border">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium">Avg. Accuracy</CardTitle>
               <BarChart2 className="h-4 w-4 text-[#4B6FED]" />
@@ -289,7 +289,7 @@ export default function QNNDashboardClient() {
           animate="visible"
           variants={fadeUp}
         >
-          <Card className="bg-[#161B22] border-[#2D333B]">
+          <Card className="bg-surface-secondary border-border">
             <CardHeader>
               <div className="flex items-center justify-between">
                 <div>
@@ -312,7 +312,7 @@ export default function QNNDashboardClient() {
                 {models.map((model) => (
                   <div
                     key={model.id}
-                    className="flex items-center justify-between p-3 bg-vite-bg rounded-lg border border-[#2D333B]"
+                    className="flex items-center justify-between p-3 bg-vite-bg rounded-lg border border-border"
                   >
                     <div className="flex-1">
                       <div className="flex items-center gap-2">
@@ -346,7 +346,7 @@ export default function QNNDashboardClient() {
           animate="visible"
           variants={fadeUp}
         >
-          <Card className="bg-[#161B22] border-[#2D333B]">
+          <Card className="bg-surface-secondary border-border">
             <CardHeader>
               <div className="flex items-center justify-between">
                 <div>
@@ -367,7 +367,7 @@ export default function QNNDashboardClient() {
                 {trainingJobs.map((job) => (
                   <div
                     key={job.id}
-                    className="p-3 bg-vite-bg rounded-lg border border-[#2D333B]"
+                    className="p-3 bg-vite-bg rounded-lg border border-border"
                   >
                     <div className="flex items-center justify-between mb-2">
                       <div className="flex items-center gap-2">
@@ -423,7 +423,7 @@ export default function QNNDashboardClient() {
         animate="visible"
         variants={fadeUp}
       >
-        <Card className="bg-[#161B22] border-[#2D333B]">
+        <Card className="bg-surface-secondary border-border">
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <Zap className="h-5 w-5" />

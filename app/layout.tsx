@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono, Poppins } from "next/font/google";
 import { QueryProvider } from "@/components/providers/QueryProvider";
+import { ThemeProvider } from "@/components/providers/ThemeProvider";
 import SessionProvider from "@/components/providers/session-provider";
 import ConditionalLayout from "@/components/layout/ConditionalLayout";
 import GoogleTagManager, { GoogleTagManagerNoscript } from "@/components/analytics/GoogleTagManager";
@@ -201,7 +202,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className="dark">
+    <html lang="en" suppressHydrationWarning>
       <head>
         {/* Google Analytics 4 (GA4) - Primary Analytics */}
         <GoogleAnalytics />
@@ -213,23 +214,30 @@ export default function RootLayout({
         <StructuredData />
       </head>
       <body
-        className={`${poppins.variable} ${geistSans.variable} ${geistMono.variable} font-sans antialiased bg-vite-bg text-white`}
+        className={`${poppins.variable} ${geistSans.variable} ${geistMono.variable} font-sans antialiased bg-background text-foreground`}
       >
         {/* GTM noscript fallback */}
         <GoogleTagManagerNoscript />
 
-        <SessionProvider>
-          <QueryProvider>
-            <ConditionalLayout>
-              <main className="min-h-screen">{children}</main>
-            </ConditionalLayout>
-          </QueryProvider>
-        </SessionProvider>
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="dark"
+          enableSystem
+          disableTransitionOnChange
+        >
+          <SessionProvider>
+            <QueryProvider>
+              <ConditionalLayout>
+                <main className="min-h-screen">{children}</main>
+              </ConditionalLayout>
+            </QueryProvider>
+          </SessionProvider>
 
-        {/* Analytics & Support Widgets */}
-        <ChatwootWidget />
-        <SpeedInsights />
-        <WebVitalsMonitor />
+          {/* Analytics & Support Widgets */}
+          <ChatwootWidget />
+          <SpeedInsights />
+          <WebVitalsMonitor />
+        </ThemeProvider>
       </body>
     </html>
   );

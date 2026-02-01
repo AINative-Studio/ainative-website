@@ -65,7 +65,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
   };
 
   return (
-    <div className="min-h-screen bg-vite-bg text-white flex flex-col">
+    <div className="min-h-screen bg-vite-bg text-white flex flex-col" data-testid="dashboard-layout">
       {/* Header */}
       <div className="relative">
         {/* Desktop Header */}
@@ -91,13 +91,15 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
 
       {/* Mobile Sidebar */}
       {sidebarOpen && (
-        <Sidebar isMobile onClose={() => setSidebarOpen(false)} />
+        <div data-testid="mobile-sidebar">
+          <Sidebar isMobile onClose={() => setSidebarOpen(false)} />
+        </div>
       )}
 
       {/* Layout Body */}
       <div className="flex flex-1 pt-16 md:pt-20">
         {/* Desktop Sidebar */}
-        <div className="hidden md:block fixed left-0 top-0 h-full z-20">
+        <div className="hidden md:block fixed left-0 top-0 h-full z-20" data-testid="desktop-sidebar">
           <Sidebar />
         </div>
 

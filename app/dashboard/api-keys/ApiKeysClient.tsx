@@ -27,7 +27,7 @@ const Dialog = ({
       onClick={() => onClose()}
     >
       <div
-        className="bg-[#161B22] border border-[#1E262F] rounded-lg p-6 w-full max-w-md"
+        className="bg-surface-secondary border border-border rounded-lg p-6 w-full max-w-md"
         onClick={e => e.stopPropagation()}
       >
         <button
@@ -202,7 +202,7 @@ const ApiKeysClient: React.FC = () => {
                     placeholder="e.g. Production API Key"
                     value={newKeyName}
                     onChange={(e) => setNewKeyName(e.target.value)}
-                    className="bg-vite-bg border-[#1E262F] text-white"
+                    className="bg-vite-bg border-border text-white"
                     fullWidth
                   />
                 </div>
@@ -260,7 +260,7 @@ const ApiKeysClient: React.FC = () => {
         </div>
       </div>
 
-      <Card className="bg-[#161B22] border-[#1E262F]">
+      <Card className="bg-surface-secondary border-border">
         <CardHeader>
           <CardTitle className="text-white">Your API Keys</CardTitle>
           <CardDescription>
@@ -274,7 +274,7 @@ const ApiKeysClient: React.FC = () => {
                 key={apiKey.id}
                 className={`p-4 border rounded-md ${
                   apiKey.status === 'active'
-                    ? 'border-[#1E262F] bg-vite-bg'
+                    ? 'border-border bg-vite-bg'
                     : 'border-gray-700 bg-gray-900/50'
                 }`}
               >
@@ -401,7 +401,7 @@ const ApiKeysClient: React.FC = () => {
         </CardContent>
       </Card>
 
-      <div className="mt-8 p-6 bg-[#161B22] border border-[#1E262F] rounded-lg">
+      <div className="mt-8 p-6 bg-surface-secondary border border-border rounded-lg">
         <h3 className="text-lg font-medium text-white mb-4">API Key Security</h3>
         <ul className="space-y-2 text-gray-400">
           <li className="flex items-start gap-2">

@@ -144,7 +144,7 @@ export default function UsageClient() {
         className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6"
       >
         <motion.div variants={fadeUp}>
-          <Card className="bg-[#161B22] border-[#2D333B]">
+          <Card className="bg-surface-secondary border-border">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium">Credits Used</CardTitle>
               <Zap className="h-4 w-4 text-[#4B6FED]" />
@@ -162,7 +162,7 @@ export default function UsageClient() {
         </motion.div>
 
         <motion.div variants={fadeUp}>
-          <Card className="bg-[#161B22] border-[#2D333B]">
+          <Card className="bg-surface-secondary border-border">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium">API Calls</CardTitle>
               <BarChart2 className="h-4 w-4 text-[#4B6FED]" />
@@ -183,7 +183,7 @@ export default function UsageClient() {
         </motion.div>
 
         <motion.div variants={fadeUp}>
-          <Card className="bg-[#161B22] border-[#2D333B]">
+          <Card className="bg-surface-secondary border-border">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium">Storage</CardTitle>
               <BarChart2 className="h-4 w-4 text-[#4B6FED]" />
@@ -201,7 +201,7 @@ export default function UsageClient() {
         </motion.div>
 
         <motion.div variants={fadeUp}>
-          <Card className="bg-[#161B22] border-[#2D333B]">
+          <Card className="bg-surface-secondary border-border">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium">Monthly Spend</CardTitle>
               <CreditCard className="h-4 w-4 text-[#4B6FED]" />
@@ -226,7 +226,7 @@ export default function UsageClient() {
         animate="visible"
         variants={fadeUp}
       >
-        <Card className="bg-[#161B22] border-[#2D333B]">
+        <Card className="bg-surface-secondary border-border">
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <Zap className="h-5 w-5" />
@@ -273,7 +273,7 @@ export default function UsageClient() {
                 </div>
               </div>
 
-              <div className="pt-4 border-t border-[#2D333B]">
+              <div className="pt-4 border-t border-border">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2">
                     <Calendar className="h-4 w-4 text-muted-foreground" />
