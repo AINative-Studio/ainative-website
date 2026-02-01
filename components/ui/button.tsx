@@ -9,17 +9,20 @@ const buttonVariants = cva(
   {
     variants: {
       variant: {
-        // Primary: Vite-aligned with shadow effects
-        default: "bg-[#4B6FED] hover:bg-[#3A56D3] text-white shadow-lg hover:shadow-xl hover:shadow-[#4B6FED]/20 transform hover:-translate-y-0.5",
+        // Primary: Uses brand-primary token with shadow effects
+        default: "bg-brand-primary hover:bg-vite-primary-hover text-white shadow-lg hover:shadow-xl hover:shadow-brand-primary/20 transform hover:-translate-y-0.5",
         destructive:
           "bg-destructive text-destructive-foreground shadow-sm hover:bg-destructive/90",
-        // Outline: Vite-aligned with border effects
+        // Outline: Uses design tokens for border and hover states
         outline:
-          "border-2 border-[#2D3748] hover:border-[#4B6FED]/40 bg-transparent hover:bg-[#4B6FED]/5 text-white",
+          "border-2 border-dark-2 hover:border-brand-primary/40 bg-transparent hover:bg-dark-3 text-white",
+        // Secondary: Uses vite-secondary token
         secondary:
-          "bg-[#8A63F4] hover:bg-[#7A53E4] text-white shadow-sm",
-        ghost: "hover:bg-[#4B6FED]/10 hover:text-white",
-        link: "text-[#4B6FED] underline-offset-4 hover:underline",
+          "bg-vite-secondary hover:bg-vite-secondary/80 text-white shadow-sm",
+        // Ghost: Uses dark-3 token for subtle hover
+        ghost: "hover:bg-dark-3 hover:text-white",
+        // Link: Uses brand-primary token for text
+        link: "text-brand-primary underline-offset-4 hover:underline",
       },
       size: {
         default: "h-10 px-4 py-2",

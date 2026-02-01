@@ -13,11 +13,11 @@ export const ButtonCustom = React.forwardRef<HTMLButtonElement, ButtonCustomProp
     return (
       <button
         className={cn(
-          "inline-flex items-center justify-center rounded-lg font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50",
+          "inline-flex items-center justify-center rounded-lg font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50",
           {
             'bg-primary text-white hover:bg-primary/90 active:bg-primary/95': variant === 'primary',
-            'border-2 border-[#374151] bg-transparent hover:bg-[#1f2937] text-[#e5e7eb]': variant === 'outline',
-            'bg-transparent hover:bg-[#1f2937] text-[#e5e7eb]': variant === 'ghost',
+            'border-2 border-dark-2 bg-transparent hover:bg-dark-3 text-foreground dark:text-white': variant === 'outline',
+            'bg-transparent hover:bg-dark-3 text-foreground dark:text-white': variant === 'ghost',
             'text-sm px-3 py-1.5 h-8': size === 'sm',
             'text-base px-4 py-2 h-10': size === 'md',
             'text-lg px-6 py-3 h-12': size === 'lg',
