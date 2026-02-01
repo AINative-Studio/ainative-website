@@ -234,7 +234,7 @@ export default function DesignSystemShowcaseClient() {
             transition={{ duration: 0.6 }}
             className="text-center space-y-8 max-w-5xl mx-auto"
           >
-            <GradientText variant="rainbow" size="5xl" as="h1" animated className="font-bold leading-tight">
+            <GradientText variant="rainbow" size="display-2" as="h1" animated className="font-bold leading-tight">
               Build Stunning AI-Native Interfaces
             </GradientText>
 
@@ -276,7 +276,7 @@ export default function DesignSystemShowcaseClient() {
         <div className="container mx-auto px-6">
           <div className="max-w-5xl mx-auto">
             <div className="text-center space-y-4 mb-12">
-              <GradientText variant="primary" size="3xl" as="h2" className="font-bold">
+              <GradientText variant="primary" size="display-3" as="h2" className="font-bold">
                 AINative Design MCP Server
               </GradientText>
               <p className="text-xl text-gray-400 max-w-3xl mx-auto">
@@ -348,7 +348,7 @@ export default function DesignSystemShowcaseClient() {
       <section className="py-20 bg-vite-bg">
         <div className="container mx-auto px-6">
           <div className="text-center space-y-4 mb-12">
-            <GradientText variant="secondary" size="3xl" as="h2" className="font-bold">
+            <GradientText variant="secondary" size="display-3" as="h2" className="font-bold">
               AI Kit - 14 Production-Ready Packages
             </GradientText>
             <p className="text-xl text-gray-400 max-w-3xl mx-auto">
@@ -447,7 +447,7 @@ export default function DesignSystemShowcaseClient() {
         <div className="container mx-auto px-6">
           <div className="max-w-7xl mx-auto">
             <div className="text-center space-y-4 mb-12">
-              <GradientText variant="rainbow" size="3xl" as="h2" className="font-bold">
+              <GradientText variant="rainbow" size="display-3" as="h2" className="font-bold">
                 Complete Component Library
               </GradientText>
               <p className="text-xl text-gray-400 max-w-3xl mx-auto">
@@ -881,9 +881,9 @@ export default function DesignSystemShowcaseClient() {
                     <CardDescription>Animated gradient text effects</CardDescription>
                   </CardHeader>
                   <CardContent className="space-y-6 text-center">
-                    <GradientText variant="primary" size="3xl">Primary Gradient</GradientText>
-                    <GradientText variant="secondary" size="3xl">Secondary Gradient</GradientText>
-                    <GradientText variant="rainbow" size="3xl" animated>Animated Rainbow</GradientText>
+                    <GradientText variant="primary" size="title-1">Primary Gradient</GradientText>
+                    <GradientText variant="secondary" size="title-1">Secondary Gradient</GradientText>
+                    <GradientText variant="rainbow" size="title-1" animated>Animated Rainbow</GradientText>
                   </CardContent>
                 </Card>
 
@@ -928,7 +928,7 @@ export default function DesignSystemShowcaseClient() {
         <div className="container mx-auto px-6">
           <div className="max-w-6xl mx-auto">
             <div className="text-center space-y-4 mb-12">
-              <GradientText variant="accent" size="3xl" as="h2" className="font-bold">
+              <GradientText variant="accent" size="display-3" as="h2" className="font-bold">
                 Copy-Paste Ready Examples
               </GradientText>
               <p className="text-xl text-gray-400 max-w-3xl mx-auto">
@@ -978,7 +978,7 @@ export default function DesignSystemShowcaseClient() {
         <div className="container mx-auto px-6">
           <GradientBorder variant="rainbow" borderWidth="2" className="max-w-4xl mx-auto">
             <div className="bg-vite-bg p-12 text-center space-y-6">
-              <GradientText variant="rainbow" size="4xl" as="h2" className="font-bold">
+              <GradientText variant="rainbow" size="display-3" as="h2" className="font-bold">
                 Ready to Build?
               </GradientText>
               <p className="text-xl text-gray-400 max-w-2xl mx-auto">
