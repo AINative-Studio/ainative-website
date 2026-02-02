@@ -32,10 +32,9 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
   // Auto-close sidebar on route change in mobile view
   useEffect(() => {
     if (isMobile) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect -- Intentional: close sidebar on route/mobile changes
       setSidebarOpen(false);
     }
-  // Intentionally calling setState on route/mobile changes
-   
   }, [pathname, isMobile]);
 
   // Close if clicking outside on mobile
@@ -110,7 +109,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
       </div>
 
       {/* Footer with offset for sidebar on desktop */}
-      <div className="md:ml-72">
+      <div className="md:ml-72" data-testid="dashboard-footer-wrapper">
         <Footer />
       </div>
     </div>
