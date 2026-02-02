@@ -11,6 +11,7 @@ import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { aiRegistryService, RegisterModelData } from '@/lib/ai-registry-service';
 import { Brain, Plus, Star, CheckCircle2, Settings, Zap, Eye } from 'lucide-react';
+import { toast } from 'sonner';
 
 const fadeUp = {
   hidden: { opacity: 0, y: 20 },
@@ -57,10 +58,15 @@ export default function AISettingsClient() {
   // Register model mutation
   const registerMutation = useMutation({
     mutationFn: (data: RegisterModelData) => aiRegistryService.registerModel(data),
-    onSuccess: () => {
+    onSuccess: (newModel) => {
       queryClient.invalidateQueries({ queryKey: ['ai-models'] });
       setIsRegisterDialogOpen(false);
       resetForm();
+      toast.success(`Model "${newModel.name}" registered successfully`);
+    },
+    onError: (error: Error) => {
+      console.error('Failed to register model:', error);
+      toast.error(error.message || 'Failed to register model. Please try again.');
     },
   });
 
@@ -69,6 +75,11 @@ export default function AISettingsClient() {
     mutationFn: (modelId: number) => aiRegistryService.switchDefaultModel(modelId),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['ai-models'] });
+      toast.success('Default model updated successfully');
+    },
+    onError: (error: Error) => {
+      console.error('Failed to switch default model:', error);
+      toast.error(error.message || 'Failed to update default model. Please try again.');
     },
   });
 

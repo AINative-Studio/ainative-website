@@ -154,6 +154,34 @@ export interface MultiModelInferenceResponse {
 }
 
 /**
+ * Default models for fallback when API is unavailable
+ */
+const DEFAULT_MODELS: AIModel[] = [
+  {
+    id: 1,
+    name: 'GPT-4 Turbo',
+    provider: 'openai',
+    model_identifier: 'gpt-4-turbo-preview',
+    capabilities: ['text-generation', 'reasoning', 'code'],
+    is_default: true,
+    max_tokens: 128000,
+    created_at: new Date().toISOString(),
+    usage_count: 0,
+  },
+  {
+    id: 2,
+    name: 'Claude 3 Opus',
+    provider: 'anthropic',
+    model_identifier: 'claude-3-opus-20240229',
+    capabilities: ['text-generation', 'reasoning', 'vision', 'code'],
+    is_default: false,
+    max_tokens: 200000,
+    created_at: new Date().toISOString(),
+    usage_count: 0,
+  },
+];
+
+/**
  * AI Registry Service class
  */
 class AIRegistryService {
@@ -161,37 +189,69 @@ class AIRegistryService {
 
   /**
    * List all registered AI models
+   * Returns default models if API is unavailable
    */
   async listModels(): Promise<ModelsResponse> {
-    const response = await apiClient.get<ModelsResponse>('/v1/public/multi-model/models');
-    return response.data;
+    try {
+      const response = await apiClient.get<ModelsResponse>('/v1/public/multi-model/models');
+      return response.data;
+    } catch (error) {
+      console.warn('Failed to fetch AI models, using defaults:', error);
+      return { models: DEFAULT_MODELS, total: DEFAULT_MODELS.length };
+    }
   }
 
   /**
    * Register a new AI model
+   * Throws descriptive error on failure
    */
   async registerModel(data: RegisterModelData): Promise<AIModel> {
-    const response = await apiClient.post<AIModel>('/v1/public/multi-model/models', data);
-    return response.data;
+    try {
+      const response = await apiClient.post<AIModel>('/v1/public/multi-model/models', data);
+      return response.data;
+    } catch (error) {
+      console.error('Failed to register AI model:', error);
+      // Extract meaningful error message
+      const errorMessage = error instanceof Error
+        ? error.message
+        : 'Failed to register model. Please check your connection and try again.';
+      throw new Error(errorMessage);
+    }
   }
 
   /**
    * Get model details by ID
    */
   async getModelDetails(id: number): Promise<AIModel> {
-    const response = await apiClient.get<AIModel>(`/v1/public/multi-model/models/${id}`);
-    return response.data;
+    try {
+      const response = await apiClient.get<AIModel>(`/v1/public/multi-model/models/${id}`);
+      return response.data;
+    } catch (error) {
+      console.error(`Failed to fetch model ${id}:`, error);
+      // Return default model as fallback
+      const defaultModel = DEFAULT_MODELS.find(m => m.id === id) || DEFAULT_MODELS[0];
+      return defaultModel;
+    }
   }
 
   /**
    * Switch the default AI model
+   * Throws descriptive error on failure
    */
   async switchDefaultModel(id: number): Promise<SwitchModelResponse> {
-    const response = await apiClient.post<SwitchModelResponse>(
-      `/v1/public/multi-model/models/${id}/switch`,
-      {}
-    );
-    return response.data;
+    try {
+      const response = await apiClient.post<SwitchModelResponse>(
+        `/v1/public/multi-model/models/${id}/switch`,
+        {}
+      );
+      return response.data;
+    } catch (error) {
+      console.error('Failed to switch default model:', error);
+      const errorMessage = error instanceof Error
+        ? error.message
+        : 'Failed to update default model. Please try again.';
+      throw new Error(errorMessage);
+    }
   }
 
   // ===== Usage Analytics Endpoints =====
