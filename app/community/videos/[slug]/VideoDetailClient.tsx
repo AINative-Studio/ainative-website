@@ -329,7 +329,7 @@ export default function VideoDetailClient({ slug }: VideoDetailClientProps) {
 
   return (
     <div className="min-h-screen bg-vite-bg">
-      <div className="max-w-7xl mx-auto px-4 py-8">
+      <div className="max-w-7xl mx-auto px-4 pt-24 pb-8">
         {/* Back Button */}
         <Link
           href="/community/videos"
