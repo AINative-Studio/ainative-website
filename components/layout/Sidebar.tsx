@@ -2,6 +2,7 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import { signOut } from 'next-auth/react';
 import {
   BarChart2, CreditCard, LogOut, Settings, User,
   Bell, Repeat, FileText, Sliders, X,
@@ -97,8 +98,9 @@ export default function Sidebar({ isMobile = false, onClose }: SidebarProps) {
   };
 
   const handleLogout = () => {
+    // Clear localStorage and sign out via NextAuth
     localStorage.clear();
-    window.location.href = '/login';
+    signOut({ callbackUrl: '/login' });
   };
 
   const sidebarContent = (
