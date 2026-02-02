@@ -21,6 +21,7 @@ import {
   Maximize,
   Video as VideoIcon,
 } from 'lucide-react';
+import { VideoPlayer } from '@/components/video/VideoPlayer';
 
 interface Video {
   id: number;
@@ -350,69 +351,21 @@ export default function VideoDetailClient({ slug }: VideoDetailClientProps) {
               className="mb-6"
             >
               <div className="relative aspect-video bg-[#161B22] rounded-lg overflow-hidden border border-[#2D333B]">
-                {/* Video placeholder - in production would use actual video */}
-                <div className="absolute inset-0 bg-gradient-to-br from-[#4B6FED]/20 to-[#8A63F4]/20 flex items-center justify-center">
-                  <VideoIcon className="w-24 h-24 text-[#4B6FED]/50" />
-                </div>
-
-                {/* Play overlay */}
-                <button
-                  onClick={togglePlay}
-                  className="absolute inset-0 flex items-center justify-center group"
-                >
-                  <div className="w-20 h-20 rounded-full bg-[#4B6FED]/80 flex items-center justify-center group-hover:bg-[#4B6FED] transition-colors">
-                    {isPlaying ? (
-                      <Pause className="w-10 h-10 text-white" />
-                    ) : (
-                      <Play className="w-10 h-10 text-white ml-1" />
-                    )}
-                  </div>
-                </button>
-
-                {/* Controls bar */}
-                <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 to-transparent p-4">
-                  {/* Progress bar */}
-                  <div className="w-full h-1 bg-[#2D333B] rounded-full mb-3">
-                    <div
-                      className="h-full bg-[#4B6FED] rounded-full"
-                      style={{ width: `${progress}%` }}
-                    />
-                  </div>
-
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-3">
-                      <button
-                        onClick={togglePlay}
-                        className="text-white hover:text-[#8AB4FF]"
-                      >
-                        {isPlaying ? (
-                          <Pause className="w-5 h-5" />
-                        ) : (
-                          <Play className="w-5 h-5" />
-                        )}
-                      </button>
-                      <button
-                        onClick={toggleMute}
-                        className="text-white hover:text-[#8AB4FF]"
-                      >
-                        {isMuted ? (
-                          <VolumeX className="w-5 h-5" />
-                        ) : (
-                          <Volume2 className="w-5 h-5" />
-                        )}
-                      </button>
-                      <span className="text-white text-sm">
-                        0:00 / {formatDuration(video.duration)}
-                      </span>
-                    </div>
-                    <button
-                      onClick={handleFullscreen}
-                      className="text-white hover:text-[#8AB4FF]"
-                    >
-                      <Maximize className="w-5 h-5" />
-                    </button>
-                  </div>
-                </div>
+                <VideoPlayer
+                  src={video.video_url}
+                  poster={video.poster_url}
+                  videoId={video.documentId}
+                  autoplay={false}
+                  controls={true}
+                  className="w-full h-full"
+                  onPlay={() => setIsPlaying(true)}
+                  onPause={() => setIsPlaying(false)}
+                  onTimeUpdate={(time) => {
+                    if (video.duration > 0) {
+                      setProgress((time / video.duration) * 100);
+                    }
+                  }}
+                />
               </div>
             </motion.div>
 
