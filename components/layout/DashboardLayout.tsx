@@ -97,22 +97,20 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
       )}
 
       {/* Layout Body */}
-      <div className="flex flex-1 pt-16 md:pt-20">
+      <div className="flex flex-1 pt-16 md:pt-0">
         {/* Desktop Sidebar */}
-        <div className="hidden md:block fixed left-0 top-0 h-full z-20" data-testid="desktop-sidebar">
+        <div className="hidden md:block" data-testid="desktop-sidebar">
           <Sidebar />
         </div>
 
         {/* Main Content */}
-        <main className="flex-1 p-4 md:p-6 overflow-y-auto w-full md:ml-72">
-          <div className="max-w-7xl mx-auto">{children}</div>
+        <main className="flex-1 p-4 md:p-8 lg:p-10 overflow-y-auto w-full">
+          <div className="max-w-7xl mx-auto space-y-6">{children}</div>
         </main>
       </div>
 
-      {/* Footer with offset for sidebar on desktop */}
-      <div className="md:ml-72">
-        <Footer />
-      </div>
+      {/* Footer - no sidebar offset needed with flex layout */}
+      <Footer />
     </div>
   );
 }
