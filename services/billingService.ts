@@ -194,24 +194,34 @@ export class BillingService {
   // ==========================================================================
 
   /**
-   * Get billing information including payment methods and balances
+   * Default billing info for fallback
    */
-  async getBillingInfo(): Promise<BillingInfo | null> {
+  private defaultBillingInfo: BillingInfo = {
+    payment_methods: [],
+    balance: 0,
+    credit_balance: 0,
+    status: 'active',
+  };
+
+  /**
+   * Get billing information including payment methods and balances
+   * Returns default info if API fails to ensure page doesn't break
+   */
+  async getBillingInfo(): Promise<BillingInfo> {
     try {
       const response = await apiClient.get<ApiResponse<BillingInfo>>(
         `${this.billingBasePath}/info`
       );
 
       if (!response.data.success || !response.data.data) {
-        throw new Error(response.data.message || 'Failed to fetch billing info');
+        console.warn('Billing info API returned empty, using defaults');
+        return this.defaultBillingInfo;
       }
 
       return response.data.data;
     } catch (error: unknown) {
-      const errorMessage =
-        error instanceof Error ? error.message : 'Failed to fetch billing info';
-      console.error('Error fetching billing info:', errorMessage);
-      throw new Error(errorMessage);
+      console.warn('Error fetching billing info, using defaults:', error);
+      return this.defaultBillingInfo;
     }
   }
 
