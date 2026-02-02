@@ -74,8 +74,8 @@ export class ApiKeyService {
 
   /**
    * Get all API keys for the current user
+   * Returns empty array if API fails to ensure page doesn't break
    * @returns Promise resolving to an array of API keys
-   * @throws Error if the request fails or returns unsuccessful
    */
   async listApiKeys(): Promise<ApiKey[]> {
     try {
@@ -84,13 +84,14 @@ export class ApiKeyService {
       );
 
       if (!response.data.success || !response.data.data?.keys) {
-        throw new Error(response.data.message || 'Failed to fetch API keys');
+        console.warn('API keys endpoint returned empty, returning empty array');
+        return [];
       }
 
       return response.data.data.keys;
     } catch (error) {
-      console.error('Error fetching API keys:', error);
-      throw error;
+      console.warn('Error fetching API keys, returning empty array:', error);
+      return [];
     }
   }
 
