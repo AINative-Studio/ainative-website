@@ -170,6 +170,7 @@ export class SubscriptionService {
 
   /**
    * Get current subscription details
+   * Returns null if no subscription found to allow graceful handling
    */
   async getCurrentSubscription(): Promise<Subscription | null> {
     try {
@@ -178,13 +179,14 @@ export class SubscriptionService {
       );
 
       if (!response.data.success || !response.data.data?.subscription) {
-        throw new Error(response.data.message || 'No subscription found');
+        console.warn('No subscription found or API returned empty');
+        return null;
       }
 
       return response.data.data.subscription;
     } catch (error) {
-      console.error('Error fetching subscription:', error);
-      throw error;
+      console.warn('Error fetching subscription:', error);
+      return null;
     }
   }
 
@@ -463,14 +465,29 @@ export class SubscriptionService {
   }
 
   /**
+   * Default plan info for users without subscription
+   */
+  private defaultPlanInfo: CurrentPlanInfo = {
+    id: 'free',
+    name: 'Free Plan',
+    price: 0,
+    currency: 'USD',
+    status: 'active',
+    current_period_end: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(),
+    features: ['Basic access', 'Limited API calls']
+  };
+
+  /**
    * Get current plan details in a format suitable for the UI
+   * Returns default free plan if no subscription found
    */
   async getCurrentPlan(): Promise<CurrentPlanInfo> {
     try {
       const subscription = await this.getCurrentSubscription();
 
       if (!subscription) {
-        throw new Error('No subscription found');
+        console.warn('No subscription found, returning default free plan');
+        return this.defaultPlanInfo;
       }
 
       return {
@@ -483,8 +500,8 @@ export class SubscriptionService {
         features: subscription.plan.features || []
       };
     } catch (error) {
-      console.error('Error getting current plan:', error);
-      throw error;
+      console.warn('Error getting current plan, returning default:', error);
+      return this.defaultPlanInfo;
     }
   }
 
