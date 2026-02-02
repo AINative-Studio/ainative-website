@@ -136,45 +136,57 @@ export const env = clientEnvSchema.parse({
  * Validated server-side environment variables.
  * Only use in API routes, server components, or server actions.
  * These will throw if accessed on the client side.
+ *
+ * Uses lazy-loading via Proxy to prevent crashes when the module
+ * is imported in client components that only use `env`.
  */
-export const serverEnv = (() => {
-  // Only parse server env on the server side
-  if (typeof window !== "undefined") {
-    throw new Error(
-      "serverEnv should only be used on the server side. " +
-      "Use `env` for client-side environment variables."
-    );
-  }
+let _serverEnv: z.infer<typeof serverEnvSchema> | null = null;
 
-  return serverEnvSchema.parse({
-    STRIPE_SECRET_KEY: process.env.STRIPE_SECRET_KEY,
-    STRIPE_WEBHOOK_SECRET: process.env.STRIPE_WEBHOOK_SECRET,
-    DATABASE_URL: process.env.DATABASE_URL,
-    DATABASE_POOL_SIZE: process.env.DATABASE_POOL_SIZE,
-    REDIS_URL: process.env.REDIS_URL,
-    GITHUB_CLIENT_SECRET: process.env.GITHUB_CLIENT_SECRET,
-    JWT_SECRET: process.env.JWT_SECRET,
-    JWT_EXPIRES_IN: process.env.JWT_EXPIRES_IN,
-    REFRESH_TOKEN_SECRET: process.env.REFRESH_TOKEN_SECRET,
-    REFRESH_TOKEN_EXPIRES_IN: process.env.REFRESH_TOKEN_EXPIRES_IN,
-    OPENAI_API_KEY: process.env.OPENAI_API_KEY,
-    ANTHROPIC_API_KEY: process.env.ANTHROPIC_API_KEY,
-    ZERODB_API_URL: process.env.ZERODB_API_URL,
-    ZERODB_API_KEY: process.env.ZERODB_API_KEY,
-    LUMA_API_KEY: process.env.LUMA_API_KEY,
-    SENTRY_AUTH_TOKEN: process.env.SENTRY_AUTH_TOKEN,
-    SMTP_HOST: process.env.SMTP_HOST,
-    SMTP_PORT: process.env.SMTP_PORT,
-    SMTP_USER: process.env.SMTP_USER,
-    SMTP_PASS: process.env.SMTP_PASS,
-    FROM_EMAIL: process.env.FROM_EMAIL,
-    FROM_NAME: process.env.FROM_NAME,
-    AWS_ACCESS_KEY_ID: process.env.AWS_ACCESS_KEY_ID,
-    AWS_SECRET_ACCESS_KEY: process.env.AWS_SECRET_ACCESS_KEY,
-    AWS_REGION: process.env.AWS_REGION,
-    S3_BUCKET_NAME: process.env.S3_BUCKET_NAME,
-  });
-})();
+export const serverEnv = new Proxy({} as z.infer<typeof serverEnvSchema>, {
+  get(_target, prop) {
+    // Only parse server env on the server side
+    if (typeof window !== "undefined") {
+      throw new Error(
+        "serverEnv should only be used on the server side. " +
+        "Use `env` for client-side environment variables."
+      );
+    }
+
+    // Lazy-load serverEnv on first access
+    if (!_serverEnv) {
+      _serverEnv = serverEnvSchema.parse({
+        STRIPE_SECRET_KEY: process.env.STRIPE_SECRET_KEY,
+        STRIPE_WEBHOOK_SECRET: process.env.STRIPE_WEBHOOK_SECRET,
+        DATABASE_URL: process.env.DATABASE_URL,
+        DATABASE_POOL_SIZE: process.env.DATABASE_POOL_SIZE,
+        REDIS_URL: process.env.REDIS_URL,
+        GITHUB_CLIENT_SECRET: process.env.GITHUB_CLIENT_SECRET,
+        JWT_SECRET: process.env.JWT_SECRET,
+        JWT_EXPIRES_IN: process.env.JWT_EXPIRES_IN,
+        REFRESH_TOKEN_SECRET: process.env.REFRESH_TOKEN_SECRET,
+        REFRESH_TOKEN_EXPIRES_IN: process.env.REFRESH_TOKEN_EXPIRES_IN,
+        OPENAI_API_KEY: process.env.OPENAI_API_KEY,
+        ANTHROPIC_API_KEY: process.env.ANTHROPIC_API_KEY,
+        ZERODB_API_URL: process.env.ZERODB_API_URL,
+        ZERODB_API_KEY: process.env.ZERODB_API_KEY,
+        LUMA_API_KEY: process.env.LUMA_API_KEY,
+        SENTRY_AUTH_TOKEN: process.env.SENTRY_AUTH_TOKEN,
+        SMTP_HOST: process.env.SMTP_HOST,
+        SMTP_PORT: process.env.SMTP_PORT,
+        SMTP_USER: process.env.SMTP_USER,
+        SMTP_PASS: process.env.SMTP_PASS,
+        FROM_EMAIL: process.env.FROM_EMAIL,
+        FROM_NAME: process.env.FROM_NAME,
+        AWS_ACCESS_KEY_ID: process.env.AWS_ACCESS_KEY_ID,
+        AWS_SECRET_ACCESS_KEY: process.env.AWS_SECRET_ACCESS_KEY,
+        AWS_REGION: process.env.AWS_REGION,
+        S3_BUCKET_NAME: process.env.S3_BUCKET_NAME,
+      });
+    }
+
+    return _serverEnv[prop as keyof typeof _serverEnv];
+  },
+});
 
 // ===========================================
 // Type Exports
