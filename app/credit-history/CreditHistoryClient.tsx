@@ -234,7 +234,7 @@ export default function CreditHistoryClient() {
 
         {/* Pagination */}
         <div className="flex items-center justify-between p-4 border-t border-gray-800">
-          <div className="text-sm text-gray-500">
+          <div className="text-sm text-gray-500" suppressHydrationWarning>
             Showing {filteredTransactions.length} of {transactions.length} transactions
           </div>
           <div className="flex gap-1">
