@@ -4,6 +4,7 @@ import { useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useSession, signOut } from 'next-auth/react';
+import { clearAuthData } from '@/utils/authCookies';
 import { ButtonCustom } from '@/components/ui/button-custom';
 import { Menu, X } from 'lucide-react';
 import { cn } from '@/lib/utils';
@@ -37,7 +38,10 @@ export default function Header() {
   const avatar = session?.user?.image;
 
   const handleLogout = () => {
-    signOut({ callbackUrl: '/login' });
+    // Clear localStorage
+    clearAuthData();
+    // Redirect to server-side logout route which clears cookies and redirects to login
+    window.location.href = '/api/auth/logout';
   };
 
   return (

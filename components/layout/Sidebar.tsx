@@ -1,7 +1,9 @@
 'use client';
 
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
+import { signOut } from 'next-auth/react';
+import { clearAuthData } from '@/utils/authCookies';
 import {
   BarChart2, CreditCard, LogOut, Settings, User,
   Bell, Repeat, FileText, Sliders, X,
@@ -97,8 +99,10 @@ export default function Sidebar({ isMobile = false, onClose }: SidebarProps) {
   };
 
   const handleLogout = () => {
-    localStorage.clear();
-    window.location.href = '/login';
+    // Clear localStorage
+    clearAuthData();
+    // Redirect to server-side logout route which clears cookies and redirects to login
+    window.location.href = '/api/auth/logout';
   };
 
   const sidebarContent = (

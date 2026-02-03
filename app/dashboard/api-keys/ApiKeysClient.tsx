@@ -70,6 +70,7 @@ const ApiKeysClient: React.FC = () => {
   // State for managing API keys
   const [apiKeys, setApiKeys] = useState<ApiKey[]>([]);
   const [isLoadingKeys, setIsLoadingKeys] = useState(true);
+  const [fetchError, setFetchError] = useState<string | null>(null);
 
   const [newKeyName, setNewKeyName] = useState('');
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
@@ -92,12 +93,14 @@ const ApiKeysClient: React.FC = () => {
   // Fetch API keys from server
   const fetchApiKeys = async () => {
     setIsLoadingKeys(true);
+    setFetchError(null);
     try {
       const keys = await apiKeyService.listApiKeys();
       setApiKeys(keys);
     } catch (error) {
       console.error('Error fetching API keys:', error);
-      // Fallback to empty array on error
+      // Set user-friendly error message
+      setFetchError('Unable to load API keys. Please ensure you are logged in and try again.');
       setApiKeys([]);
     } finally {
       setIsLoadingKeys(false);
@@ -389,6 +392,18 @@ const ApiKeysClient: React.FC = () => {
             <div className="text-center py-8">
               <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-4"></div>
               <p className="text-gray-400">Loading API keys...</p>
+            </div>
+          ) : fetchError ? (
+            <div className="text-center py-8">
+              <Alert className="bg-red-900/20 border-red-800 mb-4 max-w-md mx-auto">
+                <AlertCircle className="h-4 w-4 text-red-500" />
+                <AlertDescription className="text-red-400">
+                  {fetchError}
+                </AlertDescription>
+              </Alert>
+              <Button variant="outline" className="mt-4" onClick={fetchApiKeys}>
+                <RefreshCw className="h-4 w-4 mr-2" /> Retry
+              </Button>
             </div>
           ) : apiKeys.length === 0 ? (
             <div className="text-center py-8">
