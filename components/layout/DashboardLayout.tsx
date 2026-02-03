@@ -95,8 +95,8 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
         </div>
       )}
 
-      {/* Layout Body */}
-      <div className="flex flex-1 pt-16 md:pt-0">
+      {/* Layout Body - pt-16 for mobile header (64px), md:pt-20 for desktop header (80px) */}
+      <div className="flex flex-1 pt-16 md:pt-20">
         {/* Desktop Sidebar - sticky, not fixed, so it doesn't overlap footer */}
         <div className="hidden md:block shrink-0" data-testid="desktop-sidebar">
           <div className="w-72 h-[calc(100vh-80px)] sticky top-20 overflow-y-auto">
