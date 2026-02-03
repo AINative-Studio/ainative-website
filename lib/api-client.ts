@@ -4,6 +4,7 @@
  */
 
 import { appConfig } from './config/app';
+import { getAuthToken } from '@/utils/authCookies';
 
 interface RequestConfig extends RequestInit {
   timeout?: number;
@@ -24,9 +25,10 @@ class ApiClient {
     this.timeout = appConfig.api.timeout;
   }
 
-  private getAuthToken(): string | null {
+  private getToken(): string | null {
     if (typeof window === 'undefined') return null;
-    return localStorage.getItem('accessToken');
+    // Use the centralized auth token getter which handles both cookies and localStorage
+    return getAuthToken();
   }
 
   private async request<T>(
@@ -43,7 +45,7 @@ class ApiClient {
     };
 
     // Add auth token if available
-    const token = this.getAuthToken();
+    const token = this.getToken();
     if (token) {
       (headers as Record<string, string>)['Authorization'] = `Bearer ${token}`;
     }
