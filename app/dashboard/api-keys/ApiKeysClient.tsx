@@ -5,7 +5,7 @@ import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import { AlertCircle, Copy, Key, RefreshCw, CheckCircle2, X } from 'lucide-react';
+import { AlertCircle, Copy, Key, RefreshCw, CheckCircle2, X, Trash2 } from 'lucide-react';
 import { apiKeyService, type ApiKey } from '@/services/apiKeyService';
 import { AIKitTextField } from '@/src/components/aikit/AIKitTextField';
 
@@ -377,9 +377,10 @@ const ApiKeysClient: React.FC = () => {
                     <Button
                       size="sm"
                       variant="ghost"
-                      className="h-6 text-xs text-gray-400 hover:text-red-500 p-0 ml-2"
+                      className="h-6 text-xs text-red-500 hover:text-red-400 hover:bg-red-500/10 p-0 px-2 ml-2 flex items-center gap-1"
                       onClick={() => setShowDeleteConfirm(apiKey.id)}
                     >
+                      <Trash2 className="h-3.5 w-3.5" />
                       Delete
                     </Button>
                   )}

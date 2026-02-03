@@ -139,12 +139,19 @@ export class ApiKeyService {
    */
   async createApiKey(name: string): Promise<CreateApiKeyResponse> {
     try {
-      const response = await apiClient.post<CreateApiKeyResponse>(
-        this.basePath,
-        { name }
-      );
+      const response = await apiClient.post<{
+        success?: boolean;
+        api_key?: string;
+        key?: string;
+        id: string;
+      }>(this.basePath, { name });
 
-      return response.data;
+      const data = response.data;
+      return {
+        // API returns 'api_key', transform to 'key' for frontend
+        key: data.api_key || data.key || '',
+        id: data.id,
+      };
     } catch (error) {
       console.error('Error creating API key:', error);
       throw error;
@@ -159,11 +166,17 @@ export class ApiKeyService {
    */
   async regenerateApiKey(id: string): Promise<RegenerateApiKeyResponse> {
     try {
-      const response = await apiClient.post<RegenerateApiKeyResponse>(
-        `${this.basePath}/${id}/regenerate`
-      );
+      const response = await apiClient.post<{
+        success?: boolean;
+        api_key?: string;
+        key?: string;
+      }>(`${this.basePath}/${id}/regenerate`);
 
-      return response.data;
+      const data = response.data;
+      return {
+        // API returns 'api_key', transform to 'key' for frontend
+        key: data.api_key || data.key || '',
+      };
     } catch (error) {
       console.error('Error regenerating API key:', error);
       throw error;
