@@ -7,10 +7,11 @@ import { clearAuthData } from '@/utils/authCookies';
 import {
   BarChart2, CreditCard, LogOut, Settings, User,
   Bell, Repeat, FileText, Sliders, X,
-  ChevronRight, Database, Zap, Code,
+  ChevronRight, ChevronDown, Database, Zap, Code,
   Server, Wrench, Home, Network, Package, Users, Receipt, GitBranch,
   Shield, Cpu, Activity, Brain, DollarSign, Wallet
 } from 'lucide-react';
+import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { useIsAdmin } from '@/components/guards/AdminRouteGuard';
 
@@ -68,6 +69,20 @@ export default function Sidebar({ isMobile = false, onClose }: SidebarProps) {
   const pathname = usePathname();
   const isAdmin = useIsAdmin();
 
+  // Track which sections are expanded (all expanded by default)
+  const [expandedSections, setExpandedSections] = useState<Record<string, boolean>>({
+    Developer: true,
+    Admin: true,
+    User: true,
+  });
+
+  const toggleSection = (title: string) => {
+    setExpandedSections(prev => ({
+      ...prev,
+      [title]: !prev[title],
+    }));
+  };
+
   // Check if a path is active, handling both exact matches and nested routes
   const isActive = (path: string) => {
     // Exact match for dashboard homepage
@@ -122,17 +137,30 @@ export default function Sidebar({ isMobile = false, onClose }: SidebarProps) {
             variants={listVariants}
             className="mb-1"
           >
-            <p className="text-xs font-semibold uppercase text-gray-400 mb-3 pl-1 tracking-wider">
-              {section.title}
-            </p>
-            <nav className="space-y-1" role="navigation" aria-label={`${section.title} navigation`}>
-              {section.links.filter((item) => {
-                // Filter out Invoices menu item for non-admin users
-                if (item.name === 'Invoices' && !isAdmin) {
-                  return false;
-                }
-                return true;
-              }).map((item) => {
+            <button
+              onClick={() => toggleSection(section.title)}
+              className="flex items-center justify-between w-full text-xs font-semibold uppercase text-gray-400 mb-3 pl-1 tracking-wider hover:text-white transition-colors"
+            >
+              <span>{section.title}</span>
+              <motion.div
+                animate={{ rotate: expandedSections[section.title] ? 0 : -90 }}
+                transition={{ duration: 0.2 }}
+              >
+                <ChevronDown className="w-4 h-4" />
+              </motion.div>
+            </button>
+            <motion.nav
+              className="space-y-1 overflow-hidden"
+              role="navigation"
+              aria-label={`${section.title} navigation`}
+              initial={false}
+              animate={{
+                height: expandedSections[section.title] ? 'auto' : 0,
+                opacity: expandedSections[section.title] ? 1 : 0,
+              }}
+              transition={{ duration: 0.2 }}
+            >
+              {section.links.map((item) => {
                 const Icon = item.icon;
                 const active = isActive(item.to);
                 return (
@@ -157,7 +185,7 @@ export default function Sidebar({ isMobile = false, onClose }: SidebarProps) {
                   </motion.div>
                 );
               })}
-            </nav>
+            </motion.nav>
           </motion.div>
         ))}
       </div>
@@ -167,9 +195,9 @@ export default function Sidebar({ isMobile = false, onClose }: SidebarProps) {
           whileHover={{ scale: 1.01 }}
           whileTap={{ scale: 0.99 }}
           onClick={handleLogout}
-          className="flex items-center gap-3 px-3 py-2.5 text-sm text-gray-400 hover:text-white hover:bg-gray-800/40 rounded-md transition-colors w-full group"
+          className="flex items-center gap-3 px-3 py-2.5 text-sm text-red-500 hover:text-red-400 hover:bg-red-500/10 rounded-md transition-colors w-full"
         >
-          <LogOut className="w-4 h-4 group-hover:text-primary transition-colors" />
+          <LogOut className="w-4 h-4" />
           <span>Logout</span>
         </motion.button>
       </div>

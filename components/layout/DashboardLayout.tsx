@@ -96,22 +96,22 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
       )}
 
       {/* Layout Body */}
-      <div className="flex flex-1 pt-16 md:pt-20">
-        {/* Desktop Sidebar */}
-        <div className="hidden md:block fixed left-0 top-0 h-full z-20" data-testid="desktop-sidebar">
-          <Sidebar />
+      <div className="flex flex-1 pt-16 md:pt-0">
+        {/* Desktop Sidebar - sticky, not fixed, so it doesn't overlap footer */}
+        <div className="hidden md:block shrink-0" data-testid="desktop-sidebar">
+          <div className="w-72 h-[calc(100vh-80px)] sticky top-20 overflow-y-auto">
+            <Sidebar />
+          </div>
         </div>
 
         {/* Main Content */}
-        <main className="flex-1 p-4 md:p-6 overflow-y-auto w-full md:ml-72">
+        <main className="flex-1 p-4 md:p-6 overflow-y-auto w-full">
           <div className="max-w-7xl mx-auto">{children}</div>
         </main>
       </div>
 
-      {/* Footer with offset for sidebar on desktop */}
-      <div className="md:ml-72" data-testid="dashboard-footer-wrapper">
-        <Footer />
-      </div>
+      {/* Footer - full width, below sidebar and content */}
+      <Footer />
     </div>
   );
 }
