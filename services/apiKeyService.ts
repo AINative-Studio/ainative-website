@@ -6,7 +6,7 @@
 import apiClient from '@/lib/api-client';
 
 /**
- * Represents an API key entity
+ * Represents an API key entity (matches frontend display requirements)
  */
 export interface ApiKey {
   id: string;
@@ -15,6 +15,36 @@ export interface ApiKey {
   created: string;
   lastUsed: string;
   status: 'active' | 'inactive';
+}
+
+/**
+ * API response format from backend
+ */
+interface ApiKeyResponse {
+  id: string;
+  name: string;
+  prefix: string;
+  is_active: boolean;
+  created_at: string;
+  last_used_at: string | null;
+  usage_count?: number;
+  expires_at?: string | null;
+}
+
+/**
+ * Transform backend response to frontend format
+ */
+function transformApiKey(apiKey: ApiKeyResponse): ApiKey {
+  return {
+    id: apiKey.id,
+    name: apiKey.name,
+    key: apiKey.prefix,
+    created: new Date(apiKey.created_at).toLocaleDateString(),
+    lastUsed: apiKey.last_used_at
+      ? new Date(apiKey.last_used_at).toLocaleDateString()
+      : 'Never',
+    status: apiKey.is_active ? 'active' : 'inactive',
+  };
 }
 
 /**
@@ -70,17 +100,28 @@ export class ApiKeyService {
    */
   async listApiKeys(): Promise<ApiKey[]> {
     try {
-      const response = await apiClient.get<{ keys: ApiKey[] } | ApiKey[]>(
-        this.basePath
-      );
+      const response = await apiClient.get<{
+        success?: boolean;
+        data?: ApiKeyResponse[];
+        keys?: ApiKeyResponse[];
+      } | ApiKeyResponse[]>(this.basePath);
 
-      // Handle both array response and object with keys property
-      const data = response.data;
-      if (Array.isArray(data)) {
-        return data;
+      // Handle various response formats from the API
+      const responseData = response.data;
+
+      // If response is an array directly
+      if (Array.isArray(responseData)) {
+        return responseData.map(transformApiKey);
       }
-      if (data && 'keys' in data) {
-        return data.keys;
+
+      // If response has 'data' property (current API format)
+      if (responseData && 'data' in responseData && Array.isArray(responseData.data)) {
+        return responseData.data.map(transformApiKey);
+      }
+
+      // If response has 'keys' property (legacy format)
+      if (responseData && 'keys' in responseData && Array.isArray(responseData.keys)) {
+        return responseData.keys.map(transformApiKey);
       }
 
       return [];
