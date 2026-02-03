@@ -71,7 +71,7 @@ export type UsagePeriod = '7d' | '30d' | '90d';
  * Manages all usage-related API operations
  */
 export class UsageService {
-  private readonly basePath = '/api/v1/usage';
+  private readonly basePath = '/v1/settings';
 
   /**
    * Get usage metrics for a specified period
@@ -102,7 +102,7 @@ export class UsageService {
   async getUsageLimits(): Promise<UsageLimits | null> {
     try {
       const response = await apiClient.get<ApiResponse<{ limits: UsageLimits }>>(
-        `${this.basePath}/limits`
+        `${this.basePath}/usage-limits`
       );
 
       if (!response.data.success || !response.data.data?.limits) {

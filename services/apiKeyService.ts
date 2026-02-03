@@ -18,15 +18,6 @@ export interface ApiKey {
 }
 
 /**
- * Standard API response wrapper
- */
-export interface ApiKeyApiResponse<T> {
-  success: boolean;
-  message: string;
-  data: T;
-}
-
-/**
  * Request payload for creating a new API key
  */
 export interface CreateApiKeyRequest {
@@ -70,7 +61,7 @@ export interface UpdateApiKeyRequest {
  * ApiKeyService provides methods for managing API keys
  */
 export class ApiKeyService {
-  private readonly basePath = '/api/v1/api-keys';
+  private readonly basePath = '/v1/settings/api-keys';
 
   /**
    * Get all API keys for the current user
@@ -79,15 +70,20 @@ export class ApiKeyService {
    */
   async listApiKeys(): Promise<ApiKey[]> {
     try {
-      const response = await apiClient.get<ApiKeyApiResponse<{ keys: ApiKey[] }>>(
+      const response = await apiClient.get<{ keys: ApiKey[] } | ApiKey[]>(
         this.basePath
       );
 
-      if (!response.data.success || !response.data.data?.keys) {
-        throw new Error(response.data.message || 'Failed to fetch API keys');
+      // Handle both array response and object with keys property
+      const data = response.data;
+      if (Array.isArray(data)) {
+        return data;
+      }
+      if (data && 'keys' in data) {
+        return data.keys;
       }
 
-      return response.data.data.keys;
+      return [];
     } catch (error) {
       console.error('Error fetching API keys:', error);
       throw error;
@@ -102,16 +98,12 @@ export class ApiKeyService {
    */
   async createApiKey(name: string): Promise<CreateApiKeyResponse> {
     try {
-      const response = await apiClient.post<ApiKeyApiResponse<CreateApiKeyResponse>>(
+      const response = await apiClient.post<CreateApiKeyResponse>(
         this.basePath,
         { name }
       );
 
-      if (!response.data.success || !response.data.data) {
-        throw new Error(response.data.message || 'Failed to create API key');
-      }
-
-      return response.data.data;
+      return response.data;
     } catch (error) {
       console.error('Error creating API key:', error);
       throw error;
@@ -126,15 +118,11 @@ export class ApiKeyService {
    */
   async regenerateApiKey(id: string): Promise<RegenerateApiKeyResponse> {
     try {
-      const response = await apiClient.post<ApiKeyApiResponse<RegenerateApiKeyResponse>>(
+      const response = await apiClient.post<RegenerateApiKeyResponse>(
         `${this.basePath}/${id}/regenerate`
       );
 
-      if (!response.data.success || !response.data.data) {
-        throw new Error(response.data.message || 'Failed to regenerate API key');
-      }
-
-      return response.data.data;
+      return response.data;
     } catch (error) {
       console.error('Error regenerating API key:', error);
       throw error;
@@ -149,17 +137,11 @@ export class ApiKeyService {
    */
   async deleteApiKey(id: string): Promise<{ success: boolean; message: string }> {
     try {
-      const response = await apiClient.delete<ApiKeyApiResponse<{ success: boolean }>>(
-        `${this.basePath}/${id}`
-      );
-
-      if (!response.data.success) {
-        throw new Error(response.data.message || 'Failed to delete API key');
-      }
+      await apiClient.delete(`${this.basePath}/${id}`);
 
       return {
         success: true,
-        message: response.data.message || 'API key deleted successfully',
+        message: 'API key deleted successfully',
       };
     } catch (error) {
       console.error('Error deleting API key:', error);
@@ -176,16 +158,12 @@ export class ApiKeyService {
    */
   async updateApiKey(id: string, updates: UpdateApiKeyRequest): Promise<ApiKey> {
     try {
-      const response = await apiClient.put<ApiKeyApiResponse<ApiKey>>(
+      const response = await apiClient.put<ApiKey>(
         `${this.basePath}/${id}`,
         updates
       );
 
-      if (!response.data.success || !response.data.data) {
-        throw new Error(response.data.message || 'Failed to update API key');
-      }
-
-      return response.data.data;
+      return response.data;
     } catch (error) {
       console.error('Error updating API key:', error);
       throw error;
@@ -200,15 +178,11 @@ export class ApiKeyService {
    */
   async getApiKeyUsage(id: string): Promise<ApiKeyUsageStats> {
     try {
-      const response = await apiClient.get<ApiKeyApiResponse<ApiKeyUsageStats>>(
+      const response = await apiClient.get<ApiKeyUsageStats>(
         `${this.basePath}/${id}/usage`
       );
 
-      if (!response.data.success || !response.data.data) {
-        throw new Error(response.data.message || 'Failed to fetch API key usage');
-      }
-
-      return response.data.data;
+      return response.data;
     } catch (error) {
       console.error('Error fetching API key usage:', error);
       throw error;
@@ -223,15 +197,11 @@ export class ApiKeyService {
    */
   async getApiKey(id: string): Promise<ApiKey> {
     try {
-      const response = await apiClient.get<ApiKeyApiResponse<ApiKey>>(
+      const response = await apiClient.get<ApiKey>(
         `${this.basePath}/${id}`
       );
 
-      if (!response.data.success || !response.data.data) {
-        throw new Error(response.data.message || 'Failed to fetch API key');
-      }
-
-      return response.data.data;
+      return response.data;
     } catch (error) {
       console.error('Error fetching API key:', error);
       throw error;
