@@ -100,7 +100,7 @@ class AuthService {
 
         // Fetch user info from /auth/me endpoint
         try {
-          const userInfoResponse = await fetch(`${this.baseURL}/v1/auth/me`, {
+          const userInfoResponse = await fetch(`${this.baseURL}/v1/auth/auth/me`, {
             headers: {
               'Authorization': `Bearer ${data.access_token}`,
             },
@@ -211,7 +211,7 @@ class AuthService {
       const token = this.getAccessToken();
       if (!token) return null;
 
-      const response = await fetch(`${this.baseURL}/v1/auth/me`, {
+      const response = await fetch(`${this.baseURL}/v1/auth/auth/me`, {
         headers: {
           'Authorization': `Bearer ${token}`,
         },
@@ -235,7 +235,7 @@ class AuthService {
     try {
       const token = this.getAccessToken();
       if (token) {
-        await fetch(`${this.baseURL}/v1/auth/logout`, {
+        await fetch(`${this.baseURL}/v1/auth/auth/logout`, {
           method: 'POST',
           headers: {
             'Authorization': `Bearer ${token}`,

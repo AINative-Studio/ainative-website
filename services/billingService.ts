@@ -185,9 +185,9 @@ export interface CreditTransaction {
  * Manages billing, invoices, payment methods, subscriptions, and credits
  */
 export class BillingService {
-  private readonly billingBasePath = '/api/v1/billing';
-  private readonly subscriptionBasePath = '/api/v1/subscription';
-  private readonly creditsBasePath = '/api/v1/credits';
+  private readonly billingBasePath = '/v1/dashboard/billing';
+  private readonly subscriptionBasePath = '/v1/subscription';
+  private readonly creditsBasePath = '/v1/credits';
 
   // ==========================================================================
   // Billing Methods
