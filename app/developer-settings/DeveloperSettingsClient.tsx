@@ -75,6 +75,7 @@ export default function DeveloperSettingsClient() {
   const [copied, setCopied] = useState(false);
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- Intentional: track client-side mount state for SSR hydration
     setMounted(true);
   }, []);
 
@@ -171,12 +172,12 @@ export default function DeveloperSettingsClient() {
               </label>
               <div className="flex items-center gap-2">
                 <code className="flex-1 bg-vite-bg px-4 py-3 rounded-lg text-[#8AB4FF] font-mono text-sm border border-[#2D333B]">
-                  https://api.ainative.studio/v1
+                  https://api.ainative.studio
                 </code>
                 <Button
                   variant="outline"
                   size="icon"
-                  onClick={() => copyToClipboard('https://api.ainative.studio/v1')}
+                  onClick={() => copyToClipboard('https://api.ainative.studio')}
                   className="border-[#2D333B]"
                 >
                   {copied ? (
@@ -188,22 +189,6 @@ export default function DeveloperSettingsClient() {
               </div>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-4">
-              <div className="p-4 bg-vite-bg rounded-lg border border-[#2D333B]">
-                <div className="flex items-center gap-2 mb-2">
-                  <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-                  <span className="text-sm font-medium">Production</span>
-                </div>
-                <code className="text-xs text-gray-400">api.ainative.studio</code>
-              </div>
-              <div className="p-4 bg-vite-bg rounded-lg border border-[#2D333B]">
-                <div className="flex items-center gap-2 mb-2">
-                  <div className="w-2 h-2 bg-yellow-500 rounded-full"></div>
-                  <span className="text-sm font-medium">Staging</span>
-                </div>
-                <code className="text-xs text-gray-400">staging-api.ainative.studio</code>
-              </div>
-            </div>
           </CardContent>
         </Card>
       </motion.div>
@@ -267,12 +252,12 @@ export default function DeveloperSettingsClient() {
                 </p>
               </div>
             </div>
-            <Link href="/docs">
+            <a href="https://api.ainative.studio/docs" target="_blank" rel="noopener noreferrer">
               <Button className="bg-[#4B6FED] hover:bg-[#4B6FED]/80 gap-2">
                 View Docs
                 <ExternalLink className="h-4 w-4" />
               </Button>
-            </Link>
+            </a>
           </CardContent>
         </Card>
       </motion.div>
