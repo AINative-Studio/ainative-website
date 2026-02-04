@@ -329,7 +329,7 @@ export default function AgentSwarmClient() {
               <Button
                 onClick={handleCreateProject}
                 disabled={uploading || (!selectedFile && !prdText.trim())}
-                className="w-full bg-gradient-to-r from-primary to-[#FCAE39] h-12 text-base"
+                className="w-full bg-gradient-to-r from-primary to-[#FCAE39] h-12 text-base text-gray-900 font-semibold shadow-lg hover:shadow-xl transition-all"
               >
                 {uploading ? (
                   <>
