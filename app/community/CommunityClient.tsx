@@ -20,7 +20,10 @@ import {
   Mail,
   Video,
   Play,
+  Clock,
+  MapPin,
 } from 'lucide-react';
+import { getUpcomingEvents, type LumaEvent } from '@/services/luma';
 
 interface BlogPost {
   id: number;
@@ -143,6 +146,8 @@ export default function CommunityClient() {
   const [blogPosts, setBlogPosts] = useState<BlogPost[]>(fallbackBlogPosts);
   const [tutorials, setTutorials] = useState<Tutorial[]>(fallbackTutorials);
   const [loading, setLoading] = useState(true);
+  const [nextEvent, setNextEvent] = useState<LumaEvent | null>(null);
+  const [eventsLoading, setEventsLoading] = useState(true);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -184,6 +189,29 @@ export default function CommunityClient() {
     };
 
     fetchData();
+  }, []);
+
+  // Fetch next upcoming Luma event
+  useEffect(() => {
+    const fetchNextEvent = async () => {
+      try {
+        setEventsLoading(true);
+        const events = await getUpcomingEvents(); // Get all upcoming events
+        if (events && events.length > 0) {
+          // Sort by start date and get the soonest one
+          const sorted = events.sort((a, b) =>
+            new Date(a.event.start_at).getTime() - new Date(b.event.start_at).getTime()
+          );
+          setNextEvent(sorted[0]);
+        }
+      } catch (error) {
+        console.error('Error fetching upcoming event:', error);
+      } finally {
+        setEventsLoading(false);
+      }
+    };
+
+    fetchNextEvent();
   }, []);
 
   const handleNewsletterSubscribe = async (e: React.FormEvent) => {
@@ -269,7 +297,7 @@ export default function CommunityClient() {
               </>
             ) : (
               blogPosts.map((post) => (
-                <Link key={post.id} href={`/blog/${post.slug}`}>
+                <Link key={post.id} href={`/blog/${post.slug}`} className="h-full">
                   <Card className="h-full hover:shadow-lg hover:shadow-[#4B6FED]/10 transition-all duration-200 bg-[#161B22] border-[#2D333B] hover:border-[#4B6FED]/40">
                     <CardHeader>
                       <div className="flex items-center gap-2 mb-2">
@@ -330,7 +358,7 @@ export default function CommunityClient() {
               </>
             ) : (
               tutorials.map((tutorial) => (
-                <Link key={tutorial.id} href={`/tutorials/${tutorial.slug}`}>
+                <Link key={tutorial.id} href={`/tutorials/${tutorial.slug}`} className="h-full">
                   <Card className="h-full hover:shadow-lg hover:shadow-[#4B6FED]/10 transition-all duration-200 bg-[#161B22] border-[#2D333B] hover:border-[#4B6FED]/40">
                     <CardHeader>
                       <div className="flex items-center gap-2 mb-2">
@@ -368,26 +396,94 @@ export default function CommunityClient() {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <Card className="hover:shadow-lg hover:shadow-[#4B6FED]/10 transition-all duration-200 overflow-hidden bg-[#161B22] border-[#2D333B] hover:border-[#4B6FED]/40">
-              <div className="w-full h-40 bg-gradient-to-r from-[#4B6FED]/20 to-[#8A63F4]/20 flex items-center justify-center">
-                <Calendar className="h-16 w-16 text-[#4B6FED]/50" />
-              </div>
-              <CardHeader>
-                <CardTitle className="text-white">Upcoming Events</CardTitle>
-                <CardDescription className="mt-2 text-gray-400">
-                  Join our workshops, webinars, and community meetups
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <Link href="/events">
-                  <Button className="w-full bg-[#4B6FED] hover:bg-[#3A56D3] text-white">
-                    View All Events <ArrowRight className="ml-2 h-4 w-4" />
-                  </Button>
-                </Link>
-              </CardContent>
-            </Card>
-            <Card className="hover:shadow-lg hover:shadow-[#4B6FED]/10 transition-all duration-200 overflow-hidden bg-[#161B22] border-[#2D333B] hover:border-[#4B6FED]/40">
-              <div className="w-full h-40 bg-gradient-to-r from-[#8A63F4]/20 to-[#4B6FED]/20 flex items-center justify-center">
+            {eventsLoading ? (
+              <Card className="h-full hover:shadow-lg hover:shadow-[#4B6FED]/10 transition-all duration-200 overflow-hidden bg-[#161B22] border-[#2D333B]">
+                <Skeleton className="w-full h-48 bg-[#21262D]" />
+                <CardHeader>
+                  <Skeleton className="h-6 w-3/4 bg-[#21262D] mb-2" />
+                  <Skeleton className="h-4 w-full bg-[#21262D]" />
+                  <Skeleton className="h-4 w-2/3 bg-[#21262D] mt-2" />
+                </CardHeader>
+                <CardContent>
+                  <Skeleton className="h-10 w-full bg-[#21262D]" />
+                </CardContent>
+              </Card>
+            ) : nextEvent ? (
+              <Card className="h-full hover:shadow-lg hover:shadow-[#4B6FED]/10 transition-all duration-200 overflow-hidden bg-[#161B22] border-[#2D333B] hover:border-[#4B6FED]/40">
+                <div className="relative w-full h-48 overflow-hidden">
+                  {nextEvent.event.cover_url ? (
+                    <img
+                      src={nextEvent.event.cover_url}
+                      alt={nextEvent.event.name}
+                      className="w-full h-full object-cover"
+                    />
+                  ) : (
+                    <div className="w-full h-full bg-gradient-to-r from-[#4B6FED]/20 to-[#8A63F4]/20 flex items-center justify-center">
+                      <Calendar className="h-16 w-16 text-[#4B6FED]/50" />
+                    </div>
+                  )}
+                  <Badge className="absolute top-3 left-3 bg-[#4B6FED] text-white">
+                    Next Event
+                  </Badge>
+                </div>
+                <CardHeader>
+                  <CardTitle className="text-white line-clamp-2">{nextEvent.event.name}</CardTitle>
+                  <CardDescription className="mt-2 text-gray-400">
+                    <div className="flex items-center gap-2 mb-1">
+                      <Clock className="h-4 w-4" />
+                      {new Date(nextEvent.event.start_at).toLocaleDateString('en-US', {
+                        weekday: 'short',
+                        month: 'short',
+                        day: 'numeric',
+                        hour: 'numeric',
+                        minute: '2-digit',
+                      })}
+                    </div>
+                    {nextEvent.event.geo_address_json?.city && (
+                      <div className="flex items-center gap-2">
+                        <MapPin className="h-4 w-4" />
+                        {nextEvent.event.geo_address_json.city}
+                        {nextEvent.event.geo_address_json.country && `, ${nextEvent.event.geo_address_json.country}`}
+                      </div>
+                    )}
+                    {!nextEvent.event.geo_address_json?.city && nextEvent.event.url && (
+                      <div className="flex items-center gap-2">
+                        <Video className="h-4 w-4" />
+                        Online Event
+                      </div>
+                    )}
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <a href={nextEvent.event.url} target="_blank" rel="noopener noreferrer">
+                    <Button className="w-full bg-[#4B6FED] hover:bg-[#3A56D3] text-white">
+                      Register Now <ArrowRight className="ml-2 h-4 w-4" />
+                    </Button>
+                  </a>
+                </CardContent>
+              </Card>
+            ) : (
+              <Card className="h-full hover:shadow-lg hover:shadow-[#4B6FED]/10 transition-all duration-200 overflow-hidden bg-[#161B22] border-[#2D333B] hover:border-[#4B6FED]/40">
+                <div className="w-full h-48 bg-gradient-to-r from-[#4B6FED]/20 to-[#8A63F4]/20 flex items-center justify-center">
+                  <Calendar className="h-16 w-16 text-[#4B6FED]/50" />
+                </div>
+                <CardHeader>
+                  <CardTitle className="text-white">Upcoming Events</CardTitle>
+                  <CardDescription className="mt-2 text-gray-400">
+                    Join our workshops, webinars, and community meetups
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <Link href="/events">
+                    <Button className="w-full bg-[#4B6FED] hover:bg-[#3A56D3] text-white">
+                      View All Events <ArrowRight className="ml-2 h-4 w-4" />
+                    </Button>
+                  </Link>
+                </CardContent>
+              </Card>
+            )}
+            <Card className="h-full hover:shadow-lg hover:shadow-[#4B6FED]/10 transition-all duration-200 overflow-hidden bg-[#161B22] border-[#2D333B] hover:border-[#4B6FED]/40">
+              <div className="w-full h-48 bg-gradient-to-r from-[#8A63F4]/20 to-[#4B6FED]/20 flex items-center justify-center">
                 <Video className="h-16 w-16 text-[#8A63F4]/50" />
               </div>
               <CardHeader>
@@ -425,8 +521,8 @@ export default function CommunityClient() {
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {staticShowcases.map((showcase) => (
-              <Link key={showcase.id} href={`/showcases/${showcase.slug}`}>
-                <Card className="hover:shadow-lg hover:shadow-[#4B6FED]/10 transition-all duration-200 bg-[#161B22] border-[#2D333B] hover:border-[#4B6FED]/40">
+              <Link key={showcase.id} href={`/showcases/${showcase.slug}`} className="h-full">
+                <Card className="h-full hover:shadow-lg hover:shadow-[#4B6FED]/10 transition-all duration-200 bg-[#161B22] border-[#2D333B] hover:border-[#4B6FED]/40">
                   <CardHeader>
                     <div className="flex items-center gap-2 mb-2">
                       <Sparkles className="h-4 w-4 text-yellow-500" />
@@ -459,8 +555,8 @@ export default function CommunityClient() {
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {staticVideos.map((video) => (
-              <Link key={video.id} href={`/community/videos/${video.slug}`}>
-                <Card className="hover:shadow-lg hover:shadow-[#4B6FED]/10 transition-all duration-200 overflow-hidden bg-[#161B22] border-[#2D333B] hover:border-[#4B6FED]/40">
+              <Link key={video.id} href={`/community/videos/${video.slug}`} className="h-full">
+                <Card className="h-full hover:shadow-lg hover:shadow-[#4B6FED]/10 transition-all duration-200 overflow-hidden bg-[#161B22] border-[#2D333B] hover:border-[#4B6FED]/40">
                   <div className="relative">
                     <div className="w-full h-48 bg-gradient-to-br from-[#1C2128] to-[#0D1117] flex items-center justify-center">
                       <Play className="h-16 w-16 text-[#4B6FED]/50" />
@@ -492,10 +588,10 @@ export default function CommunityClient() {
         <section className="mb-16">
           <h2 className="text-2xl font-bold mb-6 text-center text-white">Developer Resources</h2>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <Link href="/dev-resources">
-              <Card className="text-center hover:shadow-lg hover:shadow-[#4B6FED]/10 transition-all duration-200">
-                <CardHeader>
-                  <Code className="h-12 w-12 mx-auto mb-4 text-[#4B6FED]" />
+            <Link href="/dev-resources" className="h-full">
+              <Card className="h-full text-center hover:shadow-lg hover:shadow-[#4B6FED]/10 transition-all duration-200 bg-[#161B22] border-[#2D333B] hover:border-[#4B6FED]/40">
+                <CardHeader className="flex flex-col items-center justify-center h-full">
+                  <Code className="h-12 w-12 mb-4 text-[#4B6FED]" />
                   <CardTitle className="text-white">SDKs & APIs</CardTitle>
                   <CardDescription className="mt-2 text-gray-400">
                     Official SDKs for Python, JavaScript, and Go
@@ -503,21 +599,21 @@ export default function CommunityClient() {
                 </CardHeader>
               </Card>
             </Link>
-            <Link href="/api-reference">
-              <Card className="text-center hover:shadow-lg hover:shadow-[#4B6FED]/10 transition-all duration-200">
-                <CardHeader>
-                  <FileText className="h-12 w-12 mx-auto mb-4 text-[#4B6FED]" />
+            <a href="https://api.ainative.studio/docs" target="_blank" rel="noopener noreferrer" className="h-full">
+              <Card className="h-full text-center hover:shadow-lg hover:shadow-[#4B6FED]/10 transition-all duration-200 bg-[#161B22] border-[#2D333B] hover:border-[#4B6FED]/40">
+                <CardHeader className="flex flex-col items-center justify-center h-full">
+                  <FileText className="h-12 w-12 mb-4 text-[#4B6FED]" />
                   <CardTitle className="text-white">API Reference</CardTitle>
                   <CardDescription className="mt-2 text-gray-400">
                     Complete API documentation and examples
                   </CardDescription>
                 </CardHeader>
               </Card>
-            </Link>
-            <Link href="/resources">
-              <Card className="text-center hover:shadow-lg hover:shadow-[#4B6FED]/10 transition-all duration-200">
-                <CardHeader>
-                  <Rocket className="h-12 w-12 mx-auto mb-4 text-[#4B6FED]" />
+            </a>
+            <Link href="/resources" className="h-full">
+              <Card className="h-full text-center hover:shadow-lg hover:shadow-[#4B6FED]/10 transition-all duration-200 bg-[#161B22] border-[#2D333B] hover:border-[#4B6FED]/40">
+                <CardHeader className="flex flex-col items-center justify-center h-full">
+                  <Rocket className="h-12 w-12 mb-4 text-[#4B6FED]" />
                   <CardTitle className="text-white">Resources</CardTitle>
                   <CardDescription className="mt-2 text-gray-400">
                     Tools, templates, and code examples

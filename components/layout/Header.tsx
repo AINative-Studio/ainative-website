@@ -12,7 +12,7 @@ import { cn } from '@/lib/utils';
 const navigation: { name: string; path: string; external?: boolean }[] = [
   { name: 'Products', path: '/products' },
   { name: 'Pricing', path: '/pricing' },
-  { name: 'Docs', path: '/docs' },
+  { name: 'Design System', path: '/design-system-showcase' },
   { name: 'ZeroDB', path: 'https://zerodb.ainative.studio', external: true },
 ];
 
@@ -100,6 +100,9 @@ export default function Header() {
                   className="w-8 h-8 rounded-full border border-brand-primary"
                 />
               )}
+              <Link href="/dashboard">
+                <ButtonCustom variant="primary">Dashboard</ButtonCustom>
+              </Link>
               <ButtonCustom
                 variant="outline"
                 onClick={handleLogout}
@@ -213,6 +216,11 @@ export default function Header() {
                     className="w-8 h-8 rounded-full border border-brand-primary mx-auto mb-2"
                   />
                 )}
+                <Link href="/dashboard" onClick={() => setMobileMenuOpen(false)}>
+                  <ButtonCustom variant="primary" className="w-full">
+                    Dashboard
+                  </ButtonCustom>
+                </Link>
                 <ButtonCustom
                   variant="outline"
                   className="w-full"

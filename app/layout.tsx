@@ -41,7 +41,7 @@ export const metadata: Metadata = {
     default: 'AI Native Studio | Quantum-Enhanced Development Environment for Modern Developers',
     template: '%s | AI Native Studio',
   },
-  description: 'Experience the next generation of software development with AI Native Studio. Our quantum-boosted IDE combines multi-agent AI, quantum neural networks, and intuitive design to revolutionize your coding workflow.',
+  description: 'AINative Studio - AI Native Development Platform. Build AI applications 10x faster with our IDE, Vector DB, and production-ready AI Kit packages. Complete toolkit for AI-native development.',
   keywords: [
     // Competitive Keywords (CRITICAL)
     'Cursor alternative',
@@ -145,14 +145,14 @@ export const metadata: Metadata = {
     locale: 'en_US',
     url: siteUrl,
     siteName: 'AI Native Studio',
-    title: 'AI Native Studio | Quantum-Enhanced Development Environment',
-    description: 'Experience the future of coding with AI Native Studio. Quantum-boosted IDE with multi-agent AI and neural networks for developers.',
+    title: 'AI Native Studio | AI Development Platform with IDE, Vector DB, and AI Kit',
+    description: 'Build AI applications 10x faster with our quantum-enhanced IDE, ZeroDB vector database, and 14 production-ready AI Kit packages. Complete AI-native development platform.',
     images: [
       {
         url: '/card.png',
         width: 1200,
         height: 630,
-        alt: 'AI Native Studio - Next-Gen Quantum Development Environment',
+        alt: 'AI Native Studio - AI Development Platform with IDE, Vector DB, and AI Kit packages',
         type: 'image/png',
       },
     ],
@@ -161,8 +161,8 @@ export const metadata: Metadata = {
     card: 'summary_large_image',
     site: '@AINativeStudio',
     creator: '@AINativeStudio',
-    title: 'AI Native Studio | Quantum-Enhanced Development Environment',
-    description: 'Experience the future of coding with AI Native Studio. Quantum-boosted IDE with multi-agent AI and neural networks for developers.',
+    title: 'AI Native Studio | AI Development Platform with IDE, Vector DB & AI Kit',
+    description: 'Build AI applications 10x faster. Quantum-enhanced IDE, ZeroDB vector database, and 14 production-ready AI Kit packages for modern developers.',
     images: ['/card.png'],
   },
   alternates: {
@@ -186,13 +186,27 @@ export const metadata: Metadata = {
     'revisit-after': '7 days',
     'rating': 'general',
     'distribution': 'global',
-    'copyright': '© 2025 AI Native Studio. All rights reserved.',
+    'copyright': '© 2026 AI Native Studio. All rights reserved.',
+    'summary': 'Complete AI-native development platform with quantum-enhanced IDE, vector database (ZeroDB), and 14 production-ready AI Kit NPM packages. Build AI applications 10x faster with semantic search, embeddings, and neural network acceleration.',
     'generator': 'AI Native Studio',
-    'abstract': 'Complete AI development platform with quantum computing support, vector databases, AI agents, and semantic search capabilities. Build full-stack applications with AI-powered code generation, multi-agent development workflows, and quantum-enhanced neural networks.',
+    'abstract': 'Complete AI development platform with quantum-enhanced IDE, vector database (ZeroDB), and 14 production-ready AI Kit NPM packages. Build AI applications 10x faster with semantic search, embeddings, and neural network acceleration.',
     'article:publisher': 'AI Native Studio',
     'article:author': 'AI Native Studio',
     // Comprehensive keyword string for legacy meta tags
     'keywords': 'vibe coding, AI Native Studio, flow state programming, aesthetic IDE, Cursor alternative, Windsurf competitor, Copilot alternative, quantum IDE, AI pair programming, zen coding, lo-fi coding environment, DX-first development, 10x developer tools, multiplayer coding, AI code completion, LLM-powered IDE, GPT-4 coding assistant, Claude coding, prompt-driven development, ship faster, instant dev environment, quantum computing IDE, quantum neural networks, Next.js development, React 19 IDE, TypeScript IDE, open source IDE, indie hacker tools, developer wellness, mindful coding, distraction-free IDE, vector database, AI Kit packages, semantic search, embeddings, ZeroDB',
+    // Additional SEO meta tags from Vite version
+    'category': 'Developer Tools',
+    'coverage': 'Worldwide',
+    'target': 'developers, AI engineers, software architects, tech leads',
+    'audience': 'Developers',
+    'classification': 'AI Development Platform, IDE, Vector Database, Developer Tools',
+    'pagename': 'AI Native Studio - AI Development Platform',
+    'topic': 'AI Development, Software Engineering, Developer Tools',
+    // Geo tags
+    'geo.region': 'US',
+    'geo.placename': 'United States',
+    'geo.position': '37.7749;-122.4194',
+    'ICBM': '37.7749, -122.4194',
   },
 };
 

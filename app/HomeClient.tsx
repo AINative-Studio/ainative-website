@@ -5,8 +5,7 @@ import { motion, useScroll, useTransform, Variants, AnimatePresence } from 'fram
 import {
   Cpu,
   ArrowRight,
-  Sparkles,
-  GitBranch
+  Sparkles
 } from 'lucide-react';
 import {
   DatabaseIcon,
@@ -15,8 +14,7 @@ import {
   ChevronRightIcon
 } from '@/components/icons';
 import { Button } from '@/components/ui/button';
-import { appConfig } from '@/lib/config/app';
-import { useRef, useEffect, useState } from 'react';
+import { useRef, useEffect, useState, startTransition } from 'react';
 
 // Animated text cycling component
 const AnimatedTargetText = () => {
@@ -83,7 +81,9 @@ export default function HomeClient() {
 
   // Ensure client-side only scroll animations
   useEffect(() => {
-    setIsMounted(true);
+    startTransition(() => {
+      setIsMounted(true);
+    });
   }, []);
 
   const { scrollYProgress } = useScroll({
@@ -215,22 +215,28 @@ export default function HomeClient() {
                   <span className="absolute inset-0 bg-gradient-to-r from-white/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></span>
                 </Button>
               </Link>
-              <a
-                href={appConfig.links.github}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="w-full sm:w-auto"
-              >
+              <Link href="/ai-kit" className="w-full sm:w-auto">
                 <Button
                   variant="outline"
                   size="lg"
                   className="w-full group border-2 border-[#2D3748] hover:border-[#4B6FED]/40 bg-transparent hover:bg-[#4B6FED]/5 text-white transition-all duration-300"
                 >
-                  <GitBranch className="mr-2 h-4 w-4" />
-                  <span className="relative z-10">View on GitHub</span>
+                  <CodeIcon className="mr-2 h-4 w-4" />
+                  <span className="relative z-10">View AI-Kit Features</span>
                   <ChevronRightIcon className="ml-2 h-4 w-4 transition-transform duration-300 group-hover:translate-x-1" />
                 </Button>
-              </a>
+              </Link>
+              <Link href="/pricing" className="w-full sm:w-auto">
+                <Button
+                  variant="outline"
+                  size="lg"
+                  className="w-full group border-2 border-[#2D3748] hover:border-[#8A63F4]/40 bg-transparent hover:bg-[#8A63F4]/5 text-white transition-all duration-300"
+                >
+                  <Sparkles className="mr-2 h-4 w-4" />
+                  <span className="relative z-10">View Pricing</span>
+                  <ChevronRightIcon className="ml-2 h-4 w-4 transition-transform duration-300 group-hover:translate-x-1" />
+                </Button>
+              </Link>
             </motion.div>
 
           </motion.div>
@@ -275,8 +281,9 @@ export default function HomeClient() {
                 icon: DatabaseIcon,
                 title: 'Vector Database',
                 desc: 'Store and search embeddings with semantic similarity at scale',
-                link: '/products/zerodb',
+                link: 'https://zerodb.ainative.studio',
                 isLucideIcon: false,
+                external: true,
               },
               {
                 icon: CodeIcon,
@@ -292,8 +299,8 @@ export default function HomeClient() {
                 link: '/community',
                 isLucideIcon: false,
               },
-            ].map(({ icon: Icon, title, desc, link, isLucideIcon }, i) => (
-              <Link href={link} key={title}>
+            ].map(({ icon: Icon, title, desc, link, external }, i) => {
+              const CardContent = (
                 <motion.div
                   custom={i}
                   variants={fadeUp}
@@ -303,17 +310,23 @@ export default function HomeClient() {
                   className="bg-[#161B22] rounded-xl p-6 border border-[#2D333B]/50 hover:border-[#4B6FED]/30 transition-all duration-300 cursor-pointer h-full"
                 >
                   <div className="mb-4">
-                    {isLucideIcon ? (
-                      <Icon className="h-8 w-8 text-[#4B6FED]" />
-                    ) : (
-                      <Icon className="h-8 w-8 text-[#4B6FED]" />
-                    )}
+                    <Icon className="h-8 w-8 text-[#4B6FED]" />
                   </div>
                   <h3 className="text-lg font-semibold mb-2 text-white">{title}</h3>
                   <p className="text-sm text-gray-400 leading-relaxed">{desc}</p>
                 </motion.div>
-              </Link>
-            ))}
+              );
+
+              return external ? (
+                <a href={link} key={title} target="_blank" rel="noopener noreferrer">
+                  {CardContent}
+                </a>
+              ) : (
+                <Link href={link} key={title}>
+                  {CardContent}
+                </Link>
+              );
+            })}
           </div>
         </div>
       </section>

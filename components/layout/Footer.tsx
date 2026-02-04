@@ -65,6 +65,11 @@ const Footer = () => {
                 </a>
               </li>
               <li>
+                <a href="https://aikit.ainative.studio" target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-white text-sm transition-colors">
+                  AI-Kit
+                </a>
+              </li>
+              <li>
                 <Link href="/agent-swarm" className="text-gray-400 hover:text-white text-sm transition-colors">
                   Agent Swarm
                 </Link>
@@ -94,11 +99,6 @@ const Footer = () => {
               <li>
                 <Link href="/dev-resources" className="text-gray-400 hover:text-white text-sm transition-colors">
                   Developer Resources
-                </Link>
-              </li>
-              <li>
-                <Link href="/tutorials" className="text-gray-400 hover:text-white text-sm transition-colors">
-                  Tutorials
                 </Link>
               </li>
               <li>
