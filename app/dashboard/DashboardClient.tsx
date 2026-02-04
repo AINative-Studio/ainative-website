@@ -348,7 +348,7 @@ export default function DashboardClient() {
     >
       {/* Welcome Card - Only shown to new users or until dismissed */}
       {showWelcome && (
-        <motion.div className="mb-8" variants={fadeUp}>
+        <motion.div className="mb-6" variants={fadeUp}>
           <BrandedWelcome
             title="Welcome to AI Native Studio"
             description="Get started by creating your first API key and explore our powerful AI development tools. Build faster with our comprehensive suite of APIs and services."
@@ -365,8 +365,8 @@ export default function DashboardClient() {
       )}
 
       {/* Usage Header */}
-      <motion.div className="mb-10" variants={fadeUp}>
-        <div className="flex justify-between items-center flex-wrap gap-4">
+      <motion.div className="mb-6" variants={fadeUp}>
+        <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4">
           <div className="flex items-center gap-3">
             <div className="flex items-center gap-2">
               <BarChart2 className="text-[#4B6FED] h-6 w-6" />
@@ -383,7 +383,7 @@ export default function DashboardClient() {
               <RefreshCcw className={`h-4 w-4 ${isRefreshing ? 'animate-spin' : ''}`} />
             </AIKitButton>
           </div>
-          <div className="flex items-center gap-3 flex-wrap">
+          <div className="flex items-center gap-2 sm:gap-3 flex-wrap">
             <AIKitButton
               variant="outline"
               size="sm"
@@ -405,8 +405,7 @@ export default function DashboardClient() {
             <Link href="/pricing">
               <AIKitButton
                 variant="link"
-                className="flex items-center gap-1"
-              >
+                className="flex items-center gap-1 whitespace-nowrap">
                 See updates to pricing structure
                 <ChevronRight className="h-4 w-4" />
               </AIKitButton>
@@ -426,16 +425,16 @@ export default function DashboardClient() {
       </motion.div>
 
       {/* Usage Summary Cards */}
-      <motion.div variants={stagger}>
+      <motion.div variants={stagger} className="space-y-6">
         <motion.div variants={fadeUp}>
-          <Card className="mb-6 border-none bg-surface-secondary shadow-lg overflow-hidden">
-            <CardHeader className="border-b border-border">
+          <Card className="border-none bg-surface-secondary shadow-lg overflow-hidden">
+            <CardHeader className="border-b border-border px-6 py-4">
               <CardTitle className="text-xl flex items-center gap-2 text-white">
                 <RefreshCcw className="h-5 w-5 text-[#4B6FED]" />
                 AINative Usage Summary
               </CardTitle>
             </CardHeader>
-            <CardContent className="pt-6">
+            <CardContent className="p-6">
               {!usageData ? (
                 <div className="text-center py-8">
                   <p className="text-gray-400 mb-4">Unable to load credit information</p>
@@ -494,16 +493,16 @@ export default function DashboardClient() {
                     <p className="text-xs text-gray-500">Usage since {usageData.usagePeriod.startDate}</p>
                   </div>
 
-                  <div className="mt-8 p-4 bg-[#1C2128] rounded-md border border-border">
+                  <div className="mt-6 p-4 bg-[#1C2128] rounded-md border border-border">
                     <p className="text-sm text-gray-300">
                       Once the usage limit is reached, AINative can continue to be used with the Base
                       model. To continue using premium models, purchase add-on prompt credits.
                     </p>
                   </div>
 
-                  <div className="mt-8 flex flex-wrap gap-4">
+                  <div className="mt-6 flex flex-col sm:flex-row gap-3">
                     <Link href="/refills">
-                      <AIKitButton className="font-medium">
+                      <AIKitButton className="font-medium w-full sm:w-auto">
                         <Settings className="h-4 w-4 mr-2" />
                         Setup automatic refills
                       </AIKitButton>
@@ -511,12 +510,13 @@ export default function DashboardClient() {
                     <AIKitButton
                       variant="outline"
                       onClick={handlePurchaseCredits}
+                      className="w-full sm:w-auto"
                     >
                       Purchase credits
                     </AIKitButton>
                   </div>
 
-                  <div className="mt-8 flex items-center gap-2 p-3 border border-[#4B6FED]/20 rounded-md bg-[#4B6FED]/5">
+                  <div className="mt-6 flex items-center gap-2 p-3 border border-[#4B6FED]/20 rounded-md bg-[#4B6FED]/5">
                     <CircleHelp className="h-5 w-5 text-[#4B6FED]" />
                     <p className="text-sm text-white">Refer a friend to get 250 free add-on prompt credits</p>
                   </div>
@@ -528,16 +528,16 @@ export default function DashboardClient() {
 
         {/* Cost Breakdown Section */}
         {costData && (
-          <motion.div variants={fadeUp} className="mt-6">
+          <motion.div variants={fadeUp}>
             <Card className="border-none bg-surface-secondary shadow-lg overflow-hidden">
-              <CardHeader className="border-b border-border">
+              <CardHeader className="border-b border-border px-6 py-4">
                 <CardTitle className="text-xl flex items-center gap-2 text-white">
                   <BarChart2 className="h-5 w-5 text-[#4B6FED]" />
                   Cost Breakdown
                 </CardTitle>
               </CardHeader>
-              <CardContent className="pt-6">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <CardContent className="p-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
                   {/* Current Period Costs */}
                   <div className="bg-[#1C2128] p-4 rounded-lg">
                     <h4 className="text-sm font-semibold text-gray-300 mb-3">Current Period</h4>
@@ -578,16 +578,16 @@ export default function DashboardClient() {
 
         {/* AI Metrics Section */}
         {aiMetrics && (
-          <motion.div variants={fadeUp} className="mt-6">
+          <motion.div variants={fadeUp}>
             <Card className="border-none bg-surface-secondary shadow-lg overflow-hidden">
-              <CardHeader className="border-b border-border">
+              <CardHeader className="border-b border-border px-6 py-4">
                 <CardTitle className="text-xl flex items-center gap-2 text-white">
                   <BarChart2 className="h-5 w-5 text-[#4B6FED]" />
                   AI Development Metrics
                 </CardTitle>
               </CardHeader>
-              <CardContent className="pt-6">
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            <CardContent className="p-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
                   {/* Code Generation */}
                   <div className="bg-[#1C2128] p-4 rounded-lg">
                     <h4 className="text-sm font-semibold text-gray-300 mb-3">Code Generation</h4>
