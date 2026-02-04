@@ -72,11 +72,12 @@ export default function PlanManagementClient() {
       const subscriptionService = new SubscriptionService();
 
       // Fetch all data in parallel
+      // Note: getPaymentMethods() and getInvoices() handle errors gracefully with empty arrays
       const [subscription, allPlans, paymentMethodsList, invoicesList] = await Promise.all([
         subscriptionService.getCurrentSubscription().catch(() => null),
         pricingService.getPricingPlansWithFallback(),
-        subscriptionService.getPaymentMethods().catch(() => []),
-        subscriptionService.getInvoices(10).catch(() => [])
+        subscriptionService.getPaymentMethods(),
+        subscriptionService.getInvoices(10)
       ]);
 
       setPaymentMethods(paymentMethodsList);

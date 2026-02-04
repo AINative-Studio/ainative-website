@@ -328,13 +328,27 @@ export class SubscriptionService {
         `${this.basePath}/invoices?limit=${limit}`
       );
 
-      if (!response.data.success || !response.data.data?.invoices) {
-        throw new Error(response.data.message || 'Failed to fetch invoices');
+      // Handle non-200 responses gracefully
+      if (response.status >= 400) {
+        console.warn(`Invoices endpoint returned ${response.status}: ${response.statusText}`);
+        return [];
       }
 
-      return response.data.data.invoices;
+      // Check for successful response structure
+      if (!response.data.success) {
+        console.warn('Invoices API returned unsuccessful response:', response.data.message);
+        return [];
+      }
+
+      // Return invoices or empty array if none exist
+      return response.data.data?.invoices || [];
     } catch (error) {
-      console.error('Error fetching subscription invoices:', error);
+      // Network errors, timeout, or other issues - graceful degradation
+      if (error instanceof Error) {
+        console.warn('Invoices fetch failed (service may be unavailable):', error.message);
+      } else {
+        console.warn('Invoices fetch failed with unknown error');
+      }
       return [];
     }
   }
@@ -348,13 +362,27 @@ export class SubscriptionService {
         `${this.basePath}/payment-methods`
       );
 
-      if (!response.data.success || !response.data.data?.payment_methods) {
-        throw new Error(response.data.message || 'Failed to fetch payment methods');
+      // Handle non-200 responses gracefully
+      if (response.status >= 400) {
+        console.warn(`Payment methods endpoint returned ${response.status}: ${response.statusText}`);
+        return [];
       }
 
-      return response.data.data.payment_methods;
+      // Check for successful response structure
+      if (!response.data.success) {
+        console.warn('Payment methods API returned unsuccessful response:', response.data.message);
+        return [];
+      }
+
+      // Return payment methods or empty array if none exist
+      return response.data.data?.payment_methods || [];
     } catch (error) {
-      console.error('Error fetching payment methods:', error);
+      // Network errors, timeout, or other issues - graceful degradation
+      if (error instanceof Error) {
+        console.warn('Payment methods fetch failed (service may be unavailable):', error.message);
+      } else {
+        console.warn('Payment methods fetch failed with unknown error');
+      }
       return [];
     }
   }
