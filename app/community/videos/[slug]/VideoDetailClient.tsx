@@ -313,7 +313,7 @@ export default function VideoDetailClient({ slug }: VideoDetailClientProps) {
 
   if (!video) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 flex items-center justify-center">
+      <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 flex items-center justify-center pt-20">
         <div className="text-center">
           <h1 className="text-2xl text-white mb-4">Video not found</h1>
           <Link
@@ -329,7 +329,7 @@ export default function VideoDetailClient({ slug }: VideoDetailClientProps) {
 
   return (
     <div className="min-h-screen bg-vite-bg">
-      <div className="max-w-7xl mx-auto px-4 py-8">
+      <div className="max-w-7xl mx-auto px-4 pt-24 md:pt-28 pb-8">
         {/* Back Button */}
         <Link
           href="/community/videos"
