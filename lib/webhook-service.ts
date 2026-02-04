@@ -81,8 +81,15 @@ export const webhookService = {
    * List all webhooks
    */
   async listWebhooks(): Promise<Webhook[]> {
-    const response = await apiClient.get<{ webhooks: Webhook[] }>('/v1/public/webhooks');
-    return response.data.webhooks;
+    try {
+      const response = await apiClient.get<{ webhooks: Webhook[] }>('/v1/public/webhooks');
+      if (response.status >= 400 || !response.data?.webhooks) {
+        return [];
+      }
+      return response.data.webhooks;
+    } catch {
+      return [];
+    }
   },
 
   /**
@@ -147,10 +154,17 @@ export const webhookService = {
    * Get delivery history for a webhook
    */
   async getWebhookDeliveries(id: string): Promise<WebhookDelivery[]> {
-    const response = await apiClient.get<{ deliveries: WebhookDelivery[] }>(
-      `/v1/public/webhooks/${id}/deliveries`
-    );
-    return response.data.deliveries;
+    try {
+      const response = await apiClient.get<{ deliveries: WebhookDelivery[] }>(
+        `/v1/public/webhooks/${id}/deliveries`
+      );
+      if (response.status >= 400 || !response.data?.deliveries) {
+        return [];
+      }
+      return response.data.deliveries;
+    } catch {
+      return [];
+    }
   },
 
   /**
