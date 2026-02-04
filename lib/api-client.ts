@@ -65,12 +65,24 @@ class ApiClient {
 
       const data = await response.json();
 
-      // Handle 401 unauthorized - could trigger token refresh here
+      // Handle 401 unauthorized
       if (response.status === 401) {
-        // Clear token on 401
         if (typeof window !== 'undefined') {
           localStorage.removeItem('accessToken');
         }
+      }
+
+      // Throw error for non-OK responses
+      if (!response.ok) {
+        const errorMessage = typeof data === 'object' && data?.message
+          ? data.message
+          : typeof data === 'object' && data?.detail
+          ? data.detail
+          : typeof data === 'string'
+          ? data
+          : `HTTP ${response.status}: ${response.statusText}`;
+
+        throw new Error(errorMessage);
       }
 
       return {
