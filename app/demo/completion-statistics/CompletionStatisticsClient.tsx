@@ -19,7 +19,7 @@ import {
 } from 'recharts';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { ArrowUpIcon, ArrowDownIcon, Clock, CheckCircle2, XCircle, Activity } from 'lucide-react';
+import { ArrowUp, ArrowDown, Clock, CheckCircle2, XCircle, Activity } from 'lucide-react';
 
 // Sample data for demonstration
 const generateCompletionTrends = () => {
@@ -184,7 +184,7 @@ export default function CompletionStatisticsClient() {
           {metrics.map((metric, index) => {
             const Icon = metric.icon;
             const isPositiveTrend = metric.trend > 0;
-            const TrendIcon = isPositiveTrend ? ArrowUpIcon : ArrowDownIcon;
+            const TrendIcon = isPositiveTrend ? ArrowUp : ArrowDown;
 
             return (
               <motion.div
@@ -323,7 +323,7 @@ export default function CompletionStatisticsClient() {
                       cx="50%"
                       cy="50%"
                       labelLine={false}
-                      label={({ name, percent }) => `${name}: ${(percent * 100).toFixed(0)}%`}
+                      label={({ name, percent }) => `${name}: ${((percent ?? 0) * 100).toFixed(0)}%`}
                       outerRadius={100}
                       fill="#8884d8"
                       dataKey="value"

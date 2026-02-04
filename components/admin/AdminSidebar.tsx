@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
-  LayoutDashboard,
+  LayoutGrid,
   Users,
   Activity,
   FileText,
@@ -32,7 +32,7 @@ const menuItems: MenuItem[] = [
   {
     label: 'Dashboard',
     href: '/admin',
-    icon: LayoutDashboard,
+    icon: LayoutGrid,
   },
   {
     label: 'Users',
@@ -186,7 +186,7 @@ export default function AdminSidebar() {
               href="/dashboard"
               className="flex items-center gap-3 px-4 py-3 rounded-lg text-gray-400 hover:text-white hover:bg-gray-800 transition-all"
             >
-              <LayoutDashboard className="h-5 w-5" />
+              <LayoutGrid className="h-5 w-5" />
               <span className="font-medium">Back to Dashboard</span>
             </Link>
           </div>

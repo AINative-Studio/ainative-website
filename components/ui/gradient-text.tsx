@@ -54,7 +54,7 @@ const GradientText = React.forwardRef<HTMLElement, GradientTextProps>(
   ({ className, variant, size, animated, as: Comp = 'span', children, ...props }, ref) => {
     return (
       <Comp
-        ref={ref as React.Ref<HTMLElement>}
+        ref={ref as React.Ref<never>}
         className={cn(gradientTextVariants({ variant, size, animated, className }))}
         {...props}
       >

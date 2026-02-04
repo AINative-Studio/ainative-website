@@ -33,7 +33,9 @@ export default function Header() {
     pathname.startsWith('/refills') ||
     pathname.startsWith('/developer-settings');
 
-  const isLoggedIn = status === 'authenticated';
+  // Check both status AND session data to handle navigation edge cases
+  const hasSession = session && 'user' in session && !!session.user;
+  const isLoggedIn = status === 'authenticated' || hasSession;
   const isLoading = status === 'loading';
   const avatar = session?.user?.image;
 

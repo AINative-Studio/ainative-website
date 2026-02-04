@@ -9,7 +9,7 @@ import {
   Bell, Repeat, FileText, Sliders, X,
   ChevronRight, ChevronDown, Database, Zap, Code,
   Server, Wrench, Home, Network, Package, Users, Receipt, GitBranch,
-  Shield, Cpu, Activity, Brain, DollarSign, Wallet
+  Shield, Cpu, Activity, Brain, DollarSign
 } from 'lucide-react';
 import { useState } from 'react';
 import { motion } from 'framer-motion';
@@ -33,7 +33,7 @@ const menuSections = [
       { name: 'Developer Settings', to: '/developer-settings', icon: Code },
       { name: 'Developer Tools', to: '/developer-tools', icon: Wrench },
       { name: 'Earnings', to: '/developer/earnings', icon: DollarSign },
-      { name: 'Payouts', to: '/developer/payouts', icon: Wallet },
+      { name: 'Payouts', to: '/developer/payouts', icon: CreditCard },
       { name: 'MCP Servers', to: '/dashboard/mcp-hosting', icon: Server },
       { name: 'ZeroDB', to: '/dashboard/zerodb', icon: Database },
       { name: 'API Sandbox', to: '/dashboard/api-sandbox', icon: Package },

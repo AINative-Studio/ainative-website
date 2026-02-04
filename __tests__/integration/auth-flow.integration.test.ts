@@ -3,7 +3,7 @@
  * Tests complete authentication workflows including login, registration, token management, and user profile
  */
 
-import { authService } from '@/services/AuthService';
+import { authService } from '@/services/authService';
 import { setupIntegrationTest, testUtils, mockUser, mockTokens } from './setup';
 
 describe('Authentication Flow Integration Tests', () => {

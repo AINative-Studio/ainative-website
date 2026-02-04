@@ -3,7 +3,7 @@
  * Tests complete RLHF workflows including feedback submission, statistics, and agent improvement
  */
 
-import { rlhfService } from '@/services/RLHFService';
+import { rlhfService } from '@/services/rlhfService';
 import { setupIntegrationTest, testUtils } from './setup';
 
 describe('RLHF Feedback Collection Flow Integration Tests', () => {

@@ -367,7 +367,7 @@ export default function CompletionTimeSummaryClient() {
                         borderRadius: '8px',
                         color: '#F3F4F6',
                       }}
-                      formatter={(value: number) => [formatTime(value), '']}
+                      formatter={(value?: number) => [formatTime(value ?? 0), '']}
                     />
                     <Legend
                       wrapperStyle={{ paddingTop: '20px' }}

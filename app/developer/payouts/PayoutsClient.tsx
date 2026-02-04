@@ -15,7 +15,6 @@ import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
 import { useToast } from '@/hooks/use-toast';
 import {
-  Wallet,
   CreditCard,
   Building2,
   Calendar,
@@ -559,7 +558,7 @@ export default function PayoutsClient() {
                     {balance ? payoutService.formatCurrency(balance.available, balance.currency) : '$0.00'}
                   </p>
                 </div>
-                <Wallet className="h-10 w-10 text-green-600" />
+                <CreditCard className="h-10 w-10 text-green-600" />
               </div>
               <Button
                 className="w-full mt-4"

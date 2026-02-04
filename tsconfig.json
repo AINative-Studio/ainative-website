@@ -38,6 +38,8 @@
   ],
   "exclude": [
     "node_modules",
-    "lib/ignore-cli.ts"
+    "lib/ignore-cli.ts",
+    "**/*.stories.ts",
+    "**/*.stories.tsx"
   ]
 }

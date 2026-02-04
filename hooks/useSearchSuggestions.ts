@@ -46,7 +46,7 @@ import type { SearchSuggestionsOptions } from '@/types/search';
 interface UseSearchSuggestionsParams {
   query: string;
   options?: SearchSuggestionsOptions;
-  
+  useMockData?: boolean;
 }
 
 /**
