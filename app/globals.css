@@ -793,3 +793,29 @@ a {
   --height-button: 40px;
   --padding-button: 10px;
 }
+
+/* ============================================
+   Chatwoot Widget Positioning
+   Adjust spacing to prevent overlap with other elements
+   ============================================ */
+
+/* Target all possible Chatwoot widget selectors */
+.woot-widget-holder,
+.woot-widget-bubble,
+.woot--bubble-holder,
+.woot-widget-bubble-position--right,
+[class*="woot-widget"],
+[class*="woot--bubble"] {
+  bottom: 80px !important;
+  right: 16px !important;
+}
+
+/* Ensure proper z-index layering */
+.woot-widget-holder {
+  z-index: 9998 !important;
+}
+
+/* Add spacing between any stacked bottom-right elements */
+.woot-widget-bubble {
+  margin-bottom: 12px !important;
+}
