@@ -52,7 +52,7 @@ export function useTrainingHistory() {
     queryFn: async (): Promise<TrainingJob[]> => {
       const apiClient = new QNNApiClient();
       const response = await apiClient.getTrainingHistory();
-      return response.data;
+      return response.items;
     },
     staleTime: 1 * 60 * 1000, // 1 minute
     gcTime: 10 * 60 * 1000,
@@ -77,7 +77,7 @@ export function useTrainingByModel(modelId: string, enabled: boolean = true) {
     queryFn: async (): Promise<TrainingJob[]> => {
       const apiClient = new QNNApiClient();
       const response = await apiClient.getTrainingHistory(modelId);
-      return response.data;
+      return response.items;
     },
     staleTime: 2 * 60 * 1000,
     enabled: enabled && !!modelId,

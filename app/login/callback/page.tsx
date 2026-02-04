@@ -2,6 +2,8 @@ import { Metadata } from 'next';
 import { Suspense } from 'react';
 import OAuthCallbackClient from './OAuthCallbackClient';
 
+export const dynamic = 'force-dynamic';
+
 export const metadata: Metadata = {
   title: 'Authenticating - AINative Studio',
   description: 'Processing your authentication request',

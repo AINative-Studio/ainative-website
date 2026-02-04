@@ -42,7 +42,7 @@ export function useModels(filters?: ModelFilters) {
     queryKey: modelKeys.list(filters),
     queryFn: async (): Promise<PaginatedResponse<Model>> => {
       try {
-        const models = await qnnApiClient.listModels(filters);
+        const models = await qnnApiClient.listModels(filters as Record<string, unknown> | undefined);
         return {
           items: models,
           total: models.length,
@@ -182,8 +182,8 @@ export function useCreateModel() {
         },
       };
 
-      queryClient.setQueryData(modelKeys.list(), (old: any) => {
-        if (!old) return { items: [optimisticModel], total: 1 };
+      queryClient.setQueryData(modelKeys.list(), (old: PaginatedResponse<Model> | undefined) => {
+        if (!old) return { items: [optimisticModel], total: 1 } as PaginatedResponse<Model>;
         return {
           ...old,
           items: [optimisticModel, ...old.items],
@@ -259,7 +259,7 @@ export function useUpdateModel() {
       const previousModel = queryClient.getQueryData(modelKeys.detail(id));
 
       // Optimistically update
-      queryClient.setQueryData(modelKeys.detail(id), (old: any) => {
+      queryClient.setQueryData(modelKeys.detail(id), (old: Model | undefined) => {
         if (!old) return old;
         return {
           ...old,
@@ -323,7 +323,7 @@ export function useDeleteModel() {
       const previousModels = queryClient.getQueryData(modelKeys.lists());
 
       // Optimistically remove from list
-      queryClient.setQueriesData({ queryKey: modelKeys.lists() }, (old: any) => {
+      queryClient.setQueriesData({ queryKey: modelKeys.lists() }, (old: PaginatedResponse<Model> | undefined) => {
         if (!old?.items) return old;
         return {
           ...old,

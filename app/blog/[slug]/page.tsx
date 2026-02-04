@@ -1,7 +1,7 @@
 import { Metadata } from 'next';
 import BlogDetailClient from './BlogDetailClient';
 import { ArticleSchema, BreadcrumbSchema } from '@/components/seo/StructuredData';
-import { getRevalidateTime, getCacheTags } from '@/lib/cache-config';
+import { getCacheTags } from '@/lib/cache-config';
 
 interface BlogDetailPageProps {
   params: Promise<{
@@ -10,7 +10,7 @@ interface BlogDetailPageProps {
 }
 
 // Enable ISR with 5-minute revalidation
-export const revalidate = getRevalidateTime('content', 'blog'); // 300 seconds (5 minutes)
+export const revalidate = 300; // 5 minutes
 
 // Add cache tags for on-demand revalidation
 export const tags = getCacheTags('blog');

@@ -282,7 +282,7 @@ export function checkGradientContrast(
   const endRatio = getContrastRatio(gradient.to, textColor);
 
   let viaRatio = 0;
-  if (gradient.via) {
+  if ('via' in gradient && gradient.via) {
     viaRatio = getContrastRatio(gradient.via, textColor);
   }
 

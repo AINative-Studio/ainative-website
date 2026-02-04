@@ -1,10 +1,9 @@
 import type { Metadata } from 'next';
 import FAQClient from './FAQClient';
 import { FAQSchema, BreadcrumbSchema } from '@/components/seo/StructuredData';
-import { getRevalidateTime } from '@/lib/cache-config';
 
 // Enable ISR with 30-minute revalidation for FAQ page
-export const revalidate = getRevalidateTime('marketing', 'faq'); // 1800 seconds (30 minutes)
+export const revalidate = 1800; // 30 minutes
 
 export const metadata: Metadata = {
   title: 'FAQ - Frequently Asked Questions | AI Native Studio',

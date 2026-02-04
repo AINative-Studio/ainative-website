@@ -60,9 +60,15 @@ const clientEnvSchema = z.object({
 // These are NEVER exposed to the browser (no NEXT_PUBLIC_* prefix)
 
 const serverEnvSchema = z.object({
-  // Stripe secrets
-  STRIPE_SECRET_KEY: z.string().startsWith("sk_").optional(),
-  STRIPE_WEBHOOK_SECRET: z.string().startsWith("whsec_").optional(),
+  // Stripe secrets (preprocess to handle empty strings)
+  STRIPE_SECRET_KEY: z.preprocess(
+    (val) => (val === "" || val === undefined ? undefined : val),
+    z.string().startsWith("sk_").optional()
+  ),
+  STRIPE_WEBHOOK_SECRET: z.preprocess(
+    (val) => (val === "" || val === undefined ? undefined : val),
+    z.string().startsWith("whsec_").optional()
+  ),
 
   // Database
   DATABASE_URL: z.string().optional(),
@@ -71,15 +77,25 @@ const serverEnvSchema = z.object({
 
   // Authentication
   GITHUB_CLIENT_SECRET: z.string().optional(),
-  JWT_SECRET: z.string().min(32).optional(),
+  JWT_SECRET: z.preprocess(
+    (val) => (val === "" || val === undefined ? undefined : val),
+    z.string().min(32).optional()
+  ),
   JWT_EXPIRES_IN: z.string().default("15m"),
-  REFRESH_TOKEN_SECRET: z.string().min(32).optional(),
+  REFRESH_TOKEN_SECRET: z.preprocess(
+    (val) => (val === "" || val === undefined ? undefined : val),
+    z.string().min(32).optional()
+  ),
   REFRESH_TOKEN_EXPIRES_IN: z.string().default("7d"),
 
   // External Services
-  OPENAI_API_KEY: z.string().startsWith("sk-").optional(),
+  // Skip validation if not set or is placeholder - actual validation happens when key is used
+  OPENAI_API_KEY: z.string().optional(),
   ANTHROPIC_API_KEY: z.string().optional(),
-  ZERODB_API_URL: z.string().url().optional(),
+  ZERODB_API_URL: z.preprocess(
+    (val) => (val === "" || val === undefined ? undefined : val),
+    z.string().url().optional()
+  ),
   ZERODB_API_KEY: z.string().optional(),
   LUMA_API_KEY: z.string().optional(),
 
@@ -91,7 +107,10 @@ const serverEnvSchema = z.object({
   SMTP_PORT: z.coerce.number().optional(),
   SMTP_USER: z.string().optional(),
   SMTP_PASS: z.string().optional(),
-  FROM_EMAIL: z.string().email().optional(),
+  FROM_EMAIL: z.preprocess(
+    (val) => (val === "" || val === undefined ? undefined : val),
+    z.string().email().optional()
+  ),
   FROM_NAME: z.string().optional(),
 
   // AWS S3

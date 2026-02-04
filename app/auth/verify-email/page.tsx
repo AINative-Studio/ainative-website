@@ -2,6 +2,8 @@ import { Metadata } from 'next';
 import { Suspense } from 'react';
 import VerifyEmailClient from './VerifyEmailClient';
 
+export const dynamic = 'force-dynamic';
+
 export const metadata: Metadata = {
   title: 'Verify Email',
   description: 'Verify your email address to activate your AINative Studio account.',
