@@ -1,0 +1,30 @@
+/* Widget Positioning & Z-Index Management - Fix for Issue #519 */
+
+/* Chatwoot Chat Widget positioning */
+#chatwoot_live_chat_widget {
+  bottom: 20px !important;
+  right: 20px !important;
+  z-index: 9998 !important;
+}
+
+.woot--bubble-holder {
+  z-index: 9998 !important;
+}
+
+.woot-widget-holder {
+  z-index: 9999 !important;
+  max-width: 380px !important;
+}
+
+/* Mobile adjustments */
+@media (max-width: 768px) {
+  #chatwoot_live_chat_widget {
+    bottom: 16px !important;
+    right: 16px !important;
+  }
+
+  .woot-widget-holder {
+    max-width: calc(100vw - 32px) !important;
+    right: 16px !important;
+  }
+}

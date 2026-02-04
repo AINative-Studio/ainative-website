@@ -12,6 +12,7 @@ import SpeedInsights from "@/components/analytics/SpeedInsights";
 import WebVitalsMonitor from "@/components/analytics/WebVitalsMonitor";
 import StructuredData from "@/components/seo/StructuredData";
 import "./globals.css";
+import "./widgets.css";
 
 // Poppins - Primary font matching Vite design system
 const poppins = Poppins({

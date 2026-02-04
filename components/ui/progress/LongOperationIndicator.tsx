@@ -86,7 +86,7 @@ export const LongOperationIndicator = React.forwardRef<
           animate={{ opacity: 1, y: 0, scale: 1 }}
           exit={{ opacity: 0, y: 20, scale: 0.95 }}
           className={cn(
-            'fixed bottom-4 right-4 z-50 max-w-md rounded-lg border-2 p-4 shadow-2xl backdrop-blur-sm',
+            'fixed bottom-24 right-4 z-50 sm:bottom-20 md:bottom-24 max-w-md rounded-lg border-2 p-4 shadow-2xl backdrop-blur-sm',
             isWarningState
               ? 'border-orange-500/50 bg-orange-950/90'
               : 'border-blue-500/50 bg-blue-950/90'
