@@ -2,21 +2,30 @@ import apiClient from '@/lib/api-client';
 
 /**
  * User notification preference settings
+ * Matches backend schema from /v1/settings/notifications/preferences
+ * Refs #532
  */
 export interface NotificationPreference {
   email_notifications: boolean;
   push_notifications: boolean;
   marketing_emails: boolean;
   security_alerts: boolean;
+  ai_suggestions?: boolean;
+  system_updates?: boolean;
 }
 
 /**
  * User communication settings
+ * Matches backend schema from /v1/settings/communication
+ * Refs #532
  */
 export interface CommunicationSettings {
   preferred_language: string;
   timezone: string;
   email_frequency: 'immediate' | 'daily' | 'weekly';
+  slack_notifications?: boolean;
+  teams_notifications?: boolean;
+  discord_notifications?: boolean;
 }
 
 /**
@@ -197,10 +206,11 @@ export class UserSettingsService {
 
   /**
    * Get user profile statistics
+   * Refs #532 - Fixed endpoint to match backend
    */
   async getUserStats(): Promise<UserStats | null> {
     try {
-      const response = await apiClient.get<ApiResponse<UserStats>>('/v1/profiles/stats');
+      const response = await apiClient.get<ApiResponse<UserStats>>('/v1/profiles/me/stats');
 
       if (!response.data.success || !response.data.data) {
         throw new Error(response.data.message || 'Failed to fetch user stats');
