@@ -57,6 +57,7 @@ export default function PlanManagementClient() {
   const [fullSubscription, setFullSubscription] = useState<Subscription | null>(null);
   const [paymentMethods, setPaymentMethods] = useState<PaymentMethod[]>([]);
   const [invoices, setInvoices] = useState<SubscriptionInvoice[]>([]);
+  const [invoicesError, setInvoicesError] = useState(false);
   const [dialogOpen, setDialogOpen] = useState(false);
   const [dialogType, setDialogType] = useState<DialogType>(null);
   const [selectedPlan, setSelectedPlan] = useState<PricingPlan | null>(null);
@@ -71,17 +72,21 @@ export default function PlanManagementClient() {
     try {
       const subscriptionService = new SubscriptionService();
 
-      // Fetch all data in parallel
-      // Note: getPaymentMethods() and getInvoices() handle errors gracefully with empty arrays
+      // Fetch all data in parallel with error tracking
+      let invoicesHadError = false;
       const [subscription, allPlans, paymentMethodsList, invoicesList] = await Promise.all([
         subscriptionService.getCurrentSubscription().catch(() => null),
         pricingService.getPricingPlansWithFallback(),
-        subscriptionService.getPaymentMethods(),
-        subscriptionService.getInvoices(10)
+        subscriptionService.getPaymentMethods().catch(() => []),
+        subscriptionService.getInvoices(10).catch(() => {
+          invoicesHadError = true;
+          return [];
+        })
       ]);
 
       setPaymentMethods(paymentMethodsList);
       setInvoices(invoicesList);
+      setInvoicesError(invoicesHadError);
 
       if (subscription) {
         setFullSubscription(subscription);
@@ -741,7 +746,24 @@ export default function PlanManagementClient() {
                 {invoices.length === 0 ? (
                   <div className="text-center py-12">
                     <Download className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-                    <p className="text-muted-foreground">No invoices yet</p>
+                    <p className="text-muted-foreground">
+                      {invoicesError
+                        ? 'Unable to load invoices. Please try again later.'
+                        : 'No invoices yet'}
+                    </p>
+                    {invoicesError && (
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        className="mt-4"
+                        onClick={() => {
+                          setInvoicesError(false);
+                          fetchPlanData();
+                        }}
+                      >
+                        Retry
+                      </Button>
+                    )}
                   </div>
                 ) : (
                   <div className="space-y-3">
