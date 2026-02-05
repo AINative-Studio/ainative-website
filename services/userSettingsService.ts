@@ -176,7 +176,7 @@ export class UserSettingsService {
     profileData: Partial<UserProfile>
   ): Promise<OperationResult> {
     try {
-      const response = await apiClient.put<ApiResponse<{ message: string }>>(
+      const response = await apiClient.patch<ApiResponse<{ message: string }>>(
         '/v1/profiles/me',
         profileData
       );
@@ -200,7 +200,7 @@ export class UserSettingsService {
    */
   async getUserStats(): Promise<UserStats | null> {
     try {
-      const response = await apiClient.get<ApiResponse<UserStats>>('/v1/profiles/me/stats');
+      const response = await apiClient.get<ApiResponse<UserStats>>('/v1/profiles/stats');
 
       if (!response.data.success || !response.data.data) {
         throw new Error(response.data.message || 'Failed to fetch user stats');
