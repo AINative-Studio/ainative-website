@@ -210,7 +210,7 @@ export class UserSettingsService {
    */
   async getUserStats(): Promise<UserStats | null> {
     try {
-      const response = await apiClient.get<ApiResponse<UserStats>>('/v1/profiles/me/stats');
+      const response = await apiClient.get<ApiResponse<UserStats>>('/v1/profiles/stats');
 
       if (!response.data.success || !response.data.data) {
         throw new Error(response.data.message || 'Failed to fetch user stats');
