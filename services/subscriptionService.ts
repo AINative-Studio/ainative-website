@@ -170,6 +170,7 @@ export class SubscriptionService {
 
   /**
    * Get current subscription details
+   * Returns null if user has no subscription (e.g., free tier users)
    */
   async getCurrentSubscription(): Promise<Subscription | null> {
     try {
@@ -177,14 +178,29 @@ export class SubscriptionService {
         this.basePath
       );
 
+      // Handle successful responses with subscription data
+      if (response.data.success && response.data.data?.subscription) {
+        return response.data.data.subscription;
+      }
+
+      // Handle cases where no subscription exists (valid for free tier users)
       if (!response.data.success || !response.data.data?.subscription) {
-        throw new Error(response.data.message || 'No subscription found');
+        console.warn(
+          'No active subscription found:',
+          response.data.message || 'User may be on free tier'
+        );
+        return null;
       }
 
       return response.data.data.subscription;
     } catch (error) {
-      console.error('Error fetching subscription:', error);
-      throw error;
+      // Network errors, timeout, or other issues - return null for graceful degradation
+      if (error instanceof Error) {
+        console.warn('Subscription fetch failed (service may be unavailable):', error.message);
+      } else {
+        console.warn('Subscription fetch failed with unknown error');
+      }
+      return null;
     }
   }
 
@@ -319,38 +335,59 @@ export class SubscriptionService {
   }
 
   /**
-   * Get subscription invoices
+   * Get subscription invoices with retry logic
    * @param limit - Maximum number of invoices to return
+   * @param maxRetries - Maximum number of retry attempts (default: 3)
    */
-  async getInvoices(limit: number = 10): Promise<SubscriptionInvoice[]> {
-    try {
-      const response = await apiClient.get<ApiResponse<{ invoices: SubscriptionInvoice[] }>>(
-        `${this.basePath}/invoices?limit=${limit}`
-      );
+  async getInvoices(limit: number = 10, maxRetries: number = 3): Promise<SubscriptionInvoice[]> {
+    let lastError: Error | null = null;
 
-      // Handle non-200 responses gracefully
-      if (response.status >= 400) {
-        console.warn(`Invoices endpoint returned ${response.status}: ${response.statusText}`);
-        return [];
-      }
+    for (let attempt = 1; attempt <= maxRetries; attempt++) {
+      try {
+        const response = await apiClient.get<ApiResponse<{ invoices: SubscriptionInvoice[] }>>(
+          `${this.basePath}/invoices?limit=${limit}`
+        );
 
-      // Check for successful response structure
-      if (!response.data.success) {
-        console.warn('Invoices API returned unsuccessful response:', response.data.message);
-        return [];
-      }
+        // Handle non-200 responses gracefully
+        if (response.status >= 400) {
+          console.warn(`Invoices endpoint returned ${response.status}: ${response.statusText}`);
+          return [];
+        }
 
-      // Return invoices or empty array if none exist
-      return response.data.data?.invoices || [];
-    } catch (error) {
-      // Network errors, timeout, or other issues - graceful degradation
-      if (error instanceof Error) {
-        console.warn('Invoices fetch failed (service may be unavailable):', error.message);
-      } else {
-        console.warn('Invoices fetch failed with unknown error');
+        // Handle null/undefined data gracefully
+        if (!response.data) {
+          console.warn('Invoices API returned null/undefined data');
+          return [];
+        }
+
+        // Check for successful response structure
+        if (!response.data.success) {
+          console.warn('Invoices API returned unsuccessful response:', response.data.message);
+          return [];
+        }
+
+        // Return invoices or empty array if none exist
+        return response.data.data?.invoices || [];
+      } catch (error) {
+        lastError = error instanceof Error ? error : new Error(String(error));
+
+        // If this is not the last attempt, wait before retrying
+        if (attempt < maxRetries) {
+          // Exponential backoff: 100ms, 200ms, 400ms
+          const delayMs = Math.pow(2, attempt - 1) * 100;
+          console.warn(`Invoices fetch attempt ${attempt} failed, retrying in ${delayMs}ms...`);
+          await new Promise(resolve => setTimeout(resolve, delayMs));
+        }
       }
-      return [];
     }
+
+    // All retries exhausted - graceful degradation
+    if (lastError) {
+      console.warn(`Invoices fetch failed after ${maxRetries} attempts:`, lastError.message);
+    } else {
+      console.warn(`Invoices fetch failed after ${maxRetries} attempts with unknown error`);
+    }
+    return [];
   }
 
   /**
