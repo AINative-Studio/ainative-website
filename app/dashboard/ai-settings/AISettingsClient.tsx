@@ -57,18 +57,25 @@ export default function AISettingsClient() {
   // Register model mutation
   const registerMutation = useMutation({
     mutationFn: (data: RegisterModelData) => aiRegistryService.registerModel(data),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['ai-models'] });
+    onSuccess: async () => {
+      // Wait for cache invalidation and refetch to complete before closing dialog
+      // This fixes issue #524 - ensures newly registered models appear in the list immediately
+      await queryClient.invalidateQueries({ queryKey: ['ai-models'] });
       setIsRegisterDialogOpen(false);
       resetForm();
+    },
+    onError: (error: Error) => {
+      // Keep dialog open on error so user can retry
+      console.error('Failed to register model:', error);
     },
   });
 
   // Switch default model mutation
   const switchMutation = useMutation({
     mutationFn: (modelId: number) => aiRegistryService.switchDefaultModel(modelId),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['ai-models'] });
+    onSuccess: async () => {
+      // Wait for cache invalidation and refetch to complete
+      await queryClient.invalidateQueries({ queryKey: ['ai-models'] });
     },
   });
 
