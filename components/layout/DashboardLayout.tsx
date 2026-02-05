@@ -5,7 +5,6 @@ import { usePathname } from 'next/navigation';
 import { Menu } from 'lucide-react';
 import Header from './Header';
 import Sidebar from './Sidebar';
-import Footer from './Footer';
 
 interface DashboardLayoutProps {
   children: React.ReactNode;
@@ -109,9 +108,6 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
           <div className="max-w-7xl mx-auto">{children}</div>
         </main>
       </div>
-
-      {/* Footer - full width, below sidebar and content */}
-      <Footer />
     </div>
   );
 }

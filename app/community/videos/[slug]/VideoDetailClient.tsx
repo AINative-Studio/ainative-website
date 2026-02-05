@@ -50,6 +50,19 @@ interface Video {
   }>;
 }
 
+// Helper function to extract YouTube video ID from various URL formats
+const extractYouTubeId = (url: string): string | null => {
+  const patterns = [
+    /(?:youtube\.com\/watch\?v=|youtu\.be\/)([^&\n?#]+)/,
+    /^([a-zA-Z0-9_-]{11})$/,
+  ];
+  for (const pattern of patterns) {
+    const match = url.match(pattern);
+    if (match) return match[1];
+  }
+  return null;
+};
+
 // Mock video data
 const mockVideos: Video[] = [
   {
@@ -61,7 +74,7 @@ const mockVideos: Video[] = [
     slug: 'getting-started-ai-kit',
     category: 'tutorial',
     duration: 1245,
-    video_url: 'https://example.com/videos/ai-kit-intro.mp4',
+    video_url: 'dQw4w9WgXcQ',
     thumbnail_url: '/images/videos/ai-kit-thumb.png',
     poster_url: '/images/videos/ai-kit-poster.png',
     views: 15420,
@@ -88,7 +101,7 @@ const mockVideos: Video[] = [
     slug: 'rag-applications-zerodb',
     category: 'tutorial',
     duration: 2156,
-    video_url: 'https://example.com/videos/zerodb-rag.mp4',
+    video_url: 'jNQXAC9IVRw',
     thumbnail_url: '/images/videos/zerodb-thumb.png',
     poster_url: '/images/videos/zerodb-poster.png',
     views: 8934,
@@ -114,7 +127,7 @@ const mockVideos: Video[] = [
     slug: 'qnn-optimization-webinar',
     category: 'webinar',
     duration: 3600,
-    video_url: 'https://example.com/videos/qnn-webinar.mp4',
+    video_url: 'M7lc1UVf-VE',
     thumbnail_url: '/images/videos/qnn-webinar-thumb.png',
     poster_url: '/images/videos/qnn-webinar-poster.png',
     views: 5621,
@@ -140,7 +153,7 @@ const mockVideos: Video[] = [
     slug: 'ai-code-editor-showcase',
     category: 'showcase',
     duration: 987,
-    video_url: 'https://example.com/videos/code-editor.mp4',
+    video_url: 'y8Kyi0WNg40',
     thumbnail_url: '/images/videos/code-editor-thumb.png',
     poster_url: '/images/videos/code-editor-poster.png',
     views: 12340,
@@ -165,7 +178,7 @@ const mockVideos: Video[] = [
     slug: 'agent-swarm-demo',
     category: 'demo',
     duration: 1856,
-    video_url: 'https://example.com/videos/agent-swarm.mp4',
+    video_url: '9bZkp7q19f0',
     thumbnail_url: '/images/videos/agent-swarm-thumb.png',
     poster_url: '/images/videos/agent-swarm-poster.png',
     views: 7823,
@@ -190,7 +203,7 @@ const mockVideos: Video[] = [
     slug: 'semantic-search-guide',
     category: 'tutorial',
     duration: 2478,
-    video_url: 'https://example.com/videos/semantic-search.mp4',
+    video_url: 'L_LUpnjgPso',
     thumbnail_url: '/images/videos/semantic-search-thumb.png',
     poster_url: '/images/videos/semantic-search-poster.png',
     views: 6234,
@@ -350,69 +363,22 @@ export default function VideoDetailClient({ slug }: VideoDetailClientProps) {
               className="mb-6"
             >
               <div className="relative aspect-video bg-[#161B22] rounded-lg overflow-hidden border border-[#2D333B]">
-                {/* Video placeholder - in production would use actual video */}
-                <div className="absolute inset-0 bg-gradient-to-br from-[#4B6FED]/20 to-[#8A63F4]/20 flex items-center justify-center">
-                  <VideoIcon className="w-24 h-24 text-[#4B6FED]/50" />
-                </div>
-
-                {/* Play overlay */}
-                <button
-                  onClick={togglePlay}
-                  className="absolute inset-0 flex items-center justify-center group"
-                >
-                  <div className="w-20 h-20 rounded-full bg-[#4B6FED]/80 flex items-center justify-center group-hover:bg-[#4B6FED] transition-colors">
-                    {isPlaying ? (
-                      <Pause className="w-10 h-10 text-white" />
-                    ) : (
-                      <Play className="w-10 h-10 text-white ml-1" />
-                    )}
-                  </div>
-                </button>
-
-                {/* Controls bar */}
-                <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 to-transparent p-4">
-                  {/* Progress bar */}
-                  <div className="w-full h-1 bg-[#2D333B] rounded-full mb-3">
-                    <div
-                      className="h-full bg-[#4B6FED] rounded-full"
-                      style={{ width: `${progress}%` }}
+                {(() => {
+                  const videoId = extractYouTubeId(video.video_url);
+                  return videoId ? (
+                    <iframe
+                      className="absolute inset-0 w-full h-full"
+                      src={`https://www.youtube.com/embed/${videoId}?enablejsapi=1&rel=0&modestbranding=1`}
+                      title={video.title}
+                      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                      allowFullScreen
                     />
-                  </div>
-
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-3">
-                      <button
-                        onClick={togglePlay}
-                        className="text-white hover:text-[#8AB4FF]"
-                      >
-                        {isPlaying ? (
-                          <Pause className="w-5 h-5" />
-                        ) : (
-                          <Play className="w-5 h-5" />
-                        )}
-                      </button>
-                      <button
-                        onClick={toggleMute}
-                        className="text-white hover:text-[#8AB4FF]"
-                      >
-                        {isMuted ? (
-                          <VolumeX className="w-5 h-5" />
-                        ) : (
-                          <Volume2 className="w-5 h-5" />
-                        )}
-                      </button>
-                      <span className="text-white text-sm">
-                        0:00 / {formatDuration(video.duration)}
-                      </span>
+                  ) : (
+                    <div className="absolute inset-0 bg-gradient-to-br from-[#4B6FED]/20 to-[#8A63F4]/20 flex items-center justify-center">
+                      <VideoIcon className="w-24 h-24 text-[#4B6FED]/50" />
                     </div>
-                    <button
-                      onClick={handleFullscreen}
-                      className="text-white hover:text-[#8AB4FF]"
-                    >
-                      <Maximize className="w-5 h-5" />
-                    </button>
-                  </div>
-                </div>
+                  );
+                })()}
               </div>
             </motion.div>
 
