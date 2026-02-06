@@ -8,7 +8,7 @@ import { Button } from '@/components/ui/button';
 import { aiRegistryService, AIModel } from '@/lib/ai-registry-service';
 import {
     Zap, Code, FileText, ArrowLeft, Copy, Check,
-    Play, RotateCcw, Download, ChevronDown
+    Play, RotateCcw, Download, ChevronDown, Key
 } from 'lucide-react';
 
 const CATEGORIES = ['All', 'Image', 'Video', 'Audio', 'Coding', 'Embedding'] as const;
@@ -53,6 +53,7 @@ export default function ModelDetailClient({ modelId }: ModelDetailClientProps) {
     const [latency, setLatency] = useState<number | null>(null);
     const [tokensUsed, setTokensUsed] = useState<number | null>(null);
     const [copied, setCopied] = useState(false);
+    const [apiCodeView, setApiCodeView] = useState<'curl' | 'postrun'>('curl');
 
     const { data: model, isLoading, error } = useQuery({
         queryKey: ['ai-model', id],
@@ -126,50 +127,29 @@ export default function ModelDetailClient({ modelId }: ModelDetailClientProps) {
         );
     }
 
-    const curlSnippet = `curl -X POST https://api.ainative.studio/v1/public/multi-model/inference \\
-  -H "Authorization: Bearer YOUR_API_KEY" \\
-  -H "Content-Type: application/json" \\
-  -d '{
+    const modelSlug = model.model_identifier.toLowerCase().replace(/[^a-z0-9]+/g, '-');
+
+    const curlSnippet = `curl -X POST https://api.ainative.studio/v1/${modelSlug}/run \\
+  -H 'Content-Type: application/json' \\
+  -H 'Authorization: Bearer YOUR_API_KEY' \\
+  -d '{"input":{"prompt":"Your prompt here","negative_prompt":"","num_inference_steps":40,"guidance":5,"size":"1280*720","seed":-1,"enable_prompt_optimization":false,"enable_safety_checker":true}}'`;
+
+    const postRunSnippet = `POST https://api.ainative.studio/v1/${modelSlug}/run
+Content-Type: application/json
+Authorization: Bearer YOUR_API_KEY
+
+{
+  "input": {
     "prompt": "Your prompt here",
     "model_ids": [${model.id}],
-    "strategy": "single"
-  }'`;
-
-    const pythonSnippet = `import requests
-
-response = requests.post(
-    "https://api.ainative.studio/v1/public/multi-model/inference",
-    headers={
-        "Authorization": "Bearer YOUR_API_KEY",
-        "Content-Type": "application/json",
-    },
-    json={
-        "prompt": "Your prompt here",
-        "model_ids": [${model.id}],
-        "strategy": "single",
-    },
-)
-
-print(response.json())`;
-
-    const jsSnippet = `const response = await fetch(
-  "https://api.ainative.studio/v1/public/multi-model/inference",
-  {
-    method: "POST",
-    headers: {
-      "Authorization": "Bearer YOUR_API_KEY",
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({
-      prompt: "Your prompt here",
-      model_ids: [${model.id}],
-      strategy: "single",
-    }),
+    "strategy": "single",
+    "negative_prompt": "",
+    "num_inference_steps": 40,
+    "guidance": 5,
+    "max_tokens": ${model.max_tokens},
+    "enable_safety_checker": true
   }
-);
-
-const data = await response.json();
-console.log(data);`;
+}`;
 
     return (
         <div className="space-y-6">
@@ -451,23 +431,79 @@ console.log(data);`;
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
                     transition={{ duration: 0.2 }}
-                    className="space-y-6 max-w-3xl"
+                    className="space-y-5"
                 >
-                    <div>
-                        <h2 className="text-lg font-semibold text-white mb-1">API Reference</h2>
-                        <p className="text-sm text-gray-400">
-                            Use the following code snippets to integrate {model.name} into your application.
-                        </p>
+                    {/* Top bar: Create API Key + Curl / Post /Run toggle */}
+                    <div className="flex items-center justify-between flex-wrap gap-3">
+                        <Link
+                            href="/dashboard/api-keys"
+                            className="inline-flex items-center gap-2 px-5 py-2.5 bg-[#1a1730] hover:bg-[#252040] text-white text-sm font-medium rounded-lg border border-white/10 transition-colors"
+                        >
+                            <Key className="w-4 h-4" />
+                            Create an API Key
+                        </Link>
+
+                        <div className="flex items-center gap-0">
+                            <button
+                                onClick={() => setApiCodeView('curl')}
+                                className={`px-6 py-2.5 text-sm font-medium rounded-l-lg transition-colors ${
+                                    apiCodeView === 'curl'
+                                        ? 'bg-[#1a1730] text-white border border-white/10'
+                                        : 'bg-white/5 text-gray-400 border border-white/10 hover:text-white'
+                                }`}
+                            >
+                                Curl
+                            </button>
+                            <button
+                                onClick={() => setApiCodeView('postrun')}
+                                className={`px-6 py-2.5 text-sm font-medium rounded-r-lg transition-colors ${
+                                    apiCodeView === 'postrun'
+                                        ? 'bg-[#1a1730] text-white border border-white/10'
+                                        : 'bg-white/5 text-gray-400 border border-white/10 hover:text-white'
+                                }`}
+                            >
+                                Post /Run
+                            </button>
+                        </div>
                     </div>
 
-                    {/* cURL */}
-                    <CodeBlock title="cURL" code={curlSnippet} onCopy={handleCopy} copied={copied} />
+                    {/* Download link */}
+                    <div className="flex justify-end">
+                        <button
+                            onClick={() => handleCopy(apiCodeView === 'curl' ? curlSnippet : postRunSnippet)}
+                            className="text-xs text-gray-400 hover:text-white transition-colors flex items-center gap-1"
+                        >
+                            <Download className="w-3.5 h-3.5" />
+                            Download {apiCodeView === 'curl' ? 'curl' : 'request'}
+                        </button>
+                    </div>
 
-                    {/* Python */}
-                    <CodeBlock title="Python" code={pythonSnippet} onCopy={handleCopy} copied={copied} />
+                    {/* Full-width code display */}
+                    <div className="relative bg-white/[0.02] border border-white/10 rounded-xl overflow-hidden">
+                        {/* Code label */}
+                        <span className="absolute top-4 right-5 text-xs text-gray-500 font-medium uppercase tracking-wider select-none">
+                            {apiCodeView === 'curl' ? 'CURL' : 'POST'}
+                        </span>
 
-                    {/* JavaScript */}
-                    <CodeBlock title="JavaScript" code={jsSnippet} onCopy={handleCopy} copied={copied} />
+                        {/* Code content */}
+                        <div className="p-6 pr-20 overflow-x-auto">
+                            <pre className="text-sm text-gray-200 font-mono whitespace-pre-wrap break-all leading-relaxed">
+                                {apiCodeView === 'curl' ? curlSnippet : postRunSnippet}
+                            </pre>
+                        </div>
+
+                        {/* Copy button overlay */}
+                        <button
+                            onClick={() => handleCopy(apiCodeView === 'curl' ? curlSnippet : postRunSnippet)}
+                            className="absolute top-4 right-16 p-1.5 rounded-md bg-white/5 hover:bg-white/10 transition-colors"
+                            title="Copy to clipboard"
+                        >
+                            {copied ? <Check className="w-4 h-4 text-green-400" /> : <Copy className="w-4 h-4 text-gray-400" />}
+                        </button>
+
+                        {/* Progress bar at bottom */}
+                        <div className="h-2 bg-[#1a1730] w-full rounded-b-xl" />
+                    </div>
                 </motion.div>
             )}
 
@@ -512,25 +548,6 @@ console.log(data);`;
                     </div>
                 </motion.div>
             )}
-        </div>
-    );
-}
-
-function CodeBlock({ title, code, onCopy, copied }: { title: string; code: string; onCopy: (text: string) => void; copied: boolean }) {
-    return (
-        <div className="bg-white/[0.02] border border-white/10 rounded-xl overflow-hidden">
-            <div className="flex items-center justify-between px-4 py-2.5 border-b border-white/10">
-                <span className="text-sm font-medium text-gray-300">{title}</span>
-                <button
-                    onClick={() => onCopy(code)}
-                    className="p-1 rounded hover:bg-white/10 transition-colors"
-                >
-                    {copied ? <Check className="w-3.5 h-3.5 text-green-400" /> : <Copy className="w-3.5 h-3.5 text-gray-400" />}
-                </button>
-            </div>
-            <pre className="p-4 text-xs text-gray-300 font-mono overflow-x-auto">
-                {code}
-            </pre>
         </div>
     );
 }
