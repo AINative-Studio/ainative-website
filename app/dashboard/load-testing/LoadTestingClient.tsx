@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useSyncExternalStore } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -11,11 +11,9 @@ import {
   Play,
   Square,
   RefreshCcw,
-  Trash2,
   Plus,
   Activity,
   Clock,
-  AlertCircle,
   CheckCircle,
   XCircle,
   Loader2,
@@ -24,7 +22,27 @@ import {
   Timer,
   Users,
   TrendingUp,
+  Globe,
+  ChevronRight,
+  Search,
 } from 'lucide-react';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+  DialogFooter,
+} from '@/components/ui/dialog';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
 import {
   LineChart,
   Line,
@@ -41,6 +59,11 @@ import loadTestingService, {
   LoadTest,
   LoadTestMetrics,
 } from '@/lib/load-testing-service';
+
+const emptySubscribe = () => () => {};
+function useHydrated() {
+  return useSyncExternalStore(emptySubscribe, () => true, () => false);
+}
 
 const fadeUp = {
   hidden: { opacity: 0, y: 20 },
@@ -145,6 +168,357 @@ const mockMetrics = {
     { range: '500ms+', count: 1000, percentage: 10 },
   ],
 };
+
+// API Endpoints from OpenAPI spec at api.ainative.studio
+interface APIEndpoint {
+  method: 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE';
+  path: string;
+  description: string;
+  requiresAuth: boolean;
+}
+
+interface APIEndpointCategory {
+  name: string;
+  endpoints: APIEndpoint[];
+}
+
+const API_ENDPOINTS: APIEndpointCategory[] = [
+  {
+    name: 'Authentication',
+    endpoints: [
+      { method: 'POST', path: '/v1/auth/auth/login', description: 'Login user with email/password', requiresAuth: false },
+      { method: 'POST', path: '/v1/auth/auth/register', description: 'Register new user with email verification', requiresAuth: false },
+      { method: 'POST', path: '/v1/auth/auth/refresh', description: 'Refresh access token', requiresAuth: false },
+      { method: 'GET', path: '/v1/auth/auth/me', description: 'Get current authenticated user', requiresAuth: true },
+      { method: 'POST', path: '/v1/auth/auth/logout', description: 'Logout user by blacklisting token', requiresAuth: true },
+    ],
+  },
+  {
+    name: 'Chat & Conversations',
+    endpoints: [
+      { method: 'GET', path: '/v1/chat/health', description: 'Health check for chat service', requiresAuth: false },
+      { method: 'GET', path: '/v1/chat/sessions', description: "Get user's chat sessions", requiresAuth: false },
+      { method: 'POST', path: '/v1/chat/sessions', description: 'Create a new chat session', requiresAuth: false },
+      { method: 'POST', path: '/v1/chat/completions', description: 'Chat completion with agentic tool calling', requiresAuth: false },
+      { method: 'GET', path: '/v1/chat/sessions/{session_id}/messages', description: 'Get messages from a chat session', requiresAuth: false },
+    ],
+  },
+  {
+    name: 'Dashboard',
+    endpoints: [
+      { method: 'GET', path: '/v1/dashboard', description: 'Get dashboard overview and metrics', requiresAuth: true },
+      { method: 'GET', path: '/v1/dashboard/overview', description: 'Get aggregated platform metrics', requiresAuth: true },
+      { method: 'GET', path: '/v1/dashboard/quick-stats', description: 'Get key metrics for widgets', requiresAuth: true },
+      { method: 'GET', path: '/v1/dashboard/activity', description: 'Get recent activity feed', requiresAuth: true },
+    ],
+  },
+  {
+    name: 'Gift Campaigns',
+    endpoints: [
+      { method: 'POST', path: '/v1/campaigns/redeem', description: 'Redeem gift code for campaign access', requiresAuth: true },
+      { method: 'POST', path: '/v1/campaigns/info', description: 'Get public information about gift code', requiresAuth: false },
+      { method: 'GET', path: '/v1/campaigns/my-campaigns', description: "Get user's active campaigns", requiresAuth: true },
+    ],
+  },
+  {
+    name: 'Live Streaming - Core',
+    endpoints: [
+      { method: 'GET', path: '/v1/streams/test-deployment', description: 'Test endpoint to verify deployment', requiresAuth: false },
+      { method: 'POST', path: '/v1/streams/', description: 'Create livestream with RTMPS credentials', requiresAuth: false },
+      { method: 'GET', path: '/v1/streams/', description: 'Browse and discover livestreams', requiresAuth: false },
+      { method: 'GET', path: '/v1/streams/id/{stream_id}', description: 'Get detailed stream information', requiresAuth: false },
+      { method: 'GET', path: '/v1/streams/trending', description: 'Get trending streams by growth rate', requiresAuth: false },
+    ],
+  },
+  {
+    name: 'Live Streaming - Categories',
+    endpoints: [
+      { method: 'GET', path: '/v1/streams/categories', description: 'List available stream categories', requiresAuth: false },
+      { method: 'GET', path: '/v1/streams/categories/trending', description: 'Get trending categories by viewer count', requiresAuth: false },
+      { method: 'GET', path: '/v1/streams/categories/tree', description: 'Get hierarchical category tree', requiresAuth: false },
+      { method: 'GET', path: '/v1/streams/categories/popular', description: 'Get popular categories ranked by viewers', requiresAuth: false },
+    ],
+  },
+  {
+    name: 'Live Streaming - Search',
+    endpoints: [
+      { method: 'GET', path: '/v1/streams/search', description: 'Search streams by title, description, username', requiresAuth: false },
+      { method: 'GET', path: '/v1/streams/search/suggestions', description: 'Get autocomplete suggestions', requiresAuth: false },
+      { method: 'GET', path: '/v1/streams/search/popular', description: 'Get popular search terms', requiresAuth: false },
+      { method: 'GET', path: '/v1/streams/search/trending', description: 'Get trending search terms', requiresAuth: false },
+    ],
+  },
+  {
+    name: 'VODs',
+    endpoints: [
+      { method: 'GET', path: '/v1/streams/vods', description: 'Browse VOD content with filters', requiresAuth: false },
+      { method: 'GET', path: '/v1/streams/vods/search', description: 'Search VOD content by title', requiresAuth: false },
+      { method: 'GET', path: '/v1/streams/vods/{vod_id}', description: 'Get VOD details', requiresAuth: false },
+      { method: 'GET', path: '/v1/streams/vods/{vod_id}/playback', description: 'Get VOD playback URL', requiresAuth: false },
+    ],
+  },
+];
+
+function AddScenarioDialog({
+  open,
+  onOpenChange,
+  onCreateScenario,
+}: {
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+  onCreateScenario: (scenario: LoadTestScenario) => void;
+}) {
+  const [selectedEndpoint, setSelectedEndpoint] = useState<string>('');
+  const [scenarioName, setScenarioName] = useState('');
+  const [description, setDescription] = useState('');
+  const [virtualUsers, setVirtualUsers] = useState(50);
+  const [duration, setDuration] = useState(60);
+  const [rampUp, setRampUp] = useState(10);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [selectedCategory, setSelectedCategory] = useState<string>('all');
+
+  const filteredEndpoints = API_ENDPOINTS.map(category => ({
+    ...category,
+    endpoints: category.endpoints.filter(endpoint =>
+      (selectedCategory === 'all' || category.name === selectedCategory) &&
+      (searchQuery === '' ||
+        endpoint.path.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        endpoint.description.toLowerCase().includes(searchQuery.toLowerCase()))
+    ),
+  })).filter(category => category.endpoints.length > 0);
+
+  const selectedEndpointData = API_ENDPOINTS
+    .flatMap(cat => cat.endpoints)
+    .find(e => `${e.method}:${e.path}` === selectedEndpoint);
+
+  const handleCreate = () => {
+    if (!selectedEndpointData) return;
+
+    const scenarioId = crypto.randomUUID();
+    const timestamp = new Date().toISOString();
+    const newScenario: LoadTestScenario = {
+      id: scenarioId,
+      name: scenarioName || `Load Test: ${selectedEndpointData.path}`,
+      description: description || selectedEndpointData.description,
+      type: 'api',
+      config: {
+        targetUrl: `https://api.ainative.studio${selectedEndpointData.path}`,
+        method: selectedEndpointData.method,
+        duration,
+        virtualUsers,
+        rampUp,
+      },
+      createdAt: timestamp,
+      updatedAt: timestamp,
+    };
+
+    onCreateScenario(newScenario);
+    onOpenChange(false);
+
+    // Reset form
+    setSelectedEndpoint('');
+    setScenarioName('');
+    setDescription('');
+    setVirtualUsers(50);
+    setDuration(60);
+    setRampUp(10);
+    setSearchQuery('');
+    setSelectedCategory('all');
+  };
+
+  const getMethodColor = (method: string) => {
+    switch (method) {
+      case 'GET': return 'bg-green-500/20 text-green-400';
+      case 'POST': return 'bg-blue-500/20 text-blue-400';
+      case 'PUT': return 'bg-orange-500/20 text-orange-400';
+      case 'PATCH': return 'bg-yellow-500/20 text-yellow-400';
+      case 'DELETE': return 'bg-red-500/20 text-red-400';
+      default: return 'bg-gray-500/20 text-gray-400';
+    }
+  };
+
+  return (
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent className="max-w-2xl bg-surface-secondary border-border max-h-[90vh] overflow-hidden flex flex-col">
+        <DialogHeader>
+          <DialogTitle className="text-white flex items-center gap-2">
+            <Globe className="w-5 h-5 text-[#4B6FED]" />
+            Add Load Test Scenario
+          </DialogTitle>
+          <DialogDescription className="text-gray-400">
+            Select an API endpoint to load test and configure the test parameters.
+          </DialogDescription>
+        </DialogHeader>
+
+        <div className="flex-1 overflow-y-auto space-y-6 py-4 pr-2">
+          {/* Search and Filter */}
+          <div className="flex gap-3">
+            <div className="relative flex-1">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500" />
+              <Input
+                placeholder="Search endpoints..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="pl-9 bg-surface-primary border-gray-700 text-white"
+              />
+            </div>
+            <Select value={selectedCategory} onValueChange={setSelectedCategory}>
+              <SelectTrigger className="w-48 bg-surface-primary border-gray-700 text-white">
+                <SelectValue placeholder="Category" />
+              </SelectTrigger>
+              <SelectContent className="bg-surface-secondary border-gray-700">
+                <SelectItem value="all" className="text-white hover:bg-gray-800">All Categories</SelectItem>
+                {API_ENDPOINTS.map(cat => (
+                  <SelectItem key={cat.name} value={cat.name} className="text-white hover:bg-gray-800">
+                    {cat.name}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+
+          {/* Endpoint Selection */}
+          <div className="space-y-2">
+            <Label className="text-gray-300">Select Endpoint</Label>
+            <div className="border border-gray-700 rounded-lg max-h-48 overflow-y-auto bg-surface-primary">
+              {filteredEndpoints.map(category => (
+                <div key={category.name}>
+                  <div className="px-3 py-2 bg-gray-800/50 text-xs font-semibold text-gray-400 sticky top-0">
+                    {category.name}
+                  </div>
+                  {category.endpoints.map(endpoint => {
+                    const endpointKey = `${endpoint.method}:${endpoint.path}`;
+                    const isSelected = selectedEndpoint === endpointKey;
+                    return (
+                      <button
+                        key={endpointKey}
+                        onClick={() => setSelectedEndpoint(endpointKey)}
+                        className={`w-full px-3 py-2 flex items-center gap-3 text-left hover:bg-gray-800/50 transition-colors ${
+                          isSelected ? 'bg-[#4B6FED]/20 border-l-2 border-[#4B6FED]' : ''
+                        }`}
+                      >
+                        <span className={`px-2 py-0.5 rounded text-xs font-mono font-medium ${getMethodColor(endpoint.method)}`}>
+                          {endpoint.method}
+                        </span>
+                        <span className="text-sm text-gray-300 flex-1 truncate font-mono">{endpoint.path}</span>
+                        {endpoint.requiresAuth && (
+                          <span className="text-xs text-yellow-500">Auth</span>
+                        )}
+                        {isSelected && <ChevronRight className="w-4 h-4 text-[#4B6FED]" />}
+                      </button>
+                    );
+                  })}
+                </div>
+              ))}
+              {filteredEndpoints.length === 0 && (
+                <div className="p-4 text-center text-gray-500">
+                  No endpoints match your search.
+                </div>
+              )}
+            </div>
+          </div>
+
+          {selectedEndpointData && (
+            <>
+              {/* Selected Endpoint Info */}
+              <div className="p-3 rounded-lg bg-[#4B6FED]/10 border border-[#4B6FED]/30">
+                <p className="text-sm text-gray-300 mb-1">
+                  <span className={`px-2 py-0.5 rounded text-xs font-mono font-medium mr-2 ${getMethodColor(selectedEndpointData.method)}`}>
+                    {selectedEndpointData.method}
+                  </span>
+                  <span className="font-mono">{selectedEndpointData.path}</span>
+                </p>
+                <p className="text-xs text-gray-400">{selectedEndpointData.description}</p>
+              </div>
+
+              {/* Scenario Name */}
+              <div className="space-y-2">
+                <Label htmlFor="scenario-name" className="text-gray-300">Scenario Name (optional)</Label>
+                <Input
+                  id="scenario-name"
+                  placeholder={`Load Test: ${selectedEndpointData.path}`}
+                  value={scenarioName}
+                  onChange={(e) => setScenarioName(e.target.value)}
+                  className="bg-surface-primary border-gray-700 text-white"
+                />
+              </div>
+
+              {/* Description */}
+              <div className="space-y-2">
+                <Label htmlFor="description" className="text-gray-300">Description (optional)</Label>
+                <Input
+                  id="description"
+                  placeholder={selectedEndpointData.description}
+                  value={description}
+                  onChange={(e) => setDescription(e.target.value)}
+                  className="bg-surface-primary border-gray-700 text-white"
+                />
+              </div>
+
+              {/* Test Configuration */}
+              <div className="grid grid-cols-3 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="virtual-users" className="text-gray-300">Virtual Users</Label>
+                  <Input
+                    id="virtual-users"
+                    type="number"
+                    min={1}
+                    max={1000}
+                    value={virtualUsers}
+                    onChange={(e) => setVirtualUsers(Number(e.target.value))}
+                    className="bg-surface-primary border-gray-700 text-white"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="duration" className="text-gray-300">Duration (s)</Label>
+                  <Input
+                    id="duration"
+                    type="number"
+                    min={10}
+                    max={3600}
+                    value={duration}
+                    onChange={(e) => setDuration(Number(e.target.value))}
+                    className="bg-surface-primary border-gray-700 text-white"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="ramp-up" className="text-gray-300">Ramp Up (s)</Label>
+                  <Input
+                    id="ramp-up"
+                    type="number"
+                    min={0}
+                    max={300}
+                    value={rampUp}
+                    onChange={(e) => setRampUp(Number(e.target.value))}
+                    className="bg-surface-primary border-gray-700 text-white"
+                  />
+                </div>
+              </div>
+            </>
+          )}
+        </div>
+
+        <DialogFooter className="border-t border-border pt-4">
+          <Button
+            variant="outline"
+            onClick={() => onOpenChange(false)}
+            className="border-gray-700 text-gray-300 hover:bg-gray-800"
+          >
+            Cancel
+          </Button>
+          <Button
+            onClick={handleCreate}
+            disabled={!selectedEndpointData}
+            className="bg-[#4B6FED] hover:bg-[#3D5BD9] text-white"
+          >
+            <Plus className="w-4 h-4 mr-2" />
+            Create Scenario
+          </Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
+  );
+}
 
 function StatusBadge({ status }: { status: LoadTest['status'] }) {
   const statusConfig = {
@@ -445,13 +819,11 @@ function MetricsPanel({
 
 export default function LoadTestingClient() {
   const queryClient = useQueryClient();
-  const [mounted, setMounted] = useState(false);
+  const mounted = useHydrated();
   const [activeTab, setActiveTab] = useState<'tests' | 'scenarios'>('tests');
   const [selectedMetrics, setSelectedMetrics] = useState<string | null>(null);
-
-  useEffect(() => {
-    setMounted(true);
-  }, []);
+  const [addScenarioOpen, setAddScenarioOpen] = useState(false);
+  const [localScenarios, setLocalScenarios] = useState<LoadTestScenario[]>([]);
 
   // Fetch scenarios
   const { data: scenarios, isLoading: scenariosLoading } = useQuery({
@@ -539,6 +911,13 @@ export default function LoadTestingClient() {
     }
     setActiveTab('tests');
   };
+
+  const handleCreateScenario = (newScenario: LoadTestScenario) => {
+    setLocalScenarios(prev => [newScenario, ...prev]);
+  };
+
+  // Combine fetched scenarios with locally created ones
+  const allScenarios = [...localScenarios, ...(scenarios || mockScenarios)];
 
   if (!mounted) {
     return (
@@ -686,20 +1065,41 @@ export default function LoadTestingClient() {
                   <Loader2 className="w-8 h-8 animate-spin text-[#4B6FED]" />
                 </div>
               ) : (
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                  {(scenarios || mockScenarios).map((scenario) => (
-                    <ScenarioCard
-                      key={scenario.id}
-                      scenario={scenario}
-                      onRunTest={handleRunTest}
-                    />
-                  ))}
+                <div className="space-y-6">
+                  {/* Add Scenario Button */}
+                  <motion.div variants={fadeUp}>
+                    <Button
+                      onClick={() => setAddScenarioOpen(true)}
+                      className="bg-[#4B6FED] hover:bg-[#3D5BD9] text-white"
+                    >
+                      <Plus className="w-4 h-4 mr-2" />
+                      Add Scenario
+                    </Button>
+                  </motion.div>
+
+                  {/* Scenarios Grid */}
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    {allScenarios.map((scenario) => (
+                      <ScenarioCard
+                        key={scenario.id}
+                        scenario={scenario}
+                        onRunTest={handleRunTest}
+                      />
+                    ))}
+                  </div>
                 </div>
               )}
             </motion.div>
           )}
         </AnimatePresence>
       )}
+
+      {/* Add Scenario Dialog */}
+      <AddScenarioDialog
+        open={addScenarioOpen}
+        onOpenChange={setAddScenarioOpen}
+        onCreateScenario={handleCreateScenario}
+      />
     </motion.div>
   );
 }
