@@ -10,6 +10,7 @@ import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { aiRegistryService, RegisterModelData, AIModel } from '@/lib/ai-registry-service';
 import { Plus, CheckCircle2, Star, ChevronDown, ExternalLink } from 'lucide-react';
+import Link from 'next/link';
 
 // Category filter tabs
 const CATEGORIES = ['All', 'Image', 'Video', 'Audio', 'Coding', 'Embedding'] as const;
@@ -278,11 +279,9 @@ export default function AISettingsClient() {
                 {/* Model Cards */}
                 {filteredAndSorted.map((model) => (
                     <motion.div key={model.id} variants={fadeUp}>
-                        <div
-                            className="rounded-xl border border-white/10 bg-white/[0.02] hover:bg-white/[0.05] hover:border-white/20 transition-all overflow-hidden group cursor-pointer"
-                            onClick={() => {
-                                if (!model.is_default) handleSwitchDefault(model.id, model.name);
-                            }}
+                        <Link
+                            href={`/dashboard/ai-settings/${model.id}`}
+                            className="block rounded-xl border border-white/10 bg-white/[0.02] hover:bg-white/[0.05] hover:border-white/20 transition-all overflow-hidden group"
                         >
                             {/* Thumbnail */}
                             <div className={`relative h-36 bg-gradient-to-br ${getProviderGradient(model.provider)} flex items-center justify-center overflow-hidden`}>
@@ -310,7 +309,7 @@ export default function AISettingsClient() {
                                     </span>
                                 </div>
                             </div>
-                        </div>
+                        </Link>
                     </motion.div>
                 ))}
             </motion.div>
