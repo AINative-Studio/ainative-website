@@ -98,7 +98,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
       <div className="flex flex-1 pt-16 md:pt-20">
         {/* Desktop Sidebar - sticky, not fixed, so it doesn't overlap footer */}
         <div className="hidden md:block shrink-0" data-testid="desktop-sidebar">
-          <div className="w-72 h-[calc(100vh-80px)] sticky top-20 overflow-y-auto">
+          <div className="w-72 h-[calc(100vh-80px)] sticky top-20 overflow-y-auto bg-[#1a1730]">
             <Sidebar />
           </div>
         </div>
