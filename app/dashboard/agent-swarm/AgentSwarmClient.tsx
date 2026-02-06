@@ -8,6 +8,7 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
+import Link from 'next/link';
 import {
   Upload,
   FileText,
@@ -20,6 +21,7 @@ import {
   AlertCircle,
   Clock,
   ClipboardPaste,
+  Wand2,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -230,14 +232,22 @@ export default function AgentSwarmClient() {
               Upload your PRD and let AI agents build it for you
             </p>
           </div>
-          {healthStatus && (
-            <Badge
-              variant={healthStatus === 'healthy' ? 'default' : 'destructive'}
-              className="px-3 py-1"
-            >
-              {healthStatus === 'healthy' ? '✓ Service Healthy' : '✗ Service Unavailable'}
-            </Badge>
-          )}
+          <div className="flex items-center gap-3">
+            {healthStatus && (
+              <Badge
+                variant={healthStatus === 'healthy' ? 'default' : 'destructive'}
+                className="px-3 py-1"
+              >
+                {healthStatus === 'healthy' ? '✓ Service Healthy' : '✗ Service Unavailable'}
+              </Badge>
+            )}
+            <Link href="/dashboard/agent-swarm-wizard">
+              <Button className="gap-2">
+                <Wand2 className="w-4 h-4" />
+                Launch Setup Wizard
+              </Button>
+            </Link>
+          </div>
         </div>
       </motion.div>
 
