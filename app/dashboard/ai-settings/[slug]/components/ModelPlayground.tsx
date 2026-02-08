@@ -211,9 +211,9 @@ export default function ModelPlayground({ model, slug }: PlaygroundProps) {
       }
 
       // Media generation endpoints (TTS, image, video) can take longer than default 30s
-      // Set timeout to 120 seconds for media endpoints
+      // Video generation can take 130-180s, so set timeout to 180 seconds for video, 120s for audio/image
       const isMediaEndpoint = model.category === 'Audio' || model.category === 'Video' || model.category === 'Image';
-      const timeout = isMediaEndpoint ? 120000 : 30000; // 120s for media, 30s for others
+      const timeout = model.category === 'Video' ? 180000 : (isMediaEndpoint ? 120000 : 30000); // 180s for video, 120s for audio/image, 30s for others
 
       console.log('⏱️ Request timeout set to:', timeout / 1000, 'seconds');
 
