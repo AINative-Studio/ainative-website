@@ -18,6 +18,7 @@ import {
 import { PlaygroundProps, PlaygroundFormState } from '../types';
 import { PlaygroundResult, transformToPlaygroundResult } from '../types.preview';
 import { PreviewSelector } from './preview';
+import ImageSelector from './ImageSelector';
 import apiClient from '@/lib/api-client';
 
 /**
@@ -186,6 +187,28 @@ export default function ModelPlayground({ model, slug }: PlaygroundProps) {
           voice: 'Wise_Woman', // Default voice profile
         };
       }
+      // Video I2V models expect { image_url, motion_prompt, provider } instead of { prompt }
+      else if (model.category === 'Video' && model.endpoint.includes('i2v')) {
+        // Validate required fields for I2V
+        if (!input.image_url?.trim() || !input.prompt?.trim()) {
+          throw new Error('Both source image and motion prompt are required for I2V models');
+        }
+
+        // Determine provider from model slug or name
+        let provider = 'wan22'; // default
+        const modelSlug = model.slug?.toLowerCase() || '';
+        if (modelSlug.includes('sora')) {
+          provider = 'sora2';
+        } else if (modelSlug.includes('seedance')) {
+          provider = 'seedance';
+        }
+
+        requestPayload = {
+          image_url: input.image_url,
+          motion_prompt: input.prompt,
+          provider: provider,
+        };
+      }
 
       // Media generation endpoints (TTS, image, video) can take longer than default 30s
       // Set timeout to 120 seconds for media endpoints
@@ -290,7 +313,15 @@ export default function ModelPlayground({ model, slug }: PlaygroundProps) {
    * Handle form submission
    */
   const handleRun = () => {
-    if (!formState.prompt?.trim()) return;
+    // For I2V models, require both image_url and prompt (motion_prompt)
+    if (model.category === 'Video' && model.endpoint.includes('i2v')) {
+      if (!formState.image_url?.trim() || !formState.prompt?.trim()) {
+        return;
+      }
+    } else {
+      // For other models, just require prompt
+      if (!formState.prompt?.trim()) return;
+    }
     runInference.mutate(formState);
   };
 
@@ -338,18 +369,6 @@ export default function ModelPlayground({ model, slug }: PlaygroundProps) {
     updateField('prompt', prompt);
   };
 
-  /**
-   * Handle running an example prompt (populate and execute)
-   */
-  const handleRunPrompt = (prompt: string) => {
-    updateField('prompt', prompt);
-    // Wait for state update then run
-    setTimeout(() => {
-      const newFormState = { ...formState, prompt };
-      runInference.mutate(newFormState);
-    }, 0);
-  };
-
   return (
     <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
       {/* Left Column - Input */}
@@ -362,13 +381,36 @@ export default function ModelPlayground({ model, slug }: PlaygroundProps) {
           </button>
         </div>
 
+        {/* Image Selection (for I2V video models) */}
+        {model.category === 'Video' && model.endpoint.includes('i2v') && (
+          <div className="space-y-3">
+            <label className="text-sm font-medium text-gray-300">Source Image</label>
+            <ImageSelector
+              onImageSelect={(url) => updateField('image_url', url)}
+              currentImageUrl={formState.image_url}
+            />
+            {formState.image_url && (
+              <div className="flex items-center gap-2 p-2 bg-green-500/10 border border-green-500/20 rounded-lg">
+                <Check className="w-4 h-4 text-green-400" />
+                <p className="text-xs text-green-400">Image selected and ready</p>
+              </div>
+            )}
+          </div>
+        )}
+
         {/* Prompt Input */}
         <div className="space-y-2">
-          <label className="text-sm font-medium text-gray-300">Prompt</label>
+          <label className="text-sm font-medium text-gray-300">
+            {model.category === 'Video' && model.endpoint.includes('i2v') ? 'Motion Prompt' : 'Prompt'}
+          </label>
           <textarea
             value={formState.prompt}
             onChange={(e) => updateField('prompt', e.target.value)}
-            placeholder="Enter your prompt here..."
+            placeholder={
+              model.category === 'Video' && model.endpoint.includes('i2v')
+                ? 'Describe the motion you want to see (e.g., "The person waves and smiles at the camera")...'
+                : 'Enter your prompt here...'
+            }
             rows={5}
             className="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-3 text-sm text-white placeholder-gray-500 focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary resize-none transition-colors"
           />
@@ -407,15 +449,6 @@ export default function ModelPlayground({ model, slug }: PlaygroundProps) {
                     >
                       <Copy className="w-3 h-3" />
                       Use This
-                    </button>
-                    <button
-                      onClick={() => handleRunPrompt(prompt)}
-                      disabled={status === 'running'}
-                      className="flex items-center gap-1.5 px-3 py-1.5 text-xs bg-primary/10 hover:bg-primary/20 text-primary hover:text-primary border border-primary/20 hover:border-primary/30 rounded-md transition-all disabled:opacity-50 disabled:cursor-not-allowed"
-                      aria-label={`Run example prompt: ${prompt.substring(0, 50)}...`}
-                    >
-                      <Play className="w-3 h-3" />
-                      {status === 'running' ? 'Running...' : 'Run'}
                     </button>
                   </div>
                 </motion.div>
@@ -511,7 +544,12 @@ export default function ModelPlayground({ model, slug }: PlaygroundProps) {
           <Button
             size="sm"
             onClick={handleRun}
-            disabled={!formState.prompt?.trim() || status === 'running'}
+            disabled={
+              status === 'running' ||
+              (model.category === 'Video' && model.endpoint.includes('i2v')
+                ? !formState.image_url?.trim() || !formState.prompt?.trim()
+                : !formState.prompt?.trim())
+            }
             className="gap-1.5"
           >
             <Play className="w-3.5 h-3.5" />

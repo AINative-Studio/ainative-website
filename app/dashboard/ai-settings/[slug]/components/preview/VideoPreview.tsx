@@ -130,12 +130,21 @@ export function VideoPreview({ result, onDownload }: VideoPreviewProps) {
                 Download Video
               </button>
             </div>
+          ) : !result.url ? (
+            /* No Video URL State */
+            <div className="flex flex-col items-center justify-center min-h-[400px] p-8 text-center">
+              <AlertCircle className="w-12 h-12 text-gray-400 mb-4" />
+              <p className="text-gray-400 text-sm font-medium mb-2">No video available</p>
+              <p className="text-gray-500 text-xs max-w-md">
+                Video generation is in progress or failed. Please try again.
+              </p>
+            </div>
           ) : (
             <>
               <video
                 ref={videoRef}
                 src={result.url}
-                poster={result.thumbnail_url}
+                poster={result.thumbnail_url || undefined}
                 controls
                 preload="metadata"
                 className="w-full h-auto max-h-[600px] object-contain"
