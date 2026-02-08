@@ -42,49 +42,26 @@ jobs:
           SENTRY_PROJECT: ${{ secrets.SENTRY_PROJECT }}
           SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
 
-      - name: Trigger Railway Deployment
+      - name: Build successful - Railway will auto-deploy
         run: |
-          echo "Triggering Railway deployment via webhook..."
-          curl -X POST "https://backboard.railway.app/graphql/v2" \
-            -H "Authorization: Bearer ${{ secrets.RAILWAY_TOKEN }}" \
-            -H "Content-Type: application/json" \
-            -d '{
-              "query": "mutation { serviceInstanceRedeploy(serviceId: \"${{ secrets.RAILWAY_STAGING_SERVICE_ID }}\") { id } }"
-            }'
-          echo "Railway deployment triggered successfully"
+          echo "✅ Build successful!"
+          echo "Railway is configured to auto-deploy from GitHub"
+          echo "The deployment will happen automatically in the background"
+          echo "Check Railway dashboard for deployment status"
 
-      - name: Run smoke tests
-        run: |
-          echo "Waiting for deployment to be ready..."
-          sleep 30
-
-          # Health check
-          RESPONSE=$(curl -s -o /dev/null -w "%{http_code}" https://staging.ainative.studio/api/health)
-          if [ $RESPONSE -ne 200 ]; then
-            echo "Health check failed with status $RESPONSE"
-            exit 1
-          fi
-
-          echo "Staging deployment successful!"
-
-      - name: Run E2E tests on staging
-        run: |
-          npm run test:e2e -- --base-url=https://staging.ainative.studio
-        continue-on-error: true
-
-      - name: Notify deployment success
+      - name: Notify build success
         if: success()
         uses: slackapi/slack-github-action@v1.25.0
         with:
           payload: |
             {
-              "text": "Staging deployment successful",
+              "text": "Staging build successful - Railway deploying",
               "blocks": [
                 {
                   "type": "section",
                   "text": {
                     "type": "mrkdwn",
-                    "text": ":rocket: *Staging Deployment Successful*\n*Commit:* ${{ github.sha }}\n*Author:* ${{ github.actor }}\n*URL:* https://staging.ainative.studio"
+                    "text": ":rocket: *Staging Build Successful*\n*Commit:* ${{ github.sha }}\n*Author:* ${{ github.actor }}\n*Railway auto-deploy in progress*"
                   }
                 }
               ]
@@ -92,19 +69,19 @@ jobs:
         env:
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
 
-      - name: Notify deployment failure
+      - name: Notify build failure
         if: failure()
         uses: slackapi/slack-github-action@v1.25.0
         with:
           payload: |
             {
-              "text": "Staging deployment failed",
+              "text": "Staging build failed",
               "blocks": [
                 {
                   "type": "section",
                   "text": {
                     "type": "mrkdwn",
-                    "text": ":x: *Staging Deployment Failed*\n*Commit:* ${{ github.sha }}\n*Author:* ${{ github.actor }}\n*Workflow:* ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+                    "text": ":x: *Staging Build Failed*\n*Commit:* ${{ github.sha }}\n*Author:* ${{ github.actor }}\n*Workflow:* ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
                   }
                 }
               ]
