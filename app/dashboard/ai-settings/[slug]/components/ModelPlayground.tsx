@@ -66,9 +66,10 @@ class PreviewErrorBoundary extends Component<
 }
 
 /**
- * LocalStorage key for user-generated audio by model ID
+ * LocalStorage key for user-generated media by model ID
+ * Supports audio, image, and video models
  */
-const getUserAudioKey = (modelId: string) => `playground_audio_${modelId}`;
+const getUserMediaKey = (modelId: string) => `playground_media_${modelId}`;
 
 /**
  * Run status for the playground
@@ -137,29 +138,33 @@ export default function ModelPlayground({ model, slug }: PlaygroundProps) {
   const [copied, setCopied] = useState(false);
 
   /**
-   * Load saved audio from localStorage on component mount
-   * Only loads user-generated audio if it exists (TTS models only)
+   * Load saved media from localStorage on component mount
+   * Supports Audio (TTS), Image, and Video models for cost savings
    */
   useEffect(() => {
-    // Only load saved audio for TTS models
-    const isTTSModel = model.category === 'Audio' && model.endpoint.includes('/tts');
-    if (!isTTSModel) return;
+    // Only load saved media for media generation models
+    const isMediaModel =
+      model.category === 'Audio' ||
+      model.category === 'Image' ||
+      model.category === 'Video';
 
-    const savedAudio = localStorage.getItem(getUserAudioKey(model.id));
-    if (savedAudio) {
+    if (!isMediaModel) return;
+
+    const savedMedia = localStorage.getItem(getUserMediaKey(model.id));
+    if (savedMedia) {
       try {
-        const parsed = JSON.parse(savedAudio);
+        const parsed = JSON.parse(savedMedia);
         setResult(parsed);
         setStatus('complete');
-        console.log('✅ Loaded saved audio from localStorage');
+        console.log(`✅ Loaded saved ${model.category.toLowerCase()} from localStorage`);
       } catch (error) {
-        console.error('❌ Failed to parse saved audio:', error);
+        console.error(`❌ Failed to parse saved ${model.category.toLowerCase()}:`, error);
         // Clear corrupted data
-        localStorage.removeItem(getUserAudioKey(model.id));
+        localStorage.removeItem(getUserMediaKey(model.id));
       }
     }
-    // If no saved audio exists, user will see "Run a prompt to see results here"
-  }, [model.id, model.category, model.endpoint]);
+    // If no saved media exists, user will see "Run a prompt to see results here"
+  }, [model.id, model.category]);
 
   /**
    * Run inference mutation
@@ -216,17 +221,30 @@ export default function ModelPlayground({ model, slug }: PlaygroundProps) {
         console.log('✨ Transformation complete:', playgroundResult);
         console.log('🎯 Result type:', playgroundResult.type);
         console.log('🔗 Result URL exists:', !!playgroundResult.url);
-        if (playgroundResult.type === 'audio') {
-          console.log('🎵 Audio URL:', playgroundResult.url?.substring(0, 100) + '...');
-          console.log('🎵 Audio duration:', playgroundResult.duration_seconds);
-          console.log('🎵 Audio format:', playgroundResult.format);
 
-          // Save user-generated TTS audio to localStorage
+        // Save user-generated media to localStorage for audio/image/video models
+        const isMediaResult = ['audio', 'image', 'video'].includes(playgroundResult.type);
+        if (isMediaResult) {
+          // Log media-specific details
+          if (playgroundResult.type === 'audio') {
+            console.log('🎵 Audio URL:', playgroundResult.url?.substring(0, 100) + '...');
+            console.log('🎵 Audio duration:', playgroundResult.duration_seconds);
+            console.log('🎵 Audio format:', playgroundResult.format);
+          } else if (playgroundResult.type === 'image') {
+            console.log('🖼️ Image URL:', playgroundResult.url?.substring(0, 100) + '...');
+            console.log('🖼️ Image format:', playgroundResult.format);
+          } else if (playgroundResult.type === 'video') {
+            console.log('🎬 Video URL:', playgroundResult.url?.substring(0, 100) + '...');
+            console.log('🎬 Video duration:', playgroundResult.duration_seconds);
+            console.log('🎬 Video format:', playgroundResult.format);
+          }
+
+          // Save to localStorage for cost savings
           try {
-            localStorage.setItem(getUserAudioKey(model.id), JSON.stringify(playgroundResult));
-            console.log('💾 Saved user-generated audio to localStorage');
+            localStorage.setItem(getUserMediaKey(model.id), JSON.stringify(playgroundResult));
+            console.log(`💾 Saved user-generated ${playgroundResult.type} to localStorage`);
           } catch (storageError) {
-            console.error('❌ Failed to save audio to localStorage:', storageError);
+            console.error(`❌ Failed to save ${playgroundResult.type} to localStorage:`, storageError);
           }
         }
 
