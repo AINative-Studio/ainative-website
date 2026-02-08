@@ -23,6 +23,9 @@ const isProd = process.env.NODE_ENV === 'production';
 const isDev = process.env.NODE_ENV === 'development';
 
 export const authOptions: NextAuthOptions = {
+  // Secret for JWT encryption (required in production)
+  secret: process.env.NEXTAUTH_SECRET,
+
   // Database adapter for persistent sessions
   adapter: PrismaAdapter(prisma),
   // OAuth Providers
