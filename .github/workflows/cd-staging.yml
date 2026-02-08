@@ -42,12 +42,16 @@ jobs:
           SENTRY_PROJECT: ${{ secrets.SENTRY_PROJECT }}
           SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
 
-      - name: Deploy to Railway (Staging)
+      - name: Trigger Railway Deployment
         run: |
-          npm install -g @railway/cli
-          railway up --service ${{ secrets.RAILWAY_STAGING_SERVICE_ID }}
-        env:
-          RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
+          echo "Triggering Railway deployment via webhook..."
+          curl -X POST "https://backboard.railway.app/graphql/v2" \
+            -H "Authorization: Bearer ${{ secrets.RAILWAY_TOKEN }}" \
+            -H "Content-Type: application/json" \
+            -d '{
+              "query": "mutation { serviceInstanceRedeploy(serviceId: \"${{ secrets.RAILWAY_STAGING_SERVICE_ID }}\") { id } }"
+            }'
+          echo "Railway deployment triggered successfully"
 
       - name: Run smoke tests
         run: |
