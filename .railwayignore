@@ -68,3 +68,4 @@ prisma/migrations/
 public/images/
 public/videos/
 public/fonts/
+# Railway deployment configured with GitHub Actions
