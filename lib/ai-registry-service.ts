@@ -4,6 +4,10 @@
  */
 
 import apiClient from './api-client';
+import { modelAggregatorService, UnifiedAIModel, ModelCategory, ModelParameter } from './model-aggregator';
+
+// Re-export types from model-aggregator for convenient imports
+export type { UnifiedAIModel, ModelCategory, ModelParameter };
 
 // Type definitions for AI Model Registry
 export interface AIModel {
@@ -282,6 +286,16 @@ class AIRegistryService {
       request
     );
     return response.data;
+  }
+
+  // ===== Model Aggregation Endpoints =====
+
+  /**
+   * Get all available AI models across all categories
+   * Aggregates models from multiple backend APIs and hardcoded sources
+   */
+  async getAllModels(): Promise<UnifiedAIModel[]> {
+    return modelAggregatorService.aggregateAllModels();
   }
 }
 

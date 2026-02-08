@@ -2,6 +2,7 @@
 
 import { useState, useMemo } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
@@ -9,19 +10,19 @@ import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { aiRegistryService, RegisterModelData, AIModel } from '@/lib/ai-registry-service';
-import { Plus, CheckCircle2, Star, ChevronDown, ExternalLink } from 'lucide-react';
+import { modelAggregatorService, UnifiedAIModel, ModelCategory } from '@/lib/model-aggregator-service';
+import { Plus, CheckCircle2, Star, ChevronDown, ExternalLink, Crown } from 'lucide-react';
 
 // Category filter tabs
-const CATEGORIES = ['All', 'Image', 'Video', 'Audio', 'Coding', 'Embedding'] as const;
-type Category = typeof CATEGORIES[number];
+const CATEGORIES: ModelCategory[] = ['All', 'Image', 'Video', 'Audio', 'Coding', 'Embedding'];
 
-// Map display categories to model capabilities
+// Map display categories to model capabilities (as per spec)
 const CATEGORY_MAP: Record<string, string[]> = {
-    Image: ['vision', 'image-generation'],
-    Video: ['video', 'video-generation'],
-    Audio: ['audio', 'speech', 'audio-generation'],
-    Coding: ['code', 'code-generation'],
-    Embedding: ['embedding', 'embeddings'],
+    Image: ['image-generation', 'vision'],
+    Video: ['video-generation', 'text-to-video', 'image-to-video'],
+    Audio: ['audio', 'speech', 'transcription', 'translation', 'audio-generation', 'text-to-speech'],
+    Coding: ['code', 'text-generation', 'code-generation'],
+    Embedding: ['embedding', 'semantic-search'],
 };
 
 // Sort options
@@ -47,23 +48,54 @@ function getProviderInitials(provider: string): string {
     return provider.slice(0, 2).toUpperCase();
 }
 
-function getModelDescription(model: AIModel): string {
-    const capStr = model.capabilities.join(', ');
-    return `${model.provider} model with ${capStr} capabilities. Max ${model.max_tokens.toLocaleString()} tokens.`;
+function getModelDescription(model: UnifiedAIModel): string {
+    return model.description;
 }
 
-function getPrimaryTag(model: AIModel): string {
+function getPrimaryTag(model: UnifiedAIModel): string {
     if (model.capabilities.length === 0) return 'general';
     const cap = model.capabilities[0];
     return cap.replace('_', '-').replace('generation', 'gen');
 }
 
-function matchesCategory(model: AIModel, category: Category): boolean {
-    if (category === 'All') return true;
-    const targetCaps = CATEGORY_MAP[category] || [];
-    return model.capabilities.some(cap =>
-        targetCaps.some(target => cap.toLowerCase().includes(target.toLowerCase()))
-    );
+function formatPricing(model: UnifiedAIModel): string | null {
+    if (!model.pricing) return null;
+    return `$${model.pricing.usd.toFixed(3)} ${model.pricing.unit || ''}`;
+}
+
+function matchesCategory(model: UnifiedAIModel, category: ModelCategory): boolean {
+    // ALWAYS return true for "All" category - this is critical
+    if (category === 'All') {
+        return true;
+    }
+
+    // Validate model has capabilities array
+    if (!model || !Array.isArray(model.capabilities)) {
+        console.warn('[matchesCategory] Invalid model or capabilities:', model);
+        return false;
+    }
+
+    // Get target capabilities for the category
+    const targetCaps = CATEGORY_MAP[category];
+
+    // If category not found in map, don't filter (show all)
+    if (!targetCaps || targetCaps.length === 0) {
+        console.warn('[matchesCategory] Unknown category:', category);
+        return true;
+    }
+
+    // Check if model has any of the target capabilities
+    const matches = model.capabilities.some(cap => {
+        if (typeof cap !== 'string') {
+            console.warn('[matchesCategory] Invalid capability type:', cap);
+            return false;
+        }
+        return targetCaps.some(target =>
+            cap.toLowerCase().includes(target.toLowerCase())
+        );
+    });
+
+    return matches;
 }
 
 interface RegisterModelFormData {
@@ -89,8 +121,9 @@ const stagger = {
 };
 
 export default function AISettingsClient() {
+    const router = useRouter();
     const queryClient = useQueryClient();
-    const [activeCategory, setActiveCategory] = useState<Category>('All');
+    const [activeCategory, setActiveCategory] = useState<ModelCategory>('All');
     const [sortBy, setSortBy] = useState<SortOption>('newest');
     const [isRegisterDialogOpen, setIsRegisterDialogOpen] = useState(false);
     const [formData, setFormData] = useState<RegisterModelFormData>({
@@ -102,9 +135,31 @@ export default function AISettingsClient() {
         api_key: '',
     });
 
-    const { data: modelsData, isLoading, error } = useQuery({
-        queryKey: ['ai-models'],
-        queryFn: () => aiRegistryService.listModels(),
+    // Fetch all models from aggregation service
+    const { data: allModels, isLoading, error } = useQuery({
+        queryKey: ['ai-models-aggregated'],
+        queryFn: async () => {
+            console.log('[AISettings] Fetching models from aggregator service...');
+            try {
+                const models = await modelAggregatorService.aggregateAllModels();
+                console.log('[AISettings] Models fetched successfully:', {
+                    count: models.length,
+                    isArray: Array.isArray(models),
+                    firstModel: models[0],
+                    dataType: typeof models,
+                });
+                return models;
+            } catch (err) {
+                console.error('[AISettings] Error fetching models:', err);
+                throw err;
+            }
+        },
+        staleTime: 5 * 60 * 1000, // 5 minutes
+        gcTime: 10 * 60 * 1000, // 10 minutes (formerly cacheTime)
+        refetchOnMount: false, // Don't refetch on mount - use cached data
+        refetchOnWindowFocus: false, // Don't refetch on window focus
+        retry: 3, // Retry failed requests 3 times
+        retryDelay: (attemptIndex) => Math.min(1000 * 2 ** attemptIndex, 30000),
     });
 
     const registerMutation = useMutation({
@@ -166,41 +221,114 @@ export default function AISettingsClient() {
         }));
     };
 
-    const models = modelsData?.models || [];
+    // Defensive data extraction with validation
+    const models = useMemo(() => {
+        if (!allModels) {
+            console.warn('[AISettings] No models data available yet');
+            return [];
+        }
+
+        if (!Array.isArray(allModels)) {
+            console.error('[AISettings] Invalid models data format:', allModels);
+            return [];
+        }
+
+        console.log('[AISettings] Models loaded:', {
+            count: allModels.length,
+            isLoading,
+            activeCategory,
+        });
+
+        return allModels;
+    }, [allModels, isLoading, activeCategory]);
 
     const filteredAndSorted = useMemo(() => {
-        let result = models.filter(m => matchesCategory(m, activeCategory));
-        switch (sortBy) {
-            case 'newest':
-                result = [...result].sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
-                break;
-            case 'oldest':
-                result = [...result].sort((a, b) => new Date(a.created_at).getTime() - new Date(b.created_at).getTime());
-                break;
-            case 'name':
-                result = [...result].sort((a, b) => a.name.localeCompare(b.name));
-                break;
+        try {
+            console.log('[AISettings] Running filter:', {
+                category: activeCategory,
+                totalModels: models.length,
+                sortBy,
+            });
+
+            // Validate models array
+            if (!Array.isArray(models)) {
+                console.error('[AISettings] Models is not an array:', models);
+                return [];
+            }
+
+            // Filter models with error handling per model
+            let result = models.filter(m => {
+                try {
+                    const matches = matchesCategory(m, activeCategory);
+                    return matches;
+                } catch (err) {
+                    console.error('[AISettings] Error filtering model:', m, err);
+                    return false;
+                }
+            });
+
+            console.log('[AISettings] Filtered results:', {
+                category: activeCategory,
+                filteredCount: result.length,
+                totalCount: models.length,
+            });
+
+            // Apply sorting
+            switch (sortBy) {
+                case 'newest':
+                    // Sort by model order (hardcoded models come first, then by category)
+                    result = [...result].reverse();
+                    break;
+                case 'oldest':
+                    // Keep original order
+                    result = [...result];
+                    break;
+                case 'name':
+                    result = [...result].sort((a, b) => a.name.localeCompare(b.name));
+                    break;
+            }
+
+            console.log('[AISettings] Final sorted results:', result.length);
+            return result;
+        } catch (error) {
+            console.error('[AISettings] Error in filteredAndSorted:', error);
+            return [];
         }
-        return result;
     }, [models, activeCategory, sortBy]);
 
     if (isLoading) {
         return (
             <div className="flex items-center justify-center h-96">
-                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
+                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary" role="progressbar"></div>
             </div>
         );
     }
 
     if (error) {
+        console.error('[AISettings] Error loading models:', error);
         return (
             <div className="flex items-center justify-center h-96">
                 <div className="text-center space-y-3">
                     <p className="text-lg font-semibold text-red-400">Failed to load AI models</p>
                     <p className="text-sm text-gray-400">{(error as Error).message}</p>
+                    <Button
+                        onClick={() => {
+                            console.log('[AISettings] Retry button clicked');
+                            queryClient.invalidateQueries({ queryKey: ['ai-models-aggregated'] });
+                        }}
+                        variant="outline"
+                        className="mt-4"
+                    >
+                        Retry
+                    </Button>
                 </div>
             </div>
         );
+    }
+
+    // Guard against empty models after loading
+    if (!isLoading && models.length === 0) {
+        console.warn('[AISettings] No models available after loading');
     }
 
     return (
@@ -280,34 +408,54 @@ export default function AISettingsClient() {
                     <motion.div key={model.id} variants={fadeUp}>
                         <div
                             className="rounded-xl border border-white/10 bg-white/[0.02] hover:bg-white/[0.05] hover:border-white/20 transition-all overflow-hidden group cursor-pointer"
-                            onClick={() => {
-                                if (!model.is_default) handleSwitchDefault(model.id, model.name);
-                            }}
+                            onClick={() => router.push(`/dashboard/ai-settings/${model.slug}`)}
                         >
                             {/* Thumbnail */}
-                            <div className={`relative h-36 bg-gradient-to-br ${getProviderGradient(model.provider)} flex items-center justify-center overflow-hidden`}>
-                                <span className="text-3xl font-bold text-white/30 select-none">
-                                    {getProviderInitials(model.provider)}
-                                </span>
+                            <div className={`relative h-36 ${model.thumbnail_url ? 'bg-cover bg-center' : `bg-gradient-to-br ${getProviderGradient(model.provider)}`} flex items-center justify-center overflow-hidden`}
+                                style={model.thumbnail_url ? { backgroundImage: `url(${model.thumbnail_url})` } : undefined}
+                            >
+                                {!model.thumbnail_url && (
+                                    <span className="text-3xl font-bold text-white/30 select-none">
+                                        {getProviderInitials(model.provider)}
+                                    </span>
+                                )}
                                 {model.is_default && (
                                     <div className="absolute top-2 right-2 bg-black/40 backdrop-blur-sm rounded-full p-1">
-                                        <Star className="w-4 h-4 text-yellow-400 fill-yellow-400" />
+                                        <Star className="w-4 h-4 text-yellow-400 fill-yellow-400" data-testid="star-icon" />
+                                    </div>
+                                )}
+                                {model.is_premium && (
+                                    <div className="absolute top-2 left-2 bg-amber-500/20 backdrop-blur-sm rounded-md px-2 py-0.5 flex items-center gap-1">
+                                        <Crown className="w-3 h-3 text-amber-400" />
+                                        <span className="text-xs text-amber-300 font-medium">Premium</span>
                                     </div>
                                 )}
                             </div>
 
                             {/* Content */}
                             <div className="p-4 space-y-2">
-                                <h3 className="text-sm font-semibold text-white truncate">
-                                    {model.name.toLowerCase()}
-                                </h3>
+                                <div className="flex items-start justify-between gap-2">
+                                    <h3 className="text-sm font-semibold text-white truncate flex-1">
+                                        {model.name}
+                                    </h3>
+                                    {model.provider && (
+                                        <span className="text-xs px-2 py-0.5 rounded-md bg-white/5 text-gray-400 shrink-0">
+                                            {model.provider}
+                                        </span>
+                                    )}
+                                </div>
                                 <p className="text-xs text-gray-400 line-clamp-2 leading-relaxed min-h-[2.5rem]">
                                     {getModelDescription(model)}
                                 </p>
-                                <div className="pt-1">
+                                <div className="flex items-center justify-between pt-1">
                                     <span className="inline-block px-3 py-1 text-xs border border-white/15 rounded-md text-gray-400">
                                         {getPrimaryTag(model)}
                                     </span>
+                                    {formatPricing(model) && (
+                                        <span className="text-xs text-emerald-400 font-medium">
+                                            {formatPricing(model)}
+                                        </span>
+                                    )}
                                 </div>
                             </div>
                         </div>

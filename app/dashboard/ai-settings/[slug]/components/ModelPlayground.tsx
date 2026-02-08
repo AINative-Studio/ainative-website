@@ -121,9 +121,18 @@ const STATUS_LABELS: Record<RunStatus, string> = {
  * - Embedding models: Text input, normalization options
  */
 export default function ModelPlayground({ model, slug }: PlaygroundProps) {
+  // Debug: Log model data to check I2V condition
+  console.log('[ModelPlayground] Model:', {
+    slug: model.slug,
+    category: model.category,
+    endpoint: model.endpoint,
+    shouldShowImageSelector: model.category === 'Video' && model.endpoint.includes('i2v'),
+  });
+
   // Form state
   const [formState, setFormState] = useState<PlaygroundFormState>({
     prompt: '',
+    image_url: '',  // For I2V video models
     negative_prompt: '',
     max_tokens: model.max_tokens || 2048,
     temperature: 0.7,

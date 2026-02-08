@@ -1,3 +1,7 @@
+/**
+ * @jest-environment node
+ */
+
 import apiClient from '../api-client';
 import { aiRegistryService } from '../ai-registry-service';
 

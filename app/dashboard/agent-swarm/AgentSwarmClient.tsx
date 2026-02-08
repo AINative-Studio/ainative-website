@@ -43,10 +43,12 @@ const ProjectCard = ({ project }: { project: AgentSwarmProject }) => {
             </p>
           </div>
           <div className="flex items-center gap-2">
-            <Button size="sm" variant="outline" className="border-gray-700">
-              <Eye className="w-4 h-4 mr-1" />
-              View Logs
-            </Button>
+            <Link href={`/dashboard/agent-swarm/monitor?project=${project.id}`}>
+              <Button size="sm" variant="outline" className="border-gray-700">
+                <Eye className="w-4 h-4 mr-1" />
+                Monitor
+              </Button>
+            </Link>
           </div>
         </div>
 

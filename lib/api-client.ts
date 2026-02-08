@@ -1,13 +1,22 @@
 /**
  * Centralized API client for making HTTP requests
  * Uses native fetch with interceptors-like functionality
+ *
+ * PERMANENT FIX FOR RECURRING 401 ERRORS:
+ * - Automatically attempts token refresh on 401 errors
+ * - Retries original request after successful refresh
+ * - Clears all auth data (cookies + localStorage) on failed refresh
+ * - Redirects to login page when auth cannot be recovered
+ * - Prevents infinite retry loops
  */
 
 import { appConfig } from './config/app';
-import { getAuthToken } from '@/utils/authCookies';
+import { getAuthToken, clearAuthData } from '@/utils/authCookies';
+import { authService } from '@/services/authService';
 
 interface RequestConfig extends RequestInit {
   timeout?: number;
+  _isRetry?: boolean; // Internal flag to prevent infinite retry loops
 }
 
 interface ApiResponse<T> {
@@ -19,6 +28,8 @@ interface ApiResponse<T> {
 class ApiClient {
   private baseUrl: string;
   private timeout: number;
+  private isRefreshing = false; // Prevent concurrent refresh attempts
+  private refreshPromise: Promise<string | null> | null = null;
 
   constructor() {
     this.baseUrl = appConfig.api.baseUrl;
@@ -29,6 +40,87 @@ class ApiClient {
     if (typeof window === 'undefined') return null;
     // Use the centralized auth token getter which handles both cookies and localStorage
     return getAuthToken();
+  }
+
+  /**
+   * Attempt to refresh the access token
+   * Prevents concurrent refresh attempts by using a shared promise
+   */
+  private async refreshToken(): Promise<string | null> {
+    // If already refreshing, wait for that attempt to complete
+    if (this.isRefreshing && this.refreshPromise) {
+      console.log('🔄 [ApiClient] Token refresh already in progress, waiting...');
+      return this.refreshPromise;
+    }
+
+    this.isRefreshing = true;
+    this.refreshPromise = authService.refreshAccessToken()
+      .then((newToken) => {
+        this.isRefreshing = false;
+        this.refreshPromise = null;
+        return newToken;
+      })
+      .catch((error) => {
+        this.isRefreshing = false;
+        this.refreshPromise = null;
+        console.error('🔄 [ApiClient] Token refresh failed:', error);
+        return null;
+      });
+
+    return this.refreshPromise;
+  }
+
+  /**
+   * Handle 401 Unauthorized errors with automatic token refresh
+   * If refresh succeeds, retries the original request
+   * If refresh fails, clears auth and redirects to login
+   */
+  private async handle401Error<T>(
+    endpoint: string,
+    config: RequestConfig
+  ): Promise<ApiResponse<T>> {
+    console.warn('🔒 [ApiClient] 401 Unauthorized - Attempting token refresh...');
+
+    // Don't retry if this is already a retry attempt (prevent infinite loops)
+    if (config._isRetry) {
+      console.error('🔒 [ApiClient] Token refresh failed on retry - clearing auth and redirecting');
+      this.clearAuthAndRedirect();
+      throw new Error('Authentication failed. Please log in again.');
+    }
+
+    // Attempt to refresh the token
+    const newToken = await this.refreshToken();
+
+    if (newToken) {
+      // Refresh succeeded! Retry the original request with new token
+      console.log('✅ [ApiClient] Token refreshed successfully - retrying request');
+      return this.request<T>(endpoint, { ...config, _isRetry: true });
+    } else {
+      // Refresh failed - clear auth and redirect to login
+      console.error('❌ [ApiClient] Token refresh failed - clearing auth and redirecting');
+      this.clearAuthAndRedirect();
+      throw new Error('Session expired. Please log in again.');
+    }
+  }
+
+  /**
+   * Clear all authentication data and redirect to login page
+   * Preserves current URL for post-login redirect
+   */
+  private clearAuthAndRedirect(): void {
+    if (typeof window === 'undefined') return;
+
+    // Clear ALL auth data (cookies + localStorage)
+    clearAuthData();
+
+    // Build login URL with return path
+    const currentPath = window.location.pathname + window.location.search;
+    const loginUrl = `/login?callbackUrl=${encodeURIComponent(currentPath)}`;
+
+    console.log('🔐 [ApiClient] Redirecting to login:', loginUrl);
+
+    // Redirect to login page
+    window.location.href = loginUrl;
   }
 
   private async request<T>(
@@ -65,11 +157,10 @@ class ApiClient {
 
       const data = await response.json();
 
-      // Handle 401 unauthorized
+      // Handle 401 unauthorized with automatic token refresh
       if (response.status === 401) {
-        if (typeof window !== 'undefined') {
-          localStorage.removeItem('accessToken');
-        }
+        console.warn('🔒 [ApiClient] Received 401 Unauthorized for:', endpoint);
+        return this.handle401Error<T>(endpoint, config);
       }
 
       // Throw error for non-OK responses

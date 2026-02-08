@@ -72,7 +72,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
         </div>
 
         {/* Mobile Header */}
-        <div className="md:hidden fixed top-0 left-0 right-0 z-30 bg-[#161B22] border-b border-gray-800 flex items-center h-16 px-4">
+        <div className="md:hidden fixed top-0 left-0 right-0 z-30 bg-[#161B22] border-b border-white/10 flex items-center h-16 px-4">
           <button
             onClick={toggleSidebar}
             className="rounded-md text-gray-400 hover:text-white hover:bg-gray-700 p-2"
