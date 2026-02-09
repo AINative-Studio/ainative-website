@@ -131,10 +131,17 @@ class ApiClient {
 
     const url = endpoint.startsWith('http') ? endpoint : `${this.baseUrl}${endpoint}`;
 
+    // Don't set Content-Type for FormData - browser will set it with boundary
+    const isFormData = fetchConfig.body instanceof FormData;
+
     const headers: HeadersInit = {
-      'Content-Type': 'application/json',
       ...(fetchConfig.headers || {}),
     };
+
+    // Only set Content-Type for JSON requests
+    if (!isFormData) {
+      (headers as Record<string, string>)['Content-Type'] = 'application/json';
+    }
 
     // Add auth token if available
     const token = this.getToken();
@@ -165,6 +172,15 @@ class ApiClient {
 
       // Throw error for non-OK responses
       if (!response.ok) {
+        // Log full error details for debugging (especially 422 validation errors)
+        if (response.status === 422) {
+          console.error('🚨 [ApiClient] Validation Error (422):', {
+            endpoint,
+            status: response.status,
+            fullErrorResponse: data,
+          });
+        }
+
         const errorMessage = typeof data === 'object' && data?.message
           ? data.message
           : typeof data === 'object' && data?.detail
@@ -200,7 +216,7 @@ class ApiClient {
     return this.request<T>(endpoint, {
       ...config,
       method: 'POST',
-      body: data ? JSON.stringify(data) : undefined,
+      body: data instanceof FormData ? data : (data ? JSON.stringify(data) : undefined),
     });
   }
 

@@ -208,43 +208,46 @@ export function AudioPreview({ result, onDownload }: AudioPreviewProps) {
             </div>
           ) : (
             <div className="space-y-4">
-              {/* Hidden HTML5 audio element */}
-              {result.url && (
-                <audio
-                  ref={audioRef}
-                  src={result.url}
-                  preload="metadata"
-                  onError={handleAudioError}
-                  aria-label="AI generated audio preview"
-                >
-                  {/* Fallback for multiple formats */}
-                  {result.format === 'mp3' && (
-                    <source src={result.url} type="audio/mpeg" />
-                  )}
-                  {result.format === 'wav' && (
-                    <source src={result.url} type="audio/wav" />
-                  )}
-                  {result.format === 'opus' && (
-                    <source src={result.url} type="audio/opus" />
-                  )}
-                  {result.format === 'ogg' && (
-                    <source src={result.url} type="audio/ogg" />
-                  )}
-                  <p className="text-gray-400 text-sm">
-                    Your browser does not support audio playback.
-                    <button
-                      onClick={handleDownload}
-                      className="text-primary hover:underline ml-2"
+              {/* Audio Player - Only show for TTS results, hide for Whisper transcripts */}
+              {!result.transcript && (
+                <>
+                  {/* Hidden HTML5 audio element */}
+                  {result.url && (
+                    <audio
+                      ref={audioRef}
+                      src={result.url}
+                      preload="metadata"
+                      onError={handleAudioError}
+                      aria-label="AI generated audio preview"
                     >
-                      Download audio
-                    </button>
-                    to listen.
-                  </p>
-                </audio>
-              )}
+                      {/* Fallback for multiple formats */}
+                      {result.format === 'mp3' && (
+                        <source src={result.url} type="audio/mpeg" />
+                      )}
+                      {result.format === 'wav' && (
+                        <source src={result.url} type="audio/wav" />
+                      )}
+                      {result.format === 'opus' && (
+                        <source src={result.url} type="audio/opus" />
+                      )}
+                      {result.format === 'ogg' && (
+                        <source src={result.url} type="audio/ogg" />
+                      )}
+                      <p className="text-gray-400 text-sm">
+                        Your browser does not support audio playback.
+                        <button
+                          onClick={handleDownload}
+                          className="text-primary hover:underline ml-2"
+                        >
+                          Download audio
+                        </button>
+                        to listen.
+                      </p>
+                    </audio>
+                  )}
 
-              {/* Audio Icon and Title */}
-              <div className="flex items-center gap-3">
+                  {/* Audio Icon and Title */}
+                  <div className="flex items-center gap-3">
                 <div className="w-12 h-12 rounded-lg bg-primary/10 flex items-center justify-center">
                   <FileAudio className="w-6 h-6 text-primary" />
                 </div>
@@ -320,6 +323,8 @@ export function AudioPreview({ result, onDownload }: AudioPreviewProps) {
                   </span>
                 </div>
               </div>
+                </>
+              )}
             </div>
           )}
         </div>
@@ -365,11 +370,13 @@ export function AudioPreview({ result, onDownload }: AudioPreviewProps) {
           )}
         </div>
 
-        {/* Help Text */}
-        <p className="text-xs text-gray-500 leading-relaxed">
-          Use the controls to play, pause, seek, and adjust volume.
-          Keyboard shortcuts: Space (play/pause), Arrow keys (seek ±5s), M (mute).
-        </p>
+        {/* Help Text - Only show for audio player, not for transcripts */}
+        {!result.transcript && (
+          <p className="text-xs text-gray-500 leading-relaxed">
+            Use the controls to play, pause, seek, and adjust volume.
+            Keyboard shortcuts: Space (play/pause), Arrow keys (seek ±5s), M (mute).
+          </p>
+        )}
       </div>
     </PreviewContainer>
   );

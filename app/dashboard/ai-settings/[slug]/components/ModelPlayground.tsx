@@ -19,6 +19,7 @@ import { PlaygroundProps, PlaygroundFormState } from '../types';
 import { PlaygroundResult, transformToPlaygroundResult } from '../types.preview';
 import { PreviewSelector } from './preview';
 import ImageSelector from './ImageSelector';
+import AudioFileUpload from './AudioFileUpload';
 import apiClient from '@/lib/api-client';
 
 /**
@@ -141,6 +142,9 @@ export default function ModelPlayground({ model, slug }: PlaygroundProps) {
     enable_safety_checker: true,
   });
 
+  // Audio file state (for Whisper models)
+  const [audioFile, setAudioFile] = useState<File | null>(null);
+
   // Run state
   const [status, setStatus] = useState<RunStatus>('idle');
   const [result, setResult] = useState<PlaygroundResult | null>(null);
@@ -150,8 +154,16 @@ export default function ModelPlayground({ model, slug }: PlaygroundProps) {
   /**
    * Load saved media from localStorage on component mount
    * Supports Audio (TTS), Image, and Video models for cost savings
+   * EXCLUDES Whisper transcription/translation models (not media generation)
    */
   useEffect(() => {
+    // Exclude Whisper models - they process input audio, not generate media
+    const isWhisperModel =
+      model.endpoint.includes('/audio/transcriptions') ||
+      model.endpoint.includes('/audio/translations');
+
+    if (isWhisperModel) return;
+
     // Only load saved media for media generation models
     const isMediaModel =
       model.category === 'Audio' ||
@@ -185,6 +197,39 @@ export default function ModelPlayground({ model, slug }: PlaygroundProps) {
     mutationFn: async (input: PlaygroundFormState) => {
       console.log('Running inference with:', input);
       console.log('Model endpoint:', model.endpoint, 'Method:', model.method);
+
+      // Whisper audio transcription/translation models expect FormData with file upload
+      if (model.category === 'Audio' && (model.endpoint.includes('/audio/transcriptions') || model.endpoint.includes('/audio/translations'))) {
+        if (!audioFile) {
+          throw new Error('Audio file is required for Whisper transcription/translation');
+        }
+
+        const formData = new FormData();
+        formData.append('file', audioFile);
+
+        // Add optional parameters
+        if (input.prompt) {
+          formData.append('prompt', input.prompt);
+        }
+        if (input.temperature !== undefined) {
+          formData.append('temperature', input.temperature.toString());
+        }
+        formData.append('response_format', 'json');
+
+        // For transcription, add language if specified
+        if (model.endpoint.includes('/audio/transcriptions') && input.prompt) {
+          // Language would be extracted from prompt or a separate field
+          // For now, we'll let the API auto-detect
+        }
+
+        console.log('📤 Uploading audio file:', audioFile.name, 'Size:', audioFile.size, 'bytes');
+
+        // Don't set Content-Type header - let the browser set it with the correct boundary
+        const response = await apiClient.post(model.endpoint, formData, {
+          timeout: 120000, // 120s for audio processing
+        });
+        return response.data;
+      }
 
       // Transform request payload based on model category
       let requestPayload: Record<string, unknown> = { ...input };
@@ -255,8 +300,11 @@ export default function ModelPlayground({ model, slug }: PlaygroundProps) {
         console.log('🔗 Result URL exists:', !!playgroundResult.url);
 
         // Save user-generated media to localStorage for audio/image/video models
+        // EXCLUDE Whisper transcription/translation - those are processing results, not generated media
+        const isWhisperResult = playgroundResult.type === 'text' && playgroundResult.transcript;
         const isMediaResult = ['audio', 'image', 'video'].includes(playgroundResult.type);
-        if (isMediaResult) {
+
+        if (isMediaResult && !isWhisperResult) {
           // Log media-specific details
           if (playgroundResult.type === 'audio') {
             console.log('🎵 Audio URL:', playgroundResult.url?.substring(0, 100) + '...');
@@ -271,7 +319,7 @@ export default function ModelPlayground({ model, slug }: PlaygroundProps) {
             console.log('🎬 Video format:', playgroundResult.format);
           }
 
-          // Save to localStorage for cost savings
+          // Save to localStorage for cost savings (TTS, Image, Video generation)
           try {
             localStorage.setItem(getUserMediaKey(model.id), JSON.stringify(playgroundResult));
             console.log(`💾 Saved user-generated ${playgroundResult.type} to localStorage`);
@@ -322,13 +370,20 @@ export default function ModelPlayground({ model, slug }: PlaygroundProps) {
    * Handle form submission
    */
   const handleRun = () => {
+    // For Whisper audio models, require audio file
+    if (model.category === 'Audio' && (model.endpoint.includes('/audio/transcriptions') || model.endpoint.includes('/audio/translations'))) {
+      if (!audioFile) {
+        return;
+      }
+    }
     // For I2V models, require both image_url and prompt (motion_prompt)
-    if (model.category === 'Video' && model.endpoint.includes('i2v')) {
+    else if (model.category === 'Video' && model.endpoint.includes('i2v')) {
       if (!formState.image_url?.trim() || !formState.prompt?.trim()) {
         return;
       }
-    } else {
-      // For other models, just require prompt
+    }
+    // For other models, just require prompt
+    else {
       if (!formState.prompt?.trim()) return;
     }
     runInference.mutate(formState);
@@ -340,6 +395,7 @@ export default function ModelPlayground({ model, slug }: PlaygroundProps) {
   const handleReset = () => {
     setFormState({
       prompt: '',
+      image_url: '',
       negative_prompt: '',
       max_tokens: model.max_tokens || 2048,
       temperature: 0.7,
@@ -347,6 +403,7 @@ export default function ModelPlayground({ model, slug }: PlaygroundProps) {
       guidance: 5,
       enable_safety_checker: true,
     });
+    setAudioFile(null);
     setStatus('idle');
     setResult(null);
     setCopied(false);
@@ -404,6 +461,19 @@ export default function ModelPlayground({ model, slug }: PlaygroundProps) {
                 <p className="text-xs text-green-400">Image selected and ready</p>
               </div>
             )}
+          </div>
+        )}
+
+        {/* Audio File Upload (for Whisper transcription/translation models) */}
+        {model.category === 'Audio' && (model.endpoint.includes('/audio/transcriptions') || model.endpoint.includes('/audio/translations')) && (
+          <div className="space-y-3">
+            <label className="text-sm font-medium text-gray-300">
+              {model.endpoint.includes('/audio/transcriptions') ? 'Audio/Video File to Transcribe' : 'Audio File to Translate to English'}
+            </label>
+            <AudioFileUpload
+              onFileSelect={(file) => setAudioFile(file)}
+              currentFile={audioFile}
+            />
           </div>
         )}
 
@@ -555,7 +625,9 @@ export default function ModelPlayground({ model, slug }: PlaygroundProps) {
             onClick={handleRun}
             disabled={
               status === 'running' ||
-              (model.category === 'Video' && model.endpoint.includes('i2v')
+              (model.category === 'Audio' && (model.endpoint.includes('/audio/transcriptions') || model.endpoint.includes('/audio/translations'))
+                ? !audioFile
+                : model.category === 'Video' && model.endpoint.includes('i2v')
                 ? !formState.image_url?.trim() || !formState.prompt?.trim()
                 : !formState.prompt?.trim())
             }
