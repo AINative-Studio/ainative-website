@@ -56,13 +56,14 @@ export const authOptions: NextAuthOptions = {
         // In production, validate against backend API
         try {
           const apiUrl = process.env.NEXT_PUBLIC_API_BASE_URL || 'https://api.ainative.studio';
-          const response = await fetch(`${apiUrl}/auth/login`, {
+          const response = await fetch(`${apiUrl}/v1/public/auth/login`, {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              email: credentials.email,
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+            body: new URLSearchParams({
+              username: credentials.email,
               password: credentials.password,
-            }),
+              grant_type: 'password',
+            }).toString(),
           });
 
           if (!response.ok) {
