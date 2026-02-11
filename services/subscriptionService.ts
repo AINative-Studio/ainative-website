@@ -166,7 +166,7 @@ export interface CurrentPlanInfo {
  * Manages all subscription-related API operations
  */
 export class SubscriptionService {
-  private readonly basePath = '/v1/subscription';
+  private readonly basePath = '/v1/public/subscription';
 
   /**
    * Get current subscription details
@@ -257,7 +257,7 @@ export class SubscriptionService {
   async updateSubscription(planId: string): Promise<OperationResult> {
     try {
       const response = await apiClient.put<ApiResponse<{ subscription: Subscription }>>(
-        `${this.basePath}/update`,
+        this.basePath,
         { plan_id: planId }
       );
 
@@ -345,7 +345,7 @@ export class SubscriptionService {
     for (let attempt = 1; attempt <= maxRetries; attempt++) {
       try {
         const response = await apiClient.get<ApiResponse<{ invoices: SubscriptionInvoice[] }>>(
-          `${this.basePath}/invoices?limit=${limit}`
+          `/v1/public/billing/invoices?limit=${limit}`
         );
 
         // Handle non-200 responses gracefully
@@ -396,7 +396,7 @@ export class SubscriptionService {
   async getPaymentMethods(): Promise<PaymentMethod[]> {
     try {
       const response = await apiClient.get<ApiResponse<{ payment_methods: PaymentMethod[] }>>(
-        `${this.basePath}/payment-methods`
+        '/v1/public/billing/payment-methods'
       );
 
       // Handle non-200 responses gracefully
@@ -431,7 +431,7 @@ export class SubscriptionService {
   async addPaymentMethod(paymentMethodId: string): Promise<OperationResult> {
     try {
       const response = await apiClient.post<ApiResponse<{ payment_method: PaymentMethod }>>(
-        `${this.basePath}/payment-methods`,
+        '/v1/public/billing/payment-methods',
         { payment_method_id: paymentMethodId }
       );
 
@@ -459,7 +459,7 @@ export class SubscriptionService {
   async removePaymentMethod(paymentMethodId: string): Promise<OperationResult> {
     try {
       const response = await apiClient.delete<ApiResponse<{ success: boolean }>>(
-        `${this.basePath}/payment-methods/${paymentMethodId}`
+        `/v1/public/billing/payment-methods/${paymentMethodId}`
       );
 
       if (!response.data.success) {
@@ -486,7 +486,7 @@ export class SubscriptionService {
   async setDefaultPaymentMethod(paymentMethodId: string): Promise<OperationResult> {
     try {
       const response = await apiClient.post<ApiResponse<{ success: boolean }>>(
-        `${this.basePath}/default-payment-method`,
+        '/v1/public/billing/default-payment-method',
         { payment_method_id: paymentMethodId }
       );
 

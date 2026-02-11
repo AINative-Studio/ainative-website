@@ -185,9 +185,9 @@ export interface CreditTransaction {
  * Manages billing, invoices, payment methods, subscriptions, and credits
  */
 export class BillingService {
-  private readonly billingBasePath = '/v1/dashboard/billing';
-  private readonly subscriptionBasePath = '/v1/subscription';
-  private readonly creditsBasePath = '/v1/credits';
+  private readonly billingBasePath = '/v1/public/billing';
+  private readonly subscriptionBasePath = '/v1/public/subscription';
+  private readonly creditsBasePath = '/v1/public/credits';
 
   // ==========================================================================
   // Billing Methods
@@ -264,7 +264,7 @@ export class BillingService {
     try {
       const response = await apiClient.post<
         ApiResponse<{ payment_method: PaymentMethod }>
-      >(`${this.billingBasePath}/payment-method`, {
+      >(`${this.billingBasePath}/payment-methods`, {
         payment_method_id: paymentMethodId,
       });
 
@@ -387,7 +387,7 @@ export class BillingService {
     try {
       const response = await apiClient.get<
         ApiResponse<{ balance: CreditBalance }>
-      >(this.creditsBasePath);
+      >(`${this.creditsBasePath}/balance`);
 
       if (!response.data.success || !response.data.data?.balance) {
         return null;
@@ -497,7 +497,7 @@ export class BillingService {
     try {
       const response = await apiClient.get<
         ApiResponse<{ auto_refill: AutoRefillSettings }>
-      >(`${this.billingBasePath}/auto-refill-settings`);
+      >(`${this.creditsBasePath}/auto-refill-settings`);
 
       if (!response.data.success || !response.data.data?.auto_refill) {
         throw new Error(
@@ -521,7 +521,7 @@ export class BillingService {
   ): Promise<OperationResult> {
     try {
       const response = await apiClient.put<ApiResponse<{ success: boolean }>>(
-        `${this.billingBasePath}/auto-refill-settings`,
+        `${this.creditsBasePath}/auto-refill-settings`,
         settings
       );
 

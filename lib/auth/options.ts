@@ -56,21 +56,39 @@ export const authOptions: NextAuthOptions = {
         // In production, validate against backend API
         try {
           const apiUrl = process.env.NEXT_PUBLIC_API_BASE_URL || 'https://api.ainative.studio';
-          const response = await fetch(`${apiUrl}/auth/login`, {
+          const response = await fetch(`${apiUrl}/v1/public/auth/login`, {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              email: credentials.email,
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+            body: new URLSearchParams({
+              username: credentials.email,
               password: credentials.password,
-            }),
+              grant_type: 'password',
+            }).toString(),
           });
 
           if (!response.ok) {
             return null;
           }
 
-          const user = await response.json();
-          return user;
+          const data = await response.json();
+
+          // OAuth2 token response - fetch user profile with the token
+          if (data.access_token) {
+            const profileRes = await fetch(`${apiUrl}/v1/public/auth/me`, {
+              headers: { Authorization: `Bearer ${data.access_token}` },
+            });
+            if (!profileRes.ok) return null;
+            const profile = await profileRes.json();
+            return {
+              id: profile.id,
+              name: profile.name || profile.full_name || profile.preferred_name,
+              email: profile.email,
+              image: profile.avatar_url,
+              accessToken: data.access_token,
+            };
+          }
+
+          return data;
         } catch (error) {
           console.error('Auth error:', error);
           return null;
