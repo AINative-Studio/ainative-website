@@ -462,7 +462,7 @@ export class ModelAggregatorService {
           provider: 'OpenAI',
           category: 'Audio',
         }),
-        endpoint: '/v1/audio/transcriptions',
+        endpoint: '/api/v1/audio/transcriptions',
         method: 'POST',
         pricing: {
           credits: 5,
@@ -497,7 +497,7 @@ export class ModelAggregatorService {
           provider: 'OpenAI',
           category: 'Audio',
         }),
-        endpoint: '/v1/audio/translations',
+        endpoint: '/api/v1/audio/translations',
         method: 'POST',
         pricing: {
           credits: 5,
@@ -526,7 +526,7 @@ export class ModelAggregatorService {
           provider: 'OpenAI',
           category: 'Audio',
         }),
-        endpoint: '/v1/audio/speech',
+        endpoint: '/api/v1/audio/speech',
         method: 'POST',
         pricing: {
           credits: 14,
@@ -561,7 +561,7 @@ export class ModelAggregatorService {
           provider: 'HuggingFace',
           category: 'Audio',
         }),
-        endpoint: '/v1/audio/tts',
+        endpoint: '/api/v1/audio/tts',
         method: 'POST',
         pricing: {
           credits: 6,
@@ -596,7 +596,7 @@ export class ModelAggregatorService {
           provider: 'HuggingFace',
           category: 'Audio',
         }),
-        endpoint: '/v1/audio/tts',
+        endpoint: '/api/v1/audio/tts',
         method: 'POST',
         pricing: {
           credits: 5,
@@ -631,7 +631,7 @@ export class ModelAggregatorService {
           provider: 'MiniMax',
           category: 'Audio',
         }),
-        endpoint: '/v1/audio/tts',
+        endpoint: '/api/v1/audio/tts',
         method: 'POST',
         pricing: {
           credits: 14,
@@ -667,7 +667,7 @@ export class ModelAggregatorService {
           provider: 'MiniMax',
           category: 'Audio',
         }),
-        endpoint: '/v1/audio/music',
+        endpoint: '/api/v1/audio/music',
         method: 'POST',
         pricing: {
           credits: 100,
