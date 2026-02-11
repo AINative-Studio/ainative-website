@@ -10,8 +10,6 @@ import {
 import {
   sessionService,
   Session,
-  SessionDetail,
-  MemorySearchResult,
   MemoryStats,
   MemoryEntry,
 } from '@/lib/session-service';
@@ -69,23 +67,17 @@ export default function SessionsClient() {
 
   const fetchSessions = useCallback(async () => {
     try {
-      setIsLoading(true);
-      setError(null);
       const params = statusFilter !== 'all' ? { status: statusFilter as SessionStatus } : {};
       const response = await sessionService.listSessions(params);
       setSessions(response.sessions);
     } catch (err) {
       setError('Failed to load sessions');
       console.error('Error fetching sessions:', err);
-    } finally {
-      setIsLoading(false);
     }
   }, [statusFilter]);
 
   const fetchMemoryForSession = useCallback(async (sessionId: string) => {
     try {
-      setIsLoading(true);
-      setError(null);
       const [statsData, contextData] = await Promise.all([
         sessionService.getMemoryStats(sessionId),
         sessionService.getMemoryContext({ session_id: sessionId }),
@@ -95,22 +87,25 @@ export default function SessionsClient() {
     } catch (err) {
       setError('Failed to load memory data');
       console.error('Error fetching memory:', err);
-    } finally {
-      setIsLoading(false);
     }
   }, []);
 
   useEffect(() => {
-    fetchSessions();
+    setIsLoading(true);
+    fetchSessions().finally(() => setIsLoading(false));
   }, [fetchSessions]);
 
   useEffect(() => {
     if (selectedSession) {
-      fetchMemoryForSession(selectedSession.id);
+      setIsLoading(true);
+      fetchMemoryForSession(selectedSession.id).finally(() => setIsLoading(false));
     }
   }, [selectedSession, fetchMemoryForSession]);
 
   const filteredSessions = sessions.filter((session) => {
+    if (statusFilter !== 'all' && session.status !== statusFilter) {
+      return false;
+    }
     if (searchQuery) {
       const query = searchQuery.toLowerCase();
       return (
@@ -122,6 +117,7 @@ export default function SessionsClient() {
   });
 
   const handleDeleteSession = async (sessionId: string) => {
+    if (!window.confirm('Delete this session and all its data? This cannot be undone.')) return;
     try {
       await sessionService.deleteSession(sessionId);
       setSessions(sessions.filter((s) => s.id !== sessionId));
@@ -134,6 +130,7 @@ export default function SessionsClient() {
   };
 
   const handleClearMemory = async (sessionId: string) => {
+    if (!window.confirm('Clear all memory for this session? This cannot be undone.')) return;
     try {
       await sessionService.clearSessionMemory(sessionId);
       setMemoryEntries([]);
@@ -177,12 +174,19 @@ export default function SessionsClient() {
     }
   };
 
-  const handleRefresh = () => {
-    fetchSessions();
-    if (selectedSession) {
-      fetchMemoryForSession(selectedSession.id);
+  const handleRefresh = useCallback(async () => {
+    setIsLoading(true);
+    setError(null);
+    try {
+      const promises: Promise<void>[] = [fetchSessions()];
+      if (selectedSession) {
+        promises.push(fetchMemoryForSession(selectedSession.id));
+      }
+      await Promise.all(promises);
+    } finally {
+      setIsLoading(false);
     }
-  };
+  }, [fetchSessions, fetchMemoryForSession, selectedSession]);
 
   return (
     <div className="space-y-6">

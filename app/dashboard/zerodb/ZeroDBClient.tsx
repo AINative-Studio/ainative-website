@@ -75,14 +75,17 @@ export default function ZeroDBClient() {
     try {
       const response = await zerodbService.listNamespaces();
       setNamespaces(response.namespaces || []);
-      if (!selectedNamespace && response.namespaces?.length > 0) {
-        setSelectedNamespace(response.namespaces[0].name);
-      }
+      setSelectedNamespace((prev) => {
+        if (!prev && response.namespaces?.length > 0) {
+          return response.namespaces[0].name;
+        }
+        return prev;
+      });
     } catch (err) {
       console.error('Failed to fetch namespaces:', err);
       setError('Failed to load namespaces');
     }
-  }, [selectedNamespace]);
+  }, []);
 
   const fetchStats = useCallback(async () => {
     try {
@@ -154,6 +157,7 @@ export default function ZeroDBClient() {
   };
 
   const handleDeleteNamespace = async (name: string) => {
+    if (!window.confirm(`Delete namespace "${name}"? All vectors in this namespace will be permanently deleted.`)) return;
     try {
       await zerodbService.deleteNamespace(name);
       if (selectedNamespace === name) {
@@ -189,6 +193,7 @@ export default function ZeroDBClient() {
 
   const handleDeleteVector = async (vectorId: string) => {
     if (!selectedNamespace) return;
+    if (!window.confirm(`Delete vector ${vectorId}? This cannot be undone.`)) return;
     try {
       await zerodbService.deleteVector(vectorId, selectedNamespace);
       setVectors(vectors.filter((v) => v.id !== vectorId));
@@ -209,7 +214,12 @@ export default function ZeroDBClient() {
         include_vectors: includeVectors,
       });
       if (response.download_url) {
-        window.open(response.download_url, '_blank');
+        const link = document.createElement('a');
+        link.href = response.download_url;
+        link.download = `zerodb-export-${selectedNamespace}.${exportFormat}`;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
       }
     } catch (err) {
       setError('Failed to export data');
