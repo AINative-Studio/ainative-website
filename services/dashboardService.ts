@@ -1,11 +1,134 @@
 /**
  * Dashboard Service
- * Handles API calls for Kong Admin metrics, system health, and real-time monitoring
- *
- * @module DashboardService
+ * Handles API calls for dashboard overview, quick stats, analytics,
+ * Kong Admin metrics, system health, and real-time monitoring
  */
 
-import apiClient from '@/utils/apiClient';
+import apiClient from '@/lib/api-client';
+
+/**
+ * Standard API response wrapper
+ */
+interface ApiResponse<T> {
+  success: boolean;
+  message: string;
+  data: T;
+}
+
+/**
+ * Dashboard quick stats from /v1/dashboard/quick-stats
+ */
+export interface DashboardQuickStats {
+  total_requests: number;
+  active_projects: number;
+  credits_used: number;
+  avg_response_time: number;
+  trends?: {
+    requests_change?: number;
+    projects_change?: number;
+    credits_change?: number;
+    response_time_change?: number;
+  };
+}
+
+/**
+ * Dashboard overview from /v1/dashboard/overview
+ */
+export interface DashboardOverview {
+  stats: DashboardQuickStats;
+  usage: {
+    date: string;
+    requests: number;
+    tokens: number;
+  }[];
+  model_usage: {
+    name: string;
+    value: number;
+    color?: string;
+  }[];
+  project_activity: {
+    name: string;
+    codeGen: number;
+    reviews: number;
+    fixes: number;
+  }[];
+  performance: {
+    time: string;
+    latency: number;
+    throughput: number;
+  }[];
+}
+
+/**
+ * Dashboard analytics from /v1/dashboard/analytics
+ */
+export interface DashboardAnalytics {
+  usage_trends: {
+    date: string;
+    requests: number;
+    tokens: number;
+  }[];
+  model_distribution: {
+    name: string;
+    value: number;
+    color?: string;
+  }[];
+  project_activity: {
+    name: string;
+    codeGen: number;
+    reviews: number;
+    fixes: number;
+  }[];
+  performance_metrics: {
+    time: string;
+    latency: number;
+    throughput: number;
+  }[];
+}
+
+/**
+ * AI usage aggregate from /v1/public/ai-usage/aggregate
+ */
+export interface AiUsageAggregate {
+  total_requests: number;
+  total_tokens: number;
+  by_model: {
+    model: string;
+    requests: number;
+    tokens: number;
+    percentage: number;
+  }[];
+  by_feature: {
+    feature: string;
+    credits_used: number;
+    percentage: number;
+  }[];
+  daily_usage: {
+    date: string;
+    credits_used: number;
+    endpoint?: string;
+  }[];
+}
+
+/**
+ * AI usage costs from /v1/public/ai-usage/costs
+ */
+export interface AiUsageCosts {
+  total_cost: number;
+  currency: string;
+  period: string;
+  breakdown: {
+    base_fee: number;
+    overage_fees: number;
+    overage_breakdown?: {
+      api_credits: number;
+      llm_tokens: number;
+      storage_gb: number;
+      mcp_hours: number;
+    };
+  };
+  projected_monthly: number;
+}
 
 /**
  * Kong Metrics API Response - may have different field names
@@ -27,7 +150,7 @@ export interface KongMetricsResponse {
   throughput_per_min: number;
   avg_latency_ms: number;
   error_rate_percentage: number;
-  error_rate: number; // Backend returns error_rate, map to error_rate_percentage
+  error_rate: number;
   active_connections: number;
   timestamp: string;
   period: string;
@@ -83,15 +206,120 @@ export interface APIUsageResponse {
 
 /**
  * Dashboard Service Class
- * Provides methods to fetch Kong metrics, system health, and usage data
+ * Provides methods to fetch dashboard data, Kong metrics, system health, and usage data
  */
 export class DashboardService {
+  private readonly dashboardPath = '/v1/dashboard';
+  private readonly publicPath = '/v1/public';
+
+  /**
+   * Get dashboard quick stats
+   */
+  async getQuickStats(): Promise<DashboardQuickStats | null> {
+    try {
+      const response = await apiClient.get<ApiResponse<DashboardQuickStats>>(
+        `${this.dashboardPath}/quick-stats`
+      );
+
+      if (!response.data.success || !response.data.data) {
+        console.warn('Quick stats returned unsuccessful:', response.data.message);
+        return null;
+      }
+
+      return response.data.data;
+    } catch (error) {
+      console.error('Failed to fetch quick stats:', error);
+      return null;
+    }
+  }
+
+  /**
+   * Get dashboard overview (aggregated dashboard data)
+   */
+  async getOverview(): Promise<DashboardOverview | null> {
+    try {
+      const response = await apiClient.get<ApiResponse<DashboardOverview>>(
+        `${this.dashboardPath}/overview`
+      );
+
+      if (!response.data.success || !response.data.data) {
+        console.warn('Dashboard overview returned unsuccessful:', response.data.message);
+        return null;
+      }
+
+      return response.data.data;
+    } catch (error) {
+      console.error('Failed to fetch dashboard overview:', error);
+      return null;
+    }
+  }
+
+  /**
+   * Get dashboard analytics
+   */
+  async getAnalytics(): Promise<DashboardAnalytics | null> {
+    try {
+      const response = await apiClient.get<ApiResponse<DashboardAnalytics>>(
+        `${this.dashboardPath}/analytics`
+      );
+
+      if (!response.data.success || !response.data.data) {
+        console.warn('Dashboard analytics returned unsuccessful:', response.data.message);
+        return null;
+      }
+
+      return response.data.data;
+    } catch (error) {
+      console.error('Failed to fetch dashboard analytics:', error);
+      return null;
+    }
+  }
+
+  /**
+   * Get AI usage aggregate
+   * @param period - Time period (7d, 30d, 90d)
+   */
+  async getAiUsageAggregate(period: string = '30d'): Promise<AiUsageAggregate | null> {
+    try {
+      const response = await apiClient.get<ApiResponse<{ metrics: AiUsageAggregate }>>(
+        `${this.publicPath}/ai-usage/aggregate?period=${period}`
+      );
+
+      if (!response.data.success) {
+        console.warn('AI usage aggregate returned unsuccessful:', response.data.message);
+        return null;
+      }
+
+      return response.data.data?.metrics || null;
+    } catch (error) {
+      console.error('Failed to fetch AI usage aggregate:', error);
+      return null;
+    }
+  }
+
+  /**
+   * Get AI usage costs
+   */
+  async getAiUsageCosts(): Promise<AiUsageCosts | null> {
+    try {
+      const response = await apiClient.get<ApiResponse<AiUsageCosts>>(
+        `${this.publicPath}/ai-usage/costs`
+      );
+
+      if (!response.data.success || !response.data.data) {
+        console.warn('AI usage costs returned unsuccessful:', response.data.message);
+        return null;
+      }
+
+      return response.data.data;
+    } catch (error) {
+      console.error('Failed to fetch AI usage costs:', error);
+      return null;
+    }
+  }
+
   /**
    * Get Kong gateway metrics (Prometheus format)
-   *
-   * @param projectId - Project ID (optional)
-   * @returns Kong metrics data
-   * @throws Error if API call fails
    */
   async getKongMetrics(projectId?: string): Promise<KongMetricsResponse> {
     try {
@@ -101,7 +329,6 @@ export class DashboardService {
 
       const response = await apiClient.get<KongMetricsApiResponse>(endpoint);
 
-      // Map backend response to frontend format
       const data = response.data;
       return {
         throughput_per_min: data.throughput_per_min || 0,
@@ -112,9 +339,8 @@ export class DashboardService {
         timestamp: data.timestamp || new Date().toISOString(),
         period: data.period || 'last_5_minutes'
       };
-    } catch (error: unknown) {
+    } catch (error) {
       console.error('Failed to fetch Kong metrics:', error);
-      // Return default metrics on error to prevent UI crashes
       return {
         throughput_per_min: 0,
         avg_latency_ms: 0,
@@ -129,10 +355,6 @@ export class DashboardService {
 
   /**
    * Get system health status
-   *
-   * @param projectId - Project ID (optional)
-   * @returns System health data
-   * @throws Error if API call fails
    */
   async getSystemHealth(projectId?: string): Promise<SystemHealthResponse> {
     try {
@@ -142,9 +364,8 @@ export class DashboardService {
 
       const response = await apiClient.get<SystemHealthResponse>(endpoint);
       return response.data;
-    } catch (error: unknown) {
+    } catch (error) {
       console.error('Failed to fetch system health:', error);
-      // Return default health status on error
       return {
         overall_status: 'healthy',
         services: [],
@@ -155,10 +376,6 @@ export class DashboardService {
 
   /**
    * Get Kong services list
-   *
-   * @param projectId - Project ID (optional)
-   * @returns List of Kong services
-   * @throws Error if API call fails
    */
   async getKongServices(projectId?: string): Promise<KongService[]> {
     try {
@@ -168,7 +385,7 @@ export class DashboardService {
 
       const response = await apiClient.get<{ data: KongService[] }>(endpoint);
       return response.data.data || [];
-    } catch (error: unknown) {
+    } catch (error) {
       console.error('Failed to fetch Kong services:', error);
       return [];
     }
@@ -176,11 +393,6 @@ export class DashboardService {
 
   /**
    * Get API usage statistics
-   *
-   * @param projectId - Project ID (optional)
-   * @param timeRange - Time range filter (default: 'current')
-   * @returns API usage data
-   * @throws Error if API call fails
    */
   async getAPIUsage(projectId?: string, timeRange: string = 'current'): Promise<APIUsageResponse> {
     try {
@@ -188,12 +400,11 @@ export class DashboardService {
       if (projectId) params.append('project_id', projectId);
       if (timeRange) params.append('time_range', timeRange);
 
-      const endpoint = `/v1/public/ai-usage/aggregate?${params.toString()}`;
+      const endpoint = `${this.publicPath}/ai-usage/aggregate?${params.toString()}`;
       const response = await apiClient.get<APIUsageResponse>(endpoint);
       return response.data;
-    } catch (error: unknown) {
+    } catch (error) {
       console.error('Failed to fetch API usage:', error);
-      // Return default usage data on error
       return {
         total_requests: 0,
         successful_requests: 0,
@@ -209,9 +420,6 @@ export class DashboardService {
 
   /**
    * Get real-time metrics with auto-refresh capability
-   *
-   * @param projectId - Project ID (optional)
-   * @returns Combined metrics data
    */
   async getRealtimeMetrics(projectId?: string): Promise<{
     kong: KongMetricsResponse;
@@ -226,7 +434,7 @@ export class DashboardService {
       ]);
 
       return { kong, health, usage };
-    } catch (error: unknown) {
+    } catch (error) {
       console.error('Failed to fetch realtime metrics:', error);
       throw error;
     }

@@ -15,6 +15,10 @@ import {
   RefreshCcw,
   Download
 } from 'lucide-react';
+import { creditService } from '@/services/creditService';
+import { subscriptionService } from '@/services/subscriptionService';
+import { dashboardService, AiUsageCosts } from '@/services/dashboardService';
+import { usageService } from '@/services/usageService';
 
 /**
  * Generates a default avatar URL using Gravatar's identicon service
@@ -82,12 +86,7 @@ interface AiMetrics {
     componentsCreated: number;
     lastGeneration: string;
   };
-  modelUsage: {
-    gpt4: number;
-    claude: number;
-    llama: number;
-    custom: number;
-  };
+  modelUsage: Record<string, number>;
   apiIntegrations: {
     activeProviders: string[];
     totalRequests: number;
@@ -101,32 +100,48 @@ interface AiMetrics {
   };
 }
 
-interface CostData {
-  total_cost: number;
-  currency: string;
-  period: string;
-  breakdown: {
-    base_fee: number;
-    overage_fees: number;
-    overage_breakdown: {
-      api_credits: number;
-      llm_tokens: number;
-      storage_gb: number;
-      mcp_hours: number;
-    };
+function mapCreditsToUsageData(credits: { used: number; total: number; next_reset_date?: string }): UsageData {
+  const nextRefreshDate = credits.next_reset_date
+    ? new Date(credits.next_reset_date)
+    : new Date(Date.now() + 30 * 24 * 60 * 60 * 1000);
+  const now = new Date();
+  const diffDays = Math.max(0, Math.ceil(
+    (nextRefreshDate.getTime() - now.getTime()) / (1000 * 60 * 60 * 24)
+  ));
+
+  const periodStart = new Date(Date.now() - 15 * 24 * 60 * 60 * 1000).toLocaleDateString('en-US', {
+    year: 'numeric', month: 'short', day: 'numeric'
+  });
+
+  return {
+    basePromptCredits: {
+      used: credits.used,
+      total: credits.total
+    },
+    additionalPromptCredits: {
+      used: 0,
+      total: 0
+    },
+    nextPlanRefresh: {
+      days: diffDays,
+      date: nextRefreshDate.toLocaleDateString()
+    },
+    usagePeriod: {
+      startDate: periodStart
+    }
   };
-  projected_monthly: number;
 }
 
 export default function DashboardClient() {
   const [mounted, setMounted] = useState(false);
+  const [sessionLoaded, setSessionLoaded] = useState(false);
   const [sessionUser, setSessionUser] = useState<{ email?: string; name?: string } | null>(null);
   const [user, setUser] = useState<DashboardUser | null>(null);
   const [usageData, setUsageData] = useState<UsageData | null>(null);
   const [subscriptionPlan, setSubscriptionPlan] = useState<string>('Free');
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [aiMetrics, setAiMetrics] = useState<AiMetrics | null>(null);
-  const [costData, setCostData] = useState<CostData | null>(null);
+  const [costData, setCostData] = useState<AiUsageCosts | null>(null);
   const [apiError, setApiError] = useState<string | null>(null);
   const [showWelcome, setShowWelcome] = useState(true);
   const router = useRouter();
@@ -141,7 +156,6 @@ export default function DashboardClient() {
         setSessionUser({ email: userData.email, name: userData.name });
       }
 
-      // Check if user has dismissed welcome before
       const welcomeDismissed = localStorage.getItem('dashboard_welcome_dismissed');
       if (welcomeDismissed === 'true') {
         setShowWelcome(false);
@@ -149,9 +163,9 @@ export default function DashboardClient() {
     } catch {
       // Ignore parse errors
     }
+    setSessionLoaded(true);
   }, []);
 
-  // Handle welcome dismissal with localStorage persistence
   const handleWelcomeDismiss = useCallback(() => {
     setShowWelcome(false);
     try {
@@ -161,140 +175,106 @@ export default function DashboardClient() {
     }
   }, []);
 
-  // Set mock AI metrics data
-  const setMockAiMetrics = useCallback(() => {
-    setAiMetrics({
-      codeGeneration: {
-        totalProjects: 12,
-        linesGenerated: 45230,
-        componentsCreated: 89,
-        lastGeneration: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString()
-      },
-      modelUsage: {
-        gpt4: 45,
-        claude: 35,
-        llama: 15,
-        custom: 5
-      },
-      apiIntegrations: {
-        activeProviders: ['OpenAI', 'Anthropic', 'Meta'],
-        totalRequests: 1247,
-        avgResponseTime: 1.2
-      },
-      aiAssistance: {
-        codeReviews: 34,
-        bugsFixed: 18,
-        optimizations: 12,
-        refactorings: 7
-      }
-    });
-  }, []);
-
-  // Set mock usage data
-  const setMockUsageData = useCallback(() => {
-    const nextRefreshDate = new Date();
-    nextRefreshDate.setDate(nextRefreshDate.getDate() + 15);
-
-    setUsageData({
-      basePromptCredits: {
-        used: 750,
-        total: 1000
-      },
-      additionalPromptCredits: {
-        used: 150,
-        total: 500
-      },
-      nextPlanRefresh: {
-        days: 15,
-        date: nextRefreshDate.toLocaleDateString()
-      },
-      usagePeriod: {
-        startDate: new Date(Date.now() - 15 * 24 * 60 * 60 * 1000).toLocaleDateString('en-US', {
-          year: 'numeric',
-          month: 'short',
-          day: 'numeric'
-        })
-      }
-    });
-  }, []);
-
   const fetchDashboardData = useCallback(async () => {
     try {
       setIsRefreshing(true);
       setApiError(null);
 
-      // Use localStorage session for authentication
+      // Build user from session
       if (sessionUser) {
-        // User is authenticated
         setUser({
           login: sessionUser.email?.split('@')[0] || 'user',
           name: sessionUser.name || 'User',
           email: sessionUser.email || undefined,
           avatar_url: generateDefaultAvatar(sessionUser.email || 'user')
         });
-        setMockUsageData();
-        setMockAiMetrics();
-        setSubscriptionPlan('Pro');
-        setCostData({
-          total_cost: 49.99,
-          currency: 'USD',
-          period: 'current',
-          breakdown: {
-            base_fee: 49.99,
-            overage_fees: 0,
-            overage_breakdown: {
-              api_credits: 0,
-              llm_tokens: 0,
-              storage_gb: 0,
-              mcp_hours: 0
-            }
+      } else {
+        setUser({
+          login: 'user',
+          name: 'User',
+          avatar_url: generateDefaultAvatar('user')
+        });
+      }
+
+      // Fetch all data in parallel from real APIs
+      const [creditsResult, planResult, costsResult, aiUsageResult] = await Promise.allSettled([
+        creditService.getCreditBalance(),
+        subscriptionService.getCurrentPlan(),
+        dashboardService.getAiUsageCosts(),
+        usageService.getUsageMetrics('30d')
+      ]);
+
+      // Map credits to usage data
+      if (creditsResult.status === 'fulfilled' && creditsResult.value) {
+        setUsageData(mapCreditsToUsageData(creditsResult.value));
+      } else {
+        console.warn('Credits fetch failed:', creditsResult.status === 'rejected' ? creditsResult.reason : 'null response');
+        setUsageData(null);
+      }
+
+      // Set subscription plan
+      if (planResult.status === 'fulfilled' && planResult.value) {
+        setSubscriptionPlan(planResult.value.name);
+      } else {
+        setSubscriptionPlan('Free');
+      }
+
+      // Set cost data
+      if (costsResult.status === 'fulfilled' && costsResult.value) {
+        setCostData(costsResult.value);
+      } else {
+        setCostData(null);
+      }
+
+      // Map AI usage to metrics
+      if (aiUsageResult.status === 'fulfilled' && aiUsageResult.value) {
+        const metrics = aiUsageResult.value;
+        const modelUsage: Record<string, number> = {};
+        if (metrics.by_feature) {
+          metrics.by_feature.forEach((f) => {
+            modelUsage[f.feature] = Math.round(f.percentage);
+          });
+        }
+
+        setAiMetrics({
+          codeGeneration: {
+            totalProjects: 0,
+            linesGenerated: 0,
+            componentsCreated: 0,
+            lastGeneration: ''
           },
-          projected_monthly: 49.99
+          modelUsage,
+          apiIntegrations: {
+            activeProviders: Object.keys(modelUsage),
+            totalRequests: metrics.daily_usage?.reduce(
+              (sum, d) => sum + d.credits_used, 0
+            ) || 0,
+            avgResponseTime: 0
+          },
+          aiAssistance: {
+            codeReviews: 0,
+            bugsFixed: 0,
+            optimizations: 0,
+            refactorings: 0
+          }
         });
       } else {
-        // Fallback for demo/unauthenticated users (middleware should redirect, but keep for safety)
-        setUser({
-          login: 'demo_user',
-          name: 'Demo User',
-          email: 'demo@example.com',
-          avatar_url: generateDefaultAvatar('demo_user')
-        });
-        setMockUsageData();
-        setMockAiMetrics();
-        setSubscriptionPlan('Free');
-        setCostData({
-          total_cost: 0,
-          currency: 'USD',
-          period: 'current',
-          breakdown: {
-            base_fee: 0,
-            overage_fees: 0,
-            overage_breakdown: {
-              api_credits: 0,
-              llm_tokens: 0,
-              storage_gb: 0,
-              mcp_hours: 0
-            }
-          },
-          projected_monthly: 0
-        });
+        setAiMetrics(null);
       }
 
     } catch (err) {
       console.error('Dashboard data load failed:', err);
-      setApiError('Unable to load dashboard data');
-      setMockAiMetrics();
-      setMockUsageData();
+      setApiError('Unable to load dashboard data. Please try refreshing.');
     } finally {
       setIsRefreshing(false);
     }
-  }, [sessionUser, setMockAiMetrics, setMockUsageData]);
+  }, [sessionUser]);
 
   useEffect(() => {
-    setMockAiMetrics();
-    setMockUsageData();
-    fetchDashboardData();
-  }, [fetchDashboardData, setMockAiMetrics, setMockUsageData]);
+    if (mounted && sessionLoaded) {
+      fetchDashboardData();
+    }
+  }, [mounted, sessionLoaded, fetchDashboardData]);
 
   const handleRefresh = () => {
     fetchDashboardData();
@@ -587,42 +567,21 @@ export default function DashboardClient() {
                 </CardTitle>
               </CardHeader>
             <CardContent className="p-6">
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
-                  {/* Code Generation */}
-                  <div className="bg-[#1C2128] p-4 rounded-lg">
-                    <h4 className="text-sm font-semibold text-gray-300 mb-3">Code Generation</h4>
-                    <div className="space-y-2 text-sm">
-                      <div className="flex justify-between">
-                        <span className="text-gray-400">Projects:</span>
-                        <span className="text-white">{aiMetrics.codeGeneration.totalProjects}</span>
-                      </div>
-                      <div className="flex justify-between">
-                        <span className="text-gray-400">Lines Generated:</span>
-                        <span className="text-white">{aiMetrics.codeGeneration.linesGenerated.toLocaleString()}</span>
-                      </div>
-                      <div className="flex justify-between">
-                        <span className="text-gray-400">Components:</span>
-                        <span className="text-white">{aiMetrics.codeGeneration.componentsCreated}</span>
-                      </div>
-                    </div>
-                  </div>
-
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
                   {/* Model Usage */}
                   <div className="bg-[#1C2128] p-4 rounded-lg">
                     <h4 className="text-sm font-semibold text-gray-300 mb-3">Model Usage</h4>
                     <div className="space-y-2 text-sm">
-                      <div className="flex justify-between">
-                        <span className="text-gray-400">GPT-4:</span>
-                        <span className="text-white">{aiMetrics.modelUsage.gpt4}%</span>
-                      </div>
-                      <div className="flex justify-between">
-                        <span className="text-gray-400">Claude:</span>
-                        <span className="text-white">{aiMetrics.modelUsage.claude}%</span>
-                      </div>
-                      <div className="flex justify-between">
-                        <span className="text-gray-400">Llama:</span>
-                        <span className="text-white">{aiMetrics.modelUsage.llama}%</span>
-                      </div>
+                      {Object.entries(aiMetrics.modelUsage).length > 0 ? (
+                        Object.entries(aiMetrics.modelUsage).slice(0, 5).map(([model, pct]) => (
+                          <div key={model} className="flex justify-between">
+                            <span className="text-gray-400">{model}:</span>
+                            <span className="text-white">{pct}%</span>
+                          </div>
+                        ))
+                      ) : (
+                        <p className="text-gray-500 text-xs">No usage data yet</p>
+                      )}
                     </div>
                   </div>
 
@@ -631,36 +590,30 @@ export default function DashboardClient() {
                     <h4 className="text-sm font-semibold text-gray-300 mb-3">API Integrations</h4>
                     <div className="space-y-2 text-sm">
                       <div className="flex justify-between">
-                        <span className="text-gray-400">Providers:</span>
+                        <span className="text-gray-400">Active Features:</span>
                         <span className="text-white">{aiMetrics.apiIntegrations.activeProviders.length}</span>
                       </div>
                       <div className="flex justify-between">
-                        <span className="text-gray-400">Requests:</span>
+                        <span className="text-gray-400">Total Credits Used:</span>
                         <span className="text-white">{aiMetrics.apiIntegrations.totalRequests.toLocaleString()}</span>
-                      </div>
-                      <div className="flex justify-between">
-                        <span className="text-gray-400">Avg Response:</span>
-                        <span className="text-white">{aiMetrics.apiIntegrations.avgResponseTime}s</span>
                       </div>
                     </div>
                   </div>
 
-                  {/* AI Assistance */}
+                  {/* Current Plan */}
                   <div className="bg-[#1C2128] p-4 rounded-lg">
-                    <h4 className="text-sm font-semibold text-gray-300 mb-3">AI Assistance</h4>
+                    <h4 className="text-sm font-semibold text-gray-300 mb-3">Current Plan</h4>
                     <div className="space-y-2 text-sm">
                       <div className="flex justify-between">
-                        <span className="text-gray-400">Code Reviews:</span>
-                        <span className="text-white">{aiMetrics.aiAssistance.codeReviews}</span>
+                        <span className="text-gray-400">Plan:</span>
+                        <span className="text-white font-semibold">{subscriptionPlan}</span>
                       </div>
-                      <div className="flex justify-between">
-                        <span className="text-gray-400">Bugs Fixed:</span>
-                        <span className="text-white">{aiMetrics.aiAssistance.bugsFixed}</span>
-                      </div>
-                      <div className="flex justify-between">
-                        <span className="text-gray-400">Optimizations:</span>
-                        <span className="text-white">{aiMetrics.aiAssistance.optimizations}</span>
-                      </div>
+                      {costData && (
+                        <div className="flex justify-between">
+                          <span className="text-gray-400">Monthly Cost:</span>
+                          <span className="text-white">${costData.total_cost?.toFixed(2) || '0.00'}</span>
+                        </div>
+                      )}
                     </div>
                   </div>
                 </div>

@@ -34,6 +34,8 @@ import {
   Line,
   Legend,
 } from '@/components/lazy';
+import { dashboardService } from '@/services/dashboardService';
+import { creditService } from '@/services/creditService';
 
 const fadeUp = {
   hidden: { opacity: 0, y: 20 },
@@ -55,6 +57,12 @@ interface DashboardStats {
   activeProjects: number;
   creditsUsed: number;
   avgResponseTime: number;
+  trends?: {
+    requestsChange?: number;
+    projectsChange?: number;
+    creditsChange?: number;
+    responseTimeChange?: number;
+  };
 }
 
 interface UsageDataPoint {
@@ -83,61 +91,104 @@ interface PerformanceData {
   throughput: number;
 }
 
+const PIE_COLORS = ['#4B6FED', '#10B981', '#F59E0B', '#8B5CF6', '#EF4444', '#06B6D4'];
+
 const fetchDashboardStats = async (): Promise<DashboardStats> => {
-  await new Promise(resolve => setTimeout(resolve, 500));
-  return {
-    totalRequests: 15234,
-    activeProjects: 12,
-    creditsUsed: 7500,
-    avgResponseTime: 1.2,
+  // Try quick-stats endpoint first, fall back to credits balance
+  const [quickStats, creditsBalance] = await Promise.allSettled([
+    dashboardService.getQuickStats(),
+    creditService.getCreditBalance()
+  ]);
+
+  const stats: DashboardStats = {
+    totalRequests: 0,
+    activeProjects: 0,
+    creditsUsed: 0,
+    avgResponseTime: 0,
   };
+
+  if (quickStats.status === 'fulfilled' && quickStats.value) {
+    stats.totalRequests = quickStats.value.total_requests;
+    stats.activeProjects = quickStats.value.active_projects;
+    stats.creditsUsed = quickStats.value.credits_used;
+    stats.avgResponseTime = quickStats.value.avg_response_time;
+    if (quickStats.value.trends) {
+      stats.trends = {
+        requestsChange: quickStats.value.trends.requests_change,
+        projectsChange: quickStats.value.trends.projects_change,
+        creditsChange: quickStats.value.trends.credits_change,
+        responseTimeChange: quickStats.value.trends.response_time_change,
+      };
+    }
+  }
+
+  if (creditsBalance.status === 'fulfilled' && creditsBalance.value) {
+    stats.creditsUsed = creditsBalance.value.used || stats.creditsUsed;
+  }
+
+  return stats;
 };
 
-const fetchUsageData = async (): Promise<UsageDataPoint[]> => {
-  await new Promise(resolve => setTimeout(resolve, 300));
-  return [
-    { date: 'Mon', requests: 1200, tokens: 45000 },
-    { date: 'Tue', requests: 1400, tokens: 52000 },
-    { date: 'Wed', requests: 1100, tokens: 41000 },
-    { date: 'Thu', requests: 1800, tokens: 67000 },
-    { date: 'Fri', requests: 2100, tokens: 78000 },
-    { date: 'Sat', requests: 900, tokens: 33000 },
-    { date: 'Sun', requests: 750, tokens: 28000 },
-  ];
-};
+const fetchDashboardData = async (): Promise<{
+  usage: UsageDataPoint[];
+  modelUsage: ModelUsageData[];
+  projectActivity: ProjectActivityData[];
+  performance: PerformanceData[];
+}> => {
+  // Fire all three endpoints in parallel, pick the best available result
+  const [overviewResult, analyticsResult, aiUsageResult] = await Promise.allSettled([
+    dashboardService.getOverview(),
+    dashboardService.getAnalytics(),
+    dashboardService.getAiUsageAggregate('7d')
+  ]);
 
-const fetchModelUsage = async (): Promise<ModelUsageData[]> => {
-  await new Promise(resolve => setTimeout(resolve, 400));
-  return [
-    { name: 'GPT-4', value: 45, color: '#4B6FED' },
-    { name: 'Claude', value: 35, color: '#10B981' },
-    { name: 'Llama', value: 15, color: '#F59E0B' },
-    { name: 'Custom', value: 5, color: '#8B5CF6' },
-  ];
-};
+  const overview = overviewResult.status === 'fulfilled' ? overviewResult.value : null;
+  if (overview) {
+    return {
+      usage: overview.usage || [],
+      modelUsage: (overview.model_usage || []).map((m, i) => ({
+        name: m.name,
+        value: m.value,
+        color: m.color || PIE_COLORS[i % PIE_COLORS.length]
+      })),
+      projectActivity: overview.project_activity || [],
+      performance: overview.performance || []
+    };
+  }
 
-const fetchProjectActivity = async (): Promise<ProjectActivityData[]> => {
-  await new Promise(resolve => setTimeout(resolve, 350));
-  return [
-    { name: 'Project A', codeGen: 450, reviews: 32, fixes: 18 },
-    { name: 'Project B', codeGen: 380, reviews: 28, fixes: 12 },
-    { name: 'Project C', codeGen: 290, reviews: 22, fixes: 8 },
-    { name: 'Project D', codeGen: 180, reviews: 15, fixes: 5 },
-    { name: 'Project E', codeGen: 120, reviews: 10, fixes: 3 },
-  ];
-};
+  const analytics = analyticsResult.status === 'fulfilled' ? analyticsResult.value : null;
+  if (analytics) {
+    return {
+      usage: analytics.usage_trends || [],
+      modelUsage: (analytics.model_distribution || []).map((m, i) => ({
+        name: m.name,
+        value: m.value,
+        color: m.color || PIE_COLORS[i % PIE_COLORS.length]
+      })),
+      projectActivity: analytics.project_activity || [],
+      performance: analytics.performance_metrics || []
+    };
+  }
 
-const fetchPerformanceData = async (): Promise<PerformanceData[]> => {
-  await new Promise(resolve => setTimeout(resolve, 450));
-  return [
-    { time: '00:00', latency: 120, throughput: 850 },
-    { time: '04:00', latency: 95, throughput: 420 },
-    { time: '08:00', latency: 180, throughput: 1200 },
-    { time: '12:00', latency: 210, throughput: 1450 },
-    { time: '16:00', latency: 165, throughput: 1100 },
-    { time: '20:00', latency: 140, throughput: 920 },
-    { time: '24:00', latency: 110, throughput: 780 },
-  ];
+  const aiUsage = aiUsageResult.status === 'fulfilled' ? aiUsageResult.value : null;
+  if (aiUsage) {
+    return {
+      usage: (aiUsage.daily_usage || []).map(d => ({
+        date: new Date(d.date).toLocaleDateString('en-US', { weekday: 'short' }),
+        requests: d.credits_used,
+        tokens: 0
+      })),
+      modelUsage: (aiUsage.by_model || []).map((m, i) => ({
+        name: m.model,
+        value: Math.round(m.percentage),
+        color: PIE_COLORS[i % PIE_COLORS.length]
+      })),
+      projectActivity: [],
+      performance: []
+    };
+  }
+
+  return { usage: [], modelUsage: [], projectActivity: [], performance: [] };
 };
 
 function StatWidget({
@@ -202,7 +253,7 @@ function UsageChart({ data, isLoading }: { data?: UsageDataPoint[]; isLoading: b
             <div className="h-[300px] flex items-center justify-center">
               <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#4B6FED]"></div>
             </div>
-          ) : (
+          ) : data && data.length > 0 ? (
             <ResponsiveContainer width="100%" height={300}>
               <LazyAreaChart data={data}>
                 <defs>
@@ -245,6 +296,10 @@ function UsageChart({ data, isLoading }: { data?: UsageDataPoint[]; isLoading: b
                 />
               </LazyAreaChart>
             </ResponsiveContainer>
+          ) : (
+            <div className="h-[300px] flex items-center justify-center text-gray-500">
+              No usage data available yet
+            </div>
           )}
         </CardContent>
       </Card>
@@ -267,7 +322,7 @@ function ModelUsageChart({ data, isLoading }: { data?: ModelUsageData[]; isLoadi
             <div className="h-[250px] flex items-center justify-center">
               <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#4B6FED]"></div>
             </div>
-          ) : (
+          ) : data && data.length > 0 ? (
             <ResponsiveContainer width="100%" height={250}>
               <LazyPieChart>
                 <Pie
@@ -297,6 +352,10 @@ function ModelUsageChart({ data, isLoading }: { data?: ModelUsageData[]; isLoadi
                 />
               </LazyPieChart>
             </ResponsiveContainer>
+          ) : (
+            <div className="h-[250px] flex items-center justify-center text-gray-500">
+              No model usage data yet
+            </div>
           )}
         </CardContent>
       </Card>
@@ -319,7 +378,7 @@ function ProjectActivityChart({ data, isLoading }: { data?: ProjectActivityData[
             <div className="h-[250px] flex items-center justify-center">
               <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#4B6FED]"></div>
             </div>
-          ) : (
+          ) : data && data.length > 0 ? (
             <ResponsiveContainer width="100%" height={250}>
               <LazyBarChart data={data} layout="vertical">
                 <CartesianGrid strokeDasharray="3 3" stroke="#374151" />
@@ -339,6 +398,10 @@ function ProjectActivityChart({ data, isLoading }: { data?: ProjectActivityData[
                 <Bar dataKey="fixes" fill="#F59E0B" name="Bug Fixes" radius={[0, 4, 4, 0]} />
               </LazyBarChart>
             </ResponsiveContainer>
+          ) : (
+            <div className="h-[250px] flex items-center justify-center text-gray-500">
+              No project activity data yet
+            </div>
           )}
         </CardContent>
       </Card>
@@ -361,7 +424,7 @@ function PerformanceChart({ data, isLoading }: { data?: PerformanceData[]; isLoa
             <div className="h-[300px] flex items-center justify-center">
               <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#4B6FED]"></div>
             </div>
-          ) : (
+          ) : data && data.length > 0 ? (
             <ResponsiveContainer width="100%" height={300}>
               <LazyLineChart data={data}>
                 <CartesianGrid strokeDasharray="3 3" stroke="#374151" />
@@ -397,6 +460,10 @@ function PerformanceChart({ data, isLoading }: { data?: PerformanceData[]; isLoa
                 />
               </LazyLineChart>
             </ResponsiveContainer>
+          ) : (
+            <div className="h-[300px] flex items-center justify-center text-gray-500">
+              No performance data available yet
+            </div>
           )}
         </CardContent>
       </Card>
@@ -429,54 +496,23 @@ export default function MainDashboardClient() {
     queryKey: ['dashboardStats'],
     queryFn: fetchDashboardStats,
     staleTime: 30000,
+    enabled: mounted,
   });
 
   const {
-    data: usageData,
-    isLoading: usageLoading,
-    refetch: refetchUsage
+    data: dashboardData,
+    isLoading: dataLoading,
+    refetch: refetchData
   } = useQuery({
-    queryKey: ['usageData'],
-    queryFn: fetchUsageData,
+    queryKey: ['dashboardData'],
+    queryFn: fetchDashboardData,
     staleTime: 30000,
-  });
-
-  const {
-    data: modelUsage,
-    isLoading: modelLoading,
-    refetch: refetchModel
-  } = useQuery({
-    queryKey: ['modelUsage'],
-    queryFn: fetchModelUsage,
-    staleTime: 30000,
-  });
-
-  const {
-    data: projectActivity,
-    isLoading: activityLoading,
-    refetch: refetchActivity
-  } = useQuery({
-    queryKey: ['projectActivity'],
-    queryFn: fetchProjectActivity,
-    staleTime: 30000,
-  });
-
-  const {
-    data: performanceData,
-    isLoading: performanceLoading,
-    refetch: refetchPerformance
-  } = useQuery({
-    queryKey: ['performanceData'],
-    queryFn: fetchPerformanceData,
-    staleTime: 30000,
+    enabled: mounted,
   });
 
   const handleRefreshAll = () => {
     refetchStats();
-    refetchUsage();
-    refetchModel();
-    refetchActivity();
-    refetchPerformance();
+    refetchData();
   };
 
   if (!mounted) {
@@ -529,46 +565,54 @@ export default function MainDashboardClient() {
           title="Total API Requests"
           value={stats?.totalRequests || 0}
           icon={Activity}
-          trend={{ value: 12.5, isPositive: true }}
+          trend={stats?.trends?.requestsChange != null
+            ? { value: Math.abs(stats.trends.requestsChange), isPositive: stats.trends.requestsChange >= 0 }
+            : undefined}
           isLoading={statsLoading}
         />
         <StatWidget
           title="Active Projects"
           value={stats?.activeProjects || 0}
           icon={Database}
-          trend={{ value: 3, isPositive: true }}
+          trend={stats?.trends?.projectsChange != null
+            ? { value: Math.abs(stats.trends.projectsChange), isPositive: stats.trends.projectsChange >= 0 }
+            : undefined}
           isLoading={statsLoading}
         />
         <StatWidget
           title="Credits Used"
           value={stats?.creditsUsed || 0}
           icon={Zap}
-          trend={{ value: 8.2, isPositive: false }}
+          trend={stats?.trends?.creditsChange != null
+            ? { value: Math.abs(stats.trends.creditsChange), isPositive: stats.trends.creditsChange <= 0 }
+            : undefined}
           isLoading={statsLoading}
         />
         <StatWidget
           title="Avg Response Time"
           value={stats ? `${stats.avgResponseTime}s` : '0s'}
           icon={Clock}
-          trend={{ value: 5.1, isPositive: true }}
+          trend={stats?.trends?.responseTimeChange != null
+            ? { value: Math.abs(stats.trends.responseTimeChange), isPositive: stats.trends.responseTimeChange <= 0 }
+            : undefined}
           isLoading={statsLoading}
         />
       </motion.div>
 
       {/* Usage Chart */}
       <div className="mb-8">
-        <UsageChart data={usageData} isLoading={usageLoading} />
+        <UsageChart data={dashboardData?.usage} isLoading={dataLoading} />
       </div>
 
       {/* Model & Project Charts */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
-        <ModelUsageChart data={modelUsage} isLoading={modelLoading} />
-        <ProjectActivityChart data={projectActivity} isLoading={activityLoading} />
+        <ModelUsageChart data={dashboardData?.modelUsage} isLoading={dataLoading} />
+        <ProjectActivityChart data={dashboardData?.projectActivity} isLoading={dataLoading} />
       </div>
 
       {/* Performance Chart */}
       <div className="mb-8">
-        <PerformanceChart data={performanceData} isLoading={performanceLoading} />
+        <PerformanceChart data={dashboardData?.performance} isLoading={dataLoading} />
       </div>
 
       {/* Quick Actions */}
