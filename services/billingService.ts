@@ -387,7 +387,7 @@ export class BillingService {
     try {
       const response = await apiClient.get<
         ApiResponse<{ balance: CreditBalance }>
-      >(this.creditsBasePath);
+      >(`${this.creditsBasePath}/balance`);
 
       if (!response.data.success || !response.data.data?.balance) {
         return null;

@@ -70,8 +70,25 @@ export const authOptions: NextAuthOptions = {
             return null;
           }
 
-          const user = await response.json();
-          return user;
+          const data = await response.json();
+
+          // OAuth2 token response - fetch user profile with the token
+          if (data.access_token) {
+            const profileRes = await fetch(`${apiUrl}/v1/public/auth/me`, {
+              headers: { Authorization: `Bearer ${data.access_token}` },
+            });
+            if (!profileRes.ok) return null;
+            const profile = await profileRes.json();
+            return {
+              id: profile.id,
+              name: profile.name || profile.full_name || profile.preferred_name,
+              email: profile.email,
+              image: profile.avatar_url,
+              accessToken: data.access_token,
+            };
+          }
+
+          return data;
         } catch (error) {
           console.error('Auth error:', error);
           return null;
