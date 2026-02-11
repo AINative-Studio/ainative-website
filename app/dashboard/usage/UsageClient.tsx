@@ -90,8 +90,8 @@ export default function UsageClient() {
 
       if (usageLimitsResult.status === 'fulfilled' && usageLimitsResult.value) {
         const limits = usageLimitsResult.value;
-        if (limits.credits_used) creditsUsed = limits.credits_used;
-        if (limits.monthly_credits) creditsTotal = limits.monthly_credits;
+        if (limits.credits_used != null) creditsUsed = limits.credits_used;
+        if (limits.monthly_credits != null) creditsTotal = limits.monthly_credits;
         if (limits.reset_date) nextRefresh = limits.reset_date;
       }
 

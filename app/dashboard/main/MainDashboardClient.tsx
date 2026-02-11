@@ -135,9 +135,14 @@ const fetchDashboardData = async (): Promise<{
   projectActivity: ProjectActivityData[];
   performance: PerformanceData[];
 }> => {
-  // Try the aggregated overview endpoint first
-  const overview = await dashboardService.getOverview();
+  // Fire all three endpoints in parallel, pick the best available result
+  const [overviewResult, analyticsResult, aiUsageResult] = await Promise.allSettled([
+    dashboardService.getOverview(),
+    dashboardService.getAnalytics(),
+    dashboardService.getAiUsageAggregate('7d')
+  ]);
 
+  const overview = overviewResult.status === 'fulfilled' ? overviewResult.value : null;
   if (overview) {
     return {
       usage: overview.usage || [],
@@ -151,9 +156,7 @@ const fetchDashboardData = async (): Promise<{
     };
   }
 
-  // Fall back to analytics endpoint
-  const analytics = await dashboardService.getAnalytics();
-
+  const analytics = analyticsResult.status === 'fulfilled' ? analyticsResult.value : null;
   if (analytics) {
     return {
       usage: analytics.usage_trends || [],
@@ -167,9 +170,7 @@ const fetchDashboardData = async (): Promise<{
     };
   }
 
-  // Fall back to AI usage aggregate for partial data
-  const aiUsage = await dashboardService.getAiUsageAggregate('7d');
-
+  const aiUsage = aiUsageResult.status === 'fulfilled' ? aiUsageResult.value : null;
   if (aiUsage) {
     return {
       usage: (aiUsage.daily_usage || []).map(d => ({

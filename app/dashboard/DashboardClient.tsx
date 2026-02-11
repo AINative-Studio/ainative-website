@@ -15,7 +15,7 @@ import {
   RefreshCcw,
   Download
 } from 'lucide-react';
-import { creditService, CreditBalanceResponse } from '@/services/creditService';
+import { creditService } from '@/services/creditService';
 import { subscriptionService } from '@/services/subscriptionService';
 import { dashboardService, AiUsageCosts } from '@/services/dashboardService';
 import { usageService } from '@/services/usageService';
@@ -100,31 +100,27 @@ interface AiMetrics {
   };
 }
 
-function mapCreditsToUsageData(credits: CreditBalanceResponse): UsageData {
-  const nextRefreshDate = credits.next_refresh
-    ? new Date(credits.next_refresh)
+function mapCreditsToUsageData(credits: { used: number; total: number; next_reset_date?: string }): UsageData {
+  const nextRefreshDate = credits.next_reset_date
+    ? new Date(credits.next_reset_date)
     : new Date(Date.now() + 30 * 24 * 60 * 60 * 1000);
   const now = new Date();
   const diffDays = Math.max(0, Math.ceil(
     (nextRefreshDate.getTime() - now.getTime()) / (1000 * 60 * 60 * 24)
   ));
 
-  const periodStart = credits.period_start
-    ? new Date(credits.period_start).toLocaleDateString('en-US', {
-        year: 'numeric', month: 'short', day: 'numeric'
-      })
-    : new Date(Date.now() - 15 * 24 * 60 * 60 * 1000).toLocaleDateString('en-US', {
-        year: 'numeric', month: 'short', day: 'numeric'
-      });
+  const periodStart = new Date(Date.now() - 15 * 24 * 60 * 60 * 1000).toLocaleDateString('en-US', {
+    year: 'numeric', month: 'short', day: 'numeric'
+  });
 
   return {
     basePromptCredits: {
-      used: credits.base_used,
-      total: credits.base_quota
+      used: credits.used,
+      total: credits.total
     },
     additionalPromptCredits: {
-      used: credits.add_on_used,
-      total: credits.add_on_quota
+      used: 0,
+      total: 0
     },
     nextPlanRefresh: {
       days: diffDays,
@@ -138,6 +134,7 @@ function mapCreditsToUsageData(credits: CreditBalanceResponse): UsageData {
 
 export default function DashboardClient() {
   const [mounted, setMounted] = useState(false);
+  const [sessionLoaded, setSessionLoaded] = useState(false);
   const [sessionUser, setSessionUser] = useState<{ email?: string; name?: string } | null>(null);
   const [user, setUser] = useState<DashboardUser | null>(null);
   const [usageData, setUsageData] = useState<UsageData | null>(null);
@@ -166,6 +163,7 @@ export default function DashboardClient() {
     } catch {
       // Ignore parse errors
     }
+    setSessionLoaded(true);
   }, []);
 
   const handleWelcomeDismiss = useCallback(() => {
@@ -200,17 +198,17 @@ export default function DashboardClient() {
 
       // Fetch all data in parallel from real APIs
       const [creditsResult, planResult, costsResult, aiUsageResult] = await Promise.allSettled([
-        creditService.getCredits(),
+        creditService.getCreditBalance(),
         subscriptionService.getCurrentPlan(),
         dashboardService.getAiUsageCosts(),
         usageService.getUsageMetrics('30d')
       ]);
 
       // Map credits to usage data
-      if (creditsResult.status === 'fulfilled') {
+      if (creditsResult.status === 'fulfilled' && creditsResult.value) {
         setUsageData(mapCreditsToUsageData(creditsResult.value));
       } else {
-        console.warn('Credits fetch failed:', creditsResult.reason);
+        console.warn('Credits fetch failed:', creditsResult.status === 'rejected' ? creditsResult.reason : 'null response');
         setUsageData(null);
       }
 
@@ -273,10 +271,10 @@ export default function DashboardClient() {
   }, [sessionUser]);
 
   useEffect(() => {
-    if (mounted) {
+    if (mounted && sessionLoaded) {
       fetchDashboardData();
     }
-  }, [mounted, fetchDashboardData]);
+  }, [mounted, sessionLoaded, fetchDashboardData]);
 
   const handleRefresh = () => {
     fetchDashboardData();
