@@ -106,7 +106,7 @@ export interface TransactionHistoryParams {
  * Manages all credit-related API operations
  */
 export class CreditService {
-  private readonly basePath = '/v1/credits';
+  private readonly basePath = '/v1/public/credits';
 
   /**
    * Get current credit balance
@@ -222,7 +222,7 @@ export class CreditService {
     try {
       console.log('Fetching credits data...');
 
-      const response = await apiClient.get<ApiResponse<CreditBalanceResponse>>(this.basePath);
+      const response = await apiClient.get<ApiResponse<CreditBalanceResponse>>(`${this.basePath}/balance`);
 
       if (!response.data.success || !response.data.data) {
         throw new Error(response.data.message || 'Failed to fetch credits information');
@@ -263,8 +263,8 @@ export class CreditService {
     paymentMethodId?: string;
   }): Promise<OperationResult> {
     try {
-      const response = await apiClient.post<ApiResponse<{ auto_refill: AutoRefillConfig }>>(
-        `${this.basePath}/auto-refill`,
+      const response = await apiClient.put<ApiResponse<{ auto_refill: AutoRefillConfig }>>(
+        `${this.basePath}/auto-refill-settings`,
         params
       );
 
@@ -291,7 +291,7 @@ export class CreditService {
   async getAutoRefillSettings(): Promise<AutoRefillConfig | null> {
     try {
       const response = await apiClient.get<ApiResponse<{ auto_refill: AutoRefillConfig }>>(
-        `${this.basePath}/auto-refill`
+        `${this.basePath}/auto-refill-settings`
       );
 
       if (!response.data.success || !response.data.data?.auto_refill) {
