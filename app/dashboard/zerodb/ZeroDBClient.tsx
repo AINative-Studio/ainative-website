@@ -1,98 +1,41 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   Database, Layers, Search, Plus, Trash2, RefreshCw, Download,
-  Upload, Play, AlertCircle, X, ChevronRight, Activity, Settings,
-  Folder, FileText, Clock, HardDrive, Zap, Eye, Copy, Check
+  Upload, Play, AlertCircle, X, Activity, Settings,
+  Folder, Clock, HardDrive, Zap, Eye, Copy, Check
 } from 'lucide-react';
 import {
+  zerodbService,
   Namespace,
   DatabaseStats,
   VectorEntry,
   QueryResult,
+  DataFormat,
 } from '@/lib/zerodb-service';
 
-// Mock data for development
-const mockNamespaces: Namespace[] = [
-  {
-    name: 'default',
-    vector_count: 15420,
-    dimensions: 1536,
-    description: 'Default namespace for general embeddings',
-    created_at: '2025-01-15T00:00:00Z',
-    updated_at: '2025-12-21T14:30:00Z',
-  },
-  {
-    name: 'documents',
-    vector_count: 8750,
-    dimensions: 768,
-    description: 'Document embeddings for RAG',
-    created_at: '2025-06-01T00:00:00Z',
-    updated_at: '2025-12-21T12:00:00Z',
-  },
-  {
-    name: 'images',
-    vector_count: 3200,
-    dimensions: 512,
-    description: 'Image embeddings for visual search',
-    created_at: '2025-09-15T00:00:00Z',
-    updated_at: '2025-12-20T18:00:00Z',
-  },
-];
-
-const mockStats: DatabaseStats = {
-  total_vectors: 27370,
-  total_namespaces: 3,
-  total_storage_mb: 485.7,
-  avg_query_latency_ms: 12.5,
-  queries_last_24h: 15420,
-  writes_last_24h: 850,
-  by_namespace: [
-    { name: 'default', vector_count: 15420, storage_mb: 280.5 },
-    { name: 'documents', vector_count: 8750, storage_mb: 150.2 },
-    { name: 'images', vector_count: 3200, storage_mb: 55.0 },
-  ],
+const emptyStats: DatabaseStats = {
+  total_vectors: 0,
+  total_namespaces: 0,
+  total_storage_mb: 0,
+  avg_query_latency_ms: 0,
+  queries_last_24h: 0,
+  writes_last_24h: 0,
+  by_namespace: [],
   index_health: 'optimal',
 };
-
-const mockVectors: VectorEntry[] = [
-  {
-    id: 'vec-001',
-    namespace: 'default',
-    metadata: { source: 'api-docs.pdf', page: 15 },
-    created_at: '2025-12-21T10:00:00Z',
-  },
-  {
-    id: 'vec-002',
-    namespace: 'default',
-    metadata: { source: 'user-guide.pdf', page: 3 },
-    created_at: '2025-12-21T10:05:00Z',
-  },
-  {
-    id: 'vec-003',
-    namespace: 'default',
-    metadata: { source: 'changelog.md', section: 'v2.0' },
-    created_at: '2025-12-21T10:10:00Z',
-  },
-];
-
-const mockQueryResults: QueryResult[] = [
-  { id: 'vec-001', score: 0.95, metadata: { source: 'api-docs.pdf', page: 15 } },
-  { id: 'vec-025', score: 0.88, metadata: { source: 'user-guide.pdf', page: 42 } },
-  { id: 'vec-142', score: 0.82, metadata: { source: 'tutorials.pdf', page: 8 } },
-];
 
 type Tab = 'namespaces' | 'query' | 'vectors' | 'import-export';
 
 export default function ZeroDBClient() {
-  const [namespaces, setNamespaces] = useState<Namespace[]>(mockNamespaces);
-  const [stats, setStats] = useState<DatabaseStats>(mockStats);
-  const [vectors, setVectors] = useState<VectorEntry[]>(mockVectors);
+  const [namespaces, setNamespaces] = useState<Namespace[]>([]);
+  const [stats, setStats] = useState<DatabaseStats>(emptyStats);
+  const [vectors, setVectors] = useState<VectorEntry[]>([]);
   const [queryResults, setQueryResults] = useState<QueryResult[]>([]);
   const [activeTab, setActiveTab] = useState<Tab>('namespaces');
-  const [selectedNamespace, setSelectedNamespace] = useState<string>('default');
+  const [selectedNamespace, setSelectedNamespace] = useState<string>('');
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [copiedId, setCopiedId] = useState<string | null>(null);
@@ -103,6 +46,12 @@ export default function ZeroDBClient() {
   const [newNamespaceDimensions, setNewNamespaceDimensions] = useState(1536);
   const [queryText, setQueryText] = useState('');
   const [topK, setTopK] = useState(10);
+
+  // Import/Export states
+  const [importFormat, setImportFormat] = useState<DataFormat>('json');
+  const [exportFormat, setExportFormat] = useState<DataFormat>('json');
+  const [includeVectors, setIncludeVectors] = useState(false);
+  const [isExporting, setIsExporting] = useState(false);
 
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleString();
@@ -120,20 +69,83 @@ export default function ZeroDBClient() {
     setTimeout(() => setCopiedId(null), 2000);
   };
 
+  // ===== Data fetching =====
+
+  const fetchNamespaces = useCallback(async () => {
+    try {
+      const response = await zerodbService.listNamespaces();
+      setNamespaces(response.namespaces || []);
+      if (!selectedNamespace && response.namespaces?.length > 0) {
+        setSelectedNamespace(response.namespaces[0].name);
+      }
+    } catch (err) {
+      console.error('Failed to fetch namespaces:', err);
+      setError('Failed to load namespaces');
+    }
+  }, [selectedNamespace]);
+
+  const fetchStats = useCallback(async () => {
+    try {
+      const response = await zerodbService.getStats();
+      setStats(response as DatabaseStats);
+    } catch (err) {
+      console.error('Failed to fetch stats:', err);
+    }
+  }, []);
+
+  const fetchVectors = useCallback(async () => {
+    if (!selectedNamespace) return;
+    try {
+      const response = await zerodbService.listVectors({
+        namespace: selectedNamespace,
+        page: 1,
+        page_size: 50,
+      });
+      setVectors(response.vectors || []);
+    } catch (err) {
+      console.error('Failed to fetch vectors:', err);
+    }
+  }, [selectedNamespace]);
+
+  const handleRefresh = useCallback(async () => {
+    setIsLoading(true);
+    setError(null);
+    try {
+      await Promise.all([fetchNamespaces(), fetchStats()]);
+      if (activeTab === 'vectors') {
+        await fetchVectors();
+      }
+    } finally {
+      setIsLoading(false);
+    }
+  }, [fetchNamespaces, fetchStats, fetchVectors, activeTab]);
+
+  // Initial data load
+  useEffect(() => {
+    handleRefresh();
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+
+  // Fetch vectors when namespace changes or vectors tab is selected
+  useEffect(() => {
+    if (activeTab === 'vectors' && selectedNamespace) {
+      fetchVectors();
+    }
+  }, [activeTab, selectedNamespace, fetchVectors]);
+
+  // ===== Action handlers =====
+
   const handleCreateNamespace = async () => {
+    if (!newNamespaceName) return;
     try {
       setIsLoading(true);
-      // In production: await zerodbService.createNamespace({ name: newNamespaceName, dimensions: newNamespaceDimensions });
-      const newNamespace: Namespace = {
+      await zerodbService.createNamespace({
         name: newNamespaceName,
-        vector_count: 0,
         dimensions: newNamespaceDimensions,
-        created_at: new Date().toISOString(),
-        updated_at: new Date().toISOString(),
-      };
-      setNamespaces([...namespaces, newNamespace]);
+      });
       setShowCreateNamespace(false);
       setNewNamespaceName('');
+      await fetchNamespaces();
+      await fetchStats();
     } catch (err) {
       setError('Failed to create namespace');
     } finally {
@@ -143,11 +155,13 @@ export default function ZeroDBClient() {
 
   const handleDeleteNamespace = async (name: string) => {
     try {
-      // In production: await zerodbService.deleteNamespace(name);
-      setNamespaces(namespaces.filter((n) => n.name !== name));
+      await zerodbService.deleteNamespace(name);
       if (selectedNamespace === name) {
-        setSelectedNamespace(namespaces[0]?.name || '');
+        const remaining = namespaces.filter((n) => n.name !== name);
+        setSelectedNamespace(remaining[0]?.name || '');
       }
+      await fetchNamespaces();
+      await fetchStats();
     } catch (err) {
       setError('Failed to delete namespace');
     }
@@ -157,12 +171,50 @@ export default function ZeroDBClient() {
     if (!queryText) return;
     try {
       setIsLoading(true);
-      // In production: const results = await zerodbService.executeQuery({ namespace: selectedNamespace, vector: [...], top_k: topK });
-      setQueryResults(mockQueryResults);
+      setError(null);
+      const response = await zerodbService.executeQuery({
+        namespace: selectedNamespace,
+        vector: [],
+        top_k: topK,
+        include_metadata: true,
+        filter: { query_text: queryText },
+      });
+      setQueryResults(response.results || []);
     } catch (err) {
       setError('Query execution failed');
     } finally {
       setIsLoading(false);
+    }
+  };
+
+  const handleDeleteVector = async (vectorId: string) => {
+    if (!selectedNamespace) return;
+    try {
+      await zerodbService.deleteVector(vectorId, selectedNamespace);
+      setVectors(vectors.filter((v) => v.id !== vectorId));
+      await fetchStats();
+    } catch (err) {
+      setError('Failed to delete vector');
+    }
+  };
+
+  const handleExport = async () => {
+    if (!selectedNamespace) return;
+    try {
+      setIsExporting(true);
+      setError(null);
+      const response = await zerodbService.exportData({
+        namespace: selectedNamespace,
+        format: exportFormat,
+        include_vectors: includeVectors,
+      });
+      if (response.download_url) {
+        window.open(response.download_url, '_blank');
+      }
+    } catch (err) {
+      setError('Failed to export data');
+    } finally {
+      setIsExporting(false);
     }
   };
 
@@ -186,10 +238,11 @@ export default function ZeroDBClient() {
           <motion.button
             whileHover={{ scale: 1.02 }}
             whileTap={{ scale: 0.98 }}
-            onClick={() => {/* Refresh logic */}}
-            className="flex items-center gap-2 px-4 py-2 bg-gray-800 hover:bg-gray-700 text-white rounded-lg transition-colors"
+            onClick={handleRefresh}
+            disabled={isLoading}
+            className="flex items-center gap-2 px-4 py-2 bg-gray-800 hover:bg-gray-700 text-white rounded-lg transition-colors disabled:opacity-50"
           >
-            <RefreshCw className="w-4 h-4" />
+            <RefreshCw className={`w-4 h-4 ${isLoading ? 'animate-spin' : ''}`} />
             Refresh
           </motion.button>
         </div>
@@ -212,6 +265,14 @@ export default function ZeroDBClient() {
           </motion.div>
         )}
       </AnimatePresence>
+
+      {/* Loading State */}
+      {isLoading && namespaces.length === 0 && (
+        <div className="flex items-center justify-center py-12">
+          <RefreshCw className="w-6 h-6 text-primary animate-spin" />
+          <span className="ml-3 text-gray-400">Loading ZeroDB data...</span>
+        </div>
+      )}
 
       {/* Stats Overview */}
       <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4">
@@ -326,6 +387,13 @@ export default function ZeroDBClient() {
               Create Namespace
             </motion.button>
           </div>
+
+          {namespaces.length === 0 && !isLoading && (
+            <div className="text-center py-12 text-gray-400">
+              <Database className="w-12 h-12 mx-auto mb-3 opacity-50" />
+              <p>No namespaces found. Create one to get started.</p>
+            </div>
+          )}
 
           <div className="grid gap-4">
             {namespaces.map((namespace, index) => (
@@ -509,67 +577,76 @@ export default function ZeroDBClient() {
             <div className="flex items-center gap-3">
               <h3 className="text-lg font-semibold text-white">Vector Browser</h3>
               <span className="px-2 py-0.5 bg-gray-700 rounded text-sm text-gray-300">
-                {selectedNamespace}
+                {selectedNamespace || 'No namespace selected'}
               </span>
-            </div>
-            <div className="relative">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
-              <input
-                type="text"
-                placeholder="Search vectors..."
-                className="pl-10 pr-4 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-primary"
-              />
             </div>
           </div>
 
-          <div className="overflow-x-auto">
-            <table className="w-full">
-              <thead>
-                <tr className="text-left border-b border-gray-700">
-                  <th className="py-3 px-4 text-sm font-medium text-gray-400">ID</th>
-                  <th className="py-3 px-4 text-sm font-medium text-gray-400">Metadata</th>
-                  <th className="py-3 px-4 text-sm font-medium text-gray-400">Created</th>
-                  <th className="py-3 px-4 text-sm font-medium text-gray-400">Actions</th>
-                </tr>
-              </thead>
-              <tbody>
-                {vectors.map((vector) => (
-                  <tr key={vector.id} className="border-b border-border hover:bg-gray-800/50">
-                    <td className="py-3 px-4">
-                      <span className="font-mono text-sm text-white">{vector.id}</span>
-                    </td>
-                    <td className="py-3 px-4">
-                      <pre className="text-xs text-gray-400 max-w-xs overflow-hidden text-ellipsis">
-                        {JSON.stringify(vector.metadata)}
-                      </pre>
-                    </td>
-                    <td className="py-3 px-4 text-sm text-gray-400">
-                      {formatDate(vector.created_at)}
-                    </td>
-                    <td className="py-3 px-4">
-                      <div className="flex items-center gap-2">
-                        <button
-                          onClick={() => handleCopy(vector.id)}
-                          className="p-1.5 text-gray-400 hover:text-white hover:bg-gray-700 rounded transition-colors"
-                        >
-                          {copiedId === vector.id ? (
-                            <Check className="w-4 h-4 text-green-400" />
-                          ) : (
-                            <Copy className="w-4 h-4" />
-                          )}
-                        </button>
-                        <button
-                          className="p-1.5 text-gray-400 hover:text-red-400 hover:bg-red-500/10 rounded transition-colors"
-                        >
-                          <Trash2 className="w-4 h-4" />
-                        </button>
-                      </div>
-                    </td>
+          {!selectedNamespace && (
+            <div className="text-center py-12 text-gray-400">
+              <Layers className="w-12 h-12 mx-auto mb-3 opacity-50" />
+              <p>Select a namespace to browse vectors.</p>
+            </div>
+          )}
+
+          {selectedNamespace && vectors.length === 0 && (
+            <div className="text-center py-12 text-gray-400">
+              <Layers className="w-12 h-12 mx-auto mb-3 opacity-50" />
+              <p>No vectors found in this namespace.</p>
+            </div>
+          )}
+
+          {vectors.length > 0 && (
+            <div className="overflow-x-auto">
+              <table className="w-full">
+                <thead>
+                  <tr className="text-left border-b border-gray-700">
+                    <th className="py-3 px-4 text-sm font-medium text-gray-400">ID</th>
+                    <th className="py-3 px-4 text-sm font-medium text-gray-400">Metadata</th>
+                    <th className="py-3 px-4 text-sm font-medium text-gray-400">Created</th>
+                    <th className="py-3 px-4 text-sm font-medium text-gray-400">Actions</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+                </thead>
+                <tbody>
+                  {vectors.map((vector) => (
+                    <tr key={vector.id} className="border-b border-border hover:bg-gray-800/50">
+                      <td className="py-3 px-4">
+                        <span className="font-mono text-sm text-white">{vector.id}</span>
+                      </td>
+                      <td className="py-3 px-4">
+                        <pre className="text-xs text-gray-400 max-w-xs overflow-hidden text-ellipsis">
+                          {JSON.stringify(vector.metadata)}
+                        </pre>
+                      </td>
+                      <td className="py-3 px-4 text-sm text-gray-400">
+                        {formatDate(vector.created_at)}
+                      </td>
+                      <td className="py-3 px-4">
+                        <div className="flex items-center gap-2">
+                          <button
+                            onClick={() => handleCopy(vector.id)}
+                            className="p-1.5 text-gray-400 hover:text-white hover:bg-gray-700 rounded transition-colors"
+                          >
+                            {copiedId === vector.id ? (
+                              <Check className="w-4 h-4 text-green-400" />
+                            ) : (
+                              <Copy className="w-4 h-4" />
+                            )}
+                          </button>
+                          <button
+                            onClick={() => handleDeleteVector(vector.id)}
+                            className="p-1.5 text-gray-400 hover:text-red-400 hover:bg-red-500/10 rounded transition-colors"
+                          >
+                            <Trash2 className="w-4 h-4" />
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
         </div>
       )}
 
@@ -599,7 +676,11 @@ export default function ZeroDBClient() {
               </div>
               <div>
                 <label className="block text-sm text-gray-400 mb-2">Format</label>
-                <select className="w-full px-3 py-2 bg-gray-900 border border-gray-700 rounded-lg text-white focus:outline-none focus:border-primary">
+                <select
+                  value={importFormat}
+                  onChange={(e) => setImportFormat(e.target.value as DataFormat)}
+                  className="w-full px-3 py-2 bg-gray-900 border border-gray-700 rounded-lg text-white focus:outline-none focus:border-primary"
+                >
                   <option value="json">JSON</option>
                   <option value="parquet">Parquet</option>
                   <option value="csv">CSV</option>
@@ -645,7 +726,11 @@ export default function ZeroDBClient() {
               </div>
               <div>
                 <label className="block text-sm text-gray-400 mb-2">Format</label>
-                <select className="w-full px-3 py-2 bg-gray-900 border border-gray-700 rounded-lg text-white focus:outline-none focus:border-primary">
+                <select
+                  value={exportFormat}
+                  onChange={(e) => setExportFormat(e.target.value as DataFormat)}
+                  className="w-full px-3 py-2 bg-gray-900 border border-gray-700 rounded-lg text-white focus:outline-none focus:border-primary"
+                >
                   <option value="json">JSON</option>
                   <option value="parquet">Parquet</option>
                   <option value="csv">CSV</option>
@@ -653,16 +738,23 @@ export default function ZeroDBClient() {
               </div>
               <div>
                 <label className="flex items-center gap-2 text-sm text-gray-400">
-                  <input type="checkbox" className="rounded bg-gray-700 border-gray-600 text-primary focus:ring-primary" />
+                  <input
+                    type="checkbox"
+                    checked={includeVectors}
+                    onChange={(e) => setIncludeVectors(e.target.checked)}
+                    className="rounded bg-gray-700 border-gray-600 text-primary focus:ring-primary"
+                  />
                   Include vector embeddings
                 </label>
               </div>
               <motion.button
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
-                className="w-full px-4 py-2 bg-blue-600 hover:bg-blue-500 text-white rounded-lg transition-colors"
+                onClick={handleExport}
+                disabled={isExporting || !selectedNamespace}
+                className="w-full px-4 py-2 bg-blue-600 hover:bg-blue-500 text-white rounded-lg transition-colors disabled:opacity-50"
               >
-                Generate Export
+                {isExporting ? 'Exporting...' : 'Generate Export'}
               </motion.button>
             </div>
           </div>
