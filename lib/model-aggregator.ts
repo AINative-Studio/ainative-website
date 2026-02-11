@@ -464,6 +464,11 @@ export class ModelAggregatorService {
         }),
         endpoint: '/v1/audio/transcriptions',
         method: 'POST',
+        pricing: {
+          credits: 5,
+          usd: 0.006,
+          unit: 'per minute',
+        },
         parameters: [
           {
             name: 'file',
@@ -494,6 +499,11 @@ export class ModelAggregatorService {
         }),
         endpoint: '/v1/audio/translations',
         method: 'POST',
+        pricing: {
+          credits: 5,
+          usd: 0.006,
+          unit: 'per minute',
+        },
         parameters: [
           {
             name: 'file',
@@ -505,7 +515,7 @@ export class ModelAggregatorService {
       },
       // Text-to-Speech
       {
-        id: 'tts',
+        id: 'text-to-speech',
         slug: 'text-to-speech',
         name: 'Text-to-Speech',
         provider: 'OpenAI',
@@ -518,6 +528,11 @@ export class ModelAggregatorService {
         }),
         endpoint: '/v1/audio/speech',
         method: 'POST',
+        pricing: {
+          credits: 14,
+          usd: 0.015,
+          unit: 'per 1000 characters',
+        },
         parameters: [
           {
             name: 'text',
@@ -530,6 +545,150 @@ export class ModelAggregatorService {
             type: 'string',
             required: false,
             description: 'Voice option',
+          },
+        ],
+      },
+      // MeloTTS (HuggingFace)
+      {
+        id: 'myshell-ai/MeloTTS',
+        slug: 'melotts',
+        name: 'MeloTTS',
+        provider: 'HuggingFace',
+        category: 'Audio',
+        capabilities: ['audio-generation', 'text-to-speech', 'multilingual'],
+        description: 'High-quality multilingual text-to-speech with natural prosody. Supports English, Spanish, French, Chinese, Japanese, and Korean. Deployed on T4 GPU for fast inference.',
+        thumbnail_url: getThumbnailUrl({
+          provider: 'HuggingFace',
+          category: 'Audio',
+        }),
+        endpoint: '/v1/audio/tts',
+        method: 'POST',
+        pricing: {
+          credits: 6,
+          usd: 0.0024,
+          unit: 'per request',
+        },
+        parameters: [
+          {
+            name: 'text',
+            type: 'string',
+            required: true,
+            description: 'Text to convert to speech',
+          },
+          {
+            name: 'language',
+            type: 'string',
+            required: false,
+            description: 'Language code (en, es, fr, zh, ja, ko)',
+          },
+        ],
+      },
+      // Kokoro (HuggingFace)
+      {
+        id: 'hexgrad/Kokoro-82M',
+        slug: 'kokoro-82m',
+        name: 'Kokoro-82M',
+        provider: 'HuggingFace',
+        category: 'Audio',
+        capabilities: ['audio-generation', 'text-to-speech', 'fast-inference'],
+        description: 'Lightweight and fast text-to-speech model with natural voice quality. Optimized for real-time applications. Deployed on T4 GPU with ultra-fast inference.',
+        thumbnail_url: getThumbnailUrl({
+          provider: 'HuggingFace',
+          category: 'Audio',
+        }),
+        endpoint: '/v1/audio/tts',
+        method: 'POST',
+        pricing: {
+          credits: 5,
+          usd: 0.0024,
+          unit: 'per request',
+        },
+        parameters: [
+          {
+            name: 'text',
+            type: 'string',
+            required: true,
+            description: 'Text to convert to speech',
+          },
+          {
+            name: 'voice',
+            type: 'string',
+            required: false,
+            description: 'Voice variant',
+          },
+        ],
+      },
+      // MiniMax TTS Sync
+      {
+        id: 'minimax-tts-sync',
+        slug: 'minimax-tts-sync',
+        name: 'MiniMax TTS Sync',
+        provider: 'MiniMax',
+        category: 'Audio',
+        capabilities: ['audio-generation', 'text-to-speech', 'voice-profiles'],
+        description: 'High-quality synchronous text-to-speech with multiple voice profiles. Fast generation with premium voice quality via API proxy.',
+        thumbnail_url: getThumbnailUrl({
+          provider: 'MiniMax',
+          category: 'Audio',
+        }),
+        endpoint: '/v1/audio/tts',
+        method: 'POST',
+        pricing: {
+          credits: 14,
+          usd: 0.007,
+          unit: 'per generation',
+        },
+        parameters: [
+          {
+            name: 'text',
+            type: 'string',
+            required: true,
+            description: 'Text to convert to speech (1-5000 characters)',
+          },
+          {
+            name: 'voice',
+            type: 'string',
+            required: false,
+            default: 'Wise_Woman',
+            description: 'Voice profile selection',
+          },
+        ],
+      },
+      // MiniMax Music 2.0
+      {
+        id: 'minimax-music-v2',
+        slug: 'minimax-music-v2',
+        name: 'MiniMax Music 2.0',
+        provider: 'MiniMax',
+        category: 'Audio',
+        capabilities: ['audio-generation', 'music-generation', 'ai-composition'],
+        description: 'AI-powered music generation with genre and mood control. Create original compositions from text descriptions via API proxy.',
+        thumbnail_url: getThumbnailUrl({
+          provider: 'MiniMax',
+          category: 'Audio',
+        }),
+        endpoint: '/v1/audio/music',
+        method: 'POST',
+        pricing: {
+          credits: 100,
+          usd: 0.05,
+          unit: 'per track',
+        },
+        parameters: [
+          {
+            name: 'prompt',
+            type: 'string',
+            required: true,
+            description: 'Music description including genre, mood, and style',
+          },
+          {
+            name: 'duration',
+            type: 'integer',
+            required: false,
+            default: 30,
+            min: 10,
+            max: 120,
+            description: 'Duration in seconds',
           },
         ],
       },
