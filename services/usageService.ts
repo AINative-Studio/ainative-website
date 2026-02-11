@@ -71,7 +71,7 @@ export type UsagePeriod = '7d' | '30d' | '90d';
  * Manages all usage-related API operations
  */
 export class UsageService {
-  private readonly basePath = '/v1/settings';
+  private readonly basePath = '/v1/public';
 
   /**
    * Get usage metrics for a specified period
@@ -81,7 +81,7 @@ export class UsageService {
   async getUsageMetrics(period: UsagePeriod = '30d'): Promise<UsageMetrics | null> {
     try {
       const response = await apiClient.get<ApiResponse<{ metrics: UsageMetrics }>>(
-        `${this.basePath}/metrics?period=${period}`
+        `${this.basePath}/ai-usage/aggregate?period=${period}`
       );
 
       if (!response.data.success || !response.data.data?.metrics) {
@@ -102,7 +102,7 @@ export class UsageService {
   async getUsageLimits(): Promise<UsageLimits | null> {
     try {
       const response = await apiClient.get<ApiResponse<{ limits: UsageLimits }>>(
-        `${this.basePath}/usage-limits`
+        `${this.basePath}/settings/usage-limits`
       );
 
       if (!response.data.success || !response.data.data?.limits) {
@@ -123,7 +123,7 @@ export class UsageService {
   async getRealtimeUsage(): Promise<RealtimeUsage | null> {
     try {
       const response = await apiClient.get<ApiResponse<RealtimeUsage>>(
-        `${this.basePath}/current`
+        `${this.basePath}/credits/usage/current`
       );
 
       if (!response.data.success) {
