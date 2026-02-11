@@ -116,7 +116,7 @@ export type ExportFormat = 'csv' | 'pdf' | 'json';
  * Manages developer earnings, transactions, and payout information
  */
 export class EarningsService {
-  private readonly basePath = '/api/v1/public/developer/earnings';
+  private readonly basePath = '/v1/public/developer/earnings';
 
   /**
    * Get earnings overview summary
