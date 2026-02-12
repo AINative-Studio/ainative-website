@@ -85,7 +85,7 @@ export class UsageService {
       );
 
       if (!response.data.success || !response.data.data?.metrics) {
-        throw new Error(response.data.message || 'Failed to fetch usage metrics');
+        return null;
       }
 
       return response.data.data.metrics;
@@ -106,7 +106,7 @@ export class UsageService {
       );
 
       if (!response.data.success || !response.data.data?.limits) {
-        throw new Error(response.data.message || 'Failed to fetch usage limits');
+        return null;
       }
 
       return response.data.data.limits;
@@ -127,7 +127,7 @@ export class UsageService {
       );
 
       if (!response.data.success) {
-        throw new Error(response.data.message || 'Failed to fetch real-time usage');
+        return null;
       }
 
       return response.data.data;
