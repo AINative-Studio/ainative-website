@@ -234,10 +234,11 @@ export default function ModelPlayground({ model, slug }: PlaygroundProps) {
       // Transform request payload based on model category
       let requestPayload: Record<string, unknown> = { ...input };
 
-      // Audio TTS models expect { text, voice } instead of { prompt }
+      // Audio TTS models expect { text, voice, model_id } instead of { prompt }
       if (model.category === 'Audio' && model.endpoint.includes('/tts')) {
         requestPayload = {
           text: input.prompt || '',
+          model_id: model.slug, // Required for backend to identify the audio model
           voice: 'Wise_Woman', // Default voice profile
         };
       }
