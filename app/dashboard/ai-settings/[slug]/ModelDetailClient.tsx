@@ -67,8 +67,16 @@ export default function ModelDetailClient({ slug }: ModelDetailClientProps) {
   // Find the model by slug
   const model = models?.find(m => m.slug === slug);
 
-  // Read active tab from URL query params, default to 'playground'
-  const activeTab = (searchParams.get('tab') as TabType) || 'playground';
+  // Filter tabs based on model category - embedding models don't have playground
+  const availableTabs = model?.category === 'Embedding'
+    ? TABS.filter(tab => tab.id !== 'playground')
+    : TABS;
+
+  // Default to 'api' for embeddings, 'playground' for others
+  const defaultTab = model?.category === 'Embedding' ? 'api' : 'playground';
+
+  // Read active tab from URL query params, default based on model category
+  const activeTab = (searchParams.get('tab') as TabType) || defaultTab;
 
   /**
    * Update active tab and sync with URL
@@ -176,7 +184,7 @@ export default function ModelDetailClient({ slug }: ModelDetailClientProps) {
 
       {/* Tab Navigation */}
       <div className="flex items-center gap-6 border-b border-white/10 pb-0">
-        {TABS.map((tab) => {
+        {availableTabs.map((tab) => {
           const Icon = tab.icon;
           const isActive = activeTab === tab.id;
 

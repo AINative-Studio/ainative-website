@@ -64,26 +64,23 @@ class AuthService {
 
   /**
    * Login with email and password
-   * Uses URLSearchParams for form data as required by the OAuth2 API
+   * Uses JSON format as required by the /api/v1/auth/login API
    */
   async login(email: string, password: string): Promise<LoginResponse> {
     try {
-      // OAuth2 style form data
-      const formData = new URLSearchParams();
-      formData.append('username', email); // API expects 'username', not 'email'
-      formData.append('password', password);
-      formData.append('grant_type', 'password');
-
-      const fullURL = `${this.baseURL}/v1/public/auth/login`;
+      const fullURL = `${this.baseURL}/api/v1/auth/login`;
 
       console.log('Auth Debug: Making login request to:', fullURL);
 
       const response = await fetch(fullURL, {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/x-www-form-urlencoded',
+          'Content-Type': 'application/json',
         },
-        body: formData.toString(),
+        body: JSON.stringify({
+          email: email,
+          password: password
+        }),
         credentials: 'include',
       });
 
@@ -100,7 +97,7 @@ class AuthService {
 
         // Fetch user info from /auth/me endpoint
         try {
-          const userInfoResponse = await fetch(`${this.baseURL}/v1/public/auth/me`, {
+          const userInfoResponse = await fetch(`${this.baseURL}/api/v1/auth/me`, {
             headers: {
               'Authorization': `Bearer ${data.access_token}`,
             },
@@ -136,7 +133,7 @@ class AuthService {
    */
   async register(userData: RegisterData): Promise<LoginResponse> {
     try {
-      const response = await fetch(`${this.baseURL}/v1/public/auth/register`, {
+      const response = await fetch(`${this.baseURL}/api/v1/auth/register`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -170,7 +167,7 @@ class AuthService {
         ? `${window.location.origin}/login/callback`
         : '';
 
-      const response = await fetch(`${this.baseURL}/v1/public/auth/github/callback`, {
+      const response = await fetch(`${this.baseURL}/api/v1/auth/github/callback`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -211,7 +208,7 @@ class AuthService {
       const token = this.getAccessToken();
       if (!token) return null;
 
-      const response = await fetch(`${this.baseURL}/v1/public/auth/me`, {
+      const response = await fetch(`${this.baseURL}/api/v1/auth/me`, {
         headers: {
           'Authorization': `Bearer ${token}`,
         },
@@ -235,7 +232,7 @@ class AuthService {
     try {
       const token = this.getAccessToken();
       if (token) {
-        await fetch(`${this.baseURL}/v1/public/auth/logout`, {
+        await fetch(`${this.baseURL}/api/v1/auth/logout`, {
           method: 'POST',
           headers: {
             'Authorization': `Bearer ${token}`,
@@ -259,7 +256,7 @@ class AuthService {
     }
 
     try {
-      const response = await fetch(`${this.baseURL}/v1/public/auth/refresh`, {
+      const response = await fetch(`${this.baseURL}/api/v1/auth/refresh`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -297,7 +294,7 @@ class AuthService {
    */
   async verifyEmail(token: string): Promise<{ message: string }> {
     try {
-      const response = await fetch(`${this.baseURL}/v1/public/auth/verify-email?token=${encodeURIComponent(token)}`, {
+      const response = await fetch(`${this.baseURL}/api/v1/auth/verify-email?token=${encodeURIComponent(token)}`, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
@@ -321,7 +318,7 @@ class AuthService {
    */
   async resetPassword(token: string, newPassword: string): Promise<{ message: string }> {
     try {
-      const response = await fetch(`${this.baseURL}/v1/public/auth/reset-password`, {
+      const response = await fetch(`${this.baseURL}/api/v1/auth/reset-password`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -346,7 +343,7 @@ class AuthService {
    */
   async requestPasswordReset(email: string): Promise<{ message: string }> {
     try {
-      const response = await fetch(`${this.baseURL}/v1/public/auth/forgot-password`, {
+      const response = await fetch(`${this.baseURL}/api/v1/auth/forgot-password`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

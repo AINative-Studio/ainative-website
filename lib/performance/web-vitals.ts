@@ -97,38 +97,13 @@ export function formatMetric(metric: Metric): WebVitalsMetric {
 
 /**
  * Send metric to analytics endpoint
+ * Note: Analytics endpoint is not yet implemented - currently disabled
  */
 export async function sendToAnalytics(metric: WebVitalsMetric): Promise<void> {
-  // Send to custom analytics endpoint
-  const body = JSON.stringify({
-    metric: metric.name,
-    value: metric.value,
-    rating: metric.rating,
-    delta: metric.delta,
-    id: metric.id,
-    navigationType: metric.navigationType,
-    url: window.location.pathname,
-    userAgent: navigator.userAgent,
-    timestamp: Date.now(),
-  });
-
-  try {
-    // Use sendBeacon for reliability (doesn't block page unload)
-    if (navigator.sendBeacon) {
-      const blob = new Blob([body], { type: 'application/json' });
-      navigator.sendBeacon('/api/analytics/vitals', blob);
-    } else {
-      // Fallback to fetch
-      await fetch('/api/analytics/vitals', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body,
-        keepalive: true,
-      });
-    }
-  } catch (error) {
-    console.error('Failed to send metric to analytics:', error);
-  }
+  // Analytics endpoint not yet implemented
+  // TODO: Implement /api/analytics/vitals endpoint
+  // For now, metrics are only logged to console in development (see logMetric function)
+  return;
 }
 
 /**

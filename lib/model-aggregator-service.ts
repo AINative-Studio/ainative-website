@@ -148,16 +148,13 @@ class ModelAggregatorService {
   }
 
   /**
-   * Fetch embedding models from /v1/public/embeddings/models
+   * Fetch embedding models
+   * Note: Embeddings require project_id context (/v1/public/zerodb/{project_id}/embeddings/models)
+   * which is not available in AI Settings page. Disabled for now.
    */
   private async fetchEmbeddingModels(): Promise<UnifiedAIModel[]> {
-    try {
-      const response = await apiClient.get<EmbeddingModel[]>('/v1/public/embeddings/models');
-      return response.data.map(model => this.transformEmbeddingModel(model));
-    } catch (error) {
-      console.error('Failed to fetch embedding models:', error);
-      return [];
-    }
+    // Disabled - requires project_id which is not available in this context
+    return [];
   }
 
   /**
@@ -291,7 +288,10 @@ class ModelAggregatorService {
         category: 'Video',
         capabilities: ['image-to-video', 'video-generation'],
         description: 'Wan 2.2 is an open-source AI video generation model that utilizes a diffusion transformer architecture for image-to-video generation',
-        thumbnail_url: 'https://image.ainative.studio/asset/alibaba/wan-2i2v720.png',
+        thumbnail_url: getThumbnailUrl({
+          provider: 'Alibaba',
+          category: 'Video',
+        }),
         examplePrompts: [
           'Create a realistic 5-second video from this image. Motion should be minimal but believable. Maintain original composition and proportions. No stylistic exaggeration.',
         ],
@@ -455,7 +455,7 @@ class ModelAggregatorService {
       {
         id: 'audio-whisper-transcription',
         slug: 'whisper-transcription',
-        name: 'Whisper',
+        name: 'Whisper Transcription',
         provider: 'OpenAI',
         category: 'Audio',
         capabilities: ['audio', 'transcription', 'speech-to-text'],
@@ -467,7 +467,12 @@ class ModelAggregatorService {
         examplePrompts: [
           'Transcribe this audio verbatim. Preserve speaker intent and meaning. Use paragraph breaks for topic changes. Add speaker labels if multiple voices are present. Do not add commentary or interpretation.',
         ],
-        endpoint: '/v1/audio/transcriptions',
+        pricing: {
+          credits: 5,
+          usd: 0.006,
+          unit: 'per minute',
+        },
+        endpoint: '/api/v1/audio/transcriptions',
         method: 'POST',
         is_default: true,
         speed: 'Fast',
@@ -488,15 +493,20 @@ class ModelAggregatorService {
         examplePrompts: [
           'Translate this audio into fluent, natural English. Preserve intent, tone, and idiomatic meaning rather than literal phrasing. If cultural references appear, translate them in a way an English-speaking audience would understand. Do not summarize. Do not omit details.',
         ],
-        endpoint: '/v1/audio/translations',
+        pricing: {
+          credits: 5,
+          usd: 0.006,
+          unit: 'per minute',
+        },
+        endpoint: '/api/v1/audio/translations',
         method: 'POST',
         speed: 'Fast',
         source_type: 'audio',
       },
       {
-        id: 'audio-tts',
+        id: 'audio-openai-tts',
         slug: 'openai-tts',
-        name: 'TTS Model',
+        name: 'Text-to-Speech',
         provider: 'OpenAI',
         category: 'Audio',
         capabilities: ['audio-generation', 'text-to-speech', 'speech'],
@@ -508,9 +518,114 @@ class ModelAggregatorService {
         examplePrompts: [
           'Read the following text as a confident, calm, emotionally intelligent narrator. Use natural pacing, subtle emphasis, and realistic pauses. Avoid sounding robotic or overly dramatic. Tone: warm, articulate, professional. Audience: intelligent but non-technical adults.',
         ],
-        endpoint: '/v1/multimodal/tts',
+        pricing: {
+          credits: 14,
+          usd: 0.015,
+          unit: 'per 1000 characters',
+        },
+        endpoint: '/api/v1/audio/speech',
         method: 'POST',
         speed: 'Fast',
+        source_type: 'audio',
+      },
+      {
+        id: 'audio-melotts',
+        slug: 'melotts',
+        name: 'MeloTTS',
+        provider: 'HuggingFace',
+        category: 'Audio',
+        capabilities: ['audio-generation', 'text-to-speech', 'multilingual'],
+        description: 'High-quality multilingual text-to-speech with natural prosody. Supports English, Spanish, French, Chinese, Japanese, and Korean. Deployed on T4 GPU for fast inference.',
+        thumbnail_url: getThumbnailUrl({
+          provider: 'HuggingFace',
+          category: 'Audio',
+        }),
+        examplePrompts: [
+          'Generate natural-sounding speech in multiple languages. Use realistic prosody and intonation. Maintain consistent voice quality across languages.',
+        ],
+        pricing: {
+          credits: 6,
+          usd: 0.0024,
+          unit: 'per request',
+        },
+        endpoint: '/api/v1/audio/tts',
+        method: 'POST',
+        speed: 'Fast',
+        source_type: 'audio',
+      },
+      {
+        id: 'audio-kokoro-82m',
+        slug: 'kokoro-82m',
+        name: 'Kokoro-82M',
+        provider: 'HuggingFace',
+        category: 'Audio',
+        capabilities: ['audio-generation', 'text-to-speech', 'fast-inference'],
+        description: 'Lightweight and fast text-to-speech model with natural voice quality. Optimized for real-time applications. Deployed on T4 GPU with ultra-fast inference.',
+        thumbnail_url: getThumbnailUrl({
+          provider: 'HuggingFace',
+          category: 'Audio',
+        }),
+        examplePrompts: [
+          'Generate speech optimized for real-time applications. Prioritize low latency and natural voice quality. Maintain clarity and expressiveness.',
+        ],
+        pricing: {
+          credits: 5,
+          usd: 0.0024,
+          unit: 'per request',
+        },
+        endpoint: '/api/v1/audio/tts',
+        method: 'POST',
+        speed: 'Fast',
+        source_type: 'audio',
+      },
+      {
+        id: 'audio-minimax-tts-sync',
+        slug: 'minimax-tts-sync',
+        name: 'MiniMax TTS Sync',
+        provider: 'MiniMax',
+        category: 'Audio',
+        capabilities: ['audio-generation', 'text-to-speech', 'voice-profiles'],
+        description: 'Premium real-time text-to-speech with diverse voice profiles. Delivers fast, natural-sounding audio with studio-grade clarity.',
+        thumbnail_url: getThumbnailUrl({
+          provider: 'MiniMax',
+          category: 'Audio',
+        }),
+        examplePrompts: [
+          'Generate professional-quality speech with customizable voice profiles. Use natural intonation and clear articulation. Support for various speaking styles.',
+        ],
+        pricing: {
+          credits: 14,
+          usd: 0.007,
+          unit: 'per generation',
+        },
+        endpoint: '/api/v1/audio/tts',
+        method: 'POST',
+        speed: 'Fast',
+        source_type: 'audio',
+      },
+      {
+        id: 'audio-minimax-music-v2',
+        slug: 'minimax-music-v2',
+        name: 'MiniMax Music 2.5',
+        provider: 'MiniMax',
+        category: 'Audio',
+        capabilities: ['audio-generation', 'music-generation', 'ai-composition'],
+        description: 'AI-powered music generation engine that transforms text prompts and lyrics into original, studio-quality tracks. Control genre, mood, and style to produce dynamic 10–60 second compositions on demand.',
+        thumbnail_url: getThumbnailUrl({
+          provider: 'MiniMax',
+          category: 'Audio',
+        }),
+        examplePrompts: [
+          'Create original music compositions with genre and mood control. Generate coherent musical structure with proper instrumentation and arrangement.',
+        ],
+        pricing: {
+          credits: 20,
+          usd: 0.01,
+          unit: 'per track',
+        },
+        endpoint: '/api/v1/audio/music',
+        method: 'POST',
+        speed: 'Medium',
         source_type: 'audio',
       },
     ];
