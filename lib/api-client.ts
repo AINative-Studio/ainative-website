@@ -181,13 +181,24 @@ class ApiClient {
           });
         }
 
-        const errorMessage = typeof data === 'object' && data?.message
-          ? data.message
-          : typeof data === 'object' && data?.detail
-          ? data.detail
-          : typeof data === 'string'
-          ? data
-          : `HTTP ${response.status}: ${response.statusText}`;
+        let errorMessage: string;
+        if (typeof data === 'object' && typeof data?.message === 'string') {
+          errorMessage = data.message;
+        } else if (typeof data === 'object' && typeof data?.detail === 'string') {
+          errorMessage = data.detail;
+        } else if (typeof data === 'object' && data?.detail && typeof data.detail === 'object') {
+          errorMessage = typeof data.detail.message === 'string'
+            ? data.detail.message
+            : Array.isArray(data.detail)
+            ? data.detail.map((d: { msg?: string }) => d.msg || String(d)).join('; ')
+            : JSON.stringify(data.detail);
+        } else if (typeof data === 'object' && data?.message && typeof data.message === 'object') {
+          errorMessage = JSON.stringify(data.message);
+        } else if (typeof data === 'string') {
+          errorMessage = data;
+        } else {
+          errorMessage = `HTTP ${response.status}: ${response.statusText}`;
+        }
 
         throw new Error(errorMessage);
       }
