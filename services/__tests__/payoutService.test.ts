@@ -1,22 +1,21 @@
 /**
+ * @jest-environment node
+ */
+
+/**
  * Payout Service Tests
  * Comprehensive test suite for payoutService.ts
- * Tests all public methods, edge cases, and error handling
- * Target coverage: 100%
+ * Updated to verify correct API endpoint paths (Fixes #587)
  */
 
 import { PayoutService, payoutService } from '../payoutService';
 import apiClient from '@/lib/api-client';
 import type {
-  StripeConnectStatus,
   ConnectedPaymentMethod,
   PaymentMethodType,
   Payout,
-  PayoutStatus,
   PayoutBalance,
   AutoPayoutSettings,
-  TaxForm,
-  TaxFormType,
   PayoutNotificationPreferences,
 } from '../payoutService';
 
@@ -30,8 +29,6 @@ describe('PayoutService', () => {
   beforeEach(() => {
     service = new PayoutService();
     jest.clearAllMocks();
-
-    // Mock console.error to avoid test pollution
     jest.spyOn(console, 'error').mockImplementation(() => {});
   });
 
@@ -40,146 +37,42 @@ describe('PayoutService', () => {
   });
 
   // ==========================================================================
-  // Stripe Connect Status Tests
+  // Stripe Connect Methods (all return null — no backend)
   // ==========================================================================
 
   describe('getStripeConnectStatus', () => {
-    it('should fetch Stripe Connect status successfully', async () => {
-      // Arrange
-      const mockStatus: StripeConnectStatus = {
-        is_connected: true,
-        account_id: 'acct_123',
-        charges_enabled: true,
-        payouts_enabled: true,
-        details_submitted: true,
-        requirements: {
-          currently_due: [],
-          eventually_due: [],
-          past_due: [],
-        },
-      };
-
-      mockedApiClient.get.mockResolvedValue({
-        data: {
-          success: true,
-          message: 'Success',
-          data: mockStatus,
-        },
-      });
-
-      // Act
+    it('should return null (no backend endpoint exists)', async () => {
       const result = await service.getStripeConnectStatus();
-
-      // Assert
-      expect(result).toEqual(mockStatus);
-      expect(mockedApiClient.get).toHaveBeenCalledWith(
-        '/api/v1/developer/payouts/connect/status'
-      );
-    });
-
-    it('should return null when not connected', async () => {
-      // Arrange
-      mockedApiClient.get.mockResolvedValue({
-        data: {
-          success: false,
-          message: 'Not connected',
-          data: null,
-        },
-      });
-
-      // Act
-      const result = await service.getStripeConnectStatus();
-
-      // Assert
       expect(result).toBeNull();
     });
 
-    it('should return null on error', async () => {
-      // Arrange
-      mockedApiClient.get.mockRejectedValue(new Error('Network error'));
-
-      // Act
-      const result = await service.getStripeConnectStatus();
-
-      // Assert
-      expect(result).toBeNull();
-      expect(console.error).toHaveBeenCalled();
+    it('should not make any API calls', async () => {
+      await service.getStripeConnectStatus();
+      expect(mockedApiClient.get).not.toHaveBeenCalled();
     });
   });
 
   describe('createConnectAccountLink', () => {
-    it('should create account link successfully', async () => {
-      // Arrange
-      const mockLink = { url: 'https://connect.stripe.com/setup/123' };
-
-      mockedApiClient.post.mockResolvedValue({
-        data: {
-          success: true,
-          message: 'Success',
-          data: mockLink,
-        },
-      });
-
-      // Act
+    it('should return null (no backend endpoint exists)', async () => {
       const result = await service.createConnectAccountLink();
-
-      // Assert
-      expect(result).toEqual(mockLink);
-      expect(mockedApiClient.post).toHaveBeenCalledWith(
-        '/api/v1/developer/payouts/connect/account-link'
-      );
-    });
-
-    it('should return null on failure', async () => {
-      // Arrange
-      mockedApiClient.post.mockResolvedValue({
-        data: {
-          success: false,
-          message: 'Failed',
-          data: null,
-        },
-      });
-
-      // Act
-      const result = await service.createConnectAccountLink();
-
-      // Assert
       expect(result).toBeNull();
     });
 
-    it('should return null on error', async () => {
-      // Arrange
-      mockedApiClient.post.mockRejectedValue(new Error('Network error'));
-
-      // Act
-      const result = await service.createConnectAccountLink();
-
-      // Assert
-      expect(result).toBeNull();
+    it('should not make any API calls', async () => {
+      await service.createConnectAccountLink();
+      expect(mockedApiClient.post).not.toHaveBeenCalled();
     });
   });
 
   describe('createConnectDashboardLink', () => {
-    it('should create dashboard link successfully', async () => {
-      // Arrange
-      const mockLink = { url: 'https://connect.stripe.com/dashboard/123' };
-
-      mockedApiClient.post.mockResolvedValue({
-        data: {
-          success: true,
-          message: 'Success',
-          data: mockLink,
-        },
-      });
-
-      // Act
+    it('should return null (no backend endpoint exists)', async () => {
       const result = await service.createConnectDashboardLink();
+      expect(result).toBeNull();
+    });
 
-      // Assert
-      expect(result).toEqual(mockLink);
-      expect(mockedApiClient.post).toHaveBeenCalledWith(
-        '/api/v1/developer/payouts/connect/dashboard-link'
-      );
+    it('should not make any API calls', async () => {
+      await service.createConnectDashboardLink();
+      expect(mockedApiClient.post).not.toHaveBeenCalled();
     });
   });
 
@@ -188,230 +81,215 @@ describe('PayoutService', () => {
   // ==========================================================================
 
   describe('getPaymentMethods', () => {
-    it('should fetch payment methods successfully', async () => {
-      // Arrange
-      const mockMethods: ConnectedPaymentMethod[] = [
-        {
-          id: 'pm_123',
-          type: 'bank_account',
-          bank_name: 'Test Bank',
-          account_holder_name: 'John Doe',
-          routing_number: '110000000',
-          last4: '1234',
-          currency: 'USD',
-          is_default: true,
-          status: 'verified',
-        },
-      ];
+    const mockMethod: ConnectedPaymentMethod = {
+      id: 'pm_123',
+      type: 'bank_account',
+      bank_name: 'Test Bank',
+      account_holder_name: 'John Doe',
+      routing_number: '110000000',
+      last4: '1234',
+      currency: 'USD',
+      is_default: true,
+      status: 'verified',
+    };
 
+    it('should call the correct billing endpoint', async () => {
       mockedApiClient.get.mockResolvedValue({
-        data: {
-          success: true,
-          message: 'Success',
-          data: { payment_methods: mockMethods },
-        },
+        data: { success: true, message: 'Success', data: [mockMethod] },
       });
 
-      // Act
-      const result = await service.getPaymentMethods();
-
-      // Assert
-      expect(result).toEqual(mockMethods);
-      expect(mockedApiClient.get).toHaveBeenCalledWith(
-        '/api/v1/developer/payouts/payment-methods'
-      );
+      await service.getPaymentMethods();
+      expect(mockedApiClient.get).toHaveBeenCalledWith('/v1/public/billing/payment-methods');
     });
 
-    it('should return empty array when no methods exist', async () => {
-      // Arrange
+    it('should handle wrapped response with direct array data', async () => {
       mockedApiClient.get.mockResolvedValue({
-        data: {
-          success: true,
-          message: 'Success',
-          data: { payment_methods: [] },
-        },
+        data: { success: true, message: 'Success', data: [mockMethod] },
       });
 
-      // Act
       const result = await service.getPaymentMethods();
+      expect(result).toEqual([mockMethod]);
+    });
 
-      // Assert
+    it('should handle wrapped response with nested payment_methods field', async () => {
+      mockedApiClient.get.mockResolvedValue({
+        data: { success: true, message: 'Success', data: { payment_methods: [mockMethod] } },
+      });
+
+      const result = await service.getPaymentMethods();
+      expect(result).toEqual([mockMethod]);
+    });
+
+    it('should handle wrapped response with null data', async () => {
+      mockedApiClient.get.mockResolvedValue({
+        data: { success: true, message: 'Success', data: null },
+      });
+
+      const result = await service.getPaymentMethods();
+      expect(result).toEqual([]);
+    });
+
+    it('should handle wrapped response with non-array inner data', async () => {
+      mockedApiClient.get.mockResolvedValue({
+        data: { success: true, message: 'Success', data: {} },
+      });
+
+      const result = await service.getPaymentMethods();
+      expect(result).toEqual([]);
+    });
+
+    it('should handle raw array response', async () => {
+      mockedApiClient.get.mockResolvedValue({ data: [mockMethod] });
+
+      const result = await service.getPaymentMethods();
+      expect(result).toEqual([mockMethod]);
+    });
+
+    it('should return empty array for non-array raw response', async () => {
+      mockedApiClient.get.mockResolvedValue({ data: {} });
+
+      const result = await service.getPaymentMethods();
       expect(result).toEqual([]);
     });
 
     it('should return empty array on error', async () => {
-      // Arrange
       mockedApiClient.get.mockRejectedValue(new Error('Network error'));
 
-      // Act
       const result = await service.getPaymentMethods();
+      expect(result).toEqual([]);
+      expect(console.error).toHaveBeenCalled();
+    });
 
-      // Assert
+    it('should return empty array on non-Error exception', async () => {
+      mockedApiClient.get.mockRejectedValue('String error');
+
+      const result = await service.getPaymentMethods();
       expect(result).toEqual([]);
     });
   });
 
   describe('addPaymentMethod', () => {
-    it('should add bank account successfully', async () => {
-      // Arrange
-      const methodDetails = {
-        type: 'bank_account' as PaymentMethodType,
-        bank_account_token: 'btok_123',
-      };
+    const methodDetails = {
+      type: 'bank_account' as PaymentMethodType,
+      bank_account_token: 'btok_123',
+    };
 
-      const mockMethod: ConnectedPaymentMethod = {
-        id: 'pm_123',
-        type: 'bank_account',
-        last4: '1234',
-        currency: 'USD',
-        is_default: false,
-        status: 'verified',
-      };
-
+    it('should call the correct billing endpoint', async () => {
       mockedApiClient.post.mockResolvedValue({
-        data: {
-          success: true,
-          message: 'Added',
-          data: { payment_method: mockMethod },
-        },
+        data: { success: true, message: 'Added', data: { payment_method: {} } },
       });
 
-      // Act
-      const result = await service.addPaymentMethod(methodDetails);
-
-      // Assert
-      expect(result.success).toBe(true);
-      expect(result.message).toBe('Payment method added successfully');
+      await service.addPaymentMethod(methodDetails);
       expect(mockedApiClient.post).toHaveBeenCalledWith(
-        '/api/v1/developer/payouts/payment-methods',
+        '/v1/public/billing/payment-methods',
         methodDetails
       );
     });
 
-    it('should add debit card successfully', async () => {
-      // Arrange
-      const methodDetails = {
-        type: 'debit_card' as PaymentMethodType,
-        debit_card_token: 'ctok_123',
-      };
-
+    it('should return success on successful addition', async () => {
       mockedApiClient.post.mockResolvedValue({
-        data: {
-          success: true,
-          message: 'Added',
-          data: { payment_method: {} },
-        },
+        data: { success: true, message: 'Added', data: { payment_method: {} } },
       });
 
-      // Act
       const result = await service.addPaymentMethod(methodDetails);
-
-      // Assert
       expect(result.success).toBe(true);
+      expect(result.message).toBe('Payment method added successfully');
     });
 
-    it('should return error when addition fails', async () => {
-      // Arrange
-      const methodDetails = {
-        type: 'bank_account' as PaymentMethodType,
-        bank_account_token: 'btok_123',
-      };
-
+    it('should return error when API reports failure', async () => {
       mockedApiClient.post.mockResolvedValue({
-        data: {
-          success: false,
-          message: 'Invalid token',
-          data: null,
-        },
+        data: { success: false, message: 'Invalid token', data: null },
       });
 
-      // Act
       const result = await service.addPaymentMethod(methodDetails);
-
-      // Assert
       expect(result.success).toBe(false);
       expect(result.message).toBe('Invalid token');
     });
 
-    it('should handle network errors', async () => {
-      // Arrange
-      const methodDetails = {
-        type: 'bank_account' as PaymentMethodType,
-        bank_account_token: 'btok_123',
-      };
+    it('should return error with default message when API message is empty', async () => {
+      mockedApiClient.post.mockResolvedValue({
+        data: { success: false, message: '', data: null },
+      });
 
+      const result = await service.addPaymentMethod(methodDetails);
+      expect(result.success).toBe(false);
+      expect(result.message).toBe('Failed to add payment method');
+    });
+
+    it('should handle network errors', async () => {
       mockedApiClient.post.mockRejectedValue(new Error('Network error'));
 
-      // Act
       const result = await service.addPaymentMethod(methodDetails);
-
-      // Assert
       expect(result.success).toBe(false);
       expect(result.message).toBe('Failed to add payment method. Please try again.');
+    });
+
+    it('should handle non-Error exceptions', async () => {
+      mockedApiClient.post.mockRejectedValue('String error');
+
+      const result = await service.addPaymentMethod(methodDetails);
+      expect(result.success).toBe(false);
     });
   });
 
   describe('removePaymentMethod', () => {
-    it('should remove payment method successfully', async () => {
-      // Arrange
+    it('should call the correct bank-accounts endpoint', async () => {
       mockedApiClient.delete.mockResolvedValue({
-        data: {
-          success: true,
-          message: 'Removed',
-          data: { success: true },
-        },
+        data: { success: true, message: 'Removed', data: { success: true } },
       });
 
-      // Act
-      const result = await service.removePaymentMethod('pm_123');
-
-      // Assert
-      expect(result.success).toBe(true);
-      expect(result.message).toBe('Payment method removed successfully');
+      await service.removePaymentMethod('pm_123');
       expect(mockedApiClient.delete).toHaveBeenCalledWith(
-        '/api/v1/developer/payouts/payment-methods/pm_123'
+        '/v1/payments/bank-accounts/pm_123'
       );
     });
 
-    it('should return error when removal fails', async () => {
-      // Arrange
+    it('should return success on successful removal', async () => {
       mockedApiClient.delete.mockResolvedValue({
-        data: {
-          success: false,
-          message: 'Cannot remove default method',
-          data: null,
-        },
+        data: { success: true, message: 'Removed', data: { success: true } },
       });
 
-      // Act
       const result = await service.removePaymentMethod('pm_123');
+      expect(result.success).toBe(true);
+      expect(result.message).toBe('Payment method removed successfully');
+    });
 
-      // Assert
+    it('should return error when API reports failure', async () => {
+      mockedApiClient.delete.mockResolvedValue({
+        data: { success: false, message: 'Cannot remove default method', data: null },
+      });
+
+      const result = await service.removePaymentMethod('pm_123');
       expect(result.success).toBe(false);
       expect(result.message).toBe('Cannot remove default method');
+    });
+
+    it('should handle network errors', async () => {
+      mockedApiClient.delete.mockRejectedValue(new Error('Network error'));
+
+      const result = await service.removePaymentMethod('pm_123');
+      expect(result.success).toBe(false);
+      expect(result.message).toBe('Failed to remove payment method. Please try again.');
+    });
+
+    it('should handle non-Error exceptions', async () => {
+      mockedApiClient.delete.mockRejectedValue('String error');
+
+      const result = await service.removePaymentMethod('pm_123');
+      expect(result.success).toBe(false);
     });
   });
 
   describe('setDefaultPaymentMethod', () => {
-    it('should set default payment method successfully', async () => {
-      // Arrange
-      mockedApiClient.put.mockResolvedValue({
-        data: {
-          success: true,
-          message: 'Updated',
-          data: { success: true },
-        },
-      });
-
-      // Act
+    it('should return failure (no backend endpoint exists)', async () => {
       const result = await service.setDefaultPaymentMethod('pm_123');
+      expect(result.success).toBe(false);
+      expect(result.message).toContain('not yet supported');
+    });
 
-      // Assert
-      expect(result.success).toBe(true);
-      expect(result.message).toBe('Default payment method updated');
-      expect(mockedApiClient.put).toHaveBeenCalledWith(
-        '/api/v1/developer/payouts/payment-methods/pm_123/default'
-      );
+    it('should not make any API calls', async () => {
+      await service.setDefaultPaymentMethod('pm_123');
+      expect(mockedApiClient.put).not.toHaveBeenCalled();
     });
   });
 
@@ -432,430 +310,350 @@ describe('PayoutService', () => {
       destination_last4: '1234',
     };
 
-    it('should fetch payouts successfully', async () => {
-      // Arrange
+    it('should call the correct transactions endpoint', async () => {
       mockedApiClient.get.mockResolvedValue({
-        data: {
-          success: true,
-          message: 'Success',
-          data: { payouts: [mockPayout], has_more: false },
-        },
+        data: { success: true, message: 'Success', data: [mockPayout] },
       });
 
-      // Act
-      const result = await service.getPayouts();
+      await service.getPayouts();
+      expect(mockedApiClient.get).toHaveBeenCalledWith('/v1/payments/transactions');
+    });
 
-      // Assert
+    it('should handle wrapped response with direct array data', async () => {
+      mockedApiClient.get.mockResolvedValue({
+        data: { success: true, message: 'Success', data: [mockPayout] },
+      });
+
+      const result = await service.getPayouts();
       expect(result).toEqual([mockPayout]);
+    });
+
+    it('should handle wrapped response with nested payouts field', async () => {
+      mockedApiClient.get.mockResolvedValue({
+        data: { success: true, message: 'Success', data: { payouts: [mockPayout] } },
+      });
+
+      const result = await service.getPayouts();
+      expect(result).toEqual([mockPayout]);
+    });
+
+    it('should handle wrapped response with null data', async () => {
+      mockedApiClient.get.mockResolvedValue({
+        data: { success: true, message: 'Success', data: null },
+      });
+
+      const result = await service.getPayouts();
+      expect(result).toEqual([]);
+    });
+
+    it('should handle wrapped response with non-array inner data', async () => {
+      mockedApiClient.get.mockResolvedValue({
+        data: { success: true, message: 'Success', data: {} },
+      });
+
+      const result = await service.getPayouts();
+      expect(result).toEqual([]);
+    });
+
+    it('should handle raw array response', async () => {
+      mockedApiClient.get.mockResolvedValue({ data: [mockPayout] });
+
+      const result = await service.getPayouts();
+      expect(result).toEqual([mockPayout]);
+    });
+
+    it('should handle raw response with transactions field', async () => {
+      mockedApiClient.get.mockResolvedValue({
+        data: { transactions: [mockPayout] },
+      });
+
+      const result = await service.getPayouts();
+      expect(result).toEqual([mockPayout]);
+    });
+
+    it('should return empty array for raw response with no matching fields', async () => {
+      mockedApiClient.get.mockResolvedValue({ data: {} });
+
+      const result = await service.getPayouts();
+      expect(result).toEqual([]);
+    });
+
+    it('should include query params when provided', async () => {
+      mockedApiClient.get.mockResolvedValue({ data: [mockPayout] });
+
+      await service.getPayouts({ limit: 10, starting_after: 'po_100' });
       expect(mockedApiClient.get).toHaveBeenCalledWith(
-        '/api/v1/developer/payouts',
-        { params: undefined }
+        expect.stringContaining('limit=10')
+      );
+      expect(mockedApiClient.get).toHaveBeenCalledWith(
+        expect.stringContaining('starting_after=po_100')
       );
     });
 
-    it('should fetch payouts with pagination', async () => {
-      // Arrange
-      mockedApiClient.get.mockResolvedValue({
-        data: {
-          success: true,
-          message: 'Success',
-          data: { payouts: [mockPayout], has_more: true },
-        },
-      });
+    it('should not add ? when no params provided', async () => {
+      mockedApiClient.get.mockResolvedValue({ data: [] });
 
-      // Act
-      const result = await service.getPayouts({ limit: 10, starting_after: 'po_100' });
-
-      // Assert
-      expect(result).toHaveLength(1);
-      expect(mockedApiClient.get).toHaveBeenCalledWith(
-        '/api/v1/developer/payouts',
-        { params: { limit: 10, starting_after: 'po_100' } }
-      );
+      await service.getPayouts();
+      expect(mockedApiClient.get).toHaveBeenCalledWith('/v1/payments/transactions');
     });
 
     it('should return empty array on error', async () => {
-      // Arrange
       mockedApiClient.get.mockRejectedValue(new Error('Network error'));
 
-      // Act
       const result = await service.getPayouts();
+      expect(result).toEqual([]);
+      expect(console.error).toHaveBeenCalled();
+    });
 
-      // Assert
+    it('should return empty array on non-Error exception', async () => {
+      mockedApiClient.get.mockRejectedValue('String error');
+
+      const result = await service.getPayouts();
       expect(result).toEqual([]);
     });
   });
 
   describe('getPayoutById', () => {
-    it('should fetch specific payout successfully', async () => {
-      // Arrange
-      const mockPayout: Payout = {
-        id: 'po_123',
-        amount: 10000,
-        currency: 'USD',
-        status: 'paid',
-        created_at: '2026-01-01T00:00:00Z',
-        destination_type: 'bank_account',
-        destination_last4: '1234',
-      };
-
-      mockedApiClient.get.mockResolvedValue({
-        data: {
-          success: true,
-          message: 'Success',
-          data: mockPayout,
-        },
-      });
-
-      // Act
+    it('should return null (no backend endpoint exists)', async () => {
       const result = await service.getPayoutById('po_123');
-
-      // Assert
-      expect(result).toEqual(mockPayout);
-      expect(mockedApiClient.get).toHaveBeenCalledWith(
-        '/api/v1/developer/payouts/po_123'
-      );
+      expect(result).toBeNull();
     });
 
-    it('should return null when payout not found', async () => {
-      // Arrange
-      mockedApiClient.get.mockResolvedValue({
-        data: {
-          success: false,
-          message: 'Not found',
-          data: null,
-        },
-      });
-
-      // Act
-      const result = await service.getPayoutById('po_invalid');
-
-      // Assert
-      expect(result).toBeNull();
+    it('should not make any API calls', async () => {
+      await service.getPayoutById('po_123');
+      expect(mockedApiClient.get).not.toHaveBeenCalled();
     });
   });
 
   describe('getPayoutBalance', () => {
-    it('should fetch payout balance successfully', async () => {
-      // Arrange
-      const mockBalance: PayoutBalance = {
-        available: 5000,
-        pending: 2000,
-        total: 7000,
-        currency: 'USD',
-      };
+    const mockBalance: PayoutBalance = {
+      available: 5000,
+      pending: 2000,
+      total: 7000,
+      currency: 'USD',
+    };
 
+    it('should call the correct wallet balance endpoint', async () => {
       mockedApiClient.get.mockResolvedValue({
-        data: {
-          success: true,
-          message: 'Success',
-          data: mockBalance,
-        },
+        data: { success: true, message: 'Success', data: mockBalance },
       });
 
-      // Act
-      const result = await service.getPayoutBalance();
+      await service.getPayoutBalance();
+      expect(mockedApiClient.get).toHaveBeenCalledWith('/v1/payments/wallets/me/balance');
+    });
 
-      // Assert
+    it('should handle wrapped response', async () => {
+      mockedApiClient.get.mockResolvedValue({
+        data: { success: true, message: 'Success', data: mockBalance },
+      });
+
+      const result = await service.getPayoutBalance();
       expect(result).toEqual(mockBalance);
     });
 
+    it('should handle raw response', async () => {
+      mockedApiClient.get.mockResolvedValue({ data: mockBalance });
+
+      const result = await service.getPayoutBalance();
+      expect(result).toEqual(mockBalance);
+    });
+
+    it('should return null when wrapped response has no data', async () => {
+      mockedApiClient.get.mockResolvedValue({
+        data: { success: true, message: 'Success', data: null },
+      });
+
+      const result = await service.getPayoutBalance();
+      expect(result).toBeNull();
+    });
+
     it('should return null on error', async () => {
-      // Arrange
       mockedApiClient.get.mockRejectedValue(new Error('Network error'));
 
-      // Act
       const result = await service.getPayoutBalance();
+      expect(result).toBeNull();
+      expect(console.error).toHaveBeenCalled();
+    });
 
-      // Assert
+    it('should return null on non-Error exception', async () => {
+      mockedApiClient.get.mockRejectedValue('String error');
+
+      const result = await service.getPayoutBalance();
       expect(result).toBeNull();
     });
   });
 
   describe('requestPayout', () => {
-    it('should request payout successfully', async () => {
-      // Arrange
+    it('should call the correct withdraw endpoint', async () => {
       mockedApiClient.post.mockResolvedValue({
-        data: {
-          success: true,
-          message: 'Payout requested',
-          data: { payout: { id: 'po_123' } },
-        },
+        data: { success: true, message: 'Requested', data: { payout: { id: 'po_123' } } },
       });
 
-      // Act
-      const result = await service.requestPayout(10000);
-
-      // Assert
-      expect(result.success).toBe(true);
-      expect(result.message).toBe('Payout requested successfully');
+      await service.requestPayout(10000);
       expect(mockedApiClient.post).toHaveBeenCalledWith(
-        '/api/v1/developer/payouts/request',
+        '/v1/payments/withdraw',
         { amount: 10000 }
       );
     });
 
-    it('should handle insufficient balance error', async () => {
-      // Arrange
+    it('should return success on successful request', async () => {
       mockedApiClient.post.mockResolvedValue({
-        data: {
-          success: false,
-          message: 'Insufficient balance',
-          data: null,
-        },
+        data: { success: true, message: 'Requested', data: { payout: { id: 'po_123' } } },
       });
 
-      // Act
       const result = await service.requestPayout(10000);
+      expect(result.success).toBe(true);
+      expect(result.message).toBe('Payout requested successfully');
+    });
 
-      // Assert
+    it('should return error when API reports failure', async () => {
+      mockedApiClient.post.mockResolvedValue({
+        data: { success: false, message: 'Insufficient balance', data: null },
+      });
+
+      const result = await service.requestPayout(10000);
       expect(result.success).toBe(false);
       expect(result.message).toBe('Insufficient balance');
+    });
+
+    it('should handle network errors', async () => {
+      mockedApiClient.post.mockRejectedValue(new Error('Network error'));
+
+      const result = await service.requestPayout(10000);
+      expect(result.success).toBe(false);
+      expect(result.message).toBe('Failed to request payout. Please try again.');
+    });
+
+    it('should handle non-Error exceptions', async () => {
+      mockedApiClient.post.mockRejectedValue('String error');
+
+      const result = await service.requestPayout(10000);
+      expect(result.success).toBe(false);
     });
   });
 
   // ==========================================================================
-  // Auto-Payout Settings Tests
+  // Auto-Payout Settings Tests (no backend)
   // ==========================================================================
 
   describe('getAutoPayoutSettings', () => {
-    it('should fetch auto-payout settings successfully', async () => {
-      // Arrange
-      const mockSettings: AutoPayoutSettings = {
+    it('should return null (no backend endpoint exists)', async () => {
+      const result = await service.getAutoPayoutSettings();
+      expect(result).toBeNull();
+    });
+
+    it('should not make any API calls', async () => {
+      await service.getAutoPayoutSettings();
+      expect(mockedApiClient.get).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('updateAutoPayoutSettings', () => {
+    it('should return failure (no backend endpoint exists)', async () => {
+      const settings: AutoPayoutSettings = {
         enabled: true,
         schedule: 'weekly',
         threshold: 10000,
         delay_days: 2,
       };
 
-      mockedApiClient.get.mockResolvedValue({
-        data: {
-          success: true,
-          message: 'Success',
-          data: { settings: mockSettings },
-        },
-      });
-
-      // Act
-      const result = await service.getAutoPayoutSettings();
-
-      // Assert
-      expect(result).toEqual(mockSettings);
+      const result = await service.updateAutoPayoutSettings(settings);
+      expect(result.success).toBe(false);
+      expect(result.message).toContain('not yet supported');
     });
-  });
 
-  describe('updateAutoPayoutSettings', () => {
-    it('should update auto-payout settings successfully', async () => {
-      // Arrange
-      const newSettings: AutoPayoutSettings = {
-        enabled: false,
-        schedule: 'monthly',
-        threshold: 20000,
-        delay_days: 5,
-      };
-
-      mockedApiClient.put.mockResolvedValue({
-        data: {
-          success: true,
-          message: 'Updated',
-          data: { settings: newSettings },
-        },
+    it('should not make any API calls', async () => {
+      await service.updateAutoPayoutSettings({
+        enabled: true,
+        schedule: 'weekly',
+        threshold: 10000,
+        delay_days: 2,
       });
-
-      // Act
-      const result = await service.updateAutoPayoutSettings(newSettings);
-
-      // Assert
-      expect(result.success).toBe(true);
-      expect(result.message).toBe('Auto-payout settings updated successfully');
-      expect(mockedApiClient.put).toHaveBeenCalledWith(
-        '/api/v1/developer/payouts/settings/auto',
-        newSettings
-      );
+      expect(mockedApiClient.put).not.toHaveBeenCalled();
     });
   });
 
   // ==========================================================================
-  // Tax Form Tests
+  // Tax Form Tests (no backend)
   // ==========================================================================
 
   describe('getTaxForms', () => {
-    it('should fetch tax forms successfully', async () => {
-      // Arrange
-      const mockForms: TaxForm[] = [
-        {
-          id: 'tf_123',
-          type: 'W9',
-          year: 2025,
-          status: 'approved',
-          file_url: 'https://example.com/forms/w9.pdf',
-          submitted_at: '2025-01-01T00:00:00Z',
-          approved_at: '2025-01-05T00:00:00Z',
-        },
-      ];
-
-      mockedApiClient.get.mockResolvedValue({
-        data: {
-          success: true,
-          message: 'Success',
-          data: { forms: mockForms },
-        },
-      });
-
-      // Act
+    it('should return empty array (no backend endpoint exists)', async () => {
       const result = await service.getTaxForms();
-
-      // Assert
-      expect(result).toEqual(mockForms);
+      expect(result).toEqual([]);
     });
 
-    it('should return empty array when no forms exist', async () => {
-      // Arrange
-      mockedApiClient.get.mockResolvedValue({
-        data: {
-          success: true,
-          message: 'Success',
-          data: { forms: [] },
-        },
-      });
-
-      // Act
-      const result = await service.getTaxForms();
-
-      // Assert
-      expect(result).toEqual([]);
+    it('should not make any API calls', async () => {
+      await service.getTaxForms();
+      expect(mockedApiClient.get).not.toHaveBeenCalled();
     });
   });
 
   describe('uploadTaxForm', () => {
-    it('should upload tax form successfully', async () => {
-      // Arrange
-      const mockFile = new File(['test content'], 'w9.pdf', { type: 'application/pdf' });
-
-      mockedApiClient.post.mockResolvedValue({
-        data: {
-          success: true,
-          message: 'Uploaded',
-          data: { form: { id: 'tf_123' } },
-        },
-      });
-
-      // Act
+    it('should return failure (no backend endpoint exists)', async () => {
+      const mockFile = { name: 'w9.pdf', type: 'application/pdf' } as unknown as File;
       const result = await service.uploadTaxForm('W9', 2025, mockFile);
-
-      // Assert
-      expect(result.success).toBe(true);
-      expect(result.message).toBe('Tax form uploaded successfully');
-      expect(mockedApiClient.post).toHaveBeenCalledWith(
-        '/api/v1/developer/payouts/tax-forms',
-        expect.any(FormData),
-        expect.objectContaining({
-          headers: { 'Content-Type': 'multipart/form-data' },
-        })
-      );
+      expect(result.success).toBe(false);
+      expect(result.message).toContain('not yet supported');
     });
 
-    it('should handle upload errors', async () => {
-      // Arrange
-      const mockFile = new File(['test'], 'w9.pdf', { type: 'application/pdf' });
-
-      mockedApiClient.post.mockRejectedValue(new Error('Upload failed'));
-
-      // Act
-      const result = await service.uploadTaxForm('W9', 2025, mockFile);
-
-      // Assert
-      expect(result.success).toBe(false);
-      expect(result.message).toBe('Failed to upload tax form. Please try again.');
+    it('should not make any API calls', async () => {
+      const mockFile = { name: 'w9.pdf', type: 'application/pdf' } as unknown as File;
+      await service.uploadTaxForm('W9', 2025, mockFile);
+      expect(mockedApiClient.post).not.toHaveBeenCalled();
     });
   });
 
   describe('downloadTaxForm', () => {
-    it('should download tax form successfully', async () => {
-      // Arrange
-      const mockUrl = 'https://example.com/forms/w9.pdf';
-
-      mockedApiClient.get.mockResolvedValue({
-        data: {
-          success: true,
-          message: 'Success',
-          data: { url: mockUrl },
-        },
-      });
-
-      // Act
+    it('should return null (no backend endpoint exists)', async () => {
       const result = await service.downloadTaxForm('tf_123');
-
-      // Assert
-      expect(result).toBe(mockUrl);
+      expect(result).toBeNull();
     });
 
-    it('should return null on error', async () => {
-      // Arrange
-      mockedApiClient.get.mockRejectedValue(new Error('Download failed'));
-
-      // Act
-      const result = await service.downloadTaxForm('tf_123');
-
-      // Assert
-      expect(result).toBeNull();
+    it('should not make any API calls', async () => {
+      await service.downloadTaxForm('tf_123');
+      expect(mockedApiClient.get).not.toHaveBeenCalled();
     });
   });
 
   // ==========================================================================
-  // Notification Preferences Tests
+  // Notification Preferences Tests (no backend)
   // ==========================================================================
 
   describe('getNotificationPreferences', () => {
-    it('should fetch notification preferences successfully', async () => {
-      // Arrange
-      const mockPreferences: PayoutNotificationPreferences = {
+    it('should return null (no backend endpoint exists)', async () => {
+      const result = await service.getNotificationPreferences();
+      expect(result).toBeNull();
+    });
+
+    it('should not make any API calls', async () => {
+      await service.getNotificationPreferences();
+      expect(mockedApiClient.get).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('updateNotificationPreferences', () => {
+    it('should return failure (no backend endpoint exists)', async () => {
+      const prefs: PayoutNotificationPreferences = {
         email_on_payout_sent: true,
         email_on_payout_paid: true,
         email_on_payout_failed: true,
         sms_on_payout_paid: false,
       };
 
-      mockedApiClient.get.mockResolvedValue({
-        data: {
-          success: true,
-          message: 'Success',
-          data: { preferences: mockPreferences },
-        },
-      });
-
-      // Act
-      const result = await service.getNotificationPreferences();
-
-      // Assert
-      expect(result).toEqual(mockPreferences);
+      const result = await service.updateNotificationPreferences(prefs);
+      expect(result.success).toBe(false);
+      expect(result.message).toContain('not yet supported');
     });
-  });
 
-  describe('updateNotificationPreferences', () => {
-    it('should update notification preferences successfully', async () => {
-      // Arrange
-      const newPreferences: PayoutNotificationPreferences = {
-        email_on_payout_sent: false,
+    it('should not make any API calls', async () => {
+      await service.updateNotificationPreferences({
+        email_on_payout_sent: true,
         email_on_payout_paid: true,
         email_on_payout_failed: true,
-        sms_on_payout_paid: true,
-      };
-
-      mockedApiClient.put.mockResolvedValue({
-        data: {
-          success: true,
-          message: 'Updated',
-          data: { preferences: newPreferences },
-        },
+        sms_on_payout_paid: false,
       });
-
-      // Act
-      const result = await service.updateNotificationPreferences(newPreferences);
-
-      // Assert
-      expect(result.success).toBe(true);
-      expect(result.message).toBe('Notification preferences updated successfully');
+      expect(mockedApiClient.put).not.toHaveBeenCalled();
     });
   });
 
