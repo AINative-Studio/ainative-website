@@ -83,7 +83,7 @@ const videoService = {
       formData.append('description', request.description);
     }
 
-    const response = await apiClient.post<Video>('/v1/video/upload', formData, {
+    const response = await apiClient.post<Video>('/v1/public/video/upload', formData, {
       headers: {
         'Content-Type': 'multipart/form-data',
       },
@@ -96,7 +96,7 @@ const videoService = {
    * Get video details
    */
   async getVideo(videoId: string): Promise<Video> {
-    const response = await apiClient.get<Video>(`/v1/video/${videoId}`);
+    const response = await apiClient.get<Video>(`/v1/public/video/${videoId}`);
     return response.data;
   },
 
@@ -105,7 +105,7 @@ const videoService = {
    */
   async processVideo(videoId: string, request: ProcessVideoRequest): Promise<ProcessingStatus> {
     const response = await apiClient.post<ProcessingStatus>(
-      `/v1/video/${videoId}/process`,
+      `/v1/public/video/${videoId}/process`,
       request
     );
     return response.data;
@@ -115,7 +115,7 @@ const videoService = {
    * Get video processing status
    */
   async getProcessingStatus(videoId: string): Promise<ProcessingStatus> {
-    const response = await apiClient.get<ProcessingStatus>(`/v1/video/${videoId}/status`);
+    const response = await apiClient.get<ProcessingStatus>(`/v1/public/video/${videoId}/status`);
     return response.data;
   },
 
@@ -131,7 +131,7 @@ const videoService = {
     if (params?.sortBy) queryParams.append('sortBy', params.sortBy);
     if (params?.sortOrder) queryParams.append('sortOrder', params.sortOrder);
 
-    const endpoint = `/v1/video/library${queryParams.toString() ? `?${queryParams.toString()}` : ''}`;
+    const endpoint = `/v1/public/video/library${queryParams.toString() ? `?${queryParams.toString()}` : ''}`;
     const response = await apiClient.get<VideoLibraryResponse>(endpoint);
     return response.data;
   },
@@ -140,7 +140,7 @@ const videoService = {
    * Delete a video
    */
   async deleteVideo(videoId: string): Promise<{ success: boolean }> {
-    const response = await apiClient.delete<{ success: boolean }>(`/v1/video/${videoId}`);
+    const response = await apiClient.delete<{ success: boolean }>(`/v1/public/video/${videoId}`);
     return response.data;
   },
 
@@ -149,7 +149,7 @@ const videoService = {
    */
   async batchProcess(videoIds: string[], options: ProcessingOptions): Promise<{ jobId: string; videos: string[] }> {
     const response = await apiClient.post<{ jobId: string; videos: string[] }>(
-      '/v1/video/batch-process',
+      '/v1/public/video/batch-process',
       { videoIds, options }
     );
     return response.data;
@@ -169,7 +169,7 @@ const videoService = {
       averageWatchTime: number;
       completionRate: number;
       engagementScore: number;
-    }>(`/v1/video/${videoId}/analytics`);
+    }>(`/v1/public/video/${videoId}/analytics`);
     return response.data;
   },
 };
