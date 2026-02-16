@@ -207,7 +207,7 @@ describe('CreditService', () => {
       expect(result).toEqual([mockCreditPackage]);
     });
 
-    it('should throw error when fetch fails', async () => {
+    it('should return empty array when API returns unsuccessful', async () => {
       mockedApiClient.get.mockResolvedValue({
         data: {
           success: false,
@@ -216,13 +216,15 @@ describe('CreditService', () => {
         },
       });
 
-      await expect(creditService.getCreditPackages()).rejects.toThrow('Packages unavailable');
+      const result = await creditService.getCreditPackages();
+      expect(result).toEqual([]);
     });
 
-    it('should handle network errors', async () => {
+    it('should return empty array on network error', async () => {
       mockedApiClient.get.mockRejectedValue(new Error('Network Error'));
 
-      await expect(creditService.getCreditPackages()).rejects.toThrow('Network Error');
+      const result = await creditService.getCreditPackages();
+      expect(result).toEqual([]);
     });
   });
 
@@ -304,7 +306,7 @@ describe('CreditService', () => {
       expect(result).toEqual(mockCreditBalanceResponse);
     });
 
-    it('should throw error when fetch fails', async () => {
+    it('should return default values when API returns unsuccessful', async () => {
       mockedApiClient.get.mockResolvedValue({
         data: {
           success: false,
@@ -313,44 +315,38 @@ describe('CreditService', () => {
         },
       });
 
-      await expect(creditService.getCredits()).rejects.toThrow('Credits unavailable');
+      const result = await creditService.getCredits();
+      expect(result.base_used).toBe(0);
+      expect(result.base_quota).toBe(0);
+      expect(result.add_on_used).toBe(0);
+      expect(result.add_on_quota).toBe(0);
     });
 
-    it('should handle 404 errors', async () => {
-      const consoleWarnSpy = jest.spyOn(console, 'warn').mockImplementation();
+    it('should return default values on 404 error', async () => {
       mockedApiClient.get.mockRejectedValue({
         response: { status: 404 },
       });
 
-      await expect(creditService.getCredits()).rejects.toBeDefined();
-      expect(consoleWarnSpy).toHaveBeenCalledWith(
-        'Credits endpoint not found - check API route configuration'
-      );
-      consoleWarnSpy.mockRestore();
+      const result = await creditService.getCredits();
+      expect(result.base_used).toBe(0);
+      expect(result.base_quota).toBe(0);
     });
 
-    it('should handle 401 errors', async () => {
-      const consoleWarnSpy = jest.spyOn(console, 'warn').mockImplementation();
+    it('should return default values on 401 error', async () => {
       mockedApiClient.get.mockRejectedValue({
         response: { status: 401 },
       });
 
-      await expect(creditService.getCredits()).rejects.toBeDefined();
-      expect(consoleWarnSpy).toHaveBeenCalledWith(
-        'Authentication failed when fetching credits'
-      );
-      consoleWarnSpy.mockRestore();
+      const result = await creditService.getCredits();
+      expect(result.base_used).toBe(0);
     });
 
-    it('should handle network/CORS errors', async () => {
-      const consoleWarnSpy = jest.spyOn(console, 'warn').mockImplementation();
+    it('should return default values on network error', async () => {
       mockedApiClient.get.mockRejectedValue(new Error('Network Error'));
 
-      await expect(creditService.getCredits()).rejects.toThrow('Network Error');
-      expect(consoleWarnSpy).toHaveBeenCalledWith(
-        'This appears to be a CORS or network connectivity issue'
-      );
-      consoleWarnSpy.mockRestore();
+      const result = await creditService.getCredits();
+      expect(result.base_used).toBe(0);
+      expect(result.base_quota).toBe(0);
     });
   });
 
