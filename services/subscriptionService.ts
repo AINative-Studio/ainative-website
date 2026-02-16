@@ -228,27 +228,11 @@ export class SubscriptionService {
    * Subscribe to a plan
    */
   async subscribe(planId: string, paymentMethodId?: string): Promise<OperationResult> {
-    try {
-      const response = await apiClient.post<ApiResponse<{ subscription: Subscription }>>(
-        `${this.basePath}/subscribe`,
-        { plan_id: planId, payment_method_id: paymentMethodId }
-      );
-
-      if (!response.data.success) {
-        throw new Error(response.data.message || 'Failed to subscribe to plan');
-      }
-
-      return {
-        success: true,
-        message: 'Successfully subscribed to the plan'
-      };
-    } catch (error) {
-      console.error('Error subscribing to plan:', error);
-      return {
-        success: false,
-        message: error instanceof Error ? error.message : 'Failed to subscribe to plan'
-      };
-    }
+    console.warn('Direct subscription endpoint not available. Use pricingService.createCheckoutSession() for new subscriptions.');
+    return {
+      success: false,
+      message: 'Please use the checkout flow to subscribe to a plan'
+    };
   }
 
   /**
@@ -256,7 +240,7 @@ export class SubscriptionService {
    */
   async updateSubscription(planId: string): Promise<OperationResult> {
     try {
-      const response = await apiClient.put<ApiResponse<{ subscription: Subscription }>>(
+      const response = await apiClient.patch<ApiResponse<{ subscription: Subscription }>>(
         this.basePath,
         { plan_id: planId }
       );
@@ -283,55 +267,22 @@ export class SubscriptionService {
    * @param cancelAtPeriodEnd - If true, cancels at end of billing period; if false, cancels immediately
    */
   async cancelSubscription(cancelAtPeriodEnd: boolean = true): Promise<OperationResult> {
-    try {
-      const response = await apiClient.post<ApiResponse<{ subscription: Subscription }>>(
-        `${this.basePath}/cancel`,
-        { cancel_at_period_end: cancelAtPeriodEnd }
-      );
-
-      if (!response.data.success) {
-        throw new Error(response.data.message || 'Failed to cancel subscription');
-      }
-
-      return {
-        success: true,
-        message: cancelAtPeriodEnd
-          ? 'Subscription will be canceled at the end of the billing period'
-          : 'Subscription has been canceled'
-      };
-    } catch (error) {
-      console.error('Error canceling subscription:', error);
-      return {
-        success: false,
-        message: error instanceof Error ? error.message : 'Failed to cancel subscription'
-      };
-    }
+    console.warn('cancelSubscription: /v1/public/subscription/cancel endpoint not available');
+    return {
+      success: false,
+      message: 'Subscription cancellation is not yet available. Please contact support.'
+    };
   }
 
   /**
    * Reactivate a canceled subscription
    */
   async reactivateSubscription(): Promise<OperationResult> {
-    try {
-      const response = await apiClient.post<ApiResponse<{ subscription: Subscription }>>(
-        `${this.basePath}/reactivate`
-      );
-
-      if (!response.data.success) {
-        throw new Error(response.data.message || 'Failed to reactivate subscription');
-      }
-
-      return {
-        success: true,
-        message: 'Subscription has been reactivated'
-      };
-    } catch (error) {
-      console.error('Error reactivating subscription:', error);
-      return {
-        success: false,
-        message: error instanceof Error ? error.message : 'Failed to reactivate subscription'
-      };
-    }
+    console.warn('reactivateSubscription: /v1/public/subscription/reactivate endpoint not available');
+    return {
+      success: false,
+      message: 'Subscription reactivation is not yet available. Please contact support.'
+    };
   }
 
   /**
@@ -457,26 +408,11 @@ export class SubscriptionService {
    * @param paymentMethodId - Payment method ID to remove
    */
   async removePaymentMethod(paymentMethodId: string): Promise<OperationResult> {
-    try {
-      const response = await apiClient.delete<ApiResponse<{ success: boolean }>>(
-        `/v1/public/billing/payment-methods/${paymentMethodId}`
-      );
-
-      if (!response.data.success) {
-        throw new Error(response.data.message || 'Failed to remove payment method');
-      }
-
-      return {
-        success: true,
-        message: 'Payment method removed successfully'
-      };
-    } catch (error) {
-      console.error('Error removing payment method:', error);
-      return {
-        success: false,
-        message: error instanceof Error ? error.message : 'Failed to remove payment method'
-      };
-    }
+    console.warn('removePaymentMethod: DELETE /v1/public/billing/payment-methods/{id} endpoint not available');
+    return {
+      success: false,
+      message: 'Payment method removal is not yet available'
+    };
   }
 
   /**
@@ -484,27 +420,11 @@ export class SubscriptionService {
    * @param paymentMethodId - Payment method ID to set as default
    */
   async setDefaultPaymentMethod(paymentMethodId: string): Promise<OperationResult> {
-    try {
-      const response = await apiClient.post<ApiResponse<{ success: boolean }>>(
-        '/v1/public/billing/default-payment-method',
-        { payment_method_id: paymentMethodId }
-      );
-
-      if (!response.data.success) {
-        throw new Error(response.data.message || 'Failed to set default payment method');
-      }
-
-      return {
-        success: true,
-        message: 'Default payment method updated successfully'
-      };
-    } catch (error) {
-      console.error('Error setting default payment method:', error);
-      return {
-        success: false,
-        message: error instanceof Error ? error.message : 'Failed to set default payment method'
-      };
-    }
+    console.warn('setDefaultPaymentMethod: /v1/public/billing/default-payment-method endpoint not available');
+    return {
+      success: false,
+      message: 'Setting default payment method is not yet available'
+    };
   }
 
   /**
