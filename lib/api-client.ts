@@ -16,6 +16,7 @@ import { authService } from '@/services/authService';
 
 interface RequestConfig extends RequestInit {
   timeout?: number;
+  responseType?: 'json' | 'blob' | 'text';
   _isRetry?: boolean; // Internal flag to prevent infinite retry loops
 }
 
@@ -127,7 +128,7 @@ class ApiClient {
     endpoint: string,
     config: RequestConfig = {}
   ): Promise<ApiResponse<T>> {
-    const { timeout = this.timeout, ...fetchConfig } = config;
+    const { timeout = this.timeout, responseType, _isRetry, ...fetchConfig } = config;
 
     const url = endpoint.startsWith('http') ? endpoint : `${this.baseUrl}${endpoint}`;
 
@@ -162,7 +163,15 @@ class ApiClient {
 
       clearTimeout(timeoutId);
 
-      const data = await response.json();
+      // Parse response based on responseType
+      let data: unknown;
+      if (responseType === 'blob') {
+        data = await response.blob();
+      } else if (responseType === 'text') {
+        data = await response.text();
+      } else {
+        data = await response.json();
+      }
 
       // Handle 401 unauthorized with automatic token refresh
       if (response.status === 401) {
