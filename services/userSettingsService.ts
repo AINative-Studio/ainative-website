@@ -2,7 +2,7 @@ import apiClient from '@/lib/api-client';
 
 /**
  * User notification preference settings
- * Matches backend schema from /v1/settings/notifications/preferences
+ * Matches backend schema from /v1/public/settings/notifications/preferences
  * Refs #532
  */
 export interface NotificationPreference {
@@ -16,7 +16,7 @@ export interface NotificationPreference {
 
 /**
  * User communication settings
- * Matches backend schema from /v1/settings/communication
+ * Matches backend schema from /v1/public/settings/communication
  * Refs #532
  */
 export interface CommunicationSettings {
@@ -74,7 +74,7 @@ export class UserSettingsService {
   async getNotificationPreferences(): Promise<NotificationPreference> {
     try {
       const response = await apiClient.get<ApiResponse<NotificationPreference>>(
-        '/v1/settings/notifications/preferences'
+        '/v1/public/settings/notifications/preferences'
       );
 
       if (!response.data.success || !response.data.data) {
@@ -96,7 +96,7 @@ export class UserSettingsService {
   ): Promise<OperationResult> {
     try {
       const response = await apiClient.put<ApiResponse<{ message: string }>>(
-        '/v1/settings/notifications/preferences',
+        '/v1/public/settings/notifications/preferences',
         preferences
       );
 
@@ -117,7 +117,7 @@ export class UserSettingsService {
   async getCommunicationSettings(): Promise<CommunicationSettings> {
     try {
       const response = await apiClient.get<ApiResponse<CommunicationSettings>>(
-        '/v1/settings/communication'
+        '/v1/public/settings/communication'
       );
 
       if (!response.data.success || !response.data.data) {
@@ -139,7 +139,7 @@ export class UserSettingsService {
   ): Promise<OperationResult> {
     try {
       const response = await apiClient.put<ApiResponse<{ message: string }>>(
-        '/v1/settings/communication',
+        '/v1/public/settings/communication',
         settings
       );
 
@@ -165,7 +165,7 @@ export class UserSettingsService {
    */
   async getUserProfile(): Promise<UserProfile | null> {
     try {
-      const response = await apiClient.get<ApiResponse<UserProfile>>('/v1/profiles/me');
+      const response = await apiClient.get<ApiResponse<UserProfile>>('/v1/public/profile/me');
 
       if (!response.data.success || !response.data.data) {
         throw new Error(response.data.message || 'Failed to fetch user profile');
@@ -186,7 +186,7 @@ export class UserSettingsService {
   ): Promise<OperationResult> {
     try {
       const response = await apiClient.patch<ApiResponse<{ message: string }>>(
-        '/v1/profiles/me',
+        '/v1/public/profile/me',
         profileData
       );
 
@@ -210,7 +210,7 @@ export class UserSettingsService {
    */
   async getUserStats(): Promise<UserStats | null> {
     try {
-      const response = await apiClient.get<ApiResponse<UserStats>>('/v1/profiles/stats');
+      const response = await apiClient.get<ApiResponse<UserStats>>('/v1/public/profile/stats');
 
       if (!response.data.success || !response.data.data) {
         throw new Error(response.data.message || 'Failed to fetch user stats');
