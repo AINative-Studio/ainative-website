@@ -17,6 +17,9 @@ const protectedRoutes = [
   '/credit-history',
   '/refills',
   '/developer-settings',
+  '/developer',
+  '/invoices',
+  '/admin',
 ];
 
 // Routes that should redirect to dashboard if already authenticated
@@ -66,6 +69,9 @@ export const config = {
     '/credit-history/:path*',
     '/refills/:path*',
     '/developer-settings/:path*',
+    '/developer/:path*',
+    '/invoices/:path*',
+    '/admin/:path*',
     '/login',
     '/signup',
   ],
