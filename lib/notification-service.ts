@@ -191,7 +191,7 @@ const notificationService = {
   async getNotifications(filter?: 'all' | 'unread' | 'read'): Promise<Notification[]> {
     try {
       const params = filter ? `?filter=${filter}` : '';
-      const response = await apiClient.get<{ notifications: Notification[] }>(`/v1/notifications${params}`);
+      const response = await apiClient.get<{ notifications: Notification[] }>(`/v1/public/notifications${params}`);
       return response.data.notifications || [];
     } catch (error) {
       // Only use mock data in development mode when API is disabled
@@ -222,7 +222,7 @@ const notificationService = {
    */
   async getNotification(id: string): Promise<Notification> {
     try {
-      const response = await apiClient.get<Notification>(`/v1/notifications/${id}`);
+      const response = await apiClient.get<Notification>(`/v1/public/notifications/${id}`);
       return response.data;
     } catch (error) {
       // Only use mock data in development mode when API is disabled
@@ -252,7 +252,7 @@ const notificationService = {
    */
   async markAsRead(id: string): Promise<Notification> {
     try {
-      const response = await apiClient.put<Notification>(`/v1/notifications/${id}/read`);
+      const response = await apiClient.patch<Notification>(`/v1/public/notifications/${id}/read`);
       return response.data;
     } catch (error) {
       // Only use mock data in development mode when API is disabled
@@ -286,7 +286,7 @@ const notificationService = {
    */
   async markAsUnread(id: string): Promise<Notification> {
     try {
-      const response = await apiClient.put<Notification>(`/v1/notifications/${id}/unread`);
+      const response = await apiClient.patch<Notification>(`/v1/public/notifications/${id}/unread`);
       return response.data;
     } catch (error) {
       // Only use mock data in development mode when API is disabled
@@ -320,7 +320,7 @@ const notificationService = {
    */
   async deleteNotification(id: string): Promise<void> {
     try {
-      await apiClient.delete(`/v1/notifications/${id}`);
+      await apiClient.delete(`/v1/public/notifications/${id}`);
     } catch (error) {
       // Only silently succeed in development mode when API is disabled
       if (isDevMockEnabled()) {
@@ -342,7 +342,7 @@ const notificationService = {
    */
   async markAllAsRead(): Promise<{ success: boolean; count: number }> {
     try {
-      const response = await apiClient.put<{ success: boolean; count: number }>('/v1/notifications/mark-all-read');
+      const response = await apiClient.post<{ success: boolean; count: number }>('/v1/public/notifications/mark-all-read');
       return response.data;
     } catch (error) {
       // Only use mock data in development mode when API is disabled
@@ -371,7 +371,7 @@ const notificationService = {
    */
   async getPreferences(): Promise<NotificationPreferences> {
     try {
-      const response = await apiClient.get<NotificationPreferences>('/v1/notifications/preferences');
+      const response = await apiClient.get<NotificationPreferences>('/v1/public/notifications/preferences');
       return response.data;
     } catch (error) {
       // Only use default preferences in development mode when API is disabled
@@ -420,7 +420,7 @@ const notificationService = {
    */
   async updatePreferences(preferences: NotificationPreferences): Promise<NotificationPreferences> {
     try {
-      const response = await apiClient.put<NotificationPreferences>('/v1/notifications/preferences', preferences);
+      const response = await apiClient.patch<NotificationPreferences>('/v1/public/notifications/preferences', preferences);
       return response.data;
     } catch (error) {
       // Only simulate success in development mode when API is disabled
@@ -443,7 +443,7 @@ const notificationService = {
    */
   async subscribeToPush(subscription: PushSubscription): Promise<{ success: boolean; message: string }> {
     try {
-      const response = await apiClient.post<{ success: boolean; message: string }>('/v1/notifications/subscribe', subscription);
+      const response = await apiClient.post<{ success: boolean; message: string }>('/v1/public/notifications/subscribe', subscription);
       return response.data;
     } catch (error) {
       // Only simulate success in development mode when API is disabled
@@ -469,7 +469,7 @@ const notificationService = {
    */
   async getStats(): Promise<NotificationStats> {
     try {
-      const response = await apiClient.get<NotificationStats>('/v1/notifications/stats');
+      const response = await apiClient.get<NotificationStats>('/v1/public/notifications/stats');
       return response.data;
     } catch (error) {
       // Only calculate from mock data in development mode when API is disabled
