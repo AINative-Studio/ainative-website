@@ -98,8 +98,8 @@ export class UserService {
    */
   async updateUserProfile(profileData: Partial<UserProfile>): Promise<OperationResult> {
     try {
-      const response = await apiClient.put<ApiResponse<{ message: string }>>(
-        '/v1/public/profile',
+      const response = await apiClient.patch<ApiResponse<{ message: string }>>(
+        '/v1/public/profile/me',
         profileData
       );
 
@@ -122,24 +122,16 @@ export class UserService {
    * Fetches the authenticated user's preferences and settings
    */
   async getUserPreferences(): Promise<UserPreferences> {
-    try {
-      const response = await apiClient.get<ApiResponse<UserPreferences>>(
-        '/v1/public/profile/preferences'
-      );
-
-      if (!response.data.success && response.data.data) {
-        return response.data.data;
-      }
-
-      if (!response.data.data) {
-        return response.data as unknown as UserPreferences;
-      }
-
-      return response.data.data;
-    } catch (error) {
-      console.error('Error fetching user preferences:', error);
-      throw error;
-    }
+    console.warn('getUserPreferences: /v1/public/profile/preferences endpoint not available, returning defaults');
+    return {
+      theme: 'system',
+      language: 'en',
+      timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+      email_notifications: true,
+      push_notifications: true,
+      marketing_emails: false,
+      security_alerts: true,
+    };
   }
 
   /**
@@ -147,24 +139,11 @@ export class UserService {
    * Updates the authenticated user's preferences and settings
    */
   async updateUserPreferences(preferences: Partial<UserPreferences>): Promise<OperationResult> {
-    try {
-      const response = await apiClient.put<ApiResponse<{ message: string }>>(
-        '/v1/public/profile/preferences',
-        preferences
-      );
-
-      if (!response.data.success) {
-        throw new Error(response.data.message || 'Failed to update preferences');
-      }
-
-      return {
-        success: true,
-        message: response.data.message || 'Preferences updated successfully'
-      };
-    } catch (error) {
-      console.error('Error updating user preferences:', error);
-      throw error;
-    }
+    console.warn('updateUserPreferences: /v1/public/profile/preferences endpoint not available');
+    return {
+      success: false,
+      message: 'User preferences endpoint is not yet available'
+    };
   }
 
   /**
@@ -172,24 +151,8 @@ export class UserService {
    * Fetches the authenticated user's profile picture URL
    */
   async getProfilePicture(): Promise<ProfilePictureResponse> {
-    try {
-      const response = await apiClient.get<ApiResponse<ProfilePictureResponse>>(
-        '/v1/public/profile/picture'
-      );
-
-      if (!response.data.success && response.data.data) {
-        return response.data.data;
-      }
-
-      if (!response.data.data) {
-        return response.data as unknown as ProfilePictureResponse;
-      }
-
-      return response.data.data;
-    } catch (error) {
-      console.error('Error fetching profile picture:', error);
-      throw error;
-    }
+    console.warn('getProfilePicture: /v1/public/profile/picture endpoint not available');
+    return { url: '' };
   }
 
   /**
@@ -197,43 +160,11 @@ export class UserService {
    * Uploads a new profile picture for the authenticated user
    */
   async uploadProfilePicture(file: File): Promise<OperationResult & { url?: string }> {
-    try {
-      const formData = new FormData();
-      formData.append('file', file);
-
-      // Create a custom fetch request for file upload
-      const token = typeof window !== 'undefined' ? localStorage.getItem('accessToken') : null;
-
-      const headers: HeadersInit = {};
-      if (token) {
-        headers['Authorization'] = `Bearer ${token}`;
-      }
-
-      const apiBaseUrl = typeof window !== 'undefined'
-        ? process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:8000'
-        : 'http://localhost:8000';
-
-      const response = await fetch(`${apiBaseUrl}/v1/public/profile/picture`, {
-        method: 'POST',
-        headers,
-        body: formData,
-      });
-
-      const data = await response.json();
-
-      if (!response.ok || !data.success) {
-        throw new Error(data.message || 'Failed to upload profile picture');
-      }
-
-      return {
-        success: true,
-        message: data.message || 'Profile picture uploaded successfully',
-        url: data.data?.url
-      };
-    } catch (error) {
-      console.error('Error uploading profile picture:', error);
-      throw error;
-    }
+    console.warn('uploadProfilePicture: /v1/public/profile/picture endpoint not available');
+    return {
+      success: false,
+      message: 'Profile picture upload is not yet available'
+    };
   }
 
   /**
@@ -244,7 +175,8 @@ export class UserService {
   async deleteAccount(confirmation?: { password?: string; reason?: string }): Promise<OperationResult> {
     try {
       const response = await apiClient.delete<ApiResponse<{ message: string }>>(
-        '/v1/public/profile/delete'
+        '/v1/public/auth/account',
+        confirmation ? { body: JSON.stringify(confirmation) } : undefined
       );
 
       if (!response.data.success) {
