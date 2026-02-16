@@ -64,7 +64,7 @@ class TeamService {
    * Create a new team
    */
   async createTeam(data: CreateTeamData): Promise<Team> {
-    const response = await apiClient.post<Team>('/v1/teams', data);
+    const response = await apiClient.post<Team>('/v1/public/teams', data);
     return response.data;
   }
 
@@ -73,8 +73,8 @@ class TeamService {
    */
   async listTeams(organizationId?: number): Promise<TeamsResponse> {
     const endpoint = organizationId
-      ? `/v1/teams?organization_id=${organizationId}`
-      : '/v1/teams';
+      ? `/v1/public/teams?organization_id=${organizationId}`
+      : '/v1/public/teams';
     const response = await apiClient.get<TeamsResponse>(endpoint);
     return response.data;
   }
@@ -83,7 +83,7 @@ class TeamService {
    * Get team details by ID
    */
   async getTeam(id: number): Promise<Team> {
-    const response = await apiClient.get<Team>(`/v1/teams/${id}`);
+    const response = await apiClient.get<Team>(`/v1/public/teams/${id}`);
     return response.data;
   }
 
@@ -91,7 +91,7 @@ class TeamService {
    * Update team details
    */
   async updateTeam(id: number, data: UpdateTeamData): Promise<Team> {
-    const response = await apiClient.put<Team>(`/v1/teams/${id}`, data);
+    const response = await apiClient.patch<Team>(`/v1/public/teams/${id}`, data);
     return response.data;
   }
 
@@ -99,7 +99,7 @@ class TeamService {
    * Delete a team
    */
   async deleteTeam(id: number): Promise<DeleteResponse> {
-    const response = await apiClient.delete<DeleteResponse>(`/v1/teams/${id}`);
+    const response = await apiClient.delete<DeleteResponse>(`/v1/public/teams/${id}`);
     return response.data;
   }
 
@@ -107,7 +107,7 @@ class TeamService {
    * Add a member to a team
    */
   async addTeamMember(teamId: number, data: AddTeamMemberData): Promise<TeamMember> {
-    const response = await apiClient.post<TeamMember>(`/v1/teams/${teamId}/members`, data);
+    const response = await apiClient.post<TeamMember>(`/v1/public/teams/${teamId}/members`, data);
     return response.data;
   }
 
@@ -115,7 +115,7 @@ class TeamService {
    * List all members of a team
    */
   async listTeamMembers(teamId: number): Promise<TeamMembersResponse> {
-    const response = await apiClient.get<TeamMembersResponse>(`/v1/teams/${teamId}/members`);
+    const response = await apiClient.get<TeamMembersResponse>(`/v1/public/teams/${teamId}/members`);
     return response.data;
   }
 
@@ -123,7 +123,7 @@ class TeamService {
    * Remove a member from a team
    */
   async removeTeamMember(teamId: number, userId: number): Promise<DeleteResponse> {
-    const response = await apiClient.delete<DeleteResponse>(`/v1/teams/${teamId}/members/${userId}`);
+    const response = await apiClient.delete<DeleteResponse>(`/v1/public/teams/${teamId}/members/${userId}`);
     return response.data;
   }
 }

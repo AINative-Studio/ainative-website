@@ -15,6 +15,8 @@ export interface ApiKey {
   created: string;
   lastUsed: string;
   status: 'active' | 'inactive';
+  usageCount: number;
+  expiresAt: string | null;
 }
 
 /**
@@ -44,6 +46,8 @@ function transformApiKey(apiKey: ApiKeyResponse): ApiKey {
       ? new Date(apiKey.last_used_at).toLocaleDateString()
       : 'Never',
     status: apiKey.is_active ? 'active' : 'inactive',
+    usageCount: apiKey.usage_count ?? 0,
+    expiresAt: apiKey.expires_at ?? null,
   };
 }
 
