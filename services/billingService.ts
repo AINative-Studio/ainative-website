@@ -330,7 +330,7 @@ export class BillingService {
     updates: Partial<Subscription>
   ): Promise<OperationResult> {
     try {
-      const response = await apiClient.put<
+      const response = await apiClient.patch<
         ApiResponse<{ subscription: Subscription }>
       >(this.subscriptionBasePath, { ...updates });
 
@@ -452,7 +452,7 @@ export class BillingService {
   async getCreditUsage(): Promise<CreditUsage | null> {
     try {
       const response = await apiClient.get<ApiResponse<{ usage: CreditUsage }>>(
-        `${this.creditsBasePath}/usage`
+        `${this.creditsBasePath}/usage/current`
       );
 
       if (!response.data.success || !response.data.data?.usage) {
