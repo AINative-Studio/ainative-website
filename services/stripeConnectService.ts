@@ -109,34 +109,9 @@ export class StripeConnectService {
    * @param redirectUri - Callback URL after authorization
    * @param state - CSRF protection state token
    */
-  async getAuthorizationUrl(
-    redirectUri: string,
-    state: string
-  ): Promise<string> {
-    try {
-      const response = await apiClient.post<ApiResponse<{ url: string }>>(
-        `${this.basePath}/authorize`,
-        {
-          redirect_uri: redirectUri,
-          state,
-        }
-      );
-
-      if (!response.data.success || !response.data.data?.url) {
-        throw new Error(
-          response.data.message || 'Failed to get authorization URL'
-        );
-      }
-
-      return response.data.data.url;
-    } catch (error: unknown) {
-      const errorMessage =
-        error instanceof Error
-          ? error.message
-          : 'Failed to get authorization URL';
-      console.error('Error getting authorization URL:', errorMessage);
-      throw new Error(errorMessage);
-    }
+  async getAuthorizationUrl(redirectUri: string, state: string): Promise<string> {
+    console.warn('Stripe Connect endpoints are not yet available on the backend');
+    return '';
   }
 
   /**
@@ -144,57 +119,12 @@ export class StripeConnectService {
    * @param code - OAuth authorization code from Stripe
    * @param state - CSRF protection state token (must match initial request)
    */
-  async completeOAuthFlow(
-    code: string,
-    state: string
-  ): Promise<AccountLinkingResult> {
-    try {
-      const response = await apiClient.post<
-        ApiResponse<{
-          account: StripeConnectAccount;
-          redirect_url?: string;
-        }>
-      >(`${this.basePath}/callback`, {
-        code,
-        state,
-      });
-
-      if (!response.data.success) {
-        return {
-          success: false,
-          message: response.data.message || 'Failed to link Stripe account',
-        };
-      }
-
-      const { account, redirect_url } = response.data.data;
-
-      return {
-        success: true,
-        message: 'Stripe account linked successfully',
-        account,
-        redirect_url,
-      };
-    } catch (error: unknown) {
-      console.error('Error completing OAuth flow:', error);
-
-      let errorMessage = 'Failed to link Stripe account. Please try again.';
-
-      if (error && typeof error === 'object') {
-        if ('response' in error) {
-          const axiosError = error as {
-            response?: { data?: { message?: string } };
-          };
-          errorMessage = axiosError?.response?.data?.message || errorMessage;
-        } else if (error instanceof Error) {
-          errorMessage = error.message;
-        }
-      }
-
-      return {
-        success: false,
-        message: errorMessage,
-      };
-    }
+  async completeOAuthFlow(code: string, state: string): Promise<AccountLinkingResult> {
+    console.warn('Stripe Connect endpoints are not yet available on the backend');
+    return {
+      success: false,
+      message: 'Stripe Connect integration is not yet available',
+    };
   }
 
   /**
@@ -230,95 +160,35 @@ export class StripeConnectService {
    * Get current user's Stripe Connect account
    */
   async getConnectAccount(): Promise<StripeConnectAccount | null> {
-    try {
-      const response = await apiClient.get<
-        ApiResponse<{ account: StripeConnectAccount }>
-      >(`${this.basePath}/account`);
-
-      if (!response.data.success || !response.data.data?.account) {
-        return null;
-      }
-
-      return response.data.data.account;
-    } catch (error) {
-      console.error('Failed to fetch Stripe Connect account:', error);
-      return null;
-    }
+    console.warn('Stripe Connect endpoints are not yet available on the backend');
+    return null;
   }
 
   /**
    * Disconnect Stripe Connect account
    */
   async disconnectAccount(): Promise<OperationResult> {
-    try {
-      const response = await apiClient.delete<ApiResponse<{ success: boolean }>>(
-        `${this.basePath}/account`
-      );
-
-      if (!response.data.success) {
-        return {
-          success: false,
-          message:
-            response.data.message || 'Failed to disconnect Stripe account',
-        };
-      }
-
-      return {
-        success: true,
-        message: 'Stripe account disconnected successfully',
-      };
-    } catch (error: unknown) {
-      console.error('Error disconnecting Stripe account:', error);
-      const errorMessage =
-        error instanceof Error
-          ? error.message
-          : 'Failed to disconnect Stripe account';
-
-      return {
-        success: false,
-        message: errorMessage,
-      };
-    }
+    console.warn('Stripe Connect endpoints are not yet available on the backend');
+    return {
+      success: false,
+      message: 'Stripe Connect integration is not yet available',
+    };
   }
 
   /**
    * Get account onboarding link for incomplete accounts
    */
   async getOnboardingLink(): Promise<string | null> {
-    try {
-      const response = await apiClient.post<ApiResponse<{ url: string }>>(
-        `${this.basePath}/onboarding-link`
-      );
-
-      if (!response.data.success || !response.data.data?.url) {
-        return null;
-      }
-
-      return response.data.data.url;
-    } catch (error) {
-      console.error('Failed to get onboarding link:', error);
-      return null;
-    }
+    console.warn('Stripe Connect endpoints are not yet available on the backend');
+    return null;
   }
 
   /**
    * Refresh account to get latest status from Stripe
    */
   async refreshAccount(): Promise<StripeConnectAccount | null> {
-    try {
-      const response = await apiClient.post<
-        ApiResponse<{ account: StripeConnectAccount }>
-      >(`${this.basePath}/refresh`);
-
-      if (!response.data.success || !response.data.data?.account) {
-        return null;
-      }
-
-      return response.data.data.account;
-    } catch (error) {
-      console.error('Failed to refresh account:', error);
-      return null;
-    }
+    console.warn('Stripe Connect endpoints are not yet available on the backend');
+    return null;
   }
 
   // ==========================================================================
