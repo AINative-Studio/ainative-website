@@ -42,6 +42,18 @@ export const PROVIDER_COLORS: Record<string, { primary: string; secondary: strin
     primary: '#13C2C2',
     secondary: '#08979C',
   },
+  HuggingFace: {
+    primary: '#FFD21E',
+    secondary: '#FF9D00',
+  },
+  MiniMax: {
+    primary: '#6366F1',
+    secondary: '#4F46E5',
+  },
+  'Nous Research': {
+    primary: '#06B6D4',
+    secondary: '#0891B2',
+  },
   Generic: {
     primary: '#8C8C8C',
     secondary: '#595959',

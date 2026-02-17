@@ -140,25 +140,15 @@ export default function AISettingsClient() {
         queryKey: ['ai-models-aggregated'],
         queryFn: async () => {
             console.log('[AISettings] Fetching models from aggregator service...');
-            try {
-                const models = await modelAggregatorService.aggregateAllModels();
-                console.log('[AISettings] Models fetched successfully:', {
-                    count: models.length,
-                    isArray: Array.isArray(models),
-                    firstModel: models[0],
-                    dataType: typeof models,
-                });
-                return models;
-            } catch (err) {
-                console.error('[AISettings] Error fetching models:', err);
-                throw err;
-            }
+            const models = await modelAggregatorService.aggregateAllModels();
+            console.log('[AISettings] Models fetched:', models.length);
+            return models;
         },
         staleTime: 5 * 60 * 1000, // 5 minutes
-        gcTime: 10 * 60 * 1000, // 10 minutes (formerly cacheTime)
-        refetchOnMount: false, // Don't refetch on mount - use cached data
-        refetchOnWindowFocus: false, // Don't refetch on window focus
-        retry: 3, // Retry failed requests 3 times
+        gcTime: 10 * 60 * 1000, // 10 minutes
+        refetchOnMount: 'always', // Always refetch on mount to ensure fresh data
+        refetchOnWindowFocus: false,
+        retry: 3,
         retryDelay: (attemptIndex) => Math.min(1000 * 2 ** attemptIndex, 30000),
     });
 
@@ -223,77 +213,28 @@ export default function AISettingsClient() {
 
     // Defensive data extraction with validation
     const models = useMemo(() => {
-        if (!allModels) {
-            console.warn('[AISettings] No models data available yet');
-            return [];
-        }
-
-        if (!Array.isArray(allModels)) {
-            console.error('[AISettings] Invalid models data format:', allModels);
-            return [];
-        }
-
-        console.log('[AISettings] Models loaded:', {
-            count: allModels.length,
-            isLoading,
-            activeCategory,
-        });
-
+        if (!allModels || !Array.isArray(allModels)) return [];
         return allModels;
-    }, [allModels, isLoading, activeCategory]);
+    }, [allModels]);
 
     const filteredAndSorted = useMemo(() => {
-        try {
-            console.log('[AISettings] Running filter:', {
-                category: activeCategory,
-                totalModels: models.length,
-                sortBy,
-            });
+        if (!Array.isArray(models)) return [];
 
-            // Validate models array
-            if (!Array.isArray(models)) {
-                console.error('[AISettings] Models is not an array:', models);
-                return [];
-            }
+        let result = models.filter(m => matchesCategory(m, activeCategory));
 
-            // Filter models with error handling per model
-            let result = models.filter(m => {
-                try {
-                    const matches = matchesCategory(m, activeCategory);
-                    return matches;
-                } catch (err) {
-                    console.error('[AISettings] Error filtering model:', m, err);
-                    return false;
-                }
-            });
-
-            console.log('[AISettings] Filtered results:', {
-                category: activeCategory,
-                filteredCount: result.length,
-                totalCount: models.length,
-            });
-
-            // Apply sorting
-            switch (sortBy) {
-                case 'newest':
-                    // Sort by model order (hardcoded models come first, then by category)
-                    result = [...result].reverse();
-                    break;
-                case 'oldest':
-                    // Keep original order
-                    result = [...result];
-                    break;
-                case 'name':
-                    result = [...result].sort((a, b) => a.name.localeCompare(b.name));
-                    break;
-            }
-
-            console.log('[AISettings] Final sorted results:', result.length);
-            return result;
-        } catch (error) {
-            console.error('[AISettings] Error in filteredAndSorted:', error);
-            return [];
+        switch (sortBy) {
+            case 'newest':
+                result = [...result].reverse();
+                break;
+            case 'oldest':
+                result = [...result];
+                break;
+            case 'name':
+                result = [...result].sort((a, b) => a.name.localeCompare(b.name));
+                break;
         }
+
+        return result;
     }, [models, activeCategory, sortBy]);
 
     if (isLoading) {
@@ -324,11 +265,6 @@ export default function AISettingsClient() {
                 </div>
             </div>
         );
-    }
-
-    // Guard against empty models after loading
-    if (!isLoading && models.length === 0) {
-        console.warn('[AISettings] No models available after loading');
     }
 
     return (
@@ -380,6 +316,7 @@ export default function AISettingsClient() {
 
             {/* Models Grid */}
             <motion.div
+                key={activeCategory}
                 initial="hidden"
                 animate="visible"
                 variants={stagger}
