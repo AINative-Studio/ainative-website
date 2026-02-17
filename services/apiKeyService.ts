@@ -95,7 +95,7 @@ export interface UpdateApiKeyRequest {
  * ApiKeyService provides methods for managing API keys
  */
 export class ApiKeyService {
-  private readonly basePath = '/v1/public/api-keys';
+  private readonly basePath = '/v1/public/settings/api-keys';
 
   /**
    * Get all API keys for the current user
@@ -148,7 +148,7 @@ export class ApiKeyService {
         api_key?: string;
         key?: string;
         id: string;
-      }>(this.basePath, { name });
+      }>(`${this.basePath}`, { name });
 
       const data = response.data;
       return {
