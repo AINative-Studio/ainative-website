@@ -82,11 +82,12 @@ export default function SessionsClient() {
         sessionService.getMemoryStats(sessionId),
         sessionService.getMemoryContext({ session_id: sessionId }),
       ]);
-      setMemoryStats(statsData);
-      setMemoryEntries(contextData.context);
+      setMemoryStats(statsData ?? emptyMemoryStats);
+      setMemoryEntries(contextData?.context ?? []);
     } catch (err) {
-      setError('Failed to load memory data');
       console.error('Error fetching memory:', err);
+      setMemoryStats(emptyMemoryStats);
+      setMemoryEntries([]);
     }
   }, []);
 
@@ -110,7 +111,8 @@ export default function SessionsClient() {
       const query = searchQuery.toLowerCase();
       return (
         session.id.toLowerCase().includes(query) ||
-        session.agent_id.toLowerCase().includes(query)
+        (session.title && session.title.toLowerCase().includes(query)) ||
+        (session.user_id && session.user_id.toLowerCase().includes(query))
       );
     }
     return true;
@@ -132,19 +134,23 @@ export default function SessionsClient() {
   const handleClearMemory = async (sessionId: string) => {
     if (!window.confirm('Clear all memory for this session? This cannot be undone.')) return;
     try {
-      await sessionService.clearSessionMemory(sessionId);
-      setMemoryEntries([]);
-      setMemoryStats({
-        ...memoryStats,
-        total_memories: 0,
-        total_tokens: 0,
-        by_role: {
-          user: { count: 0, tokens: 0 },
-          assistant: { count: 0, tokens: 0 },
-          system: { count: 0, tokens: 0 },
-        },
-        context_window_usage: 0,
-      });
+      const result = await sessionService.clearSessionMemory(sessionId);
+      if (result) {
+        setMemoryEntries([]);
+        setMemoryStats({
+          ...memoryStats,
+          total_memories: 0,
+          total_tokens: 0,
+          by_role: {
+            user: { count: 0, tokens: 0 },
+            assistant: { count: 0, tokens: 0 },
+            system: { count: 0, tokens: 0 },
+          },
+          context_window_usage: 0,
+        });
+      } else {
+        setError('Memory service is currently unavailable');
+      }
     } catch (err) {
       setError('Failed to clear memory');
     }
@@ -159,14 +165,18 @@ export default function SessionsClient() {
         session_id: selectedSession?.id,
         limit: 20,
       });
-      const entries: MemoryEntry[] = response.results.map((r) => ({
-        id: r.id,
-        content: r.content,
-        role: r.role as 'user' | 'assistant' | 'system',
-        timestamp: r.timestamp,
-        relevance_score: r.relevance_score,
-      }));
-      setMemoryEntries(entries);
+      if (response) {
+        const entries: MemoryEntry[] = response.results.map((r) => ({
+          id: r.id,
+          content: r.content,
+          role: r.role as 'user' | 'assistant' | 'system',
+          timestamp: r.timestamp,
+          relevance_score: r.relevance_score,
+        }));
+        setMemoryEntries(entries);
+      } else {
+        setError('Memory search is currently unavailable');
+      }
     } catch (err) {
       setError('Search failed');
     } finally {
@@ -308,7 +318,7 @@ export default function SessionsClient() {
                     </div>
                     <div>
                       <div className="flex items-center gap-2">
-                        <span className="font-medium text-white">{session.id}</span>
+                        <span className="font-medium text-white">{session.title || session.id}</span>
                         <span className={`flex items-center gap-1 px-2 py-0.5 rounded-full text-xs ${
                           statusColors[session.status].bg
                         } ${statusColors[session.status].text}`}>
@@ -316,7 +326,10 @@ export default function SessionsClient() {
                           {session.status}
                         </span>
                       </div>
-                      <p className="text-sm text-gray-400 mt-1">Agent: {session.agent_id}</p>
+                      <p className="text-sm text-gray-400 mt-1">User: {session.user_id}</p>
+                      {session.description && (
+                        <p className="text-sm text-gray-500 mt-0.5">{session.description}</p>
+                      )}
                       <div className="flex items-center gap-4 mt-2 text-xs text-gray-500">
                         <span className="flex items-center gap-1">
                           <Clock className="w-3 h-3" />
@@ -402,7 +415,7 @@ export default function SessionsClient() {
               <div className="flex items-center justify-between">
                 <div>
                   <span className="text-sm text-gray-400">Viewing memory for:</span>
-                  <span className="ml-2 text-white font-medium">{selectedSession.id}</span>
+                  <span className="ml-2 text-white font-medium">{selectedSession.title || selectedSession.id}</span>
                 </div>
                 <button
                   onClick={() => handleClearMemory(selectedSession.id)}
@@ -459,8 +472,12 @@ export default function SessionsClient() {
                     <button
                       onClick={async () => {
                         try {
-                          await sessionService.deleteMemory(entry.id);
-                          setMemoryEntries(memoryEntries.filter((m) => m.id !== entry.id));
+                          const result = await sessionService.deleteMemory(entry.id);
+                          if (result) {
+                            setMemoryEntries(memoryEntries.filter((m) => m.id !== entry.id));
+                          } else {
+                            setError('Memory service is currently unavailable');
+                          }
                         } catch {
                           setError('Failed to delete memory entry');
                         }

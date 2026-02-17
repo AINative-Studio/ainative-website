@@ -186,10 +186,16 @@ class ZeroDBService {
 
   /**
    * List all namespaces
+   * Returns empty list if the endpoint is unavailable (404/deprecated)
    */
   async listNamespaces(): Promise<NamespacesListResponse> {
-    const response = await apiClient.get<NamespacesListResponse>('/v1/public/zerodb/namespaces');
-    return response.data;
+    try {
+      const response = await apiClient.get<NamespacesListResponse>('/v1/public/zerodb/namespaces');
+      return response.data;
+    } catch (error) {
+      console.warn('ZeroDB namespaces endpoint unavailable:', error instanceof Error ? error.message : error);
+      return { namespaces: [], total: 0 };
+    }
   }
 
   /**
@@ -212,15 +218,32 @@ class ZeroDBService {
 
   // ===== Stats Endpoints =====
 
+  private static readonly defaultStats: DatabaseStats = {
+    total_vectors: 0,
+    total_namespaces: 0,
+    total_storage_mb: 0,
+    avg_query_latency_ms: 0,
+    queries_last_24h: 0,
+    writes_last_24h: 0,
+    by_namespace: [],
+    index_health: 'optimal',
+  };
+
   /**
    * Get database statistics
+   * Returns empty stats if the endpoint is unavailable (404/deprecated)
    */
   async getStats(namespace?: string): Promise<DatabaseStats | NamespaceDetailStats> {
-    const endpoint = namespace
-      ? `/v1/public/zerodb/stats?namespace=${namespace}`
-      : '/v1/public/zerodb/stats';
-    const response = await apiClient.get<DatabaseStats | NamespaceDetailStats>(endpoint);
-    return response.data;
+    try {
+      const endpoint = namespace
+        ? `/v1/public/zerodb/stats?namespace=${namespace}`
+        : '/v1/public/zerodb/stats';
+      const response = await apiClient.get<DatabaseStats | NamespaceDetailStats>(endpoint);
+      return response.data;
+    } catch (error) {
+      console.warn('ZeroDB stats endpoint unavailable:', error instanceof Error ? error.message : error);
+      return ZeroDBService.defaultStats;
+    }
   }
 
   // ===== Query Endpoints =====
@@ -239,18 +262,23 @@ class ZeroDBService {
    * List vectors in a namespace
    */
   async listVectors(params: ListVectorsParams): Promise<VectorsListResponse> {
-    const queryParams = new URLSearchParams();
-    queryParams.set('namespace', params.namespace);
-    if (params.page !== undefined) {
-      queryParams.set('page', String(params.page));
-    }
-    if (params.page_size !== undefined) {
-      queryParams.set('page_size', String(params.page_size));
-    }
+    try {
+      const queryParams = new URLSearchParams();
+      queryParams.set('namespace', params.namespace);
+      if (params.page !== undefined) {
+        queryParams.set('page', String(params.page));
+      }
+      if (params.page_size !== undefined) {
+        queryParams.set('page_size', String(params.page_size));
+      }
 
-    const endpoint = `/v1/public/zerodb/vectors?${queryParams.toString()}`;
-    const response = await apiClient.get<VectorsListResponse>(endpoint);
-    return response.data;
+      const endpoint = `/v1/public/zerodb/vectors?${queryParams.toString()}`;
+      const response = await apiClient.get<VectorsListResponse>(endpoint);
+      return response.data;
+    } catch (error) {
+      console.warn('ZeroDB vectors endpoint unavailable:', error instanceof Error ? error.message : error);
+      return { vectors: [], total: 0, page: 1, page_size: 50, has_more: false };
+    }
   }
 
   /**

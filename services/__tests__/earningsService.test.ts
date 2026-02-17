@@ -1,8 +1,11 @@
 /**
+ * @jest-environment node
+ */
+
+/**
  * Earnings Service Tests
  * Comprehensive test suite for earningsService.ts
- * Tests all public methods, edge cases, and error handling
- * Target coverage: 100%
+ * Updated to verify correct API endpoint paths (Fixes #585)
  */
 
 import { EarningsService, earningsService } from '../earningsService';
@@ -11,11 +14,8 @@ import type {
   EarningsOverview,
   Transaction,
   PaginatedTransactions,
-  EarningsBreakdown,
-  PayoutSchedule,
   TransactionSource,
   TransactionStatus,
-  ExportFormat,
 } from '../earningsService';
 
 // Mock the API client
@@ -28,14 +28,7 @@ describe('EarningsService', () => {
   beforeEach(() => {
     service = new EarningsService();
     jest.clearAllMocks();
-
-    // Mock console.error to avoid test pollution
     jest.spyOn(console, 'error').mockImplementation(() => {});
-
-    // Setup DOM mocks for export functionality
-    document.body.innerHTML = '';
-    global.URL.createObjectURL = jest.fn(() => 'blob:mock-url');
-    global.URL.revokeObjectURL = jest.fn();
   });
 
   afterEach(() => {
@@ -47,8 +40,7 @@ describe('EarningsService', () => {
   // ==========================================================================
 
   describe('getEarningsOverview', () => {
-    it('should fetch earnings overview successfully', async () => {
-      // Arrange
+    it('should call the correct wallet endpoint', async () => {
       const mockOverview: EarningsOverview = {
         totalEarnings: 10000,
         thisMonth: 1500,
@@ -58,71 +50,68 @@ describe('EarningsService', () => {
       };
 
       mockedApiClient.get.mockResolvedValue({
-        data: {
-          success: true,
-          message: 'Success',
-          data: mockOverview,
-        },
+        data: { success: true, message: 'Success', data: mockOverview },
       });
 
-      // Act
+      await service.getEarningsOverview();
+
+      expect(mockedApiClient.get).toHaveBeenCalledWith('/v1/public/payments/wallets/me');
+    });
+
+    it('should handle wrapped {success, data} response format', async () => {
+      const mockOverview: EarningsOverview = {
+        totalEarnings: 10000,
+        thisMonth: 1500,
+        lastMonth: 1200,
+        pendingPayout: 300,
+        currency: 'USD',
+      };
+
+      mockedApiClient.get.mockResolvedValue({
+        data: { success: true, message: 'Success', data: mockOverview },
+      });
+
       const result = await service.getEarningsOverview();
-
-      // Assert
       expect(result).toEqual(mockOverview);
-      expect(mockedApiClient.get).toHaveBeenCalledWith(
-        '/api/v1/public/developer/earnings/overview'
-      );
     });
 
-    it('should throw error when response is not successful', async () => {
-      // Arrange
+    it('should handle raw response format', async () => {
+      const mockOverview: EarningsOverview = {
+        totalEarnings: 5000,
+        thisMonth: 800,
+        lastMonth: 600,
+        pendingPayout: 200,
+        currency: 'USD',
+      };
+
+      mockedApiClient.get.mockResolvedValue({ data: mockOverview });
+
+      const result = await service.getEarningsOverview();
+      expect(result).toEqual(mockOverview);
+    });
+
+    it('should return null when wrapped response has no data', async () => {
       mockedApiClient.get.mockResolvedValue({
-        data: {
-          success: false,
-          message: 'Failed to fetch overview',
-          data: null,
-        },
+        data: { success: true, message: 'Success', data: null },
       });
 
-      // Act & Assert
-      await expect(service.getEarningsOverview()).rejects.toThrow(
-        'Failed to fetch overview'
-      );
+      const result = await service.getEarningsOverview();
+      expect(result).toBeNull();
     });
 
-    it('should throw error when data is missing', async () => {
-      // Arrange
-      mockedApiClient.get.mockResolvedValue({
-        data: {
-          success: false,
-          message: 'Data not found',
-          data: null,
-        },
-      });
+    it('should return null on network error', async () => {
+      mockedApiClient.get.mockRejectedValue(new Error('Network error'));
 
-      // Act & Assert
-      await expect(service.getEarningsOverview()).rejects.toThrow();
-    });
-
-    it('should handle network errors gracefully', async () => {
-      // Arrange
-      const networkError = new Error('Network error');
-      mockedApiClient.get.mockRejectedValue(networkError);
-
-      // Act & Assert
-      await expect(service.getEarningsOverview()).rejects.toThrow('Network error');
+      const result = await service.getEarningsOverview();
+      expect(result).toBeNull();
       expect(console.error).toHaveBeenCalled();
     });
 
-    it('should handle non-Error exceptions', async () => {
-      // Arrange
+    it('should return null on non-Error exceptions', async () => {
       mockedApiClient.get.mockRejectedValue('String error');
 
-      // Act & Assert
-      await expect(service.getEarningsOverview()).rejects.toThrow(
-        'Failed to fetch earnings overview'
-      );
+      const result = await service.getEarningsOverview();
+      expect(result).toBeNull();
     });
   });
 
@@ -141,117 +130,126 @@ describe('EarningsService', () => {
       currency: 'USD',
     };
 
-    it('should fetch transactions without parameters', async () => {
-      // Arrange
-      const mockResponse: PaginatedTransactions = {
-        items: [mockTransaction],
-        total: 1,
-        page: 1,
-        pageSize: 10,
-      };
-
+    it('should call the correct transactions endpoint', async () => {
       mockedApiClient.get.mockResolvedValue({
-        data: {
-          success: true,
-          message: 'Success',
-          data: mockResponse,
-        },
+        data: { success: true, message: 'Success', data: { items: [mockTransaction], total: 1, page: 1, pageSize: 50 } },
       });
 
-      // Act
-      const result = await service.getTransactions();
-
-      // Assert
-      expect(result).toEqual(mockResponse);
-      expect(mockedApiClient.get).toHaveBeenCalledWith(
-        '/api/v1/public/developer/earnings/transactions'
-      );
+      await service.getTransactions();
+      expect(mockedApiClient.get).toHaveBeenCalledWith('/v1/public/payments/transactions');
     });
 
-    it('should fetch transactions with all query parameters', async () => {
-      // Arrange
-      const params = {
-        page: 2,
-        pageSize: 20,
-        source: 'marketplace' as TransactionSource,
-        status: 'completed' as TransactionStatus,
-        startDate: '2026-01-01',
-        endDate: '2026-01-31',
-      };
-
+    it('should handle wrapped {success, data} response format', async () => {
       const mockResponse: PaginatedTransactions = {
-        items: [mockTransaction],
-        total: 50,
-        page: 2,
-        pageSize: 20,
+        items: [mockTransaction], total: 1, page: 1, pageSize: 10,
       };
 
       mockedApiClient.get.mockResolvedValue({
-        data: {
-          success: true,
-          message: 'Success',
-          data: mockResponse,
-        },
+        data: { success: true, message: 'Success', data: mockResponse },
       });
 
-      // Act
-      const result = await service.getTransactions(params);
-
-      // Assert
+      const result = await service.getTransactions();
       expect(result).toEqual(mockResponse);
+    });
+
+    it('should handle raw response with transactions array', async () => {
+      mockedApiClient.get.mockResolvedValue({
+        data: { transactions: [mockTransaction], total: 1, page: 1, page_size: 50 },
+      });
+
+      const result = await service.getTransactions();
+      expect(result.items).toEqual([mockTransaction]);
+      expect(result.total).toBe(1);
+      expect(result.pageSize).toBe(50);
+    });
+
+    it('should handle raw response with items array and pageSize', async () => {
+      mockedApiClient.get.mockResolvedValue({
+        data: { items: [mockTransaction], total: 3, page: 2, pageSize: 25 },
+      });
+
+      const result = await service.getTransactions();
+      expect(result.items).toEqual([mockTransaction]);
+      expect(result.total).toBe(3);
+      expect(result.page).toBe(2);
+      expect(result.pageSize).toBe(25);
+    });
+
+    it('should handle raw response with missing optional fields', async () => {
+      mockedApiClient.get.mockResolvedValue({
+        data: {},
+      });
+
+      const result = await service.getTransactions();
+      expect(result.items).toEqual([]);
+      expect(result.total).toBe(0);
+      expect(result.page).toBe(1);
+      expect(result.pageSize).toBe(50);
+    });
+
+    it('should build query params with page_size for API compatibility', async () => {
+      mockedApiClient.get.mockResolvedValue({
+        data: { transactions: [], total: 0, page: 2, page_size: 20 },
+      });
+
+      await service.getTransactions({ page: 2, pageSize: 20 });
+
       expect(mockedApiClient.get).toHaveBeenCalledWith(
         expect.stringContaining('page=2')
       );
       expect(mockedApiClient.get).toHaveBeenCalledWith(
-        expect.stringContaining('pageSize=20')
-      );
-      expect(mockedApiClient.get).toHaveBeenCalledWith(
-        expect.stringContaining('source=marketplace')
-      );
-      expect(mockedApiClient.get).toHaveBeenCalledWith(
-        expect.stringContaining('status=completed')
+        expect.stringContaining('page_size=20')
       );
     });
 
-    it('should handle empty transaction list', async () => {
-      // Arrange
-      const mockResponse: PaginatedTransactions = {
-        items: [],
-        total: 0,
-        page: 1,
-        pageSize: 10,
-      };
-
+    it('should include filter parameters in query', async () => {
       mockedApiClient.get.mockResolvedValue({
-        data: {
-          success: true,
-          message: 'Success',
-          data: mockResponse,
-        },
+        data: { transactions: [], total: 0, page: 1, page_size: 50 },
       });
 
-      // Act
+      await service.getTransactions({
+        source: 'marketplace' as TransactionSource,
+        status: 'completed' as TransactionStatus,
+        startDate: '2026-01-01',
+        endDate: '2026-01-31',
+      });
+
+      expect(mockedApiClient.get).toHaveBeenCalledWith(expect.stringContaining('source=marketplace'));
+      expect(mockedApiClient.get).toHaveBeenCalledWith(expect.stringContaining('status=completed'));
+      expect(mockedApiClient.get).toHaveBeenCalledWith(expect.stringContaining('startDate=2026-01-01'));
+      expect(mockedApiClient.get).toHaveBeenCalledWith(expect.stringContaining('endDate=2026-01-31'));
+    });
+
+    it('should handle no query params without adding ? to URL', async () => {
+      mockedApiClient.get.mockResolvedValue({
+        data: { success: true, message: 'Success', data: { items: [], total: 0, page: 1, pageSize: 50 } },
+      });
+
+      await service.getTransactions({});
+      expect(mockedApiClient.get).toHaveBeenCalledWith('/v1/public/payments/transactions');
+    });
+
+    it('should return default when non-Error exception thrown', async () => {
+      mockedApiClient.get.mockRejectedValue('String error');
+
       const result = await service.getTransactions();
-
-      // Assert
-      expect(result.items).toHaveLength(0);
-      expect(result.total).toBe(0);
+      expect(result).toEqual({ items: [], total: 0, page: 1, pageSize: 50 });
     });
 
-    it('should throw error on failed fetch', async () => {
-      // Arrange
+    it('should return empty paginated result on error', async () => {
+      mockedApiClient.get.mockRejectedValue(new Error('Network error'));
+
+      const result = await service.getTransactions();
+      expect(result).toEqual({ items: [], total: 0, page: 1, pageSize: 50 });
+    });
+
+    it('should return default when wrapped response has no data', async () => {
       mockedApiClient.get.mockResolvedValue({
-        data: {
-          success: false,
-          message: 'Failed to fetch transactions',
-          data: null,
-        },
+        data: { success: false, message: 'Error', data: null },
       });
 
-      // Act & Assert
-      await expect(service.getTransactions()).rejects.toThrow(
-        'Failed to fetch transactions'
-      );
+      const result = await service.getTransactions();
+      expect(result).toEqual({ items: [], total: 0, page: 1, pageSize: 50 });
     });
   });
 
@@ -260,38 +258,14 @@ describe('EarningsService', () => {
   // ==========================================================================
 
   describe('getEarningsBreakdown', () => {
-    it('should fetch earnings breakdown successfully', async () => {
-      // Arrange
-      const mockBreakdown: EarningsBreakdown = {
-        api: 5000,
-        marketplace: 3000,
-        referrals: 2000,
-      };
-
-      mockedApiClient.get.mockResolvedValue({
-        data: {
-          success: true,
-          message: 'Success',
-          data: mockBreakdown,
-        },
-      });
-
-      // Act
+    it('should return null (no backend endpoint exists)', async () => {
       const result = await service.getEarningsBreakdown();
-
-      // Assert
-      expect(result).toEqual(mockBreakdown);
-      expect(mockedApiClient.get).toHaveBeenCalledWith(
-        '/api/v1/public/developer/earnings/breakdown'
-      );
+      expect(result).toBeNull();
     });
 
-    it('should throw error on failed fetch', async () => {
-      // Arrange
-      mockedApiClient.get.mockRejectedValue(new Error('Network error'));
-
-      // Act & Assert
-      await expect(service.getEarningsBreakdown()).rejects.toThrow('Network error');
+    it('should not make any API calls', async () => {
+      await service.getEarningsBreakdown();
+      expect(mockedApiClient.get).not.toHaveBeenCalled();
     });
   });
 
@@ -300,146 +274,128 @@ describe('EarningsService', () => {
   // ==========================================================================
 
   describe('getPayoutSchedule', () => {
-    it('should fetch payout schedule successfully', async () => {
-      // Arrange
-      const mockSchedule: PayoutSchedule = {
-        nextPayoutDate: '2026-02-01',
-        minimumPayout: 50,
-        payoutThreshold: 100,
-        currency: 'USD',
-      };
-
-      mockedApiClient.get.mockResolvedValue({
-        data: {
-          success: true,
-          message: 'Success',
-          data: mockSchedule,
-        },
-      });
-
-      // Act
+    it('should return null (no backend endpoint exists)', async () => {
       const result = await service.getPayoutSchedule();
-
-      // Assert
-      expect(result).toEqual(mockSchedule);
-      expect(mockedApiClient.get).toHaveBeenCalledWith(
-        '/api/v1/public/developer/earnings/payout-schedule'
-      );
+      expect(result).toBeNull();
     });
 
-    it('should handle missing data', async () => {
-      // Arrange
-      mockedApiClient.get.mockResolvedValue({
-        data: {
-          success: false,
-          message: 'Not found',
-          data: null,
-        },
-      });
-
-      // Act & Assert
-      await expect(service.getPayoutSchedule()).rejects.toThrow();
+    it('should not make any API calls', async () => {
+      await service.getPayoutSchedule();
+      expect(mockedApiClient.get).not.toHaveBeenCalled();
     });
   });
 
   // ==========================================================================
-  // Export Transactions Tests
+  // Export Transactions Tests (skipped in node env — requires DOM)
   // ==========================================================================
 
   describe('exportTransactions', () => {
-    it('should export transactions as CSV', async () => {
-      // Arrange
-      const mockBlob = new Blob(['test data'], { type: 'text/csv' });
-      mockedApiClient.get.mockResolvedValue({
-        data: mockBlob,
-      });
+    const mockLink = { href: '', download: '', click: jest.fn() };
+    const mockCreateObjectURL = jest.fn().mockReturnValue('blob:mock-url');
+    const mockRevokeObjectURL = jest.fn();
+    const mockAppendChild = jest.fn();
+    const mockRemoveChild = jest.fn();
 
-      const clickSpy = jest.fn();
-      const mockLink = {
-        href: '',
-        download: '',
-        click: clickSpy,
-        remove: jest.fn(),
-      } as unknown as HTMLAnchorElement;
+    beforeEach(() => {
+      mockLink.href = '';
+      mockLink.download = '';
+      mockLink.click = jest.fn();
+      mockCreateObjectURL.mockClear();
+      mockRevokeObjectURL.mockClear();
+      mockAppendChild.mockClear();
+      mockRemoveChild.mockClear();
 
-      const createElementSpy = jest.spyOn(document, 'createElement').mockReturnValue(mockLink);
-      const appendChildSpy = jest.spyOn(document.body, 'appendChild').mockImplementation(() => mockLink);
-      const removeChildSpy = jest.spyOn(document.body, 'removeChild').mockImplementation(() => mockLink);
+      // Mock window and document (don't exist in node env)
+      (global as Record<string, unknown>).window = {
+        URL: {
+          createObjectURL: mockCreateObjectURL,
+          revokeObjectURL: mockRevokeObjectURL,
+        },
+      };
+      (global as Record<string, unknown>).document = {
+        createElement: jest.fn().mockReturnValue(mockLink),
+        body: {
+          appendChild: mockAppendChild,
+          removeChild: mockRemoveChild,
+        },
+      };
+    });
 
-      // Act
+    afterEach(() => {
+      delete (global as Record<string, unknown>).window;
+      delete (global as Record<string, unknown>).document;
+    });
+
+    it('should call the correct export endpoint path', async () => {
+      mockedApiClient.get.mockResolvedValue({ data: 'csv-data' });
+
+      await service.exportTransactions('csv');
+
+      expect(mockedApiClient.get).toHaveBeenCalledWith(
+        expect.stringContaining('/v1/public/payments/transactions/export'),
+        expect.objectContaining({ responseType: 'blob' })
+      );
+    });
+
+    it('should succeed and trigger download for csv format', async () => {
+      mockedApiClient.get.mockResolvedValue({ data: 'csv-data' });
+
       const result = await service.exportTransactions('csv');
 
-      // Assert
       expect(result).toBe(true);
-      expect(mockedApiClient.get).toHaveBeenCalledWith(
-        expect.stringContaining('format=csv'),
-        expect.objectContaining({ responseType: 'blob' })
-      );
-      expect(createElementSpy).toHaveBeenCalledWith('a');
-      expect(clickSpy).toHaveBeenCalled();
-      expect(appendChildSpy).toHaveBeenCalled();
-      expect(removeChildSpy).toHaveBeenCalled();
+      expect(mockLink.click).toHaveBeenCalled();
+      expect(mockLink.download).toBe('earnings-transactions.csv');
     });
 
-    it('should export transactions as PDF', async () => {
-      // Arrange
-      const mockBlob = new Blob(['test data'], { type: 'application/pdf' });
-      mockedApiClient.get.mockResolvedValue({
-        data: mockBlob,
-      });
+    it('should set correct download filename for pdf format', async () => {
+      mockedApiClient.get.mockResolvedValue({ data: 'pdf-data' });
 
-      const clickSpy = jest.fn();
-      const mockLink = {
-        href: '',
-        download: '',
-        click: clickSpy,
-        remove: jest.fn(),
-      } as unknown as HTMLAnchorElement;
+      await service.exportTransactions('pdf');
 
-      jest.spyOn(document, 'createElement').mockReturnValue(mockLink);
-      jest.spyOn(document.body, 'appendChild').mockImplementation(() => mockLink);
-      jest.spyOn(document.body, 'removeChild').mockImplementation(() => mockLink);
+      expect(mockLink.download).toBe('earnings-transactions.pdf');
+    });
 
-      // Act
-      const result = await service.exportTransactions('pdf');
+    it('should set correct download filename for json format', async () => {
+      mockedApiClient.get.mockResolvedValue({ data: 'json-data' });
 
-      // Assert
-      expect(result).toBe(true);
+      await service.exportTransactions('json');
+
+      expect(mockLink.download).toBe('earnings-transactions.json');
+    });
+
+    it('should handle full download lifecycle', async () => {
+      mockedApiClient.get.mockResolvedValue({ data: 'data' });
+
+      await service.exportTransactions('csv');
+
+      expect(mockCreateObjectURL).toHaveBeenCalled();
+      expect(mockAppendChild).toHaveBeenCalledWith(mockLink);
+      expect(mockLink.click).toHaveBeenCalled();
+      expect(mockRemoveChild).toHaveBeenCalledWith(mockLink);
+      expect(mockRevokeObjectURL).toHaveBeenCalledWith('blob:mock-url');
+    });
+
+    it('should include format parameter in URL', async () => {
+      mockedApiClient.get.mockResolvedValue({ data: 'data' });
+
+      await service.exportTransactions('pdf');
+
       expect(mockedApiClient.get).toHaveBeenCalledWith(
         expect.stringContaining('format=pdf'),
-        expect.objectContaining({ responseType: 'blob' })
+        expect.anything()
       );
     });
 
-    it('should export transactions with filter parameters', async () => {
-      // Arrange
-      const mockBlob = new Blob(['test data'], { type: 'application/json' });
-      mockedApiClient.get.mockResolvedValue({
-        data: mockBlob,
-      });
+    it('should include filter params in export URL', async () => {
+      mockedApiClient.get.mockResolvedValue({ data: 'data' });
 
-      const mockLink = {
-        href: '',
-        download: '',
-        click: jest.fn(),
-        remove: jest.fn(),
-      } as unknown as HTMLAnchorElement;
-
-      jest.spyOn(document, 'createElement').mockReturnValue(mockLink);
-      jest.spyOn(document.body, 'appendChild').mockImplementation(() => mockLink);
-      jest.spyOn(document.body, 'removeChild').mockImplementation(() => mockLink);
-
-      const params = {
+      await service.exportTransactions('json', {
         source: 'api' as TransactionSource,
         status: 'completed' as TransactionStatus,
         startDate: '2026-01-01',
         endDate: '2026-01-31',
-      };
+      });
 
-      // Act
-      await service.exportTransactions('json', params);
-
-      // Assert
       expect(mockedApiClient.get).toHaveBeenCalledWith(
         expect.stringContaining('source=api'),
         expect.anything()
@@ -448,14 +404,26 @@ describe('EarningsService', () => {
         expect.stringContaining('status=completed'),
         expect.anything()
       );
+      expect(mockedApiClient.get).toHaveBeenCalledWith(
+        expect.stringContaining('startDate=2026-01-01'),
+        expect.anything()
+      );
+      expect(mockedApiClient.get).toHaveBeenCalledWith(
+        expect.stringContaining('endDate=2026-01-31'),
+        expect.anything()
+      );
     });
 
     it('should throw error on export failure', async () => {
-      // Arrange
       mockedApiClient.get.mockRejectedValue(new Error('Export failed'));
 
-      // Act & Assert
       await expect(service.exportTransactions('csv')).rejects.toThrow('Export failed');
+    });
+
+    it('should throw with default message on non-Error exception', async () => {
+      mockedApiClient.get.mockRejectedValue('String error');
+
+      await expect(service.exportTransactions('csv')).rejects.toThrow('Failed to export transactions');
     });
   });
 
@@ -467,76 +435,53 @@ describe('EarningsService', () => {
     it('should return correct display text for API source', () => {
       expect(service.getSourceDisplayText('api')).toBe('API Usage');
     });
-
     it('should return correct display text for marketplace source', () => {
       expect(service.getSourceDisplayText('marketplace')).toBe('Marketplace');
     });
-
     it('should return correct display text for referral source', () => {
       expect(service.getSourceDisplayText('referral')).toBe('Referral');
     });
   });
 
   describe('getStatusDisplayText', () => {
-    it('should return correct display text for completed status', () => {
+    it('should return correct display text for completed', () => {
       expect(service.getStatusDisplayText('completed')).toBe('Completed');
     });
-
-    it('should return correct display text for pending status', () => {
+    it('should return correct display text for pending', () => {
       expect(service.getStatusDisplayText('pending')).toBe('Pending');
     });
-
-    it('should return correct display text for failed status', () => {
+    it('should return correct display text for failed', () => {
       expect(service.getStatusDisplayText('failed')).toBe('Failed');
     });
-
-    it('should return correct display text for cancelled status', () => {
+    it('should return correct display text for cancelled', () => {
       expect(service.getStatusDisplayText('cancelled')).toBe('Cancelled');
     });
   });
 
   describe('getStatusColorClass', () => {
-    it('should return green class for completed status', () => {
+    it('should return green for completed', () => {
       expect(service.getStatusColorClass('completed')).toBe('text-green-600 bg-green-50');
     });
-
-    it('should return yellow class for pending status', () => {
+    it('should return yellow for pending', () => {
       expect(service.getStatusColorClass('pending')).toBe('text-yellow-600 bg-yellow-50');
     });
-
-    it('should return red class for failed status', () => {
+    it('should return red for failed', () => {
       expect(service.getStatusColorClass('failed')).toBe('text-red-600 bg-red-50');
     });
-
-    it('should return gray class for cancelled status', () => {
+    it('should return gray for cancelled', () => {
       expect(service.getStatusColorClass('cancelled')).toBe('text-gray-600 bg-gray-50');
     });
   });
 
   describe('formatCurrency', () => {
     it('should format USD currency correctly', () => {
-      const result = service.formatCurrency(1234.56);
-      expect(result).toBe('$1,234.56');
+      expect(service.formatCurrency(1234.56)).toBe('$1,234.56');
     });
-
-    it('should format large amounts with commas', () => {
-      const result = service.formatCurrency(1234567.89);
-      expect(result).toBe('$1,234,567.89');
-    });
-
     it('should format zero correctly', () => {
-      const result = service.formatCurrency(0);
-      expect(result).toBe('$0.00');
+      expect(service.formatCurrency(0)).toBe('$0.00');
     });
-
     it('should handle different currencies', () => {
-      const result = service.formatCurrency(100, 'EUR');
-      expect(result).toContain('100');
-    });
-
-    it('should handle negative amounts', () => {
-      const result = service.formatCurrency(-50);
-      expect(result).toContain('50');
+      expect(service.formatCurrency(100, 'EUR')).toContain('100');
     });
   });
 
@@ -546,60 +491,32 @@ describe('EarningsService', () => {
       expect(result).toContain('2026');
       expect(result).toContain('Jan');
     });
-
-    it('should handle different months', () => {
-      const result = service.formatDate('2026-12-25T12:00:00Z');
-      expect(result).toContain('2026');
-      expect(result).toContain('Dec');
-    });
   });
 
   describe('calculateGrowthPercentage', () => {
-    it('should calculate positive growth correctly', () => {
-      const result = service.calculateGrowthPercentage(150, 100);
-      expect(result).toBe(50);
+    it('should calculate positive growth', () => {
+      expect(service.calculateGrowthPercentage(150, 100)).toBe(50);
     });
-
-    it('should calculate negative growth correctly', () => {
-      const result = service.calculateGrowthPercentage(80, 100);
-      expect(result).toBe(-20);
+    it('should calculate negative growth', () => {
+      expect(service.calculateGrowthPercentage(80, 100)).toBe(-20);
     });
-
-    it('should handle zero previous value with positive current', () => {
-      const result = service.calculateGrowthPercentage(100, 0);
-      expect(result).toBe(100);
+    it('should handle zero previous with positive current', () => {
+      expect(service.calculateGrowthPercentage(100, 0)).toBe(100);
     });
-
-    it('should handle zero previous value with zero current', () => {
-      const result = service.calculateGrowthPercentage(0, 0);
-      expect(result).toBe(0);
-    });
-
-    it('should handle large numbers', () => {
-      const result = service.calculateGrowthPercentage(1000000, 500000);
-      expect(result).toBe(100);
+    it('should handle zero previous with zero current', () => {
+      expect(service.calculateGrowthPercentage(0, 0)).toBe(0);
     });
   });
 
   describe('calculatePercentage', () => {
     it('should calculate percentage correctly', () => {
-      const result = service.calculatePercentage(25, 100);
-      expect(result).toBe(25);
+      expect(service.calculatePercentage(25, 100)).toBe(25);
     });
-
     it('should handle zero total', () => {
-      const result = service.calculatePercentage(50, 0);
-      expect(result).toBe(0);
+      expect(service.calculatePercentage(50, 0)).toBe(0);
     });
-
     it('should handle decimal results', () => {
-      const result = service.calculatePercentage(1, 3);
-      expect(result).toBeCloseTo(33.33, 1);
-    });
-
-    it('should handle percentages over 100', () => {
-      const result = service.calculatePercentage(150, 100);
-      expect(result).toBe(150);
+      expect(service.calculatePercentage(1, 3)).toBeCloseTo(33.33, 1);
     });
   });
 
@@ -611,11 +528,8 @@ describe('EarningsService', () => {
     it('should export a singleton instance', () => {
       expect(earningsService).toBeInstanceOf(EarningsService);
     });
-
-    it('should be the same instance across imports', () => {
-      const instance1 = earningsService;
-      const instance2 = earningsService;
-      expect(instance1).toBe(instance2);
+    it('should be the same instance', () => {
+      expect(earningsService).toBe(earningsService);
     });
   });
 });

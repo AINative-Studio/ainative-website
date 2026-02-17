@@ -74,6 +74,8 @@ interface ChatModelResponse {
 }
 
 interface ChatModelsData {
+  object?: string;
+  data?: ChatModelResponse[];
   models?: ChatModelResponse[];
 }
 
@@ -96,7 +98,8 @@ export class ModelAggregatorService {
   async fetchChatModels(): Promise<UnifiedAIModel[]> {
     try {
       const response = await apiClient.get<ChatModelsData>('/v1/models');
-      const models = response.data.models || [];
+      // Backend returns {object: "list", data: [...]} - try data first, then models
+      const models = response.data.data || response.data.models || [];
 
       return models.map(model => this.transformChatModel(model));
     } catch (error) {

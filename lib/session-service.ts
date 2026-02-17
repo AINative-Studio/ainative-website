@@ -8,7 +8,10 @@ import apiClient from './api-client';
 // ===== Session Types =====
 export interface Session {
   id: string;
-  agent_id: string;
+  title: string;
+  description: string;
+  meta_data: Record<string, unknown>;
+  user_id: string;
   created_at: string;
   updated_at: string;
   status: 'active' | 'completed' | 'archived';
@@ -30,15 +33,15 @@ export interface SessionDetail extends Session {
 export interface SessionsListResponse {
   sessions: Session[];
   total: number;
-  page: number;
-  page_size: number;
+  skip: number;
+  limit: number;
 }
 
 export interface SessionListParams {
-  agent_id?: string;
+  user_id?: string;
   status?: 'active' | 'completed' | 'archived';
-  page?: number;
-  page_size?: number;
+  skip?: number;
+  limit?: number;
 }
 
 export interface DeleteSessionResponse {
@@ -153,8 +156,8 @@ class SessionService {
       }, {} as Record<string, string>)
     );
     const endpoint = queryParams.toString()
-      ? `/v1/public/sessions?${queryParams.toString()}`
-      : '/v1/public/sessions';
+      ? `/v1/public/chat/sessions?${queryParams.toString()}`
+      : '/v1/public/chat/sessions';
     const response = await apiClient.get<SessionsListResponse>(endpoint);
     return response.data;
   }
@@ -163,7 +166,7 @@ class SessionService {
    * Get session details by ID
    */
   async getSession(sessionId: string): Promise<SessionDetail> {
-    const response = await apiClient.get<SessionDetail>(`/v1/public/sessions/${sessionId}`);
+    const response = await apiClient.get<SessionDetail>(`/v1/public/chat/sessions/${sessionId}`);
     return response.data;
   }
 
@@ -171,79 +174,118 @@ class SessionService {
    * Delete a session
    */
   async deleteSession(sessionId: string): Promise<DeleteSessionResponse> {
-    const response = await apiClient.delete<DeleteSessionResponse>(`/v1/public/sessions/${sessionId}`);
+    const response = await apiClient.delete<DeleteSessionResponse>(`/v1/public/chat/sessions/${sessionId}`);
     return response.data;
   }
 
   // ===== Memory Endpoints =====
+  // Note: Standalone memory endpoints may not be available on all deployments.
+  // These methods return null gracefully when endpoints are unavailable,
+  // matching the pattern established in bugs #575-577.
 
   /**
    * Get memory context for a session
+   * Returns null if the endpoint is unavailable
    */
-  async getMemoryContext(params: MemoryContextParams): Promise<MemoryContextResponse> {
-    const queryParams = new URLSearchParams(
-      Object.entries(params).reduce((acc, [key, value]) => {
-        if (value !== undefined) {
-          acc[key] = String(value);
-        }
-        return acc;
-      }, {} as Record<string, string>)
-    );
-    const endpoint = `/v1/public/memory/context?${queryParams.toString()}`;
-    const response = await apiClient.get<MemoryContextResponse>(endpoint);
-    return response.data;
+  async getMemoryContext(params: MemoryContextParams): Promise<MemoryContextResponse | null> {
+    try {
+      const queryParams = new URLSearchParams(
+        Object.entries(params).reduce((acc, [key, value]) => {
+          if (value !== undefined) {
+            acc[key] = String(value);
+          }
+          return acc;
+        }, {} as Record<string, string>)
+      );
+      const endpoint = `/v1/public/memory/context?${queryParams.toString()}`;
+      const response = await apiClient.get<MemoryContextResponse>(endpoint);
+      return response.data;
+    } catch (error) {
+      console.error('Error fetching memory context:', error);
+      return null;
+    }
   }
 
   /**
    * Store new memory entry
+   * Returns null if the endpoint is unavailable
    */
-  async storeMemory(data: StoreMemoryData): Promise<StoredMemory> {
-    const response = await apiClient.post<StoredMemory>('/v1/public/memory/store', data);
-    return response.data;
+  async storeMemory(data: StoreMemoryData): Promise<StoredMemory | null> {
+    try {
+      const response = await apiClient.post<StoredMemory>('/v1/public/memory/store', data);
+      return response.data;
+    } catch (error) {
+      console.error('Error storing memory:', error);
+      return null;
+    }
   }
 
   /**
    * Search memory entries
+   * Returns null if the endpoint is unavailable
    */
-  async searchMemory(params: MemorySearchParams): Promise<MemorySearchResponse> {
-    const queryParams = new URLSearchParams();
-    queryParams.set('query', params.query);
-    if (params.session_id) {
-      queryParams.set('session_id', params.session_id);
-    }
-    queryParams.set('limit', String(params.limit));
+  async searchMemory(params: MemorySearchParams): Promise<MemorySearchResponse | null> {
+    try {
+      const queryParams = new URLSearchParams();
+      queryParams.set('query', params.query);
+      if (params.session_id) {
+        queryParams.set('session_id', params.session_id);
+      }
+      queryParams.set('limit', String(params.limit));
 
-    const endpoint = `/v1/public/memory/search?${queryParams.toString()}`;
-    const response = await apiClient.get<MemorySearchResponse>(endpoint);
-    return response.data;
+      const endpoint = `/v1/public/memory/search?${queryParams.toString()}`;
+      const response = await apiClient.get<MemorySearchResponse>(endpoint);
+      return response.data;
+    } catch (error) {
+      console.error('Error searching memory:', error);
+      return null;
+    }
   }
 
   /**
    * Delete a specific memory entry
+   * Returns null if the endpoint is unavailable
    */
-  async deleteMemory(memoryId: string): Promise<DeleteMemoryResponse> {
-    const response = await apiClient.delete<DeleteMemoryResponse>(`/v1/public/memory/${memoryId}`);
-    return response.data;
+  async deleteMemory(memoryId: string): Promise<DeleteMemoryResponse | null> {
+    try {
+      const response = await apiClient.delete<DeleteMemoryResponse>(`/v1/public/memory/${memoryId}`);
+      return response.data;
+    } catch (error) {
+      console.error('Error deleting memory:', error);
+      return null;
+    }
   }
 
   /**
    * Get memory statistics for a session
+   * Returns null if the endpoint is unavailable
    */
-  async getMemoryStats(sessionId: string): Promise<MemoryStats> {
-    const response = await apiClient.get<MemoryStats>(
-      `/v1/public/memory/stats?session_id=${sessionId}`
-    );
-    return response.data;
+  async getMemoryStats(sessionId: string): Promise<MemoryStats | null> {
+    try {
+      const response = await apiClient.get<MemoryStats>(
+        `/v1/public/memory/stats?session_id=${sessionId}`
+      );
+      return response.data;
+    } catch (error) {
+      console.error('Error fetching memory stats:', error);
+      return null;
+    }
   }
 
   /**
    * Clear all memory for a session
+   * Returns null if the endpoint is unavailable
    */
-  async clearSessionMemory(sessionId: string): Promise<ClearMemoryResponse> {
-    const response = await apiClient.delete<ClearMemoryResponse>(
-      `/v1/public/sessions/${sessionId}/memory`
-    );
-    return response.data;
+  async clearSessionMemory(sessionId: string): Promise<ClearMemoryResponse | null> {
+    try {
+      const response = await apiClient.delete<ClearMemoryResponse>(
+        `/v1/public/chat/sessions/${sessionId}/memory`
+      );
+      return response.data;
+    } catch (error) {
+      console.error('Error clearing session memory:', error);
+      return null;
+    }
   }
 }
 

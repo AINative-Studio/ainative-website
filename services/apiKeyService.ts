@@ -15,6 +15,8 @@ export interface ApiKey {
   created: string;
   lastUsed: string;
   status: 'active' | 'inactive';
+  usageCount: number;
+  expiresAt: string | null;
 }
 
 /**
@@ -44,6 +46,8 @@ function transformApiKey(apiKey: ApiKeyResponse): ApiKey {
       ? new Date(apiKey.last_used_at).toLocaleDateString()
       : 'Never',
     status: apiKey.is_active ? 'active' : 'inactive',
+    usageCount: apiKey.usage_count ?? 0,
+    expiresAt: apiKey.expires_at ?? null,
   };
 }
 
@@ -91,7 +95,7 @@ export interface UpdateApiKeyRequest {
  * ApiKeyService provides methods for managing API keys
  */
 export class ApiKeyService {
-  private readonly basePath = '/v1/settings/api-keys';
+  private readonly basePath = '/v1/public/settings/api-keys';
 
   /**
    * Get all API keys for the current user
@@ -144,7 +148,7 @@ export class ApiKeyService {
         api_key?: string;
         key?: string;
         id: string;
-      }>(this.basePath, { name });
+      }>(`${this.basePath}`, { name });
 
       const data = response.data;
       return {
@@ -211,6 +215,7 @@ export class ApiKeyService {
    * @throws Error if the request fails or returns unsuccessful
    */
   async updateApiKey(id: string, updates: UpdateApiKeyRequest): Promise<ApiKey> {
+    console.warn('updateApiKey: PUT endpoint may not be available in the backend');
     try {
       const response = await apiClient.put<ApiKey>(
         `${this.basePath}/${id}`,
@@ -231,6 +236,7 @@ export class ApiKeyService {
    * @throws Error if the request fails or returns unsuccessful
    */
   async getApiKeyUsage(id: string): Promise<ApiKeyUsageStats> {
+    console.warn('getApiKeyUsage: usage endpoint may not be available in the backend');
     try {
       const response = await apiClient.get<ApiKeyUsageStats>(
         `${this.basePath}/${id}/usage`

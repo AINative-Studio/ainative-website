@@ -16,7 +16,7 @@ interface ApiResponse<T> {
 }
 
 /**
- * Dashboard quick stats from /v1/dashboard/quick-stats
+ * Dashboard quick stats from /v1/public/dashboard/quick-stats
  */
 export interface DashboardQuickStats {
   total_requests: number;
@@ -32,7 +32,7 @@ export interface DashboardQuickStats {
 }
 
 /**
- * Dashboard overview from /v1/dashboard/overview
+ * Dashboard overview from /v1/public/dashboard/overview
  */
 export interface DashboardOverview {
   stats: DashboardQuickStats;
@@ -60,7 +60,7 @@ export interface DashboardOverview {
 }
 
 /**
- * Dashboard analytics from /v1/dashboard/analytics
+ * Dashboard analytics from /v1/public/dashboard/analytics
  */
 export interface DashboardAnalytics {
   usage_trends: {
@@ -209,7 +209,7 @@ export interface APIUsageResponse {
  * Provides methods to fetch dashboard data, Kong metrics, system health, and usage data
  */
 export class DashboardService {
-  private readonly dashboardPath = '/v1/dashboard';
+  private readonly dashboardPath = '/v1/public/dashboard';
   private readonly publicPath = '/v1/public';
 
   /**
@@ -302,16 +302,25 @@ export class DashboardService {
    */
   async getAiUsageCosts(): Promise<AiUsageCosts | null> {
     try {
-      const response = await apiClient.get<ApiResponse<AiUsageCosts>>(
+      const response = await apiClient.get<ApiResponse<AiUsageCosts> | AiUsageCosts>(
         `${this.publicPath}/ai-usage/costs`
       );
 
-      if (!response.data.success || !response.data.data) {
-        console.warn('AI usage costs returned unsuccessful:', response.data.message);
-        return null;
+      const data = response.data;
+
+      // Handle wrapped format: {success, data: AiUsageCosts}
+      if ('success' in data && 'data' in data) {
+        const wrapped = data as ApiResponse<AiUsageCosts>;
+        if (!wrapped.success || !wrapped.data) return null;
+        return wrapped.data;
       }
 
-      return response.data.data;
+      // Handle flat format: {total_cost, currency, breakdown, ...}
+      if ('total_cost' in data) {
+        return data as AiUsageCosts;
+      }
+
+      return null;
     } catch (error) {
       console.error('Failed to fetch AI usage costs:', error);
       return null;

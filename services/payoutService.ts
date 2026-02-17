@@ -1,6 +1,18 @@
 /**
  * Payout Service
- * Handles developer payouts, Stripe Connect integration, tax forms, and payout settings
+ * Handles developer payouts, payment methods, and payout settings
+ *
+ * Endpoint mapping (Fixes #587):
+ *   - Payment methods (GET):  GET  /v1/public/billing/payment-methods
+ *   - Payment methods (POST): POST /v1/public/billing/payment-methods
+ *   - Bank accounts (DELETE): DELETE /v1/public/payments/bank-accounts/{account_id}
+ *   - Transactions/payouts:   GET  /v1/public/payments/transactions
+ *   - Wallet balance:         GET  /v1/public/payments/wallets/me/balance
+ *   - Withdraw:               POST /v1/public/payments/withdraw
+ *   - Stripe Connect:         No backend endpoint (returns null)
+ *   - Auto-payout settings:   No backend endpoint (returns null)
+ *   - Tax forms:              No backend endpoint (returns [])
+ *   - Notification prefs:     No backend endpoint (returns null)
  */
 
 import apiClient from '@/lib/api-client';
@@ -147,10 +159,14 @@ export interface PayoutBalance {
 
 /**
  * Payout Service Class
- * Manages developer payouts, Stripe Connect, tax forms, and settings
+ * Manages developer payouts, payment methods, and settings
  */
 export class PayoutService {
-  private readonly basePath = '/v1/public/developer/payouts';
+  private readonly paymentMethodsPath = '/v1/public/billing/payment-methods';
+  private readonly transactionsPath = '/v1/public/payments/transactions';
+  private readonly walletBalancePath = '/v1/public/payments/wallets/me/balance';
+  private readonly bankAccountsPath = '/v1/public/payments/bank-accounts';
+  private readonly withdrawPath = '/v1/public/payments/withdraw';
 
   // ==========================================================================
   // Stripe Connect Methods
@@ -158,62 +174,30 @@ export class PayoutService {
 
   /**
    * Get Stripe Connect account status
+   * No equivalent API endpoint exists — returns null gracefully
    */
   async getStripeConnectStatus(): Promise<StripeConnectStatus | null> {
-    try {
-      const response = await apiClient.get<ApiResponse<StripeConnectStatus>>(
-        `${this.basePath}/connect/status`
-      );
-
-      if (!response.data.success || !response.data.data) {
-        return null;
-      }
-
-      return response.data.data;
-    } catch (error) {
-      console.error('Failed to fetch Stripe Connect status:', error);
-      return null;
-    }
+    // Endpoint /v1/public/developer/payouts/connect/status does not exist in the API.
+    // Return null until a backend endpoint is implemented.
+    return null;
   }
 
   /**
    * Create Stripe Connect account link for onboarding
+   * No equivalent API endpoint exists — returns null gracefully
    */
   async createConnectAccountLink(): Promise<{ url: string } | null> {
-    try {
-      const response = await apiClient.post<ApiResponse<{ url: string }>>(
-        `${this.basePath}/connect/account-link`
-      );
-
-      if (!response.data.success || !response.data.data) {
-        return null;
-      }
-
-      return response.data.data;
-    } catch (error) {
-      console.error('Failed to create Stripe Connect account link:', error);
-      return null;
-    }
+    // No backend endpoint available.
+    return null;
   }
 
   /**
    * Create Stripe Connect dashboard link
+   * No equivalent API endpoint exists — returns null gracefully
    */
   async createConnectDashboardLink(): Promise<{ url: string } | null> {
-    try {
-      const response = await apiClient.post<ApiResponse<{ url: string }>>(
-        `${this.basePath}/connect/dashboard-link`
-      );
-
-      if (!response.data.success || !response.data.data) {
-        return null;
-      }
-
-      return response.data.data;
-    } catch (error) {
-      console.error('Failed to create Stripe Connect dashboard link:', error);
-      return null;
-    }
+    // No backend endpoint available.
+    return null;
   }
 
   // ==========================================================================
@@ -222,26 +206,45 @@ export class PayoutService {
 
   /**
    * Get all connected payment methods
+   * Maps to GET /v1/public/billing/payment-methods
    */
   async getPaymentMethods(): Promise<ConnectedPaymentMethod[]> {
     try {
       const response = await apiClient.get<
-        ApiResponse<{ payment_methods: ConnectedPaymentMethod[] }>
-      >(`${this.basePath}/payment-methods`);
+        ConnectedPaymentMethod[] | ApiResponse<ConnectedPaymentMethod[]> | ApiResponse<{ payment_methods: ConnectedPaymentMethod[] }>
+      >(this.paymentMethodsPath);
 
-      if (!response.data.success || !response.data.data?.payment_methods) {
-        return [];
+      const data = response.data;
+
+      // Handle wrapped {success, data} response format
+      if (data && typeof data === 'object' && 'success' in data && 'data' in data) {
+        const inner = (data as ApiResponse<ConnectedPaymentMethod[] | { payment_methods: ConnectedPaymentMethod[] }>).data;
+        if (!inner) return [];
+        // Handle nested { payment_methods: [...] } format
+        if ('payment_methods' in inner) {
+          return (inner as { payment_methods: ConnectedPaymentMethod[] }).payment_methods || [];
+        }
+        // Handle direct array format
+        return Array.isArray(inner) ? inner : [];
       }
 
-      return response.data.data.payment_methods;
-    } catch (error) {
-      console.error('Failed to fetch payment methods:', error);
+      // Handle raw array response
+      if (Array.isArray(data)) {
+        return data;
+      }
+
+      return [];
+    } catch (error: unknown) {
+      const errorMessage =
+        error instanceof Error ? error.message : 'Failed to fetch payment methods';
+      console.error('Failed to fetch payment methods:', errorMessage);
       return [];
     }
   }
 
   /**
    * Add a new payment method
+   * Maps to POST /v1/public/billing/payment-methods
    * @param methodDetails - Payment method details
    */
   async addPaymentMethod(methodDetails: {
@@ -250,20 +253,25 @@ export class PayoutService {
     debit_card_token?: string;
   }): Promise<OperationResult> {
     try {
-      const response = await apiClient.post<
-        ApiResponse<{ payment_method: ConnectedPaymentMethod }>
-      >(`${this.basePath}/payment-methods`, methodDetails);
+      const response = await apiClient.post<ApiResponse<{ payment_method: ConnectedPaymentMethod }>>(
+        this.paymentMethodsPath,
+        methodDetails
+      );
 
-      if (!response.data.success) {
+      const data = response.data;
+
+      if (data && typeof data === 'object' && 'success' in data && !data.success) {
         return {
           success: false,
-          message: response.data.message || 'Failed to add payment method',
+          message: (data as ApiResponse<unknown>).message || 'Failed to add payment method',
         };
       }
 
       return { success: true, message: 'Payment method added successfully' };
-    } catch (error) {
-      console.error('Failed to add payment method:', error);
+    } catch (error: unknown) {
+      const errorMessage =
+        error instanceof Error ? error.message : 'Failed to add payment method';
+      console.error('Failed to add payment method:', errorMessage);
       return {
         success: false,
         message: 'Failed to add payment method. Please try again.',
@@ -273,24 +281,29 @@ export class PayoutService {
 
   /**
    * Remove a payment method
+   * Maps to DELETE /v1/public/payments/bank-accounts/{account_id}
    * @param methodId - Payment method ID to remove
    */
   async removePaymentMethod(methodId: string): Promise<OperationResult> {
     try {
       const response = await apiClient.delete<ApiResponse<{ success: boolean }>>(
-        `${this.basePath}/payment-methods/${methodId}`
+        `${this.bankAccountsPath}/${methodId}`
       );
 
-      if (!response.data.success) {
+      const data = response.data;
+
+      if (data && typeof data === 'object' && 'success' in data && !data.success) {
         return {
           success: false,
-          message: response.data.message || 'Failed to remove payment method',
+          message: (data as ApiResponse<unknown>).message || 'Failed to remove payment method',
         };
       }
 
       return { success: true, message: 'Payment method removed successfully' };
-    } catch (error) {
-      console.error('Failed to remove payment method:', error);
+    } catch (error: unknown) {
+      const errorMessage =
+        error instanceof Error ? error.message : 'Failed to remove payment method';
+      console.error('Failed to remove payment method:', errorMessage);
       return {
         success: false,
         message: 'Failed to remove payment method. Please try again.',
@@ -300,29 +313,15 @@ export class PayoutService {
 
   /**
    * Set default payment method
+   * No equivalent API endpoint exists — returns failure gracefully
    * @param methodId - Payment method ID to set as default
    */
-  async setDefaultPaymentMethod(methodId: string): Promise<OperationResult> {
-    try {
-      const response = await apiClient.put<ApiResponse<{ success: boolean }>>(
-        `${this.basePath}/payment-methods/${methodId}/default`
-      );
-
-      if (!response.data.success) {
-        return {
-          success: false,
-          message: response.data.message || 'Failed to set default payment method',
-        };
-      }
-
-      return { success: true, message: 'Default payment method updated' };
-    } catch (error) {
-      console.error('Failed to set default payment method:', error);
-      return {
-        success: false,
-        message: 'Failed to set default payment method. Please try again.',
-      };
-    }
+  async setDefaultPaymentMethod(_methodId: string): Promise<OperationResult> {
+    // No backend endpoint available for setting default payment method.
+    return {
+      success: false,
+      message: 'Setting default payment method is not yet supported.',
+    };
   }
 
   // ==========================================================================
@@ -331,6 +330,7 @@ export class PayoutService {
 
   /**
    * Get payout history
+   * Maps to GET /v1/public/payments/transactions
    * @param params - Optional filter parameters
    */
   async getPayouts(params?: {
@@ -338,83 +338,109 @@ export class PayoutService {
     starting_after?: string;
   }): Promise<Payout[]> {
     try {
-      const response = await apiClient.get<
-        ApiResponse<{ payouts: Payout[]; has_more: boolean }>
-      >(`${this.basePath}`, { params });
+      const queryParams = new URLSearchParams();
+      if (params?.limit) queryParams.append('limit', params.limit.toString());
+      if (params?.starting_after) queryParams.append('starting_after', params.starting_after);
 
-      if (!response.data.success || !response.data.data?.payouts) {
-        return [];
+      const url = `${this.transactionsPath}${queryParams.toString() ? `?${queryParams.toString()}` : ''}`;
+
+      const response = await apiClient.get<
+        Payout[] | ApiResponse<Payout[]> | ApiResponse<{ payouts: Payout[] }>
+      >(url);
+
+      const data = response.data;
+
+      // Handle wrapped {success, data} response format
+      if (data && typeof data === 'object' && !Array.isArray(data) && 'success' in data && 'data' in data) {
+        const inner = (data as ApiResponse<Payout[] | { payouts: Payout[] }>).data;
+        if (!inner) return [];
+        if ('payouts' in inner) {
+          return (inner as { payouts: Payout[] }).payouts || [];
+        }
+        return Array.isArray(inner) ? inner : [];
       }
 
-      return response.data.data.payouts;
-    } catch (error) {
-      console.error('Failed to fetch payouts:', error);
+      // Handle raw array or object with transactions field
+      if (Array.isArray(data)) {
+        return data;
+      }
+
+      const raw = data as Record<string, unknown>;
+      if (raw.transactions) {
+        return raw.transactions as Payout[];
+      }
+
+      return [];
+    } catch (error: unknown) {
+      const errorMessage =
+        error instanceof Error ? error.message : 'Failed to fetch payouts';
+      console.error('Failed to fetch payouts:', errorMessage);
       return [];
     }
   }
 
   /**
    * Get a specific payout by ID
+   * No dedicated endpoint — returns null gracefully
    * @param payoutId - Payout ID to retrieve
    */
-  async getPayoutById(payoutId: string): Promise<Payout | null> {
-    try {
-      const response = await apiClient.get<ApiResponse<Payout>>(
-        `${this.basePath}/${payoutId}`
-      );
-
-      if (!response.data.success || !response.data.data) {
-        return null;
-      }
-
-      return response.data.data;
-    } catch (error) {
-      console.error(`Failed to fetch payout ${payoutId}:`, error);
-      return null;
-    }
+  async getPayoutById(_payoutId: string): Promise<Payout | null> {
+    // No individual payout endpoint exists in the API.
+    return null;
   }
 
   /**
    * Get payout balance
+   * Maps to GET /v1/public/payments/wallets/me/balance
    */
   async getPayoutBalance(): Promise<PayoutBalance | null> {
     try {
-      const response = await apiClient.get<ApiResponse<PayoutBalance>>(
-        `${this.basePath}/balance`
+      const response = await apiClient.get<PayoutBalance | ApiResponse<PayoutBalance>>(
+        this.walletBalancePath
       );
 
-      if (!response.data.success || !response.data.data) {
-        return null;
+      const data = response.data;
+
+      // Handle wrapped {success, data} response format
+      if (data && typeof data === 'object' && 'success' in data && 'data' in data) {
+        return (data as ApiResponse<PayoutBalance>).data || null;
       }
 
-      return response.data.data;
-    } catch (error) {
-      console.error('Failed to fetch payout balance:', error);
+      return data as PayoutBalance;
+    } catch (error: unknown) {
+      const errorMessage =
+        error instanceof Error ? error.message : 'Failed to fetch payout balance';
+      console.error('Failed to fetch payout balance:', errorMessage);
       return null;
     }
   }
 
   /**
    * Request manual payout
+   * Maps to POST /v1/public/payments/withdraw
    * @param amount - Amount to payout in cents
    */
   async requestPayout(amount: number): Promise<OperationResult> {
     try {
       const response = await apiClient.post<ApiResponse<{ payout: Payout }>>(
-        `${this.basePath}/request`,
+        this.withdrawPath,
         { amount }
       );
 
-      if (!response.data.success) {
+      const data = response.data;
+
+      if (data && typeof data === 'object' && 'success' in data && !data.success) {
         return {
           success: false,
-          message: response.data.message || 'Failed to request payout',
+          message: (data as ApiResponse<unknown>).message || 'Failed to request payout',
         };
       }
 
       return { success: true, message: 'Payout requested successfully' };
-    } catch (error) {
-      console.error('Failed to request payout:', error);
+    } catch (error: unknown) {
+      const errorMessage =
+        error instanceof Error ? error.message : 'Failed to request payout';
+      console.error('Failed to request payout:', errorMessage);
       return {
         success: false,
         message: 'Failed to request payout. Please try again.',
@@ -428,54 +454,26 @@ export class PayoutService {
 
   /**
    * Get automatic payout settings
+   * No equivalent API endpoint exists — returns null gracefully
    */
   async getAutoPayoutSettings(): Promise<AutoPayoutSettings | null> {
-    try {
-      const response = await apiClient.get<
-        ApiResponse<{ settings: AutoPayoutSettings }>
-      >(`${this.basePath}/settings/auto`);
-
-      if (!response.data.success || !response.data.data?.settings) {
-        return null;
-      }
-
-      return response.data.data.settings;
-    } catch (error) {
-      console.error('Failed to fetch auto-payout settings:', error);
-      return null;
-    }
+    // No backend endpoint available.
+    return null;
   }
 
   /**
    * Update automatic payout settings
-   * @param settings - New auto-payout settings
+   * No equivalent API endpoint exists — returns failure gracefully
+   * @param _settings - New auto-payout settings
    */
   async updateAutoPayoutSettings(
-    settings: AutoPayoutSettings
+    _settings: AutoPayoutSettings
   ): Promise<OperationResult> {
-    try {
-      const response = await apiClient.put<
-        ApiResponse<{ settings: AutoPayoutSettings }>
-      >(`${this.basePath}/settings/auto`, settings);
-
-      if (!response.data.success) {
-        return {
-          success: false,
-          message: response.data.message || 'Failed to update auto-payout settings',
-        };
-      }
-
-      return {
-        success: true,
-        message: 'Auto-payout settings updated successfully',
-      };
-    } catch (error) {
-      console.error('Failed to update auto-payout settings:', error);
-      return {
-        success: false,
-        message: 'Failed to update auto-payout settings. Please try again.',
-      };
-    }
+    // No backend endpoint available.
+    return {
+      success: false,
+      message: 'Auto-payout settings are not yet supported.',
+    };
   }
 
   // ==========================================================================
@@ -484,87 +482,40 @@ export class PayoutService {
 
   /**
    * Get all tax forms
+   * No equivalent API endpoint exists — returns empty array gracefully
    */
   async getTaxForms(): Promise<TaxForm[]> {
-    try {
-      const response = await apiClient.get<
-        ApiResponse<{ forms: TaxForm[] }>
-      >(`${this.basePath}/tax-forms`);
-
-      if (!response.data.success || !response.data.data?.forms) {
-        return [];
-      }
-
-      return response.data.data.forms;
-    } catch (error) {
-      console.error('Failed to fetch tax forms:', error);
-      return [];
-    }
+    // No backend endpoint available.
+    return [];
   }
 
   /**
    * Upload a tax form
-   * @param formType - Type of tax form
-   * @param year - Tax year
-   * @param file - File to upload
+   * No equivalent API endpoint exists — returns failure gracefully
+   * @param _formType - Type of tax form
+   * @param _year - Tax year
+   * @param _file - File to upload
    */
   async uploadTaxForm(
-    formType: TaxFormType,
-    year: number,
-    file: File
+    _formType: TaxFormType,
+    _year: number,
+    _file: File
   ): Promise<OperationResult> {
-    try {
-      const formData = new FormData();
-      formData.append('file', file);
-      formData.append('type', formType);
-      formData.append('year', year.toString());
-
-      const response = await apiClient.post<ApiResponse<{ form: TaxForm }>>(
-        `${this.basePath}/tax-forms`,
-        formData,
-        {
-          headers: {
-            'Content-Type': 'multipart/form-data',
-          },
-        }
-      );
-
-      if (!response.data.success) {
-        return {
-          success: false,
-          message: response.data.message || 'Failed to upload tax form',
-        };
-      }
-
-      return { success: true, message: 'Tax form uploaded successfully' };
-    } catch (error) {
-      console.error('Failed to upload tax form:', error);
-      return {
-        success: false,
-        message: 'Failed to upload tax form. Please try again.',
-      };
-    }
+    // No backend endpoint available.
+    return {
+      success: false,
+      message: 'Tax form upload is not yet supported.',
+    };
   }
 
   /**
    * Download a tax form
-   * @param formId - Tax form ID
+   * No equivalent API endpoint exists — returns null gracefully
+   * @param _formId - Tax form ID
    */
-  async downloadTaxForm(formId: string): Promise<string | null> {
-    try {
-      const response = await apiClient.get<ApiResponse<{ url: string }>>(
-        `${this.basePath}/tax-forms/${formId}/download`
-      );
-
-      if (!response.data.success || !response.data.data?.url) {
-        return null;
-      }
-
-      return response.data.data.url;
-    } catch (error) {
-      console.error('Failed to download tax form:', error);
-      return null;
-    }
+  async downloadTaxForm(_formId: string): Promise<string | null> {
+    // No backend endpoint available.
+    return null;
   }
 
   // ==========================================================================
@@ -573,54 +524,26 @@ export class PayoutService {
 
   /**
    * Get notification preferences
+   * No equivalent API endpoint exists — returns null gracefully
    */
   async getNotificationPreferences(): Promise<PayoutNotificationPreferences | null> {
-    try {
-      const response = await apiClient.get<
-        ApiResponse<{ preferences: PayoutNotificationPreferences }>
-      >(`${this.basePath}/settings/notifications`);
-
-      if (!response.data.success || !response.data.data?.preferences) {
-        return null;
-      }
-
-      return response.data.data.preferences;
-    } catch (error) {
-      console.error('Failed to fetch notification preferences:', error);
-      return null;
-    }
+    // No backend endpoint available.
+    return null;
   }
 
   /**
    * Update notification preferences
-   * @param preferences - New notification preferences
+   * No equivalent API endpoint exists — returns failure gracefully
+   * @param _preferences - New notification preferences
    */
   async updateNotificationPreferences(
-    preferences: PayoutNotificationPreferences
+    _preferences: PayoutNotificationPreferences
   ): Promise<OperationResult> {
-    try {
-      const response = await apiClient.put<
-        ApiResponse<{ preferences: PayoutNotificationPreferences }>
-      >(`${this.basePath}/settings/notifications`, preferences);
-
-      if (!response.data.success) {
-        return {
-          success: false,
-          message: response.data.message || 'Failed to update notification preferences',
-        };
-      }
-
-      return {
-        success: true,
-        message: 'Notification preferences updated successfully',
-      };
-    } catch (error) {
-      console.error('Failed to update notification preferences:', error);
-      return {
-        success: false,
-        message: 'Failed to update notification preferences. Please try again.',
-      };
-    }
+    // No backend endpoint available.
+    return {
+      success: false,
+      message: 'Notification preferences are not yet supported.',
+    };
   }
 
   // ==========================================================================

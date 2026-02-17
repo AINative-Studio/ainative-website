@@ -27,25 +27,20 @@ describe('AgentSwarmService', () => {
   });
 
   describe('healthCheck', () => {
-    it('should check agent swarm health status', async () => {
-      const mockResponse = {
-        status: 'healthy',
-        message: 'Agent swarm module is operational',
-      };
-
+    it('should report healthy when /projects endpoint responds', async () => {
       mockApiClient.get.mockResolvedValueOnce({
-        data: mockResponse,
+        data: { projects: [] },
         status: 200,
         statusText: 'OK',
       });
 
       const result = await agentSwarmService.healthCheck();
 
-      expect(mockApiClient.get).toHaveBeenCalledWith('/v1/public/agent-swarms/health');
-      expect(result).toEqual(mockResponse);
+      expect(mockApiClient.get).toHaveBeenCalledWith('/v1/public/agent-swarms/projects');
+      expect(result.status).toBe('healthy');
     });
 
-    it('should handle health check errors', async () => {
+    it('should throw when /projects endpoint fails', async () => {
       mockApiClient.get.mockRejectedValueOnce(new Error('Service unavailable'));
 
       await expect(agentSwarmService.healthCheck()).rejects.toThrow('Service unavailable');

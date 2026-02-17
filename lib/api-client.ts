@@ -16,6 +16,7 @@ import { authService } from '@/services/authService';
 
 interface RequestConfig extends RequestInit {
   timeout?: number;
+  responseType?: 'json' | 'blob' | 'text';
   _isRetry?: boolean; // Internal flag to prevent infinite retry loops
 }
 
@@ -127,7 +128,7 @@ class ApiClient {
     endpoint: string,
     config: RequestConfig = {}
   ): Promise<ApiResponse<T>> {
-    const { timeout = this.timeout, ...fetchConfig } = config;
+    const { timeout = this.timeout, responseType, _isRetry, ...fetchConfig } = config;
 
     const url = endpoint.startsWith('http') ? endpoint : `${this.baseUrl}${endpoint}`;
 
@@ -162,11 +163,27 @@ class ApiClient {
 
       clearTimeout(timeoutId);
 
-      const data = await response.json();
+      // Parse response based on responseType
+      let data: unknown;
+      if (responseType === 'blob') {
+        data = await response.blob();
+      } else if (responseType === 'text') {
+        data = await response.text();
+      } else {
+        data = await response.json();
+      }
 
       // Handle 401 unauthorized with automatic token refresh
-      if (response.status === 401) {
-        console.warn('🔒 [ApiClient] Received 401 Unauthorized for:', endpoint);
+      // Also detect 500 responses that wrap a 401 auth error from the backend
+      const is401 = response.status === 401;
+      const is500Wrapping401 = response.status === 500
+        && typeof data === 'object' && data !== null
+        && 'detail' in data
+        && typeof (data as Record<string, unknown>).detail === 'string'
+        && ((data as Record<string, string>).detail.includes('401') || (data as Record<string, string>).detail.includes('No authentication credentials'));
+
+      if (is401 || is500Wrapping401) {
+        console.warn('🔒 [ApiClient] Received', response.status, 'auth error for:', endpoint);
         return this.handle401Error<T>(endpoint, config);
       }
 

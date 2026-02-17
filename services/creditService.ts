@@ -113,15 +113,32 @@ export class CreditService {
    */
   async getCreditBalance(): Promise<CreditBalance | null> {
     try {
-      const response = await apiClient.get<ApiResponse<{ balance: CreditBalance }>>(
-        `${this.basePath}/balance`
-      );
+      const response = await apiClient.get<
+        | ApiResponse<{ balance: CreditBalance }>
+        | { total_credits: number; used_credits: number; remaining_credits: string | number; plan: string; period_start: string; period_end: string; usage_percentage: number }
+      >(`${this.basePath}/balance`);
 
-      if (!response.data.success || !response.data.data?.balance) {
-        throw new Error(response.data.message || 'Failed to fetch credit balance');
+      const data = response.data;
+
+      // Handle wrapped format: {success, data: {balance: {...}}}
+      if ('success' in data && data.success && 'data' in data) {
+        const wrapped = data as ApiResponse<{ balance: CreditBalance }>;
+        if (wrapped.data?.balance) return wrapped.data.balance;
       }
 
-      return response.data.data.balance;
+      // Handle flat format: {total_credits, used_credits, remaining_credits, ...}
+      if ('total_credits' in data) {
+        const flat = data as { total_credits: number; used_credits: number; remaining_credits: string | number; period_end?: string };
+        return {
+          available: Number(flat.remaining_credits) || 0,
+          used: flat.used_credits || 0,
+          total: flat.total_credits || 0,
+          currency: 'USD',
+          next_reset_date: flat.period_end,
+        };
+      }
+
+      return null;
     } catch (error) {
       console.error('Error fetching credit balance:', error);
       return null;
@@ -154,7 +171,7 @@ export class CreditService {
       >(endpoint);
 
       if (!response.data.success) {
-        throw new Error(response.data.message || 'Failed to fetch transaction history');
+        return null;
       }
 
       return response.data.data;
@@ -174,13 +191,13 @@ export class CreditService {
       );
 
       if (!response.data.success || !response.data.data?.packages) {
-        throw new Error(response.data.message || 'Failed to fetch credit packages');
+        return [];
       }
 
       return response.data.data.packages;
     } catch (error) {
       console.error('Error fetching credit packages:', error);
-      throw error;
+      return [];
     }
   }
 
@@ -225,30 +242,25 @@ export class CreditService {
       const response = await apiClient.get<ApiResponse<CreditBalanceResponse>>(`${this.basePath}/balance`);
 
       if (!response.data.success || !response.data.data) {
-        throw new Error(response.data.message || 'Failed to fetch credits information');
+        return {
+          base_used: 0,
+          base_quota: 0,
+          add_on_used: 0,
+          add_on_quota: 0,
+          next_refresh: new Date().toISOString(),
+        };
       }
 
-      console.log('Credits data fetched successfully');
       return response.data.data;
     } catch (error: unknown) {
       console.error('Error fetching credits information:', error);
-
-      // Enhanced error logging with more context
-      if (error instanceof Error) {
-        if (error.message === 'Network Error') {
-          console.warn('This appears to be a CORS or network connectivity issue');
-        }
-      }
-
-      // Check for response status if available
-      const errorWithResponse = error as { response?: { status?: number } };
-      if (errorWithResponse?.response?.status === 404) {
-        console.warn('Credits endpoint not found - check API route configuration');
-      } else if (errorWithResponse?.response?.status === 401) {
-        console.warn('Authentication failed when fetching credits');
-      }
-
-      throw error;
+      return {
+        base_used: 0,
+        base_quota: 0,
+        add_on_used: 0,
+        add_on_quota: 0,
+        next_refresh: new Date().toISOString(),
+      };
     }
   }
 
@@ -295,7 +307,7 @@ export class CreditService {
       );
 
       if (!response.data.success || !response.data.data?.auto_refill) {
-        throw new Error(response.data.message || 'Failed to fetch auto-refill settings');
+        return null;
       }
 
       return response.data.data.auto_refill;

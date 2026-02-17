@@ -2,6 +2,13 @@
  * Earnings Service
  * Handles developer earnings, transactions, and payout information
  * Follows AINative service patterns
+ *
+ * Endpoint mapping (Fixes #585):
+ *   - Wallet/overview: GET /v1/public/payments/wallets/me
+ *   - Transactions:    GET /v1/public/payments/transactions
+ *   - Export:          GET /v1/public/payments/transactions/export
+ *   - Breakdown:       No backend endpoint (returns null)
+ *   - Payout schedule: No backend endpoint (returns null)
  */
 
 import apiClient from '@/lib/api-client';
@@ -116,32 +123,38 @@ export type ExportFormat = 'csv' | 'pdf' | 'json';
  * Manages developer earnings, transactions, and payout information
  */
 export class EarningsService {
-  private readonly basePath = '/v1/public/developer/earnings';
+  private readonly walletPath = '/v1/public/payments/wallets/me';
+  private readonly transactionsPath = '/v1/public/payments/transactions';
 
   /**
    * Get earnings overview summary
+   * Maps to GET /v1/public/payments/wallets/me
    */
   async getEarningsOverview(): Promise<EarningsOverview | null> {
     try {
-      const response = await apiClient.get<ApiResponse<EarningsOverview>>(
-        `${this.basePath}/overview`
+      const response = await apiClient.get<EarningsOverview | ApiResponse<EarningsOverview>>(
+        this.walletPath
       );
 
-      if (!response.data.success || !response.data.data) {
-        throw new Error(response.data.message || 'Failed to fetch earnings overview');
+      const data = response.data;
+
+      // Handle both wrapped {success, data} and raw response formats
+      if ('success' in data && 'data' in data) {
+        return (data as ApiResponse<EarningsOverview>).data || null;
       }
 
-      return response.data.data;
+      return data as EarningsOverview;
     } catch (error: unknown) {
       const errorMessage =
         error instanceof Error ? error.message : 'Failed to fetch earnings overview';
       console.error('Error fetching earnings overview:', errorMessage);
-      throw new Error(errorMessage);
+      return null;
     }
   }
 
   /**
    * Get paginated transactions
+   * Maps to GET /v1/public/payments/transactions
    * @param params - Query parameters for filtering and pagination
    */
   async getTransactions(params: TransactionQueryParams = {}): Promise<PaginatedTransactions> {
@@ -149,75 +162,62 @@ export class EarningsService {
       const queryParams = new URLSearchParams();
 
       if (params.page) queryParams.append('page', params.page.toString());
-      if (params.pageSize) queryParams.append('pageSize', params.pageSize.toString());
+      if (params.pageSize) queryParams.append('page_size', params.pageSize.toString());
       if (params.source) queryParams.append('source', params.source);
       if (params.status) queryParams.append('status', params.status);
       if (params.startDate) queryParams.append('startDate', params.startDate);
       if (params.endDate) queryParams.append('endDate', params.endDate);
 
-      const url = `${this.basePath}/transactions${queryParams.toString() ? `?${queryParams.toString()}` : ''}`;
+      const url = `${this.transactionsPath}${queryParams.toString() ? `?${queryParams.toString()}` : ''}`;
 
-      const response = await apiClient.get<ApiResponse<PaginatedTransactions>>(url);
+      const response = await apiClient.get<PaginatedTransactions | ApiResponse<PaginatedTransactions>>(url);
 
-      if (!response.data.success || !response.data.data) {
-        throw new Error(response.data.message || 'Failed to fetch transactions');
+      const data = response.data;
+
+      // Handle both wrapped {success, data} and raw response formats
+      if ('success' in data && 'data' in data) {
+        return (data as ApiResponse<PaginatedTransactions>).data || { items: [], total: 0, page: 1, pageSize: 50 };
       }
 
-      return response.data.data;
+      // Raw response may use 'transactions' instead of 'items' and 'page_size' instead of 'pageSize'
+      const raw = data as Record<string, unknown>;
+      return {
+        items: (raw.transactions || raw.items || []) as Transaction[],
+        total: (raw.total || 0) as number,
+        page: (raw.page || 1) as number,
+        pageSize: (raw.page_size || raw.pageSize || 50) as number,
+      };
     } catch (error: unknown) {
       const errorMessage =
         error instanceof Error ? error.message : 'Failed to fetch transactions';
       console.error('Error fetching transactions:', errorMessage);
-      throw new Error(errorMessage);
+      return { items: [], total: 0, page: 1, pageSize: 50 };
     }
   }
 
   /**
    * Get earnings breakdown by source
+   * No equivalent API endpoint exists — returns null gracefully
    */
   async getEarningsBreakdown(): Promise<EarningsBreakdown | null> {
-    try {
-      const response = await apiClient.get<ApiResponse<EarningsBreakdown>>(
-        `${this.basePath}/breakdown`
-      );
-
-      if (!response.data.success || !response.data.data) {
-        throw new Error(response.data.message || 'Failed to fetch earnings breakdown');
-      }
-
-      return response.data.data;
-    } catch (error: unknown) {
-      const errorMessage =
-        error instanceof Error ? error.message : 'Failed to fetch earnings breakdown';
-      console.error('Error fetching earnings breakdown:', errorMessage);
-      throw new Error(errorMessage);
-    }
+    // Endpoint /v1/public/developer/earnings/breakdown does not exist in the API.
+    // Return null until a backend endpoint is implemented.
+    return null;
   }
 
   /**
    * Get payout schedule information
+   * No equivalent API endpoint exists — returns null gracefully
    */
   async getPayoutSchedule(): Promise<PayoutSchedule | null> {
-    try {
-      const response = await apiClient.get<ApiResponse<PayoutSchedule>>(
-        `${this.basePath}/payout-schedule`
-      );
-
-      if (!response.data.success || !response.data.data) {
-        throw new Error(response.data.message || 'Failed to fetch payout schedule');
-      }
-
-      return response.data.data;
-    } catch (error: unknown) {
-      const errorMessage =
-        error instanceof Error ? error.message : 'Failed to fetch payout schedule';
-      console.error('Error fetching payout schedule:', errorMessage);
-      throw new Error(errorMessage);
-    }
+    // Endpoint /v1/public/developer/earnings/payout-schedule does not exist in the API.
+    // Return null until a backend endpoint is implemented.
+    return null;
   }
 
   /**
    * Export transactions in specified format
+   * Maps to GET /v1/public/payments/transactions/export
    * @param format - Export format (csv, pdf, json)
    * @param params - Optional filter parameters
    */
@@ -234,7 +234,7 @@ export class EarningsService {
       if (params?.endDate) queryParams.append('endDate', params.endDate);
 
       const response = await apiClient.get(
-        `${this.basePath}/export?${queryParams.toString()}`,
+        `${this.transactionsPath}/export?${queryParams.toString()}`,
         {
           responseType: 'blob',
         }

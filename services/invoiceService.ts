@@ -1,5 +1,5 @@
 // src/services/InvoiceService.ts
-import apiClient from '@/utils/apiClient';
+import apiClient from '@/lib/api-client';
 
 // Invoice Interfaces
 export interface InvoiceLineItem {
@@ -89,6 +89,7 @@ export interface ApiResponse<T> {
 
 export class InvoiceService {
   private readonly baseUrl = '/v1/public/billing/invoices';
+  private readonly crudUrl = '/v1/public/invoices';
 
   /**
    * Get list of current user's invoices (Issue #165)
@@ -109,7 +110,7 @@ export class InvoiceService {
       }
 
       const queryString = params.toString();
-      const url = `${this.baseUrl}/me${queryString ? `?${queryString}` : ''}`;
+      const url = `${this.baseUrl}${queryString ? `?${queryString}` : ''}`;
 
       const response = await apiClient.get<ApiResponse<InvoiceListResponse>>(url);
 
@@ -183,7 +184,7 @@ export class InvoiceService {
    */
   async getMyInvoice(invoiceId: string): Promise<Invoice | null> {
     try {
-      const response = await apiClient.get<ApiResponse<Invoice>>(`${this.baseUrl}/me/${invoiceId}`);
+      const response = await apiClient.get<ApiResponse<Invoice>>(`${this.baseUrl}/${invoiceId}`);
 
       if (response.data.success) {
         return response.data.data;
@@ -202,7 +203,7 @@ export class InvoiceService {
    */
   async downloadMyInvoicePDF(invoiceId: string): Promise<void> {
     try {
-      const response = await apiClient.get(`${this.baseUrl}/me/${invoiceId}/pdf`, {
+      const response = await apiClient.get(`${this.baseUrl}/${invoiceId}/pdf`, {
         responseType: 'blob',
       } as Record<string, unknown>);
 
@@ -229,7 +230,7 @@ export class InvoiceService {
   async createMyInvoicePaymentIntent(invoiceId: string): Promise<PaymentIntentResponse | null> {
     try {
       const response = await apiClient.post<ApiResponse<PaymentIntentResponse>>(
-        `${this.baseUrl}/me/${invoiceId}/payment-intent`
+        `${this.baseUrl}/${invoiceId}/payment-intent`
       );
 
       if (response.data.success) {
@@ -288,7 +289,7 @@ export class InvoiceService {
    */
   async create(data: InvoiceCreateData): Promise<Invoice | null> {
     try {
-      const response = await apiClient.post<ApiResponse<Invoice>>(`${this.baseUrl}`, data);
+      const response = await apiClient.post<ApiResponse<Invoice>>(`${this.crudUrl}`, data);
 
       if (response.data.success) {
         return response.data.data;
@@ -307,7 +308,7 @@ export class InvoiceService {
   async update(invoiceId: string, data: InvoiceUpdateData): Promise<Invoice | null> {
     try {
       const response = await apiClient.patch<ApiResponse<Invoice>>(
-        `${this.baseUrl}/${invoiceId}`,
+        `${this.crudUrl}/${invoiceId}`,
         data
       );
 
@@ -329,7 +330,7 @@ export class InvoiceService {
   async finalize(invoiceId: string): Promise<Invoice | null> {
     try {
       const response = await apiClient.post<ApiResponse<Invoice>>(
-        `${this.baseUrl}/${invoiceId}/finalize`
+        `${this.crudUrl}/${invoiceId}/finalize`
       );
 
       if (response.data.success) {
@@ -349,7 +350,7 @@ export class InvoiceService {
   async sendEmail(invoiceId: string): Promise<boolean> {
     try {
       const response = await apiClient.post<ApiResponse<{ email_sent: boolean }>>(
-        `${this.baseUrl}/${invoiceId}/send-email`
+        `${this.crudUrl}/${invoiceId}/resend-email`
       );
 
       return response.data.success && response.data.data.email_sent;
@@ -365,7 +366,7 @@ export class InvoiceService {
   async void(invoiceId: string): Promise<Invoice | null> {
     try {
       const response = await apiClient.post<ApiResponse<Invoice>>(
-        `${this.baseUrl}/${invoiceId}/void`
+        `${this.crudUrl}/${invoiceId}/void`
       );
 
       if (response.data.success) {
@@ -385,7 +386,7 @@ export class InvoiceService {
   async markPaid(invoiceId: string, data: MarkPaidData): Promise<Invoice | null> {
     try {
       const response = await apiClient.post<ApiResponse<Invoice>>(
-        `${this.baseUrl}/${invoiceId}/mark-paid`,
+        `${this.crudUrl}/${invoiceId}/mark-paid`,
         data
       );
 
@@ -406,7 +407,7 @@ export class InvoiceService {
   async createPaymentIntent(invoiceId: string): Promise<PaymentIntentResponse | null> {
     try {
       const response = await apiClient.post<ApiResponse<PaymentIntentResponse>>(
-        `${this.baseUrl}/${invoiceId}/payment-intent`
+        `${this.crudUrl}/${invoiceId}/payment-intent`
       );
 
       if (response.data.success) {
@@ -427,7 +428,7 @@ export class InvoiceService {
     if (pdfUrl) {
       window.open(pdfUrl, '_blank');
     } else {
-      window.open(`${this.baseUrl}/${invoiceId}/pdf`, '_blank');
+      window.open(`${this.crudUrl}/${invoiceId}/pdf`, '_blank');
     }
   }
 

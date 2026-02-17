@@ -58,7 +58,7 @@ describe('NotificationService', () => {
 
       const result = await notificationService.getNotifications();
 
-      expect(mockApiClient.get).toHaveBeenCalledWith('/v1/notifications');
+      expect(mockApiClient.get).toHaveBeenCalledWith('/v1/public/notifications');
       expect(result).toEqual(mockNotifications.notifications);
     });
 
@@ -103,7 +103,7 @@ describe('NotificationService', () => {
 
       const result = await notificationService.getNotification('1');
 
-      expect(mockApiClient.get).toHaveBeenCalledWith('/v1/notifications/1');
+      expect(mockApiClient.get).toHaveBeenCalledWith('/v1/public/notifications/1');
       expect(result).toEqual(mockNotification);
     });
 
@@ -135,7 +135,7 @@ describe('NotificationService', () => {
 
       const result = await notificationService.markAsRead('1');
 
-      expect(mockApiClient.put).toHaveBeenCalledWith('/v1/notifications/1/read');
+      expect(mockApiClient.put).toHaveBeenCalledWith('/v1/public/notifications/1/read');
       expect(result.read).toBe(true);
       expect(result.readAt).toBeDefined();
     });
@@ -157,7 +157,7 @@ describe('NotificationService', () => {
 
       await notificationService.deleteNotification('1');
 
-      expect(mockApiClient.delete).toHaveBeenCalledWith('/v1/notifications/1');
+      expect(mockApiClient.delete).toHaveBeenCalledWith('/v1/public/notifications/1');
     });
 
     it('throws NotificationAPIError in production on delete errors', async () => {
@@ -204,7 +204,7 @@ describe('NotificationService', () => {
 
       const result = await notificationService.getPreferences();
 
-      expect(mockApiClient.get).toHaveBeenCalledWith('/v1/notifications/preferences');
+      expect(mockApiClient.get).toHaveBeenCalledWith('/v1/public/notifications/preferences');
       expect(result).toEqual(mockPreferences);
     });
 

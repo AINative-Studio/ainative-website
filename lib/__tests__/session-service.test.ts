@@ -26,7 +26,10 @@ describe('SessionService', () => {
         sessions: [
           {
             id: 'session-1',
-            agent_id: 'agent-1',
+            title: 'React Hooks Discussion',
+            description: 'A session about React hooks',
+            meta_data: {},
+            user_id: 'user-1',
             created_at: '2025-12-21T10:00:00Z',
             updated_at: '2025-12-21T11:00:00Z',
             status: 'active',
@@ -35,7 +38,10 @@ describe('SessionService', () => {
           },
           {
             id: 'session-2',
-            agent_id: 'agent-1',
+            title: 'Deployment Strategy',
+            description: '',
+            meta_data: {},
+            user_id: 'user-1',
             created_at: '2025-12-20T10:00:00Z',
             updated_at: '2025-12-20T12:00:00Z',
             status: 'completed',
@@ -44,8 +50,8 @@ describe('SessionService', () => {
           },
         ],
         total: 2,
-        page: 1,
-        page_size: 20,
+        skip: 0,
+        limit: 20,
       };
 
       mockApiClient.get.mockResolvedValueOnce({
@@ -56,23 +62,26 @@ describe('SessionService', () => {
 
       const result = await sessionService.listSessions();
 
-      expect(mockApiClient.get).toHaveBeenCalledWith('/v1/public/sessions');
+      expect(mockApiClient.get).toHaveBeenCalledWith('/v1/public/chat/sessions');
       expect(result).toEqual(mockSessions);
     });
 
     it('fetches sessions with filters', async () => {
       const params = {
-        agent_id: 'agent-1',
-        status: 'active',
-        page: 2,
-        page_size: 10,
+        user_id: 'user-1',
+        status: 'active' as const,
+        skip: 10,
+        limit: 10,
       };
 
       const mockSessions = {
         sessions: [
           {
             id: 'session-3',
-            agent_id: 'agent-1',
+            title: 'API Design',
+            description: '',
+            meta_data: {},
+            user_id: 'user-1',
             created_at: '2025-12-19T10:00:00Z',
             updated_at: '2025-12-19T11:00:00Z',
             status: 'active',
@@ -81,8 +90,8 @@ describe('SessionService', () => {
           },
         ],
         total: 11,
-        page: 2,
-        page_size: 10,
+        skip: 10,
+        limit: 10,
       };
 
       mockApiClient.get.mockResolvedValueOnce({
@@ -94,7 +103,7 @@ describe('SessionService', () => {
       const result = await sessionService.listSessions(params);
 
       expect(mockApiClient.get).toHaveBeenCalledWith(
-        '/v1/public/sessions?agent_id=agent-1&status=active&page=2&page_size=10'
+        '/v1/public/chat/sessions?user_id=user-1&status=active&skip=10&limit=10'
       );
       expect(result).toEqual(mockSessions);
     });
@@ -111,7 +120,10 @@ describe('SessionService', () => {
       const sessionId = 'session-1';
       const mockSession = {
         id: sessionId,
-        agent_id: 'agent-1',
+        title: 'React Hooks Discussion',
+        description: 'A session about React hooks',
+        meta_data: {},
+        user_id: 'user-1',
         created_at: '2025-12-21T10:00:00Z',
         updated_at: '2025-12-21T11:00:00Z',
         status: 'active',
@@ -141,7 +153,7 @@ describe('SessionService', () => {
 
       const result = await sessionService.getSession(sessionId);
 
-      expect(mockApiClient.get).toHaveBeenCalledWith(`/v1/public/sessions/${sessionId}`);
+      expect(mockApiClient.get).toHaveBeenCalledWith(`/v1/public/chat/sessions/${sessionId}`);
       expect(result).toEqual(mockSession);
     });
 
@@ -168,7 +180,7 @@ describe('SessionService', () => {
 
       const result = await sessionService.deleteSession(sessionId);
 
-      expect(mockApiClient.delete).toHaveBeenCalledWith(`/v1/public/sessions/${sessionId}`);
+      expect(mockApiClient.delete).toHaveBeenCalledWith(`/v1/public/chat/sessions/${sessionId}`);
       expect(result).toEqual(mockResponse);
     });
 
@@ -179,7 +191,7 @@ describe('SessionService', () => {
     });
   });
 
-  // ===== Memory Endpoints =====
+  // ===== Memory Endpoints (graceful null returns) =====
   describe('getMemoryContext', () => {
     it('fetches memory context with default parameters', async () => {
       const mockContext = {
@@ -251,12 +263,11 @@ describe('SessionService', () => {
       expect(result).toEqual(mockContext);
     });
 
-    it('handles errors when fetching memory context', async () => {
-      mockApiClient.get.mockRejectedValueOnce(new Error('Session not found'));
+    it('returns null gracefully when endpoint is unavailable', async () => {
+      mockApiClient.get.mockRejectedValueOnce(new Error('Not Found'));
 
-      await expect(sessionService.getMemoryContext({ session_id: 'invalid' })).rejects.toThrow(
-        'Session not found'
-      );
+      const result = await sessionService.getMemoryContext({ session_id: 'invalid' });
+      expect(result).toBeNull();
     });
   });
 
@@ -323,16 +334,15 @@ describe('SessionService', () => {
       expect(result).toEqual(mockResponse);
     });
 
-    it('handles errors when storing memory', async () => {
+    it('returns null gracefully when endpoint is unavailable', async () => {
       mockApiClient.post.mockRejectedValueOnce(new Error('Memory storage failed'));
 
-      await expect(
-        sessionService.storeMemory({
-          session_id: 'session-1',
-          content: 'test',
-          role: 'user',
-        })
-      ).rejects.toThrow('Memory storage failed');
+      const result = await sessionService.storeMemory({
+        session_id: 'session-1',
+        content: 'test',
+        role: 'user',
+      });
+      expect(result).toBeNull();
     });
   });
 
@@ -413,12 +423,11 @@ describe('SessionService', () => {
       expect(result).toEqual(mockResults);
     });
 
-    it('handles errors when searching memory', async () => {
+    it('returns null gracefully when endpoint is unavailable', async () => {
       mockApiClient.get.mockRejectedValueOnce(new Error('Search failed'));
 
-      await expect(
-        sessionService.searchMemory({ query: 'test', limit: 10 })
-      ).rejects.toThrow('Search failed');
+      const result = await sessionService.searchMemory({ query: 'test', limit: 10 });
+      expect(result).toBeNull();
     });
   });
 
@@ -442,10 +451,11 @@ describe('SessionService', () => {
       expect(result).toEqual(mockResponse);
     });
 
-    it('handles errors when deleting memory', async () => {
+    it('returns null gracefully when endpoint is unavailable', async () => {
       mockApiClient.delete.mockRejectedValueOnce(new Error('Memory not found'));
 
-      await expect(sessionService.deleteMemory('invalid-id')).rejects.toThrow('Memory not found');
+      const result = await sessionService.deleteMemory('invalid-id');
+      expect(result).toBeNull();
     });
   });
 
@@ -478,10 +488,11 @@ describe('SessionService', () => {
       expect(result).toEqual(mockStats);
     });
 
-    it('handles errors when fetching memory stats', async () => {
+    it('returns null gracefully when endpoint is unavailable', async () => {
       mockApiClient.get.mockRejectedValueOnce(new Error('Session not found'));
 
-      await expect(sessionService.getMemoryStats('invalid-id')).rejects.toThrow('Session not found');
+      const result = await sessionService.getMemoryStats('invalid-id');
+      expect(result).toBeNull();
     });
   });
 
@@ -503,16 +514,15 @@ describe('SessionService', () => {
 
       const result = await sessionService.clearSessionMemory(sessionId);
 
-      expect(mockApiClient.delete).toHaveBeenCalledWith(`/v1/public/sessions/${sessionId}/memory`);
+      expect(mockApiClient.delete).toHaveBeenCalledWith(`/v1/public/chat/sessions/${sessionId}/memory`);
       expect(result).toEqual(mockResponse);
     });
 
-    it('handles errors when clearing session memory', async () => {
+    it('returns null gracefully when endpoint is unavailable', async () => {
       mockApiClient.delete.mockRejectedValueOnce(new Error('Session not found'));
 
-      await expect(sessionService.clearSessionMemory('invalid-id')).rejects.toThrow(
-        'Session not found'
-      );
+      const result = await sessionService.clearSessionMemory('invalid-id');
+      expect(result).toBeNull();
     });
   });
 });

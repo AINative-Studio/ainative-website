@@ -63,11 +63,12 @@ export class AgentSwarmService {
 
   /**
    * Health check for agent swarms module
+   * Uses /projects endpoint since /health returns 404 in production
    */
   async healthCheck(): Promise<{ status: string; message: string }> {
     try {
-      const response = await apiClient.get<{ status: string; message: string }>(`${this.baseUrl}/health`);
-      return response.data;
+      await apiClient.get(`${this.baseUrl}/projects`);
+      return { status: 'healthy', message: 'Swarm service operational' };
     } catch (error) {
       console.error('Agent swarm health check failed:', error);
       throw error;

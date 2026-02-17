@@ -125,7 +125,7 @@ const getDefaultProjectId = async (): Promise<string | null> => {
 
 export class DatabaseService {
   private static readonly BASE_PATH = '/v1/public/zerodb';
-  private static readonly PROJECTS_BASE_PATH = '/v1/projects';
+  private static readonly PROJECTS_BASE_PATH = '/v1/public/projects';
 
   // PostgreSQL Management
   static async provisionPostgres(request: PostgresProvisionRequest): Promise<PostgresProvisionResponse> {

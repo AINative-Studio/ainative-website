@@ -198,7 +198,7 @@ class ConversionTrackingService {
         ...params,
       };
 
-      await apiClient.post('/v1/events/conversions', payload);
+      await apiClient.post('/v1/public/events/conversions', payload);
 
       // Fire pixel events
       if (params.event_type) {
@@ -226,7 +226,7 @@ class ConversionTrackingService {
         utm_params: this.utmParams,
       };
 
-      await apiClient.post('/v1/events/reconcile', payload);
+      await apiClient.post('/v1/public/events/reconcile', payload);
     } catch (error) {
       console.error('Failed to update funnel:', error);
     }

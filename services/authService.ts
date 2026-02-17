@@ -297,11 +297,12 @@ class AuthService {
    */
   async verifyEmail(token: string): Promise<{ message: string }> {
     try {
-      const response = await fetch(`${this.baseURL}/v1/public/auth/verify-email?token=${encodeURIComponent(token)}`, {
-        method: 'GET',
+      const response = await fetch(`${this.baseURL}/v1/public/auth/verify-email`, {
+        method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
+        body: JSON.stringify({ token }),
       });
 
       if (!response.ok) {

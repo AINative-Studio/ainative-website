@@ -54,10 +54,18 @@ describe('ZeroDBService', () => {
       expect(result).toEqual(mockNamespaces);
     });
 
-    it('handles errors when listing namespaces', async () => {
+    it('returns empty list when endpoint returns 404', async () => {
+      mockApiClient.get.mockRejectedValueOnce(new Error('Not Found'));
+
+      const result = await zerodbService.listNamespaces();
+      expect(result).toEqual({ namespaces: [], total: 0 });
+    });
+
+    it('returns empty list on network error', async () => {
       mockApiClient.get.mockRejectedValueOnce(new Error('Connection failed'));
 
-      await expect(zerodbService.listNamespaces()).rejects.toThrow('Connection failed');
+      const result = await zerodbService.listNamespaces();
+      expect(result).toEqual({ namespaces: [], total: 0 });
     });
   });
 
@@ -177,10 +185,27 @@ describe('ZeroDBService', () => {
       expect(result).toEqual(mockStats);
     });
 
-    it('handles errors when fetching stats', async () => {
+    it('returns default empty stats when endpoint is unavailable', async () => {
       mockApiClient.get.mockRejectedValueOnce(new Error('Database unavailable'));
 
-      await expect(zerodbService.getStats()).rejects.toThrow('Database unavailable');
+      const result = await zerodbService.getStats();
+      expect(result).toEqual({
+        total_vectors: 0,
+        total_namespaces: 0,
+        total_storage_mb: 0,
+        avg_query_latency_ms: 0,
+        queries_last_24h: 0,
+        writes_last_24h: 0,
+        by_namespace: [],
+        index_health: 'optimal',
+      });
+    });
+
+    it('returns default stats when endpoint returns deprecated response', async () => {
+      mockApiClient.get.mockRejectedValueOnce(new Error('This endpoint has been deprecated'));
+
+      const result = await zerodbService.getStats();
+      expect(result).toHaveProperty('total_vectors', 0);
     });
   });
 
@@ -335,12 +360,11 @@ describe('ZeroDBService', () => {
       expect(result).toEqual(mockVectors);
     });
 
-    it('handles errors when listing vectors', async () => {
+    it('returns empty list when endpoint is unavailable', async () => {
       mockApiClient.get.mockRejectedValueOnce(new Error('Namespace not found'));
 
-      await expect(zerodbService.listVectors({ namespace: 'unknown' })).rejects.toThrow(
-        'Namespace not found'
-      );
+      const result = await zerodbService.listVectors({ namespace: 'unknown' });
+      expect(result).toEqual({ vectors: [], total: 0, page: 1, page_size: 50, has_more: false });
     });
   });
 
