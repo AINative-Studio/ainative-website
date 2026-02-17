@@ -43,6 +43,14 @@ const Footer = () => {
                 </svg>
               </a>
             </div>
+            <a
+              href="https://www.linkedin.com/build-relation/newsletter-follow?entityUrn=7117636939444326400"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="mt-4 inline-flex items-center justify-center px-4 h-8 rounded-full bg-[#0A66C2] text-white text-sm font-medium hover:bg-[#004182] transition-colors no-underline"
+            >
+              Subscribe on LinkedIn
+            </a>
           </div>
 
           {/* PRODUCT Section */}
