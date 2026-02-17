@@ -51,7 +51,7 @@ describe('EmailService', () => {
 
       const result = await emailService.getTemplates();
 
-      expect(mockApiClient.get).toHaveBeenCalledWith('/v1/email/templates');
+      expect(mockApiClient.get).toHaveBeenCalledWith('/v1/public/email/templates');
       expect(result).toEqual(mockTemplates);
     });
 
@@ -85,7 +85,7 @@ describe('EmailService', () => {
 
       const result = await emailService.createTemplate(templateData);
 
-      expect(mockApiClient.post).toHaveBeenCalledWith('/v1/email/templates', templateData);
+      expect(mockApiClient.post).toHaveBeenCalledWith('/v1/public/email/templates', templateData);
       expect(result).toEqual(mockResponse);
     });
 
@@ -126,7 +126,7 @@ describe('EmailService', () => {
 
       const result = await emailService.updateTemplate(templateId, updateData);
 
-      expect(mockApiClient.put).toHaveBeenCalledWith(`/v1/email/templates/${templateId}`, updateData);
+      expect(mockApiClient.put).toHaveBeenCalledWith(`/v1/public/email/templates/${templateId}`, updateData);
       expect(result).toEqual(mockResponse);
     });
 
@@ -151,7 +151,7 @@ describe('EmailService', () => {
 
       const result = await emailService.deleteTemplate(templateId);
 
-      expect(mockApiClient.delete).toHaveBeenCalledWith(`/v1/email/templates/${templateId}`);
+      expect(mockApiClient.delete).toHaveBeenCalledWith(`/v1/public/email/templates/${templateId}`);
       expect(result).toEqual({ success: true, message: 'Template deleted' });
     });
 
@@ -181,7 +181,7 @@ describe('EmailService', () => {
 
       const result = await emailService.getSettings();
 
-      expect(mockApiClient.get).toHaveBeenCalledWith('/v1/email/settings');
+      expect(mockApiClient.get).toHaveBeenCalledWith('/v1/public/email/settings');
       expect(result).toEqual(mockSettings);
     });
 
@@ -217,7 +217,7 @@ describe('EmailService', () => {
 
       const result = await emailService.updateSettings(settingsData);
 
-      expect(mockApiClient.put).toHaveBeenCalledWith('/v1/email/settings', settingsData);
+      expect(mockApiClient.put).toHaveBeenCalledWith('/v1/public/email/settings', settingsData);
       expect(result).toEqual(mockResponse);
     });
 
@@ -254,7 +254,7 @@ describe('EmailService', () => {
 
       const result = await emailService.sendEmail(emailData);
 
-      expect(mockApiClient.post).toHaveBeenCalledWith('/v1/email/send', emailData);
+      expect(mockApiClient.post).toHaveBeenCalledWith('/v1/public/email/send', emailData);
       expect(result).toEqual(mockResponse);
     });
 
@@ -300,7 +300,7 @@ describe('EmailService', () => {
 
       const result = await emailService.getHistory({ page: 1, pageSize: 50 });
 
-      expect(mockApiClient.get).toHaveBeenCalledWith('/v1/email/history?page=1&pageSize=50');
+      expect(mockApiClient.get).toHaveBeenCalledWith('/v1/public/email/history?page=1&pageSize=50');
       expect(result).toEqual(mockHistory);
     });
 
@@ -330,7 +330,7 @@ describe('EmailService', () => {
       const result = await emailService.getHistory({ page: 1, pageSize: 50, status: 'failed' });
 
       expect(mockApiClient.get).toHaveBeenCalledWith(
-        '/v1/email/history?page=1&pageSize=50&status=failed'
+        '/v1/public/email/history?page=1&pageSize=50&status=failed'
       );
       expect(result).toEqual(mockFilteredHistory);
     });
@@ -362,7 +362,7 @@ describe('EmailService', () => {
 
       const result = await emailService.getAnalytics();
 
-      expect(mockApiClient.get).toHaveBeenCalledWith('/v1/email/analytics');
+      expect(mockApiClient.get).toHaveBeenCalledWith('/v1/public/email/analytics');
       expect(result).toEqual(mockAnalytics);
     });
 
@@ -392,7 +392,7 @@ describe('EmailService', () => {
       const result = await emailService.getAnalytics({ startDate, endDate });
 
       expect(mockApiClient.get).toHaveBeenCalledWith(
-        `/v1/email/analytics?startDate=${startDate}&endDate=${endDate}`
+        `/v1/public/email/analytics?startDate=${startDate}&endDate=${endDate}`
       );
       expect(result).toEqual(mockAnalytics);
     });

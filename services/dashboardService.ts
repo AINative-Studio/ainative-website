@@ -16,7 +16,7 @@ interface ApiResponse<T> {
 }
 
 /**
- * Dashboard quick stats from /v1/dashboard/quick-stats
+ * Dashboard quick stats from /v1/public/dashboard/quick-stats
  */
 export interface DashboardQuickStats {
   total_requests: number;
@@ -32,7 +32,7 @@ export interface DashboardQuickStats {
 }
 
 /**
- * Dashboard overview from /v1/dashboard/overview
+ * Dashboard overview from /v1/public/dashboard/overview
  */
 export interface DashboardOverview {
   stats: DashboardQuickStats;
@@ -60,7 +60,7 @@ export interface DashboardOverview {
 }
 
 /**
- * Dashboard analytics from /v1/dashboard/analytics
+ * Dashboard analytics from /v1/public/dashboard/analytics
  */
 export interface DashboardAnalytics {
   usage_trends: {
@@ -209,7 +209,7 @@ export interface APIUsageResponse {
  * Provides methods to fetch dashboard data, Kong metrics, system health, and usage data
  */
 export class DashboardService {
-  private readonly dashboardPath = '/v1/dashboard';
+  private readonly dashboardPath = '/v1/public/dashboard';
   private readonly publicPath = '/v1/public';
 
   /**

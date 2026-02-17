@@ -111,7 +111,7 @@ const agentService = {
    * Get list of all agents
    */
   async getAgents(): Promise<Agent[]> {
-    const response = await apiClient.get<{ agents: Agent[] }>('/v1/agents');
+    const response = await apiClient.get<{ agents: Agent[] }>('/v1/public/agent-orchestration');
     return response.data.agents || [];
   },
 
@@ -119,7 +119,7 @@ const agentService = {
    * Create a new agent
    */
   async createAgent(request: CreateAgentRequest): Promise<Agent> {
-    const response = await apiClient.post<Agent>('/v1/agents', request);
+    const response = await apiClient.post<Agent>('/v1/public/agent-orchestration', request);
     return response.data;
   },
 
@@ -127,7 +127,7 @@ const agentService = {
    * Get agent details
    */
   async getAgent(agentId: string): Promise<Agent> {
-    const response = await apiClient.get<Agent>(`/v1/agents/${agentId}`);
+    const response = await apiClient.get<Agent>(`/v1/public/agent-orchestration/${agentId}`);
     return response.data;
   },
 
@@ -135,7 +135,7 @@ const agentService = {
    * Update an agent
    */
   async updateAgent(agentId: string, request: UpdateAgentRequest): Promise<Agent> {
-    const response = await apiClient.put<Agent>(`/v1/agents/${agentId}`, request);
+    const response = await apiClient.put<Agent>(`/v1/public/agent-orchestration/${agentId}`, request);
     return response.data;
   },
 
@@ -143,7 +143,7 @@ const agentService = {
    * Delete an agent
    */
   async deleteAgent(agentId: string): Promise<{ success: boolean }> {
-    const response = await apiClient.delete<{ success: boolean }>(`/v1/agents/${agentId}`);
+    const response = await apiClient.delete<{ success: boolean }>(`/v1/public/agent-orchestration/${agentId}`);
     return response.data;
   },
 
@@ -151,7 +151,7 @@ const agentService = {
    * Run an agent
    */
   async runAgent(agentId: string, request: RunAgentRequest): Promise<AgentRun> {
-    const response = await apiClient.post<AgentRun>(`/v1/agents/${agentId}/run`, request);
+    const response = await apiClient.post<AgentRun>(`/v1/public/agent-orchestration/${agentId}/run`, request);
     return response.data;
   },
 
@@ -159,7 +159,7 @@ const agentService = {
    * Get agent run history
    */
   async getAgentRuns(agentId: string): Promise<AgentRun[]> {
-    const response = await apiClient.get<{ runs: AgentRun[] }>(`/v1/agents/${agentId}/runs`);
+    const response = await apiClient.get<{ runs: AgentRun[] }>(`/v1/public/agent-orchestration/${agentId}/runs`);
     return response.data.runs || [];
   },
 
@@ -168,8 +168,8 @@ const agentService = {
    */
   async getAgentLogs(agentId: string, runId?: string): Promise<AgentLog[]> {
     const endpoint = runId
-      ? `/v1/agents/${agentId}/logs?runId=${runId}`
-      : `/v1/agents/${agentId}/logs`;
+      ? `/v1/public/agent-orchestration/${agentId}/logs?runId=${runId}`
+      : `/v1/public/agent-orchestration/${agentId}/logs`;
     const response = await apiClient.get<{ logs: AgentLog[] }>(endpoint);
     return response.data.logs || [];
   },
@@ -178,7 +178,7 @@ const agentService = {
    * Get available agent templates
    */
   async getTemplates(): Promise<AgentTemplate[]> {
-    const response = await apiClient.get<{ templates: AgentTemplate[] }>('/v1/agents/templates');
+    const response = await apiClient.get<{ templates: AgentTemplate[] }>('/v1/public/agent-orchestration/templates');
     return response.data.templates || [];
   },
 
@@ -186,7 +186,7 @@ const agentService = {
    * Cancel a running agent
    */
   async cancelRun(agentId: string, runId: string): Promise<{ success: boolean }> {
-    const response = await apiClient.post<{ success: boolean }>(`/v1/agents/${agentId}/runs/${runId}/cancel`);
+    const response = await apiClient.post<{ success: boolean }>(`/v1/public/agent-orchestration/${agentId}/runs/${runId}/cancel`);
     return response.data;
   },
 };

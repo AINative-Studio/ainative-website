@@ -5,10 +5,10 @@
  * Endpoint mapping (Fixes #587):
  *   - Payment methods (GET):  GET  /v1/public/billing/payment-methods
  *   - Payment methods (POST): POST /v1/public/billing/payment-methods
- *   - Bank accounts (DELETE): DELETE /v1/payments/bank-accounts/{account_id}
- *   - Transactions/payouts:   GET  /v1/payments/transactions
- *   - Wallet balance:         GET  /v1/payments/wallets/me/balance
- *   - Withdraw:               POST /v1/payments/withdraw
+ *   - Bank accounts (DELETE): DELETE /v1/public/payments/bank-accounts/{account_id}
+ *   - Transactions/payouts:   GET  /v1/public/payments/transactions
+ *   - Wallet balance:         GET  /v1/public/payments/wallets/me/balance
+ *   - Withdraw:               POST /v1/public/payments/withdraw
  *   - Stripe Connect:         No backend endpoint (returns null)
  *   - Auto-payout settings:   No backend endpoint (returns null)
  *   - Tax forms:              No backend endpoint (returns [])
@@ -163,10 +163,10 @@ export interface PayoutBalance {
  */
 export class PayoutService {
   private readonly paymentMethodsPath = '/v1/public/billing/payment-methods';
-  private readonly transactionsPath = '/v1/payments/transactions';
-  private readonly walletBalancePath = '/v1/payments/wallets/me/balance';
-  private readonly bankAccountsPath = '/v1/payments/bank-accounts';
-  private readonly withdrawPath = '/v1/payments/withdraw';
+  private readonly transactionsPath = '/v1/public/payments/transactions';
+  private readonly walletBalancePath = '/v1/public/payments/wallets/me/balance';
+  private readonly bankAccountsPath = '/v1/public/payments/bank-accounts';
+  private readonly withdrawPath = '/v1/public/payments/withdraw';
 
   // ==========================================================================
   // Stripe Connect Methods
@@ -281,7 +281,7 @@ export class PayoutService {
 
   /**
    * Remove a payment method
-   * Maps to DELETE /v1/payments/bank-accounts/{account_id}
+   * Maps to DELETE /v1/public/payments/bank-accounts/{account_id}
    * @param methodId - Payment method ID to remove
    */
   async removePaymentMethod(methodId: string): Promise<OperationResult> {
@@ -330,7 +330,7 @@ export class PayoutService {
 
   /**
    * Get payout history
-   * Maps to GET /v1/payments/transactions
+   * Maps to GET /v1/public/payments/transactions
    * @param params - Optional filter parameters
    */
   async getPayouts(params?: {
@@ -391,7 +391,7 @@ export class PayoutService {
 
   /**
    * Get payout balance
-   * Maps to GET /v1/payments/wallets/me/balance
+   * Maps to GET /v1/public/payments/wallets/me/balance
    */
   async getPayoutBalance(): Promise<PayoutBalance | null> {
     try {
@@ -417,7 +417,7 @@ export class PayoutService {
 
   /**
    * Request manual payout
-   * Maps to POST /v1/payments/withdraw
+   * Maps to POST /v1/public/payments/withdraw
    * @param amount - Amount to payout in cents
    */
   async requestPayout(amount: number): Promise<OperationResult> {

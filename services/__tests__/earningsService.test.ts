@@ -55,7 +55,7 @@ describe('EarningsService', () => {
 
       await service.getEarningsOverview();
 
-      expect(mockedApiClient.get).toHaveBeenCalledWith('/v1/payments/wallets/me');
+      expect(mockedApiClient.get).toHaveBeenCalledWith('/v1/public/payments/wallets/me');
     });
 
     it('should handle wrapped {success, data} response format', async () => {
@@ -136,7 +136,7 @@ describe('EarningsService', () => {
       });
 
       await service.getTransactions();
-      expect(mockedApiClient.get).toHaveBeenCalledWith('/v1/payments/transactions');
+      expect(mockedApiClient.get).toHaveBeenCalledWith('/v1/public/payments/transactions');
     });
 
     it('should handle wrapped {success, data} response format', async () => {
@@ -226,7 +226,7 @@ describe('EarningsService', () => {
       });
 
       await service.getTransactions({});
-      expect(mockedApiClient.get).toHaveBeenCalledWith('/v1/payments/transactions');
+      expect(mockedApiClient.get).toHaveBeenCalledWith('/v1/public/payments/transactions');
     });
 
     it('should return default when non-Error exception thrown', async () => {
@@ -332,7 +332,7 @@ describe('EarningsService', () => {
       await service.exportTransactions('csv');
 
       expect(mockedApiClient.get).toHaveBeenCalledWith(
-        expect.stringContaining('/v1/payments/transactions/export'),
+        expect.stringContaining('/v1/public/payments/transactions/export'),
         expect.objectContaining({ responseType: 'blob' })
       );
     });

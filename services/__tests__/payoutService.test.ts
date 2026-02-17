@@ -240,7 +240,7 @@ describe('PayoutService', () => {
 
       await service.removePaymentMethod('pm_123');
       expect(mockedApiClient.delete).toHaveBeenCalledWith(
-        '/v1/payments/bank-accounts/pm_123'
+        '/v1/public/payments/bank-accounts/pm_123'
       );
     });
 
@@ -316,7 +316,7 @@ describe('PayoutService', () => {
       });
 
       await service.getPayouts();
-      expect(mockedApiClient.get).toHaveBeenCalledWith('/v1/payments/transactions');
+      expect(mockedApiClient.get).toHaveBeenCalledWith('/v1/public/payments/transactions');
     });
 
     it('should handle wrapped response with direct array data', async () => {
@@ -394,7 +394,7 @@ describe('PayoutService', () => {
       mockedApiClient.get.mockResolvedValue({ data: [] });
 
       await service.getPayouts();
-      expect(mockedApiClient.get).toHaveBeenCalledWith('/v1/payments/transactions');
+      expect(mockedApiClient.get).toHaveBeenCalledWith('/v1/public/payments/transactions');
     });
 
     it('should return empty array on error', async () => {
@@ -439,7 +439,7 @@ describe('PayoutService', () => {
       });
 
       await service.getPayoutBalance();
-      expect(mockedApiClient.get).toHaveBeenCalledWith('/v1/payments/wallets/me/balance');
+      expect(mockedApiClient.get).toHaveBeenCalledWith('/v1/public/payments/wallets/me/balance');
     });
 
     it('should handle wrapped response', async () => {
@@ -491,7 +491,7 @@ describe('PayoutService', () => {
 
       await service.requestPayout(10000);
       expect(mockedApiClient.post).toHaveBeenCalledWith(
-        '/v1/payments/withdraw',
+        '/v1/public/payments/withdraw',
         { amount: 10000 }
       );
     });

@@ -17,7 +17,7 @@ import type {
 } from '@/types/tutorial';
 import apiClient from '@/utils/apiClient';
 
-const API_BASE = '/v1/tutorials/progress';
+const API_BASE = '/v1/public/tutorials/progress';
 const RETRY_ATTEMPTS = 3;
 const RETRY_DELAY_MS = 1000;
 

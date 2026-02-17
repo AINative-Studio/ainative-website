@@ -4,9 +4,9 @@
  * Follows AINative service patterns
  *
  * Endpoint mapping (Fixes #585):
- *   - Wallet/overview: GET /v1/payments/wallets/me
- *   - Transactions:    GET /v1/payments/transactions
- *   - Export:          GET /v1/payments/transactions/export
+ *   - Wallet/overview: GET /v1/public/payments/wallets/me
+ *   - Transactions:    GET /v1/public/payments/transactions
+ *   - Export:          GET /v1/public/payments/transactions/export
  *   - Breakdown:       No backend endpoint (returns null)
  *   - Payout schedule: No backend endpoint (returns null)
  */
@@ -123,12 +123,12 @@ export type ExportFormat = 'csv' | 'pdf' | 'json';
  * Manages developer earnings, transactions, and payout information
  */
 export class EarningsService {
-  private readonly walletPath = '/v1/payments/wallets/me';
-  private readonly transactionsPath = '/v1/payments/transactions';
+  private readonly walletPath = '/v1/public/payments/wallets/me';
+  private readonly transactionsPath = '/v1/public/payments/transactions';
 
   /**
    * Get earnings overview summary
-   * Maps to GET /v1/payments/wallets/me
+   * Maps to GET /v1/public/payments/wallets/me
    */
   async getEarningsOverview(): Promise<EarningsOverview | null> {
     try {
@@ -154,7 +154,7 @@ export class EarningsService {
 
   /**
    * Get paginated transactions
-   * Maps to GET /v1/payments/transactions
+   * Maps to GET /v1/public/payments/transactions
    * @param params - Query parameters for filtering and pagination
    */
   async getTransactions(params: TransactionQueryParams = {}): Promise<PaginatedTransactions> {
@@ -217,7 +217,7 @@ export class EarningsService {
 
   /**
    * Export transactions in specified format
-   * Maps to GET /v1/payments/transactions/export
+   * Maps to GET /v1/public/payments/transactions/export
    * @param format - Export format (csv, pdf, json)
    * @param params - Optional filter parameters
    */
