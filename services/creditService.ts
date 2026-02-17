@@ -113,15 +113,32 @@ export class CreditService {
    */
   async getCreditBalance(): Promise<CreditBalance | null> {
     try {
-      const response = await apiClient.get<ApiResponse<{ balance: CreditBalance }>>(
-        `${this.basePath}/balance`
-      );
+      const response = await apiClient.get<
+        | ApiResponse<{ balance: CreditBalance }>
+        | { total_credits: number; used_credits: number; remaining_credits: string | number; plan: string; period_start: string; period_end: string; usage_percentage: number }
+      >(`${this.basePath}/balance`);
 
-      if (!response.data.success || !response.data.data?.balance) {
-        return null;
+      const data = response.data;
+
+      // Handle wrapped format: {success, data: {balance: {...}}}
+      if ('success' in data && data.success && 'data' in data) {
+        const wrapped = data as ApiResponse<{ balance: CreditBalance }>;
+        if (wrapped.data?.balance) return wrapped.data.balance;
       }
 
-      return response.data.data.balance;
+      // Handle flat format: {total_credits, used_credits, remaining_credits, ...}
+      if ('total_credits' in data) {
+        const flat = data as { total_credits: number; used_credits: number; remaining_credits: string | number; period_end?: string };
+        return {
+          available: Number(flat.remaining_credits) || 0,
+          used: flat.used_credits || 0,
+          total: flat.total_credits || 0,
+          currency: 'USD',
+          next_reset_date: flat.period_end,
+        };
+      }
+
+      return null;
     } catch (error) {
       console.error('Error fetching credit balance:', error);
       return null;

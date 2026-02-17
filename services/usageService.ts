@@ -80,15 +80,42 @@ export class UsageService {
    */
   async getUsageMetrics(period: UsagePeriod = '30d'): Promise<UsageMetrics | null> {
     try {
-      const response = await apiClient.get<ApiResponse<{ metrics: UsageMetrics }>>(
-        `${this.basePath}/ai-usage/aggregate?period=${period}`
-      );
+      const response = await apiClient.get<
+        | ApiResponse<{ metrics: UsageMetrics }>
+        | { total_tokens: number; total_requests: number; period: string; usage: Record<string, { used: number; limit: number; percentage: number; unit: string }>; period_info?: { start: string; end: string } }
+      >(`${this.basePath}/ai-usage/aggregate?period=${period}`);
 
-      if (!response.data.success || !response.data.data?.metrics) {
-        return null;
+      const data = response.data;
+
+      // Handle wrapped format: {success, data: {metrics: UsageMetrics}}
+      if ('success' in data && 'data' in data) {
+        const wrapped = data as ApiResponse<{ metrics: UsageMetrics }>;
+        if (wrapped.success && wrapped.data?.metrics) return wrapped.data.metrics;
       }
 
-      return response.data.data.metrics;
+      // Handle flat format: {total_tokens, total_requests, usage, period_info, ...}
+      if ('total_requests' in data) {
+        const flat = data as { total_tokens: number; total_requests: number; period: string; usage: Record<string, { used: number; limit: number; percentage: number; unit: string }>; period_info?: { start: string; end: string } };
+        const byFeature = Object.entries(flat.usage || {}).map(([feature, info]) => ({
+          feature,
+          credits_used: info.used || 0,
+          percentage: info.percentage || 0,
+        }));
+        const totalUsed = byFeature.reduce((sum, f) => sum + f.credits_used, 0);
+
+        return {
+          period: {
+            start: flat.period_info?.start || new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString(),
+            end: flat.period_info?.end || new Date().toISOString(),
+          },
+          total_credits_used: totalUsed,
+          credits_remaining: 0,
+          daily_usage: [],
+          by_feature: byFeature,
+        };
+      }
+
+      return null;
     } catch (error) {
       console.error('Error fetching usage metrics:', error);
       return null;
@@ -101,15 +128,24 @@ export class UsageService {
    */
   async getUsageLimits(): Promise<UsageLimits | null> {
     try {
-      const response = await apiClient.get<ApiResponse<{ limits: UsageLimits }>>(
+      const response = await apiClient.get<ApiResponse<{ limits: UsageLimits }> | UsageLimits>(
         `${this.basePath}/settings/usage-limits`
       );
 
-      if (!response.data.success || !response.data.data?.limits) {
-        return null;
+      const data = response.data;
+
+      // Handle wrapped format
+      if ('success' in data && 'data' in data) {
+        const wrapped = data as ApiResponse<{ limits: UsageLimits }>;
+        if (wrapped.success && wrapped.data?.limits) return wrapped.data.limits;
       }
 
-      return response.data.data.limits;
+      // Handle flat format
+      if ('monthly_credits' in data) {
+        return data as UsageLimits;
+      }
+
+      return null;
     } catch (error) {
       console.error('Error fetching usage limits:', error);
       return null;
@@ -122,15 +158,29 @@ export class UsageService {
    */
   async getRealtimeUsage(): Promise<RealtimeUsage | null> {
     try {
-      const response = await apiClient.get<ApiResponse<RealtimeUsage>>(
+      const response = await apiClient.get<ApiResponse<RealtimeUsage> | { success: boolean; data: { summary: { total_credits_used: number } } }>(
         `${this.basePath}/credits/usage/current`
       );
 
-      if (!response.data.success) {
-        return null;
+      const data = response.data;
+
+      // Handle wrapped format with RealtimeUsage
+      if ('success' in data && data.success && 'data' in data) {
+        const inner = (data as { data: Record<string, unknown> }).data;
+        if ('current_usage' in inner && 'limit' in inner) {
+          return inner as unknown as RealtimeUsage;
+        }
+        // Handle {success, data: {summary: {total_credits_used}}} format
+        if ('summary' in inner) {
+          const summary = inner.summary as { total_credits_used: number };
+          return {
+            current_usage: summary.total_credits_used || 0,
+            limit: 0,
+          };
+        }
       }
 
-      return response.data.data;
+      return null;
     } catch (error) {
       console.error('Error fetching real-time usage:', error);
       return null;
