@@ -71,6 +71,17 @@ interface EmbeddingModel {
   loaded?: boolean;
 }
 
+interface RegistryModel {
+  model_id: string;
+  name: string;
+  provider: string;
+  model_type: string;
+  enabled: boolean;
+  capabilities: string[];
+  quality_score?: number;
+  cost_per_request?: number;
+}
+
 /**
  * Model Aggregator Service
  * Fetches and normalizes models from all available endpoints
@@ -83,18 +94,31 @@ class ModelAggregatorService {
     console.log('[ModelAggregator] Starting model aggregation...');
     const models: UnifiedAIModel[] = [];
 
-    // Fetch from all endpoints in parallel
-    const [chatModels, embeddingModels] = await Promise.allSettled([
+    // Fetch from all API endpoints in parallel
+    const [chatModels, embeddingModels, registryModels] = await Promise.allSettled([
       this.fetchChatModels(),
       this.fetchEmbeddingModels(),
+      this.fetchRegistryModels(),
     ]);
 
-    // Add chat models
+    // Add chat models from /v1/models
     if (chatModels.status === 'fulfilled') {
       console.log('[ModelAggregator] Chat models:', chatModels.value.length);
       models.push(...chatModels.value);
     } else {
       console.warn('[ModelAggregator] Chat models failed:', chatModels.reason);
+    }
+
+    // Add registry models from /v1/public/multi-model/models (deduplicated)
+    if (registryModels.status === 'fulfilled' && registryModels.value.length > 0) {
+      const existingIds = new Set(models.map(m => m.name.toLowerCase()));
+      const newRegistryModels = registryModels.value.filter(
+        m => !existingIds.has(m.name.toLowerCase())
+      );
+      console.log('[ModelAggregator] Registry models (new):', newRegistryModels.length);
+      models.push(...newRegistryModels);
+    } else {
+      console.warn('[ModelAggregator] Registry models failed:', registryModels.status === 'rejected' ? registryModels.reason : 'empty');
     }
 
     // Add embedding models (API or fallback to hardcoded)
@@ -108,28 +132,25 @@ class ModelAggregatorService {
       models.push(...hardcodedEmbeddings);
     }
 
-    // Add hardcoded coding models
-    const codingModels = this.getCodingModels();
-    console.log('[ModelAggregator] Coding models (hardcoded):', codingModels.length);
-    models.push(...codingModels);
+    // Add hardcoded models with individual error handling
+    const hardcodedSources: Array<{ name: string; getter: () => UnifiedAIModel[] }> = [
+      { name: 'Coding', getter: () => this.getCodingModels() },
+      { name: 'Image', getter: () => this.getImageGenerationModels() },
+      { name: 'Video', getter: () => this.getVideoGenerationModels() },
+      { name: 'Audio', getter: () => this.getAudioModels() },
+    ];
 
-    // Add hardcoded image generation models
-    const imageModels = this.getImageGenerationModels();
-    console.log('[ModelAggregator] Image models (hardcoded):', imageModels.length);
-    models.push(...imageModels);
-
-    // Add hardcoded video generation models
-    const videoModels = this.getVideoGenerationModels();
-    console.log('[ModelAggregator] Video models (hardcoded):', videoModels.length);
-    models.push(...videoModels);
-
-    // Add hardcoded audio models
-    const audioModels = this.getAudioModels();
-    console.log('[ModelAggregator] Audio models (hardcoded):', audioModels.length);
-    models.push(...audioModels);
+    for (const source of hardcodedSources) {
+      try {
+        const sourceModels = source.getter();
+        console.log(`[ModelAggregator] ${source.name} models:`, sourceModels.length);
+        models.push(...sourceModels);
+      } catch (error) {
+        console.error(`[ModelAggregator] ${source.name} models failed:`, error);
+      }
+    }
 
     console.log('[ModelAggregator] Total models aggregated:', models.length);
-    console.log('[ModelAggregator] Sample of first model:', models[0]);
 
     return models;
   }
@@ -156,6 +177,22 @@ class ModelAggregatorService {
       return response.data.map(model => this.transformEmbeddingModel(model));
     } catch (error) {
       console.error('Failed to fetch embedding models:', error);
+      return [];
+    }
+  }
+
+  /**
+   * Fetch registered models from /v1/public/multi-model/models
+   */
+  private async fetchRegistryModels(): Promise<UnifiedAIModel[]> {
+    try {
+      const response = await apiClient.get<RegistryModel[]>('/v1/public/multi-model/models');
+      const models = Array.isArray(response.data) ? response.data : [];
+      return models
+        .filter(m => m.enabled)
+        .map(model => this.transformRegistryModel(model));
+    } catch (error) {
+      console.error('Failed to fetch registry models:', error);
       return [];
     }
   }
@@ -241,16 +278,60 @@ class ModelAggregatorService {
   }
 
   /**
+   * Transform registry model to unified format
+   */
+  private transformRegistryModel(model: RegistryModel): UnifiedAIModel {
+    // Map backend capabilities to frontend capability format
+    const capabilities = (model.capabilities || []).map(cap =>
+      cap.replace(/_/g, '-')
+    );
+
+    // Add 'code' capability for models with code-related capabilities
+    if (capabilities.some(c => c.includes('code'))) {
+      if (!capabilities.includes('code')) capabilities.push('code');
+    }
+    // Ensure text-generation is present for chat models
+    if (model.model_type === 'chat' && !capabilities.includes('text-generation')) {
+      capabilities.push('text-generation');
+    }
+
+    // Determine category based on model_type and capabilities
+    let category: ModelCategory = 'Coding';
+    if (model.model_type === 'embedding' || capabilities.includes('embedding')) {
+      category = 'Embedding';
+    } else if (model.model_type === 'multimodal' || capabilities.includes('vision')) {
+      category = 'Coding';
+    }
+
+    return {
+      id: `registry-${model.model_id}`,
+      slug: model.name.toLowerCase().replace(/[^a-z0-9]+/g, '-'),
+      name: model.name,
+      provider: model.provider,
+      category,
+      capabilities,
+      description: `${model.provider} ${model.name} - ${model.model_type} model`,
+      thumbnail_url: getThumbnailUrl({
+        provider: model.provider,
+        category,
+      }),
+      endpoint: '/v1/public/multi-model/inference',
+      method: 'POST' as const,
+      source_type: 'chat' as const,
+    };
+  }
+
+  /**
    * Get hardcoded image generation models
    */
   private getImageGenerationModels(): UnifiedAIModel[] {
-    const models = [
+    return [
       {
         id: 'image-qwen-edit',
         slug: 'qwen-image-edit',
         name: 'Qwen Image Edit',
         provider: 'Qwen',
-        category: 'Image',
+        category: 'Image' as ModelCategory,
         capabilities: ['image-generation', 'text-to-image'],
         description: 'High-quality image generation with LoRA style transfer support. Resolutions from 512x512 to 2048x2048.',
         thumbnail_url: getThumbnailUrl({
@@ -266,153 +347,121 @@ class ModelAggregatorService {
           unit: 'per image',
         },
         endpoint: '/v1/multimodal/image',
-        method: 'POST',
+        method: 'POST' as const,
         is_default: true,
         speed: 'Fast',
         quality: 'High',
-        source_type: 'image',
+        source_type: 'image' as const,
       },
     ];
-    console.log('[ModelAggregator] Image model created:', models[0]);
-    return models;
   }
 
   /**
    * Get hardcoded video generation models
+   * Backend confirms these endpoints are operational via /v1/multimodal/health
    */
   private getVideoGenerationModels(): UnifiedAIModel[] {
+    const video: ModelCategory = 'Video';
+    const post = 'POST' as const;
+    const videoSource = 'video' as const;
     return [
-      // Image-to-Video models
       {
         id: 'video-wan22-i2v',
         slug: 'alibaba-wan-22-i2v-720p',
         name: 'Alibaba Wan 2.2 I2V 720p',
         provider: 'Alibaba',
-        category: 'Video',
+        category: video,
         capabilities: ['image-to-video', 'video-generation'],
         description: 'Wan 2.2 is an open-source AI video generation model that utilizes a diffusion transformer architecture for image-to-video generation',
         thumbnail_url: 'https://image.ainative.studio/asset/alibaba/wan-2i2v720.png',
         examplePrompts: [
           'Create a realistic 5-second video from this image. Motion should be minimal but believable. Maintain original composition and proportions. No stylistic exaggeration.',
         ],
-        pricing: {
-          credits: 400,
-          usd: 0.20,
-          unit: 'per 5s video',
-        },
+        pricing: { credits: 400, usd: 0.20, unit: 'per 5s video' },
         endpoint: '/v1/multimodal/video/i2v',
-        method: 'POST',
+        method: post,
         is_default: true,
         speed: 'Fast',
         quality: 'High',
-        source_type: 'video',
+        source_type: videoSource,
       },
       {
         id: 'video-seedance-i2v',
         slug: 'seedance-i2v',
         name: 'Seedance I2V',
         provider: 'Seedance',
-        category: 'Video',
+        category: video,
         capabilities: ['image-to-video', 'video-generation'],
         description: 'Advanced image-to-video generation with high-quality motion synthesis',
-        thumbnail_url: getThumbnailUrl({
-          provider: 'Seedance',
-          category: 'Video',
-        }),
+        thumbnail_url: getThumbnailUrl({ provider: 'Seedance', category: 'Video' }),
         examplePrompts: [
-          'Generate smooth, high-fidelity motion from this image. Preserve structural integrity of the subject. Motion should be realistic and physically grounded. Avoid jitter, warping, or excessive motion.',
+          'Generate smooth, high-fidelity motion from this image. Preserve structural integrity of the subject. Motion should be realistic and physically grounded.',
         ],
-        pricing: {
-          credits: 520,
-          usd: 0.26,
-          unit: 'per 5s video',
-        },
+        pricing: { credits: 520, usd: 0.26, unit: 'per 5s video' },
         endpoint: '/v1/multimodal/video/i2v',
-        method: 'POST',
+        method: post,
         speed: 'Medium',
         quality: 'High',
-        source_type: 'video',
+        source_type: videoSource,
       },
       {
         id: 'video-sora2-i2v',
         slug: 'sora2-i2v',
         name: 'Sora2',
         provider: 'Sora',
-        category: 'Video',
+        category: video,
         capabilities: ['image-to-video', 'video-generation'],
         description: 'Premium cinematic quality image-to-video generation',
-        thumbnail_url: getThumbnailUrl({
-          provider: 'Sora',
-          category: 'Video',
-        }),
+        thumbnail_url: getThumbnailUrl({ provider: 'Sora', category: 'Video' }),
         examplePrompts: [
-          'Animate this image into a cinematic scene. Preserve identity, proportions, and realism. Motion should be subtle and natural. Camera movement should feel intentional and film-like. Lighting continuity must remain consistent.',
+          'Animate this image into a cinematic scene. Preserve identity, proportions, and realism. Motion should be subtle and natural.',
         ],
-        pricing: {
-          credits: 800,
-          usd: 0.40,
-          unit: 'per 4s video',
-        },
+        pricing: { credits: 800, usd: 0.40, unit: 'per 4s video' },
         endpoint: '/v1/multimodal/video/i2v',
-        method: 'POST',
+        method: post,
         is_premium: true,
         speed: 'Slow',
         quality: 'Cinematic',
-        source_type: 'video',
+        source_type: videoSource,
       },
-      // Text-to-Video models
       {
         id: 'video-t2v-generic',
         slug: 'text-to-video-model',
         name: 'Text-to-Video Model',
         provider: 'Generic',
-        category: 'Video',
+        category: video,
         capabilities: ['text-to-video', 'video-generation'],
         description: 'Premium text-to-video generation with 1-10 second duration. HD 1280x720 resolution.',
-        thumbnail_url: getThumbnailUrl({
-          provider: 'Generic',
-          category: 'Video',
-        }),
+        thumbnail_url: getThumbnailUrl({ provider: 'Generic', category: 'Video' }),
         examplePrompts: [
-          'Create a 5–8 second HD cinematic video. Subject: [MAIN SUBJECT]. Environment: [DETAILED SETTING]. Lighting: professional film lighting. Camera: smooth cinematic movement. Mood: emotionally resonant, realistic. Avoid surreal or abstract visuals.',
+          'Create a 5-8 second HD cinematic video. Subject: [MAIN SUBJECT]. Environment: [DETAILED SETTING]. Lighting: professional film lighting.',
         ],
-        pricing: {
-          credits: 1000,
-          usd: 0.50,
-          unit: 'per video',
-        },
+        pricing: { credits: 1000, usd: 0.50, unit: 'per video' },
         endpoint: '/v1/multimodal/video/t2v',
-        method: 'POST',
+        method: post,
         is_premium: true,
         speed: 'Slow',
         quality: 'High',
-        source_type: 'video',
+        source_type: videoSource,
       },
       {
         id: 'video-cogvideox-2b',
         slug: 'cogvideox-2b',
         name: 'CogVideoX-2B',
         provider: 'CogVideo',
-        category: 'Video',
+        category: video,
         capabilities: ['text-to-video', 'video-generation'],
         description: 'Text-to-video generation with 17, 33, or 49 frames. 8 FPS output in MP4 format.',
-        thumbnail_url: getThumbnailUrl({
-          provider: 'CogVideo',
-          category: 'Video',
-        }),
+        thumbnail_url: getThumbnailUrl({ provider: 'CogVideo', category: 'Video' }),
         examplePrompts: [
-          'A cinematic shot of a subject in an environment. Camera motion: slow, steady tracking shot. Lighting: realistic, soft, natural. Style: grounded realism, not cartoonish. Motion should feel physically plausible. No sudden cuts.',
+          'A cinematic shot of a subject in an environment. Camera motion: slow, steady tracking shot. Lighting: realistic, soft, natural.',
         ],
-        pricing: {
-          credits: 800,
-          usd: 0.40,
-          unit: 'per video',
-        },
+        pricing: { credits: 800, usd: 0.40, unit: 'per video' },
         endpoint: '/v1/multimodal/video/cogvideox',
-        method: 'POST',
+        method: post,
         speed: 'Slow',
         quality: 'High',
-        source_type: 'video',
+        source_type: videoSource,
       },
     ];
   }
@@ -421,167 +470,150 @@ class ModelAggregatorService {
    * Get hardcoded coding models
    */
   private getCodingModels(): UnifiedAIModel[] {
-    console.log('[ModelAggregator] getCodingModels called');
+    const coding: ModelCategory = 'Coding';
+    const post = 'POST' as const;
+    const chatSource = 'chat' as const;
     return [
       {
         id: 'coding-nous-coder',
         slug: 'nous-coder',
         name: 'NousCoder',
         provider: 'Nous Research',
-        category: 'Coding',
+        category: coding,
         capabilities: ['code', 'code-generation', 'text-generation'],
         description: 'Specialized coding model with advanced code generation capabilities and programming language support.',
-        thumbnail_url: getThumbnailUrl({
-          provider: 'Nous Research',
-          category: 'Coding',
-        }),
+        thumbnail_url: getThumbnailUrl({ provider: 'Nous Research', category: 'Coding' }),
         examplePrompts: [
-          'Write clean, production-ready code. Follow best practices and industry standards. Include comments only where clarity is required. Optimize for readability and maintainability. Assume this will be reviewed by senior engineers.',
+          'Write clean, production-ready code. Follow best practices and industry standards. Optimize for readability and maintainability.',
         ],
         endpoint: '/v1/chat/completions',
-        method: 'POST',
+        method: post,
         speed: 'Fast',
         quality: 'High',
-        source_type: 'chat',
+        source_type: chatSource,
       },
     ];
   }
 
   /**
    * Get hardcoded audio models
+   * Backend confirms tts endpoint operational via /v1/multimodal/health
    */
   private getAudioModels(): UnifiedAIModel[] {
+    const audio: ModelCategory = 'Audio';
+    const post = 'POST' as const;
+    const audioSource = 'audio' as const;
     return [
       {
         id: 'audio-whisper-transcription',
         slug: 'whisper-transcription',
         name: 'Whisper',
         provider: 'OpenAI',
-        category: 'Audio',
+        category: audio,
         capabilities: ['audio', 'transcription', 'speech-to-text'],
         description: 'Speech-to-text transcription supporting 99+ languages. Convert audio/video to text.',
-        thumbnail_url: getThumbnailUrl({
-          provider: 'OpenAI',
-          category: 'Audio',
-        }),
+        thumbnail_url: getThumbnailUrl({ provider: 'OpenAI', category: 'Audio' }),
         examplePrompts: [
-          'Transcribe this audio verbatim. Preserve speaker intent and meaning. Use paragraph breaks for topic changes. Add speaker labels if multiple voices are present. Do not add commentary or interpretation.',
+          'Transcribe this audio verbatim. Preserve speaker intent and meaning. Use paragraph breaks for topic changes.',
         ],
         endpoint: '/v1/audio/transcriptions',
-        method: 'POST',
+        method: post,
         is_default: true,
         speed: 'Fast',
-        source_type: 'audio',
+        source_type: audioSource,
       },
       {
         id: 'audio-whisper-translation',
         slug: 'whisper-translation',
         name: 'Whisper Translation',
         provider: 'OpenAI',
-        category: 'Audio',
+        category: audio,
         capabilities: ['audio', 'translation'],
         description: 'Translate any language audio to English text using Whisper.',
-        thumbnail_url: getThumbnailUrl({
-          provider: 'OpenAI',
-          category: 'Audio',
-        }),
+        thumbnail_url: getThumbnailUrl({ provider: 'OpenAI', category: 'Audio' }),
         examplePrompts: [
-          'Translate this audio into fluent, natural English. Preserve intent, tone, and idiomatic meaning rather than literal phrasing. If cultural references appear, translate them in a way an English-speaking audience would understand. Do not summarize. Do not omit details.',
+          'Translate this audio into fluent, natural English. Preserve intent, tone, and idiomatic meaning rather than literal phrasing.',
         ],
         endpoint: '/v1/audio/translations',
-        method: 'POST',
+        method: post,
         speed: 'Fast',
-        source_type: 'audio',
+        source_type: audioSource,
       },
       {
         id: 'audio-tts',
         slug: 'openai-tts',
         name: 'TTS Model',
         provider: 'OpenAI',
-        category: 'Audio',
+        category: audio,
         capabilities: ['audio-generation', 'text-to-speech', 'speech'],
         description: 'Generate natural-sounding speech from text with multiple voice options.',
-        thumbnail_url: getThumbnailUrl({
-          provider: 'OpenAI',
-          category: 'Audio',
-        }),
+        thumbnail_url: getThumbnailUrl({ provider: 'OpenAI', category: 'Audio' }),
         examplePrompts: [
-          'Read the following text as a confident, calm, emotionally intelligent narrator. Use natural pacing, subtle emphasis, and realistic pauses. Avoid sounding robotic or overly dramatic. Tone: warm, articulate, professional. Audience: intelligent but non-technical adults.',
+          'Read the following text as a confident, calm narrator. Use natural pacing, subtle emphasis, and realistic pauses.',
         ],
         endpoint: '/v1/multimodal/tts',
-        method: 'POST',
+        method: post,
         speed: 'Fast',
-        source_type: 'audio',
+        source_type: audioSource,
       },
     ];
   }
 
   /**
-   * Get hardcoded embedding models
+   * Get hardcoded embedding models (fallback when API fails)
    */
   private getHardcodedEmbeddingModels(): UnifiedAIModel[] {
+    const embedding: ModelCategory = 'Embedding';
+    const post = 'POST' as const;
+    const embeddingSource = 'embedding' as const;
+    const prompt = 'Generate embeddings optimized for semantic similarity search. Use full sentences rather than keywords.';
     return [
       {
         id: 'embedding-bge-small-en',
         slug: 'bge-small-en-v1-5',
         name: 'BGE Small EN v1.5',
         provider: 'BAAI',
-        category: 'Embedding',
+        category: embedding,
         capabilities: ['embedding', 'semantic-search'],
         description: 'Fast and efficient embedding model with 384 dimensions. Ideal for semantic search and text similarity tasks.',
-        thumbnail_url: getThumbnailUrl({
-          provider: 'BAAI',
-          category: 'Embedding',
-        }),
-        examplePrompts: [
-          'Generate embeddings optimized for semantic similarity search. Text should preserve meaning, intent, and context. Use full sentences rather than keywords.',
-        ],
+        thumbnail_url: getThumbnailUrl({ provider: 'BAAI', category: 'Embedding' }),
+        examplePrompts: [prompt],
         endpoint: '/v1/embeddings',
-        method: 'POST',
+        method: post,
         is_default: true,
         speed: 'Fast',
-        source_type: 'embedding',
+        source_type: embeddingSource,
       },
       {
         id: 'embedding-bge-base-en',
         slug: 'bge-base-en-v1-5',
         name: 'BGE Base EN v1.5',
         provider: 'BAAI',
-        category: 'Embedding',
+        category: embedding,
         capabilities: ['embedding', 'semantic-search'],
         description: 'Balanced embedding model with 768 dimensions. Good trade-off between speed and quality.',
-        thumbnail_url: getThumbnailUrl({
-          provider: 'BAAI',
-          category: 'Embedding',
-        }),
-        examplePrompts: [
-          'Generate embeddings optimized for semantic similarity search. Text should preserve meaning, intent, and context. Use full sentences rather than keywords.',
-        ],
+        thumbnail_url: getThumbnailUrl({ provider: 'BAAI', category: 'Embedding' }),
+        examplePrompts: [prompt],
         endpoint: '/v1/embeddings',
-        method: 'POST',
+        method: post,
         speed: 'Medium',
-        source_type: 'embedding',
+        source_type: embeddingSource,
       },
       {
         id: 'embedding-bge-large-en',
         slug: 'bge-large-en-v1-5',
         name: 'BGE Large EN v1.5',
         provider: 'BAAI',
-        category: 'Embedding',
+        category: embedding,
         capabilities: ['embedding', 'semantic-search'],
         description: 'High-quality embedding model with 1024 dimensions. Best for accuracy-critical applications.',
-        thumbnail_url: getThumbnailUrl({
-          provider: 'BAAI',
-          category: 'Embedding',
-        }),
-        examplePrompts: [
-          'Generate embeddings optimized for semantic similarity search. Text should preserve meaning, intent, and context. Use full sentences rather than keywords.',
-        ],
+        thumbnail_url: getThumbnailUrl({ provider: 'BAAI', category: 'Embedding' }),
+        examplePrompts: [prompt],
         endpoint: '/v1/embeddings',
-        method: 'POST',
+        method: post,
         speed: 'Slow',
         quality: 'High',
-        source_type: 'embedding',
+        source_type: embeddingSource,
       },
     ];
   }
