@@ -37,7 +37,7 @@ describe('AdminService', () => {
 
       const result = await adminService.getSystemHealth();
 
-      expect(mockApiClient.get).toHaveBeenCalledWith('/database/admin/monitoring/health');
+      expect(mockApiClient.get).toHaveBeenCalledWith('/v1/public/metrics/health');
       expect(result).toEqual(mockHealthData);
     });
 
@@ -66,7 +66,7 @@ describe('AdminService', () => {
 
       const result = await adminService.getSystemMetrics();
 
-      expect(mockApiClient.get).toHaveBeenCalledWith('/database/admin/monitoring/metrics');
+      expect(mockApiClient.get).toHaveBeenCalledWith('/v1/public/metrics/summary');
       expect(result).toEqual(mockMetricsData);
     });
 
@@ -349,7 +349,7 @@ describe('AdminService', () => {
 
       const result = await adminService.getDashboardSummary();
 
-      expect(mockApiClient.get).toHaveBeenCalledWith('/database/admin/dashboard/summary');
+      expect(mockApiClient.get).toHaveBeenCalledWith('/v1/public/metrics/summary');
       expect(result).toEqual(mockSummaryData);
     });
   });

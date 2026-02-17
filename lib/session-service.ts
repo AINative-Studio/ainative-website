@@ -156,8 +156,8 @@ class SessionService {
       }, {} as Record<string, string>)
     );
     const endpoint = queryParams.toString()
-      ? `/v1/chat/sessions?${queryParams.toString()}`
-      : '/v1/chat/sessions';
+      ? `/v1/public/chat/sessions?${queryParams.toString()}`
+      : '/v1/public/chat/sessions';
     const response = await apiClient.get<SessionsListResponse>(endpoint);
     return response.data;
   }
@@ -166,7 +166,7 @@ class SessionService {
    * Get session details by ID
    */
   async getSession(sessionId: string): Promise<SessionDetail> {
-    const response = await apiClient.get<SessionDetail>(`/v1/chat/sessions/${sessionId}`);
+    const response = await apiClient.get<SessionDetail>(`/v1/public/chat/sessions/${sessionId}`);
     return response.data;
   }
 
@@ -174,7 +174,7 @@ class SessionService {
    * Delete a session
    */
   async deleteSession(sessionId: string): Promise<DeleteSessionResponse> {
-    const response = await apiClient.delete<DeleteSessionResponse>(`/v1/chat/sessions/${sessionId}`);
+    const response = await apiClient.delete<DeleteSessionResponse>(`/v1/public/chat/sessions/${sessionId}`);
     return response.data;
   }
 
@@ -279,7 +279,7 @@ class SessionService {
   async clearSessionMemory(sessionId: string): Promise<ClearMemoryResponse | null> {
     try {
       const response = await apiClient.delete<ClearMemoryResponse>(
-        `/v1/chat/sessions/${sessionId}/memory`
+        `/v1/public/chat/sessions/${sessionId}/memory`
       );
       return response.data;
     } catch (error) {

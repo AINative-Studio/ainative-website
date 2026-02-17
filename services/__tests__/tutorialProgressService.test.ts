@@ -75,7 +75,7 @@ describe('TutorialProgressService', () => {
 
       expect(result).toEqual(mockProgress);
       expect(apiClient.get).toHaveBeenCalledWith(
-        `/v1/tutorials/progress/${tutorialId}`,
+        `/v1/public/tutorials/progress/${tutorialId}`,
         { params: { userId } }
       );
     });
@@ -190,7 +190,7 @@ describe('TutorialProgressService', () => {
 
       expect(result).toEqual(mockProgress);
       expect(apiClient.post).toHaveBeenCalledWith(
-        `/v1/tutorials/progress/${tutorialId}/chapter`,
+        `/v1/public/tutorials/progress/${tutorialId}/chapter`,
         {
           userId,
           ...chapterUpdate,
@@ -262,7 +262,7 @@ describe('TutorialProgressService', () => {
 
       expect(result).toEqual(mockProgress);
       expect(apiClient.post).toHaveBeenCalledWith(
-        `/v1/tutorials/progress/${tutorialId}/quiz`,
+        `/v1/public/tutorials/progress/${tutorialId}/quiz`,
         {
           userId,
           ...quizScore,
@@ -349,7 +349,7 @@ describe('TutorialProgressService', () => {
       expect(result.certificateEarned).toBe(true);
       expect(result.completionPercentage).toBe(100);
       expect(apiClient.post).toHaveBeenCalledWith(
-        `/v1/tutorials/progress/${tutorialId}/complete`,
+        `/v1/public/tutorials/progress/${tutorialId}/complete`,
         { userId }
       );
     });
@@ -362,7 +362,7 @@ describe('TutorialProgressService', () => {
       await TutorialProgressService.resetProgress(tutorialId, userId);
 
       expect(apiClient.delete).toHaveBeenCalledWith(
-        `/v1/tutorials/progress/${tutorialId}`,
+        `/v1/public/tutorials/progress/${tutorialId}`,
         { params: { userId } }
       );
     });

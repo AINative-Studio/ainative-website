@@ -116,9 +116,9 @@ export interface SystemMetrics {
 
 export class AnalyticsService {
   private static readonly BASE_PATH = '/v1/public/zerodb';
-  private static readonly MONITORING_PATH = '/v1/monitoring';
-  private static readonly BILLING_PATH = '/v1/billing';
-  private static readonly METRICS_PATH = '/v1/monitoring/metrics';
+  private static readonly MONITORING_PATH = '/v1/public/monitoring';
+  private static readonly BILLING_PATH = '/v1/public/billing';
+  private static readonly METRICS_PATH = '/v1/public/monitoring/metrics';
 
   // Usage Analytics
   static async getUsageAnalytics(timeRange?: string, groupBy?: string): Promise<UsageMetrics[]> {

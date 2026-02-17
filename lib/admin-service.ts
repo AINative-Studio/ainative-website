@@ -181,7 +181,7 @@ class AdminService {
    * Get system health status
    */
   async getSystemHealth(): Promise<SystemHealth> {
-    const response = await apiClient.get<MetricsHealthResponse>('/v1/metrics/health');
+    const response = await apiClient.get<MetricsHealthResponse>('/v1/public/metrics/health');
     // Transform backend response to expected format
     return {
       status: response.data.status,
@@ -198,7 +198,7 @@ class AdminService {
    * Get system metrics (CPU, memory, disk, network)
    */
   async getSystemMetrics(): Promise<SystemMetrics> {
-    const response = await apiClient.get<MetricsSummaryResponse>('/v1/metrics/summary');
+    const response = await apiClient.get<MetricsSummaryResponse>('/v1/public/metrics/summary');
     // Transform backend response to expected format
     return {
       cpu: {
@@ -302,7 +302,7 @@ class AdminService {
    * Uses /v1/metrics/summary endpoint and transforms the response
    */
   async getDashboardSummary(): Promise<DashboardSummary> {
-    const response = await apiClient.get<MetricsSummaryResponse>('/v1/metrics/summary');
+    const response = await apiClient.get<MetricsSummaryResponse>('/v1/public/metrics/summary');
     const data = response.data;
 
     // Transform backend response to expected DashboardSummary format

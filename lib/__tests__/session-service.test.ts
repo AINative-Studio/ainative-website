@@ -62,7 +62,7 @@ describe('SessionService', () => {
 
       const result = await sessionService.listSessions();
 
-      expect(mockApiClient.get).toHaveBeenCalledWith('/v1/chat/sessions');
+      expect(mockApiClient.get).toHaveBeenCalledWith('/v1/public/chat/sessions');
       expect(result).toEqual(mockSessions);
     });
 
@@ -103,7 +103,7 @@ describe('SessionService', () => {
       const result = await sessionService.listSessions(params);
 
       expect(mockApiClient.get).toHaveBeenCalledWith(
-        '/v1/chat/sessions?user_id=user-1&status=active&skip=10&limit=10'
+        '/v1/public/chat/sessions?user_id=user-1&status=active&skip=10&limit=10'
       );
       expect(result).toEqual(mockSessions);
     });
@@ -153,7 +153,7 @@ describe('SessionService', () => {
 
       const result = await sessionService.getSession(sessionId);
 
-      expect(mockApiClient.get).toHaveBeenCalledWith(`/v1/chat/sessions/${sessionId}`);
+      expect(mockApiClient.get).toHaveBeenCalledWith(`/v1/public/chat/sessions/${sessionId}`);
       expect(result).toEqual(mockSession);
     });
 
@@ -180,7 +180,7 @@ describe('SessionService', () => {
 
       const result = await sessionService.deleteSession(sessionId);
 
-      expect(mockApiClient.delete).toHaveBeenCalledWith(`/v1/chat/sessions/${sessionId}`);
+      expect(mockApiClient.delete).toHaveBeenCalledWith(`/v1/public/chat/sessions/${sessionId}`);
       expect(result).toEqual(mockResponse);
     });
 
@@ -514,7 +514,7 @@ describe('SessionService', () => {
 
       const result = await sessionService.clearSessionMemory(sessionId);
 
-      expect(mockApiClient.delete).toHaveBeenCalledWith(`/v1/chat/sessions/${sessionId}/memory`);
+      expect(mockApiClient.delete).toHaveBeenCalledWith(`/v1/public/chat/sessions/${sessionId}/memory`);
       expect(result).toEqual(mockResponse);
     });
 

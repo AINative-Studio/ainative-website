@@ -51,7 +51,7 @@ describe('VideoService', () => {
       const result = await videoService.uploadVideo(uploadRequest);
 
       expect(mockApiClient.post).toHaveBeenCalledWith(
-        '/v1/video/upload',
+        '/v1/public/video/upload',
         expect.any(FormData),
         expect.objectContaining({
           headers: { 'Content-Type': 'multipart/form-data' },
@@ -95,7 +95,7 @@ describe('VideoService', () => {
 
       const result = await videoService.getVideo('video-1');
 
-      expect(mockApiClient.get).toHaveBeenCalledWith('/v1/video/video-1');
+      expect(mockApiClient.get).toHaveBeenCalledWith('/v1/public/video/video-1');
       expect(result).toEqual(mockVideo);
     });
 
@@ -135,7 +135,7 @@ describe('VideoService', () => {
 
       const result = await videoService.processVideo('video-1', processRequest);
 
-      expect(mockApiClient.post).toHaveBeenCalledWith('/v1/video/video-1/process', processRequest);
+      expect(mockApiClient.post).toHaveBeenCalledWith('/v1/public/video/video-1/process', processRequest);
       expect(result).toEqual(mockStatus);
     });
 
@@ -167,7 +167,7 @@ describe('VideoService', () => {
 
       const result = await videoService.getProcessingStatus('video-1');
 
-      expect(mockApiClient.get).toHaveBeenCalledWith('/v1/video/video-1/status');
+      expect(mockApiClient.get).toHaveBeenCalledWith('/v1/public/video/video-1/status');
       expect(result).toEqual(mockStatus);
     });
 
@@ -225,7 +225,7 @@ describe('VideoService', () => {
 
       const result = await videoService.getVideoLibrary();
 
-      expect(mockApiClient.get).toHaveBeenCalledWith('/v1/video/library');
+      expect(mockApiClient.get).toHaveBeenCalledWith('/v1/public/video/library');
       expect(result).toEqual(mockLibrary);
     });
 
@@ -252,7 +252,7 @@ describe('VideoService', () => {
       });
 
       expect(mockApiClient.get).toHaveBeenCalledWith(
-        '/v1/video/library?page=2&pageSize=10&status=completed&sortBy=createdAt&sortOrder=desc'
+        '/v1/public/video/library?page=2&pageSize=10&status=completed&sortBy=createdAt&sortOrder=desc'
       );
       expect(result).toEqual(mockLibrary);
     });
@@ -268,7 +268,7 @@ describe('VideoService', () => {
 
       const result = await videoService.deleteVideo('video-1');
 
-      expect(mockApiClient.delete).toHaveBeenCalledWith('/v1/video/video-1');
+      expect(mockApiClient.delete).toHaveBeenCalledWith('/v1/public/video/video-1');
       expect(result.success).toBe(true);
     });
 
@@ -301,7 +301,7 @@ describe('VideoService', () => {
 
       const result = await videoService.batchProcess(videoIds, options);
 
-      expect(mockApiClient.post).toHaveBeenCalledWith('/v1/video/batch-process', {
+      expect(mockApiClient.post).toHaveBeenCalledWith('/v1/public/video/batch-process', {
         videoIds,
         options,
       });
@@ -334,7 +334,7 @@ describe('VideoService', () => {
 
       const result = await videoService.getVideoAnalytics('video-1');
 
-      expect(mockApiClient.get).toHaveBeenCalledWith('/v1/video/video-1/analytics');
+      expect(mockApiClient.get).toHaveBeenCalledWith('/v1/public/video/video-1/analytics');
       expect(result).toEqual(mockAnalytics);
     });
 
