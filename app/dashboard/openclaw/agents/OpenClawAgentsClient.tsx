@@ -124,7 +124,7 @@ export default function OpenClawAgentsClient() {
                   className="grid grid-cols-[1fr_120px_100px] items-center px-5 py-3.5 border-b border-gray-50 last:border-b-0 hover:bg-gray-50 transition-colors"
                 >
                   <div className="flex items-center gap-3 min-w-0">
-                    <div className="flex h-8 w-8 items-center justify-center rounded-full bg-gray-100 text-xs font-semibold text-gray-600 shrink-0" aria-hidden="true">
+                    <div className="flex h-8 w-8 items-center justify-center rounded-full bg-[#F0EFEC] text-xs font-semibold text-[#6B6B6B] shrink-0" aria-hidden="true">
                       {agent.name.charAt(0).toUpperCase()}
                     </div>
                     <span className="text-sm font-medium text-gray-900 truncate">

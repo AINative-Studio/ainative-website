@@ -64,7 +64,7 @@ function MemberRow({ member }: MemberRowProps) {
   return (
     <div className="flex items-center gap-4 py-4">
       <div
-        className="flex h-10 w-10 items-center justify-center rounded-full bg-gray-200 text-sm font-medium text-gray-600 shrink-0"
+        className="flex h-10 w-10 items-center justify-center rounded-full bg-[#E8E6E1] text-sm font-medium text-[#6B6B6B] shrink-0"
         aria-hidden="true"
       >
         {member.avatarInitials}
