@@ -80,7 +80,7 @@ export default function IntegrationRow({ integration, onConnect, className }: In
           variant="outline"
           size="sm"
           onClick={onConnect}
-          className="border-gray-300 text-gray-700 bg-white hover:bg-gray-50 font-medium"
+          className="border-gray-400 text-gray-800 bg-white hover:bg-gray-50 font-medium"
         >
           {integration.connected ? 'Manage' : 'Connect'}
         </Button>

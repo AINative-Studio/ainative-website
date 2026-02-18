@@ -59,7 +59,7 @@ export default function OpenClawSidebar({
   return (
     <aside
       className={cn(
-        'flex flex-col w-[220px] min-h-screen bg-white border-r border-gray-200',
+        'flex flex-col w-[220px] min-h-screen bg-[#FAF9F6] border-r border-[#EEECEA]',
         className
       )}
       role="navigation"
@@ -85,12 +85,12 @@ export default function OpenClawSidebar({
               className={cn(
                 'flex items-center gap-3 px-3 py-2 text-sm rounded-lg transition-colors',
                 active
-                  ? 'bg-gray-100 text-gray-900 font-medium'
-                  : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
+                  ? 'bg-[#F0EFEC] text-gray-900 font-medium'
+                  : 'text-[#6B6B6B] hover:bg-[#F5F4F1] hover:text-gray-900'
               )}
               aria-current={active ? 'page' : undefined}
             >
-              <Icon className={cn('h-4 w-4 shrink-0', active ? 'text-gray-900' : 'text-gray-500')} />
+              <Icon className={cn('h-4 w-4 shrink-0', active ? 'text-gray-900' : 'text-[#8C8C8C]')} />
               <span>{item.name}</span>
             </Link>
           );
@@ -102,23 +102,23 @@ export default function OpenClawSidebar({
         {/* Message Founders */}
         <Link
           href="/dashboard/openclaw/message-founders"
-          className="flex items-center gap-3 px-3 py-2 text-sm text-gray-600 hover:bg-gray-50 hover:text-gray-900 rounded-lg transition-colors"
+          className="flex items-center gap-3 px-3 py-2 text-sm text-[#6B6B6B] hover:bg-[#F5F4F1] hover:text-gray-900 rounded-lg transition-colors"
         >
-          <MessageSquare className="h-4 w-4 shrink-0 text-gray-500" />
+          <MessageSquare className="h-4 w-4 shrink-0 text-[#8C8C8C]" />
           <span>Message Founders</span>
         </Link>
 
         {/* User profile */}
         <div className="flex items-center gap-3 px-3 py-2">
           <div
-            className="flex h-8 w-8 items-center justify-center rounded-full bg-gray-200 text-xs font-medium text-gray-600"
+            className="flex h-8 w-8 items-center justify-center rounded-full bg-[#E8E6E1] text-xs font-medium text-[#6B6B6B]"
             aria-hidden="true"
           >
             {userInitials}
           </div>
           <div className="min-w-0">
             <p className="text-sm font-medium text-gray-900 truncate">{userName}</p>
-            <p className="text-xs text-gray-500 truncate">{userEmail}</p>
+            <p className="text-xs text-[#8C8C8C] truncate">{userEmail}</p>
           </div>
         </div>
       </div>

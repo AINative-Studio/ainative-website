@@ -45,7 +45,7 @@ function StatCard({ label, value, index }: StatCardProps) {
       variants={fadeUp}
       initial="hidden"
       animate="visible"
-      className="flex flex-col gap-1 rounded-lg border border-gray-200 bg-white p-4"
+      className="flex flex-col gap-1 rounded-lg border border-[#E8E6E1] bg-white p-4"
     >
       <span className="text-xs font-medium text-gray-500 uppercase tracking-wider">
         {label}
@@ -70,9 +70,9 @@ function AgentRow({ agent, index }: AgentRowProps) {
     >
       <Link
         href={`/dashboard/openclaw/agents/${agent.id}`}
-        className="flex items-center gap-4 py-3 px-2 rounded-lg hover:bg-gray-50 transition-colors group"
+        className="flex items-center gap-4 py-3 px-2 rounded-lg hover:bg-[#FAFAF8] transition-colors group"
       >
-        <div className="flex h-8 w-8 items-center justify-center rounded-full bg-gray-100 text-xs font-semibold text-gray-600 shrink-0" aria-hidden="true">
+        <div className="flex h-8 w-8 items-center justify-center rounded-full bg-[#F0EFEC] text-xs font-semibold text-[#6B6B6B] shrink-0" aria-hidden="true">
           {agent.name.charAt(0).toUpperCase()}
         </div>
         <div className="flex-1 min-w-0">
