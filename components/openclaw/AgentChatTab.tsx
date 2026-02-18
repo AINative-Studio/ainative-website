@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useRef, useEffect } from 'react';
 import { MessageSquare, Send } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import type { OpenClawAgent } from '@/types/openclaw';
@@ -19,6 +19,14 @@ interface ChatMessage {
 export default function AgentChatTab({ agent }: AgentChatTabProps) {
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [input, setInput] = useState('');
+  const replyTimeoutRef = useRef<NodeJS.Timeout>();
+
+  // Cleanup timeout on unmount
+  useEffect(() => {
+    return () => {
+      if (replyTimeoutRef.current) clearTimeout(replyTimeoutRef.current);
+    };
+  }, []);
 
   const handleSend = useCallback(() => {
     const trimmed = input.trim();
@@ -35,7 +43,7 @@ export default function AgentChatTab({ agent }: AgentChatTabProps) {
     setInput('');
 
     // Simulate agent response after a short delay
-    setTimeout(() => {
+    replyTimeoutRef.current = setTimeout(() => {
       const assistantMessage: ChatMessage = {
         id: `msg-${Date.now()}-reply`,
         role: 'assistant',

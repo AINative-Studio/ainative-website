@@ -1,13 +1,8 @@
 'use client';
 
 import { Wand2 } from 'lucide-react';
-import type { OpenClawAgent } from '@/types/openclaw';
 
-interface AgentSkillsTabProps {
-  agent: OpenClawAgent;
-}
-
-export default function AgentSkillsTab({ agent }: AgentSkillsTabProps) {
+export default function AgentSkillsTab() {
   return (
     <div className="flex flex-col items-center justify-center py-24 px-8 text-center">
       <div className="flex items-center justify-center w-14 h-14 rounded-full bg-gray-100 mb-5">

@@ -18,6 +18,7 @@ import {
 import { cn } from '@/lib/utils';
 import type { OpenClawAgent, UpdateAgentSettingsRequest, HeartbeatInterval } from '@/types/openclaw';
 import { MOCK_INTEGRATIONS, MOCK_API_KEY_PROVIDERS } from '@/lib/openclaw-mock-data';
+import { MODEL_OPTIONS_RAW as MODEL_OPTIONS, HEARTBEAT_OPTIONS } from '@/lib/openclaw-utils';
 import IntegrationRow from './IntegrationRow';
 
 interface AgentSettingsTabProps {
@@ -27,21 +28,6 @@ interface AgentSettingsTabProps {
   onRunHeartbeat: () => void;
   onRestart: () => void;
 }
-
-const MODEL_OPTIONS = [
-  { value: 'anthropic/claude-opus-4-5', label: 'anthropic/claude-opus-4-5' },
-  { value: 'anthropic/claude-sonnet-4', label: 'anthropic/claude-sonnet-4' },
-  { value: 'openai/gpt-4o', label: 'openai/gpt-4o' },
-  { value: 'google/gemini-2.0-flash', label: 'google/gemini-2.0-flash' },
-];
-
-const HEARTBEAT_OPTIONS: { value: HeartbeatInterval; label: string }[] = [
-  { value: '5m', label: 'Every 5 min' },
-  { value: '15m', label: 'Every 15 min' },
-  { value: '30m', label: 'Every 30 min' },
-  { value: '1h', label: 'Every 1 hour' },
-  { value: '2h', label: 'Every 2 hours' },
-];
 
 export default function AgentSettingsTab({
   agent,

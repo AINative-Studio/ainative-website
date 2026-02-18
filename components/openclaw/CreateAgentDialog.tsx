@@ -21,19 +21,13 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import type { CreateAgentRequest } from '@/types/openclaw';
+import { MODEL_OPTIONS } from '@/lib/openclaw-utils';
 
 interface CreateAgentDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   onSubmit: (data: CreateAgentRequest) => void;
 }
-
-const MODEL_OPTIONS = [
-  { value: 'anthropic/claude-opus-4-5', label: 'Claude Opus 4.5' },
-  { value: 'anthropic/claude-sonnet-4', label: 'Claude Sonnet 4' },
-  { value: 'openai/gpt-4o', label: 'GPT-4o' },
-  { value: 'google/gemini-2.0-flash', label: 'Gemini 2.0 Flash' },
-];
 
 export default function CreateAgentDialog({
   open,

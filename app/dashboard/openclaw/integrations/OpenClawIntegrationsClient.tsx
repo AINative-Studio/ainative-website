@@ -1,20 +1,12 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { useAgentList } from '@/hooks/useOpenClawAgents';
 import { MOCK_INTEGRATIONS } from '@/lib/openclaw-mock-data';
+import { fadeUp } from '@/lib/openclaw-utils';
 import AgentPicker from '@/components/openclaw/AgentPicker';
 import IntegrationRow from '@/components/openclaw/IntegrationRow';
-
-const fadeUp = {
-  hidden: { opacity: 0, y: 12 },
-  visible: (i: number) => ({
-    opacity: 1,
-    y: 0,
-    transition: { delay: i * 0.06, duration: 0.35, ease: 'easeOut' },
-  }),
-};
 
 export default function OpenClawIntegrationsClient() {
   const { data } = useAgentList();
@@ -24,9 +16,11 @@ export default function OpenClawIntegrationsClient() {
   );
 
   // Update selection when agents load
-  if (agents.length > 0 && !selectedAgentId) {
-    setSelectedAgentId(agents[0].id);
-  }
+  useEffect(() => {
+    if (agents.length > 0 && !selectedAgentId) {
+      setSelectedAgentId(agents[0].id);
+    }
+  }, [agents, selectedAgentId]);
 
   return (
     <div className="space-y-8">

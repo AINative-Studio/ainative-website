@@ -9,30 +9,11 @@ import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
 import { useAgentList, useCreateAgent } from '@/hooks/useOpenClawAgents';
 import { MOCK_TEMPLATES } from '@/lib/openclaw-mock-data';
+import { fadeUp, formatRelativeTime } from '@/lib/openclaw-utils';
 import AgentStatusBadge from '@/components/openclaw/AgentStatusBadge';
 import TemplateGrid from '@/components/openclaw/TemplateGrid';
 import CreateAgentDialog from '@/components/openclaw/CreateAgentDialog';
 import type { CreateAgentRequest } from '@/types/openclaw';
-
-const fadeUp = {
-  hidden: { opacity: 0, y: 12 },
-  visible: (i: number) => ({
-    opacity: 1,
-    y: 0,
-    transition: { delay: i * 0.05, duration: 0.3, ease: 'easeOut' },
-  }),
-};
-
-function formatRelativeTime(dateStr: string | null): string {
-  if (!dateStr) return '--';
-  const diff = Date.now() - new Date(dateStr).getTime();
-  const hours = Math.floor(diff / 3600000);
-  const minutes = Math.floor(diff / 60000);
-  if (hours >= 24) return `${Math.floor(hours / 24)}d ago`;
-  if (hours >= 1) return `${hours}h ago`;
-  if (minutes >= 1) return `${minutes}m ago`;
-  return 'just now';
-}
 
 export default function OpenClawAgentsClient() {
   const router = useRouter();
@@ -143,7 +124,7 @@ export default function OpenClawAgentsClient() {
                   className="grid grid-cols-[1fr_120px_100px] items-center px-5 py-3.5 border-b border-gray-50 last:border-b-0 hover:bg-gray-50 transition-colors"
                 >
                   <div className="flex items-center gap-3 min-w-0">
-                    <div className="flex h-8 w-8 items-center justify-center rounded-full bg-gray-100 text-xs font-semibold text-gray-600 shrink-0">
+                    <div className="flex h-8 w-8 items-center justify-center rounded-full bg-gray-100 text-xs font-semibold text-gray-600 shrink-0" aria-hidden="true">
                       {agent.name.charAt(0).toUpperCase()}
                     </div>
                     <span className="text-sm font-medium text-gray-900 truncate">

@@ -33,7 +33,16 @@ export default function OpenClawLayout({ children }: OpenClawLayoutProps) {
 
   return (
     <>
-      {/* Hide the parent DashboardLayout sidebar and override background */}
+      {/*
+        COUPLING NOTE: These global CSS overrides hide the parent DashboardLayout's
+        sidebar and restyle its background for the OpenClaw section. This creates a
+        dependency on the following data-testid attributes in DashboardLayout:
+          - "desktop-sidebar"  (components/layout/DashboardLayout.tsx)
+          - "dashboard-layout" (components/layout/DashboardLayout.tsx)
+        If those test IDs change, these overrides will silently break.
+        TODO: Refactor to use a context/prop-based opt-out mechanism in DashboardLayout
+        instead of global CSS overrides. See: https://github.com/AINative-Studio/ainative-website/issues/TBD
+      */}
       <style jsx global>{`
         [data-testid="desktop-sidebar"] {
           display: none !important;

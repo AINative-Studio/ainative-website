@@ -8,6 +8,8 @@ import { MOCK_AGENTS } from './openclaw-mock-data';
 
 class OpenClawService {
   private baseUrl = '/v1/agent-swarm/agents';
+  // Own copy of mock data to avoid mutating the shared module-level array
+  private agents: OpenClawAgent[] = [...MOCK_AGENTS];
 
   async listAgents(
     status?: string,
@@ -15,11 +17,7 @@ class OpenClawService {
     offset: number = 0
   ): Promise<OpenClawAgentListResponse> {
     // TODO: Replace with real API call
-    // const params = new URLSearchParams({ limit: String(limit), offset: String(offset) });
-    // if (status) params.set('status', status);
-    // const response = await apiClient.get<OpenClawAgentListResponse>(`${this.baseUrl}?${params}`);
-    // return response.data;
-    let agents = [...MOCK_AGENTS];
+    let agents = [...this.agents];
     if (status) {
       agents = agents.filter(a => a.status === status);
     }
@@ -33,17 +31,13 @@ class OpenClawService {
 
   async getAgent(agentId: string): Promise<OpenClawAgent> {
     // TODO: Replace with real API call
-    // const response = await apiClient.get<OpenClawAgent>(`${this.baseUrl}/${agentId}`);
-    // return response.data;
-    const agent = MOCK_AGENTS.find(a => a.id === agentId);
+    const agent = this.agents.find(a => a.id === agentId);
     if (!agent) throw new Error(`Agent ${agentId} not found`);
-    return agent;
+    return { ...agent };
   }
 
   async createAgent(data: CreateAgentRequest): Promise<OpenClawAgent> {
     // TODO: Replace with real API call
-    // const response = await apiClient.post<OpenClawAgent>(this.baseUrl, data);
-    // return response.data;
     const newAgent: OpenClawAgent = {
       id: `agent-${Date.now()}`,
       name: data.name,
@@ -67,42 +61,40 @@ class OpenClawService {
       pausedAt: null,
       stoppedAt: null,
     };
-    MOCK_AGENTS.push(newAgent);
-    return newAgent;
+    this.agents.push(newAgent);
+    return { ...newAgent };
   }
 
   async provisionAgent(agentId: string): Promise<OpenClawAgent> {
     // TODO: Replace with real API call
-    // const response = await apiClient.post<OpenClawAgent>(`${this.baseUrl}/${agentId}/provision`);
-    // return response.data;
-    const agent = MOCK_AGENTS.find(a => a.id === agentId);
+    const agent = this.agents.find(a => a.id === agentId);
     if (!agent) throw new Error(`Agent ${agentId} not found`);
     agent.status = 'running';
     agent.provisionedAt = new Date().toISOString();
-    return agent;
+    return { ...agent };
   }
 
   async pauseAgent(agentId: string): Promise<OpenClawAgent> {
     // TODO: Replace with real API call
-    const agent = MOCK_AGENTS.find(a => a.id === agentId);
+    const agent = this.agents.find(a => a.id === agentId);
     if (!agent) throw new Error(`Agent ${agentId} not found`);
     agent.status = 'paused';
     agent.pausedAt = new Date().toISOString();
-    return agent;
+    return { ...agent };
   }
 
   async resumeAgent(agentId: string): Promise<OpenClawAgent> {
     // TODO: Replace with real API call
-    const agent = MOCK_AGENTS.find(a => a.id === agentId);
+    const agent = this.agents.find(a => a.id === agentId);
     if (!agent) throw new Error(`Agent ${agentId} not found`);
     agent.status = 'running';
     agent.pausedAt = null;
-    return agent;
+    return { ...agent };
   }
 
   async updateSettings(agentId: string, data: UpdateAgentSettingsRequest): Promise<OpenClawAgent> {
     // TODO: Replace with real API call
-    const agent = MOCK_AGENTS.find(a => a.id === agentId);
+    const agent = this.agents.find(a => a.id === agentId);
     if (!agent) throw new Error(`Agent ${agentId} not found`);
     if (data.persona !== undefined) agent.persona = data.persona;
     if (data.model !== undefined) agent.model = data.model;
@@ -112,13 +104,13 @@ class OpenClawService {
       if (data.heartbeat.checklist) agent.heartbeatChecklist = data.heartbeat.checklist;
     }
     agent.updatedAt = new Date().toISOString();
-    return agent;
+    return { ...agent };
   }
 
   async deleteAgent(agentId: string): Promise<void> {
     // TODO: Replace with real API call
-    const index = MOCK_AGENTS.findIndex(a => a.id === agentId);
-    if (index !== -1) MOCK_AGENTS.splice(index, 1);
+    const index = this.agents.findIndex(a => a.id === agentId);
+    if (index !== -1) this.agents.splice(index, 1);
   }
 
   async executeHeartbeat(agentId: string): Promise<{ status: string; message: string }> {

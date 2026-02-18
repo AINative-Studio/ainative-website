@@ -1,12 +1,22 @@
 'use client';
 
-import { useCallback } from 'react';
+import { useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
 import { ArrowLeft, Pause, Play, Sparkles } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@/components/ui/alert-dialog';
 import {
   useAgent,
   usePauseAgent,
@@ -15,40 +25,17 @@ import {
   useDeleteAgent,
   useExecuteHeartbeat,
 } from '@/hooks/useOpenClawAgents';
+import {
+  fadeUpSimple as fadeUp,
+  formatModelShort,
+  formatHeartbeatInterval as formatHeartbeatShort,
+} from '@/lib/openclaw-utils';
 import AgentStatusBadge from '@/components/openclaw/AgentStatusBadge';
 import AgentSettingsTab from '@/components/openclaw/AgentSettingsTab';
 import AgentChatTab from '@/components/openclaw/AgentChatTab';
 import AgentChannelsTab from '@/components/openclaw/AgentChannelsTab';
 import AgentSkillsTab from '@/components/openclaw/AgentSkillsTab';
 import type { UpdateAgentSettingsRequest } from '@/types/openclaw';
-
-const fadeUp = {
-  hidden: { opacity: 0, y: 12 },
-  visible: { opacity: 1, y: 0, transition: { duration: 0.35, ease: 'easeOut' } },
-};
-
-function formatModelShort(model: string): string {
-  const parts = model.split('/');
-  const name = parts[parts.length - 1];
-  return name
-    .replace('claude-', 'Claude ')
-    .replace('opus-4-5', 'Opus 4.5')
-    .replace('sonnet-4', 'Sonnet 4')
-    .replace('gpt-4o', 'GPT-4o')
-    .replace('gemini-2.0-flash', 'Gemini 2.0 Flash');
-}
-
-function formatHeartbeatShort(interval: string | null): string {
-  if (!interval) return '';
-  const map: Record<string, string> = {
-    '5m': 'Every 5m',
-    '15m': 'Every 15m',
-    '30m': 'Every 30m',
-    '1h': 'Every 1h',
-    '2h': 'Every 2h',
-  };
-  return map[interval] ?? interval;
-}
 
 interface OpenClawAgentDetailClientProps {
   agentId: string;
@@ -64,43 +51,44 @@ export default function OpenClawAgentDetailClient({
   const updateSettings = useUpdateAgentSettings(agentId);
   const deleteAgent = useDeleteAgent();
   const executeHeartbeat = useExecuteHeartbeat();
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
 
   const isPaused = agent?.status === 'paused';
 
-  const handleTogglePause = useCallback(() => {
+  const handleTogglePause = () => {
     if (!agent) return;
     if (isPaused) {
       resumeAgent.mutate(agent.id);
     } else {
       pauseAgent.mutate(agent.id);
     }
-  }, [agent, isPaused, pauseAgent, resumeAgent]);
+  };
 
-  const handleSave = useCallback(
-    (data: UpdateAgentSettingsRequest) => {
-      updateSettings.mutate(data);
-    },
-    [updateSettings]
-  );
+  const handleSave = (data: UpdateAgentSettingsRequest) => {
+    updateSettings.mutate(data);
+  };
 
-  const handleDelete = useCallback(() => {
+  const handleDelete = () => {
     if (!agent) return;
-    if (window.confirm('Are you sure you want to delete this agent? This action cannot be undone.')) {
-      deleteAgent.mutate(agent.id, {
-        onSuccess: () => {
-          router.push('/dashboard/openclaw/agents');
-        },
-      });
-    }
-  }, [agent, deleteAgent, router]);
+    setDeleteDialogOpen(true);
+  };
 
-  const handleRunHeartbeat = useCallback(() => {
+  const confirmDelete = () => {
+    if (!agent) return;
+    deleteAgent.mutate(agent.id, {
+      onSuccess: () => {
+        router.push('/dashboard/openclaw/agents');
+      },
+    });
+    setDeleteDialogOpen(false);
+  };
+
+  const handleRunHeartbeat = () => {
     if (!agent) return;
     executeHeartbeat.mutate(agent.id);
-  }, [agent, executeHeartbeat]);
+  };
 
-  const handleRestart = useCallback(() => {
-    // Restart logic placeholder - in production this would call an API
+  const handleRestart = () => {
     if (!agent) return;
     pauseAgent.mutate(agent.id, {
       onSuccess: () => {
@@ -109,7 +97,7 @@ export default function OpenClawAgentDetailClient({
         }, 1000);
       },
     });
-  }, [agent, pauseAgent, resumeAgent]);
+  };
 
   if (isLoading) {
     return (
@@ -251,13 +239,36 @@ export default function OpenClawAgentDetailClient({
         </TabsContent>
 
         <TabsContent value="channels" className="mt-6">
-          <AgentChannelsTab agent={agent} />
+          <AgentChannelsTab />
         </TabsContent>
 
         <TabsContent value="skills" className="mt-6">
-          <AgentSkillsTab agent={agent} />
+          <AgentSkillsTab />
         </TabsContent>
       </Tabs>
+
+      {/* Delete confirmation dialog */}
+      <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
+        <AlertDialogContent className="bg-white border-gray-200">
+          <AlertDialogHeader>
+            <AlertDialogTitle className="text-gray-900">Delete Agent</AlertDialogTitle>
+            <AlertDialogDescription className="text-gray-500">
+              Are you sure you want to delete this agent? This action cannot be undone.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel className="border-gray-200 text-gray-700 bg-white hover:bg-gray-50">
+              Cancel
+            </AlertDialogCancel>
+            <AlertDialogAction
+              onClick={confirmDelete}
+              className="bg-red-600 hover:bg-red-700 text-white"
+            >
+              Delete
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </motion.div>
   );
 }

@@ -1,14 +1,9 @@
 'use client';
 
-import type { OpenClawAgent } from '@/types/openclaw';
 import { MOCK_CHANNELS } from '@/lib/openclaw-mock-data';
 import ChannelRow from './ChannelRow';
 
-interface AgentChannelsTabProps {
-  agent: OpenClawAgent;
-}
-
-export default function AgentChannelsTab({ agent }: AgentChannelsTabProps) {
+export default function AgentChannelsTab() {
   return (
     <div className="max-w-3xl">
       <div className="mb-4">

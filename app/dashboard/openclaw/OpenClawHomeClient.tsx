@@ -6,52 +6,15 @@ import { useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
 import { useAgentList } from '@/hooks/useOpenClawAgents';
 import { MOCK_TEMPLATES } from '@/lib/openclaw-mock-data';
+import {
+  fadeUp,
+  formatRelativeTime,
+  formatHeartbeatInterval,
+  formatModelShort,
+} from '@/lib/openclaw-utils';
 import AgentStatusBadge from '@/components/openclaw/AgentStatusBadge';
 import TemplateGrid from '@/components/openclaw/TemplateGrid';
 import type { OpenClawAgent } from '@/types/openclaw';
-
-const fadeUp = {
-  hidden: { opacity: 0, y: 12 },
-  visible: (i: number) => ({
-    opacity: 1,
-    y: 0,
-    transition: { delay: i * 0.06, duration: 0.35, ease: 'easeOut' },
-  }),
-};
-
-function formatRelativeTime(dateStr: string | null): string {
-  if (!dateStr) return '--';
-  const diff = Date.now() - new Date(dateStr).getTime();
-  const hours = Math.floor(diff / 3600000);
-  const minutes = Math.floor(diff / 60000);
-  if (hours >= 24) return `${Math.floor(hours / 24)}d ago`;
-  if (hours >= 1) return `${hours}h ago`;
-  if (minutes >= 1) return `${minutes}m ago`;
-  return 'just now';
-}
-
-function formatHeartbeatInterval(interval: string | null): string {
-  if (!interval) return '';
-  const map: Record<string, string> = {
-    '5m': 'Every 5m',
-    '15m': 'Every 15m',
-    '30m': 'Every 30m',
-    '1h': 'Every 1h',
-    '2h': 'Every 2h',
-  };
-  return map[interval] ?? interval;
-}
-
-function formatModelShort(model: string): string {
-  const parts = model.split('/');
-  const name = parts[parts.length - 1];
-  return name
-    .replace('claude-', 'Claude ')
-    .replace('opus-4-5', 'Opus 4.5')
-    .replace('sonnet-4', 'Sonnet 4')
-    .replace('gpt-4o', 'GPT-4o')
-    .replace('gemini-2.0-flash', 'Gemini 2.0 Flash');
-}
 
 function getGreeting(): string {
   const hour = new Date().getHours();
@@ -109,7 +72,7 @@ function AgentRow({ agent, index }: AgentRowProps) {
         href={`/dashboard/openclaw/agents/${agent.id}`}
         className="flex items-center gap-4 py-3 px-2 rounded-lg hover:bg-gray-50 transition-colors group"
       >
-        <div className="flex h-8 w-8 items-center justify-center rounded-full bg-gray-100 text-xs font-semibold text-gray-600 shrink-0">
+        <div className="flex h-8 w-8 items-center justify-center rounded-full bg-gray-100 text-xs font-semibold text-gray-600 shrink-0" aria-hidden="true">
           {agent.name.charAt(0).toUpperCase()}
         </div>
         <div className="flex-1 min-w-0">
