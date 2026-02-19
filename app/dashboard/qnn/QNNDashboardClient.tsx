@@ -21,9 +21,12 @@ import {
   AlertCircle,
   XCircle,
   ArrowUpRight,
-  Shield
+  Shield,
+  Loader2
 } from 'lucide-react';
 import Link from 'next/link';
+import { useQNNDashboardData } from '@/hooks/useQNNDashboard';
+import { Model, TrainingJob, QuantumMetrics, ModelStatus } from '@/types/qnn.types';
 
 const fadeUp = {
   hidden: { opacity: 0, y: 20 },
@@ -40,103 +43,21 @@ const stagger = {
   }
 };
 
-interface Model {
-  id: string;
-  name: string;
-  architecture: string;
-  status: 'draft' | 'ready' | 'training' | 'trained' | 'deployed' | 'failed';
-  accuracy?: number;
-  lastUpdated: string;
-}
-
-interface TrainingJob {
-  id: string;
-  modelName: string;
-  status: 'queued' | 'training' | 'completed' | 'failed';
-  progress: number;
-  epoch: number;
-  totalEpochs: number;
-  startedAt: string;
-}
-
-interface QuantumMetrics {
-  fidelity: number;
-  coherence: number;
-  entanglement: number;
-  circuitDepth: number;
-}
-
 export default function QNNDashboardClient() {
   const [mounted, setMounted] = useState(false);
-  const [isRefreshing, setIsRefreshing] = useState(false);
 
-  // Mock data - in production this would come from QNNApiClient
-  const [models] = useState<Model[]>([
-    {
-      id: '1',
-      name: 'Quantum Image Classifier',
-      architecture: 'quantum-cnn',
-      status: 'deployed',
-      accuracy: 94.5,
-      lastUpdated: '2025-01-10'
-    },
-    {
-      id: '2',
-      name: 'Hybrid Text Analyzer',
-      architecture: 'hybrid-quantum-classical',
-      status: 'training',
-      accuracy: 87.2,
-      lastUpdated: '2025-01-12'
-    },
-    {
-      id: '3',
-      name: 'VQC Sentiment Model',
-      architecture: 'variational-quantum-classifier',
-      status: 'ready',
-      accuracy: 91.8,
-      lastUpdated: '2025-01-08'
-    }
-  ]);
-
-  const [trainingJobs] = useState<TrainingJob[]>([
-    {
-      id: 'job-1',
-      modelName: 'Hybrid Text Analyzer',
-      status: 'training',
-      progress: 65,
-      epoch: 13,
-      totalEpochs: 20,
-      startedAt: '2025-01-12T10:30:00Z'
-    },
-    {
-      id: 'job-2',
-      modelName: 'New Transformer Model',
-      status: 'queued',
-      progress: 0,
-      epoch: 0,
-      totalEpochs: 50,
-      startedAt: '2025-01-12T14:00:00Z'
-    }
-  ]);
-
-  const [quantumMetrics] = useState<QuantumMetrics>({
-    fidelity: 0.987,
-    coherence: 0.923,
-    entanglement: 0.856,
-    circuitDepth: 12
-  });
+  // Fetch dashboard data from production API
+  const { data: dashboardData, isLoading, error, refetch, isRefetching } = useQNNDashboardData();
 
   useEffect(() => {
     setMounted(true);
   }, []);
 
   const handleRefresh = async () => {
-    setIsRefreshing(true);
-    await new Promise(resolve => setTimeout(resolve, 1000));
-    setIsRefreshing(false);
+    await refetch();
   };
 
-  const getStatusColor = (status: Model['status']) => {
+  const getStatusColor = (status: ModelStatus) => {
     switch (status) {
       case 'deployed':
         return 'bg-green-500/20 text-green-400 border-green-500/30';
@@ -153,7 +74,7 @@ export default function QNNDashboardClient() {
     }
   };
 
-  const getStatusIcon = (status: TrainingJob['status']) => {
+  const getTrainingStatusIcon = (status: TrainingJob['status']) => {
     switch (status) {
       case 'training':
         return <Activity className="h-4 w-4 animate-pulse text-yellow-400" />;
@@ -176,6 +97,43 @@ export default function QNNDashboardClient() {
     );
   }
 
+  // Show loading state on initial load
+  if (isLoading && !dashboardData) {
+    return (
+      <div className="flex flex-col items-center justify-center h-96 space-y-4">
+        <Loader2 className="h-12 w-12 animate-spin text-primary" />
+        <p className="text-muted-foreground">Loading QNN Dashboard...</p>
+      </div>
+    );
+  }
+
+  // Show error state
+  if (error && !dashboardData) {
+    return (
+      <div className="flex flex-col items-center justify-center h-96 space-y-4">
+        <AlertCircle className="h-12 w-12 text-red-400" />
+        <p className="text-red-400">Failed to load dashboard data</p>
+        <p className="text-sm text-muted-foreground">{error.message}</p>
+        <Button onClick={handleRefresh} variant="outline">
+          <RefreshCcw className="h-4 w-4 mr-2" />
+          Retry
+        </Button>
+      </div>
+    );
+  }
+
+  // Extract data with fallbacks
+  const models = dashboardData?.models || [];
+  const trainingJobs = dashboardData?.trainingJobs || [];
+  const quantumMetrics = dashboardData?.quantumMetrics;
+  const stats = dashboardData?.stats || {
+    totalModels: 0,
+    deployedModels: 0,
+    activeTraining: 0,
+    queuedJobs: 0,
+    averageAccuracy: 0,
+  };
+
   return (
     <div className="space-y-8 p-8">
       {/* Header */}
@@ -195,10 +153,10 @@ export default function QNNDashboardClient() {
             <Button
               variant="outline"
               onClick={handleRefresh}
-              disabled={isRefreshing}
+              disabled={isRefetching}
               className="gap-2"
             >
-              <RefreshCcw className={`h-4 w-4 ${isRefreshing ? 'animate-spin' : ''}`} />
+              <RefreshCcw className={`h-4 w-4 ${isRefetching ? 'animate-spin' : ''}`} />
               Refresh
             </Button>
             <Button className="bg-[#4B6FED] hover:bg-[#4B6FED]/80 gap-2">
@@ -223,9 +181,9 @@ export default function QNNDashboardClient() {
               <Layers className="h-4 w-4 text-[#4B6FED]" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">{models.length}</div>
+              <div className="text-2xl font-bold">{stats.totalModels}</div>
               <p className="text-xs text-muted-foreground mt-1">
-                {models.filter(m => m.status === 'deployed').length} deployed
+                {stats.deployedModels} deployed
               </p>
             </CardContent>
           </Card>
@@ -238,11 +196,9 @@ export default function QNNDashboardClient() {
               <Activity className="h-4 w-4 text-[#4B6FED]" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">
-                {trainingJobs.filter(j => j.status === 'training').length}
-              </div>
+              <div className="text-2xl font-bold">{stats.activeTraining}</div>
               <p className="text-xs text-muted-foreground mt-1">
-                {trainingJobs.filter(j => j.status === 'queued').length} queued
+                {stats.queuedJobs} queued
               </p>
             </CardContent>
           </Card>
@@ -256,9 +212,13 @@ export default function QNNDashboardClient() {
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold">
-                {(quantumMetrics.fidelity * 100).toFixed(1)}%
+                {quantumMetrics?.quantumState?.fidelity
+                  ? (quantumMetrics.quantumState.fidelity * 100).toFixed(1)
+                  : 'N/A'}%
               </div>
-              <Progress value={quantumMetrics.fidelity * 100} className="mt-2 h-1.5" />
+              {quantumMetrics?.quantumState?.fidelity && (
+                <Progress value={quantumMetrics.quantumState.fidelity * 100} className="mt-2 h-1.5" />
+              )}
             </CardContent>
           </Card>
         </motion.div>
@@ -271,7 +231,7 @@ export default function QNNDashboardClient() {
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold">
-                {(models.reduce((sum, m) => sum + (m.accuracy || 0), 0) / models.length).toFixed(1)}%
+                {stats.averageAccuracy > 0 ? stats.averageAccuracy.toFixed(1) : '0.0'}%
               </div>
               <p className="text-xs text-muted-foreground mt-1">
                 Across all models
@@ -309,32 +269,36 @@ export default function QNNDashboardClient() {
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
-                {models.map((model) => (
-                  <div
-                    key={model.id}
-                    className="flex items-center justify-between p-3 bg-vite-bg rounded-lg border border-border"
-                  >
-                    <div className="flex-1">
-                      <div className="flex items-center gap-2">
-                        <p className="font-medium">{model.name}</p>
-                        <Badge className={getStatusColor(model.status)}>
-                          {model.status}
-                        </Badge>
+                {models.length > 0 ? (
+                  models.slice(0, 3).map((model) => (
+                    <div
+                      key={model.id}
+                      className="flex items-center justify-between p-3 bg-vite-bg rounded-lg border border-border"
+                    >
+                      <div className="flex-1">
+                        <div className="flex items-center gap-2">
+                          <p className="font-medium">{model.name}</p>
+                          <Badge className={getStatusColor(model.status)}>
+                            {model.status}
+                          </Badge>
+                        </div>
+                        <p className="text-sm text-muted-foreground mt-1">
+                          {model.architecture}
+                        </p>
                       </div>
-                      <p className="text-sm text-muted-foreground mt-1">
-                        {model.architecture}
-                      </p>
+                      <div className="text-right">
+                        <p className="text-xs text-muted-foreground">
+                          {new Date(model.updatedAt).toLocaleDateString()}
+                        </p>
+                      </div>
                     </div>
-                    <div className="text-right">
-                      {model.accuracy && (
-                        <p className="font-medium text-green-400">{model.accuracy}%</p>
-                      )}
-                      <p className="text-xs text-muted-foreground">
-                        {new Date(model.lastUpdated).toLocaleDateString()}
-                      </p>
-                    </div>
+                  ))
+                ) : (
+                  <div className="text-center py-6 text-muted-foreground">
+                    <Cpu className="h-8 w-8 mx-auto mb-2 opacity-50" />
+                    <p>No models found</p>
                   </div>
-                ))}
+                )}
               </div>
             </CardContent>
           </Card>
@@ -364,48 +328,47 @@ export default function QNNDashboardClient() {
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
-                {trainingJobs.map((job) => (
-                  <div
-                    key={job.id}
-                    className="p-3 bg-vite-bg rounded-lg border border-border"
-                  >
-                    <div className="flex items-center justify-between mb-2">
-                      <div className="flex items-center gap-2">
-                        {getStatusIcon(job.status)}
-                        <p className="font-medium">{job.modelName}</p>
-                      </div>
-                      <div className="flex gap-1">
-                        {job.status === 'training' && (
-                          <>
+                {trainingJobs.length > 0 ? (
+                  trainingJobs.slice(0, 3).map((job) => (
+                    <div
+                      key={job.id}
+                      className="p-3 bg-vite-bg rounded-lg border border-border"
+                    >
+                      <div className="flex items-center justify-between mb-2">
+                        <div className="flex items-center gap-2">
+                          {getTrainingStatusIcon(job.status)}
+                          <p className="font-medium">{job.modelId}</p>
+                        </div>
+                        <div className="flex gap-1">
+                          {job.status === 'training' && (
                             <Button variant="ghost" size="icon" className="h-8 w-8">
                               <Pause className="h-4 w-4" />
                             </Button>
-                          </>
-                        )}
-                        {job.status === 'queued' && (
-                          <Button variant="ghost" size="icon" className="h-8 w-8">
-                            <Play className="h-4 w-4" />
-                          </Button>
-                        )}
-                      </div>
-                    </div>
-                    {job.status === 'training' && (
-                      <>
-                        <Progress value={job.progress} className="h-2 mb-2" />
-                        <div className="flex justify-between text-xs text-muted-foreground">
-                          <span>Epoch {job.epoch}/{job.totalEpochs}</span>
-                          <span>{job.progress}% complete</span>
+                          )}
+                          {job.status === 'queued' && (
+                            <Button variant="ghost" size="icon" className="h-8 w-8">
+                              <Play className="h-4 w-4" />
+                            </Button>
+                          )}
                         </div>
-                      </>
-                    )}
-                    {job.status === 'queued' && (
-                      <p className="text-xs text-muted-foreground">
-                        Waiting in queue...
-                      </p>
-                    )}
-                  </div>
-                ))}
-                {trainingJobs.length === 0 && (
+                      </div>
+                      {job.status === 'training' && job.metrics && (
+                        <>
+                          <Progress value={(job.metrics.epoch / job.config.epochs) * 100} className="h-2 mb-2" />
+                          <div className="flex justify-between text-xs text-muted-foreground">
+                            <span>Epoch {job.metrics.epoch}/{job.config.epochs}</span>
+                            <span>{((job.metrics.epoch / job.config.epochs) * 100).toFixed(0)}% complete</span>
+                          </div>
+                        </>
+                      )}
+                      {job.status === 'queued' && (
+                        <p className="text-xs text-muted-foreground">
+                          Waiting in queue...
+                        </p>
+                      )}
+                    </div>
+                  ))
+                ) : (
                   <div className="text-center py-6 text-muted-foreground">
                     <Activity className="h-8 w-8 mx-auto mb-2 opacity-50" />
                     <p>No active training jobs</p>
@@ -418,63 +381,71 @@ export default function QNNDashboardClient() {
       </div>
 
       {/* Quantum Metrics */}
-      <motion.div
-        initial="hidden"
-        animate="visible"
-        variants={fadeUp}
-      >
-        <Card className="bg-surface-secondary border-border">
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Zap className="h-5 w-5" />
-              Quantum Metrics Overview
-            </CardTitle>
-            <CardDescription>
-              Real-time quantum system performance metrics
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-              <div className="space-y-2">
-                <div className="flex justify-between text-sm">
-                  <span className="text-muted-foreground">Fidelity</span>
-                  <span className="font-medium">{(quantumMetrics.fidelity * 100).toFixed(1)}%</span>
-                </div>
-                <Progress value={quantumMetrics.fidelity * 100} className="h-2" />
-              </div>
+      {quantumMetrics && (
+        <motion.div
+          initial="hidden"
+          animate="visible"
+          variants={fadeUp}
+        >
+          <Card className="bg-surface-secondary border-border">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Zap className="h-5 w-5" />
+                Quantum Metrics Overview
+              </CardTitle>
+              <CardDescription>
+                Real-time quantum system performance metrics
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+                {quantumMetrics.quantumState && (
+                  <>
+                    <div className="space-y-2">
+                      <div className="flex justify-between text-sm">
+                        <span className="text-muted-foreground">Fidelity</span>
+                        <span className="font-medium">{(quantumMetrics.quantumState.fidelity * 100).toFixed(1)}%</span>
+                      </div>
+                      <Progress value={quantumMetrics.quantumState.fidelity * 100} className="h-2" />
+                    </div>
 
-              <div className="space-y-2">
-                <div className="flex justify-between text-sm">
-                  <span className="text-muted-foreground">Coherence</span>
-                  <span className="font-medium">{(quantumMetrics.coherence * 100).toFixed(1)}%</span>
-                </div>
-                <Progress value={quantumMetrics.coherence * 100} className="h-2" />
-              </div>
+                    <div className="space-y-2">
+                      <div className="flex justify-between text-sm">
+                        <span className="text-muted-foreground">Coherence</span>
+                        <span className="font-medium">{(quantumMetrics.quantumState.coherence * 100).toFixed(1)}%</span>
+                      </div>
+                      <Progress value={quantumMetrics.quantumState.coherence * 100} className="h-2" />
+                    </div>
 
-              <div className="space-y-2">
-                <div className="flex justify-between text-sm">
-                  <span className="text-muted-foreground">Entanglement</span>
-                  <span className="font-medium">{(quantumMetrics.entanglement * 100).toFixed(1)}%</span>
-                </div>
-                <Progress value={quantumMetrics.entanglement * 100} className="h-2" />
-              </div>
+                    <div className="space-y-2">
+                      <div className="flex justify-between text-sm">
+                        <span className="text-muted-foreground">Entanglement</span>
+                        <span className="font-medium">{(quantumMetrics.quantumState.entanglement * 100).toFixed(1)}%</span>
+                      </div>
+                      <Progress value={quantumMetrics.quantumState.entanglement * 100} className="h-2" />
+                    </div>
+                  </>
+                )}
 
-              <div className="space-y-2">
-                <div className="flex justify-between text-sm">
-                  <span className="text-muted-foreground">Circuit Depth</span>
-                  <span className="font-medium">{quantumMetrics.circuitDepth} layers</span>
-                </div>
-                <div className="h-2 bg-[#2D333B] rounded-full overflow-hidden">
-                  <div
-                    className="h-full bg-[#4B6FED]"
-                    style={{ width: `${(quantumMetrics.circuitDepth / 20) * 100}%` }}
-                  />
-                </div>
+                {quantumMetrics.circuitMetrics && (
+                  <div className="space-y-2">
+                    <div className="flex justify-between text-sm">
+                      <span className="text-muted-foreground">Circuit Depth</span>
+                      <span className="font-medium">{quantumMetrics.circuitMetrics.depth} layers</span>
+                    </div>
+                    <div className="h-2 bg-[#2D333B] rounded-full overflow-hidden">
+                      <div
+                        className="h-full bg-[#4B6FED]"
+                        style={{ width: `${(quantumMetrics.circuitMetrics.depth / 20) * 100}%` }}
+                      />
+                    </div>
+                  </div>
+                )}
               </div>
-            </div>
-          </CardContent>
-        </Card>
-      </motion.div>
+            </CardContent>
+          </Card>
+        </motion.div>
+      )}
 
       {/* Quick Actions */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
