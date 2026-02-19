@@ -30,6 +30,7 @@ import {
   Copy,
   FileJson,
   Settings,
+  AlertCircle,
 } from 'lucide-react';
 import sandboxService, {
   SandboxEnvironment,
@@ -51,39 +52,6 @@ const stagger = {
   }
 };
 
-// Mock data for when backend is unavailable
-const mockEnvironments: SandboxEnvironment[] = [
-  {
-    id: 'python-3.11',
-    name: 'Python 3.11',
-    language: 'python',
-    version: '3.11.0',
-    description: 'Python 3.11 with popular AI/ML libraries (numpy, pandas, scikit-learn)',
-    available: true,
-    timeout: 30,
-    memoryLimit: 512,
-  },
-  {
-    id: 'node-20',
-    name: 'Node.js 20',
-    language: 'javascript',
-    version: '20.0.0',
-    description: 'Node.js 20 LTS with TypeScript support',
-    available: true,
-    timeout: 30,
-    memoryLimit: 512,
-  },
-  {
-    id: 'rust-1.75',
-    name: 'Rust 1.75',
-    language: 'rust',
-    version: '1.75.0',
-    description: 'Rust 1.75 with cargo and common crates',
-    available: true,
-    timeout: 60,
-    memoryLimit: 1024,
-  },
-];
 
 const sampleCode: Record<string, string> = {
   'python-3.11': `# Python AI Example
@@ -186,85 +154,69 @@ export default function APISandboxClient() {
   const [requestBody, setRequestBody] = useState<string>('{\n  "model": "gpt-4",\n  "messages": []\n}');
 
   // Fetch environments
-  const { data: environments, isLoading: isLoadingEnvironments } = useQuery({
+  const {
+    data: environments,
+    isLoading: isLoadingEnvironments,
+    error: environmentsError,
+    isError: isEnvironmentsError
+  } = useQuery({
     queryKey: ['sandbox-environments'],
-    queryFn: async () => {
-      try {
-        return await sandboxService.listEnvironments();
-      } catch (error) {
-        console.warn('Using mock environments, backend unavailable');
-        return mockEnvironments;
-      }
-    },
+    queryFn: () => sandboxService.listEnvironments(),
+    retry: 2,
   });
 
   // Create sandbox mutation
   const createSandboxMutation = useMutation({
-    mutationFn: async (environmentId: string) => {
-      try {
-        return await sandboxService.createSandbox({
-          environmentId,
-          name: `Sandbox ${new Date().toLocaleTimeString()}`,
-        });
-      } catch (error) {
-        // Mock sandbox when backend unavailable
-        return {
-          id: `sandbox-${Date.now()}`,
-          environmentId,
-          status: 'ready' as const,
-          createdAt: new Date().toISOString(),
-          updatedAt: new Date().toISOString(),
-          createdBy: userEmail,
-        };
-      }
-    },
+    mutationFn: (environmentId: string) => sandboxService.createSandbox({
+      environmentId,
+      name: `Sandbox ${new Date().toLocaleTimeString()}`,
+    }),
     onSuccess: (data) => {
       setCurrentSandbox(data);
       queryClient.invalidateQueries({ queryKey: ['sandboxes'] });
+    },
+    onError: (error: Error) => {
+      console.error('Failed to create sandbox:', error);
+      setCurrentSandbox(null);
     },
   });
 
   // Execute code mutation
   const executeCodeMutation = useMutation({
-    mutationFn: async (request: ExecutionRequest) => {
+    mutationFn: (request: ExecutionRequest) => {
       if (!currentSandbox) {
         throw new Error('No active sandbox');
       }
-
-      try {
-        return await sandboxService.execute(currentSandbox.id, request);
-      } catch (error) {
-        // Mock execution result when backend unavailable
-        const mockResult: ExecutionResult = {
-          executionId: `exec-${Date.now()}`,
-          status: 'completed',
-          output: '{\n  "status": "success",\n  "message": "Code executed successfully (mock)",\n  "data": {\n    "result": 42\n  }\n}',
-          exitCode: 0,
-          executionTime: Math.random() * 1000,
-          memoryUsed: Math.random() * 256,
-          timestamp: new Date().toISOString(),
-        };
-        return mockResult;
-      }
+      return sandboxService.execute(currentSandbox.id, request);
     },
     onSuccess: (result) => {
       setExecutionResults((prev) => [result, ...prev].slice(0, 10));
+    },
+    onError: (error: Error) => {
+      console.error('Failed to execute code:', error);
+      // Add failed execution to results for visibility
+      const errorResult: ExecutionResult = {
+        executionId: `error-${Date.now()}`,
+        status: 'failed',
+        error: error.message || 'Execution failed',
+        exitCode: 1,
+        executionTime: 0,
+        timestamp: new Date().toISOString(),
+      };
+      setExecutionResults((prev) => [errorResult, ...prev].slice(0, 10));
     },
   });
 
   // Delete sandbox mutation
   const deleteSandboxMutation = useMutation({
-    mutationFn: async (sandboxId: string) => {
-      try {
-        await sandboxService.deleteSandbox(sandboxId);
-      } catch (error) {
-        console.warn('Mock delete, backend unavailable');
-      }
-    },
+    mutationFn: (sandboxId: string) => sandboxService.deleteSandbox(sandboxId),
     onSuccess: () => {
       setCurrentSandbox(null);
       setExecutionResults([]);
       queryClient.invalidateQueries({ queryKey: ['sandboxes'] });
+    },
+    onError: (error: Error) => {
+      console.error('Failed to delete sandbox:', error);
     },
   });
 
@@ -349,35 +301,91 @@ export default function APISandboxClient() {
           </CardHeader>
           <CardContent>
             <div className="grid gap-4">
+              {/* Error state for environments */}
+              {isEnvironmentsError && (
+                <div className="rounded-lg border border-destructive/50 bg-destructive/10 p-4">
+                  <div className="flex items-start gap-3">
+                    <AlertCircle className="h-5 w-5 text-destructive mt-0.5" />
+                    <div className="flex-1">
+                      <h4 className="text-sm font-semibold text-destructive mb-1">
+                        Failed to Load Environments
+                      </h4>
+                      <p className="text-xs text-muted-foreground">
+                        {environmentsError instanceof Error
+                          ? environmentsError.message
+                          : 'Unable to connect to the sandbox service. Please try again later.'}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* Error state for sandbox creation */}
+              {createSandboxMutation.isError && (
+                <div className="rounded-lg border border-destructive/50 bg-destructive/10 p-4">
+                  <div className="flex items-start gap-3">
+                    <AlertCircle className="h-5 w-5 text-destructive mt-0.5" />
+                    <div className="flex-1">
+                      <h4 className="text-sm font-semibold text-destructive mb-1">
+                        Failed to Create Sandbox
+                      </h4>
+                      <p className="text-xs text-muted-foreground">
+                        {createSandboxMutation.error instanceof Error
+                          ? createSandboxMutation.error.message
+                          : 'Unable to create sandbox environment. Please try again.'}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              )}
+
               <div className="grid gap-2">
                 <Label htmlFor="environment">Select Environment</Label>
-                <Select
-                  value={selectedEnvironment}
-                  onValueChange={handleEnvironmentChange}
-                  disabled={isLoadingEnvironments || createSandboxMutation.isPending}
-                >
-                  <SelectTrigger id="environment">
-                    <SelectValue placeholder="Select environment..." />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {(Array.isArray(environments) ? environments : mockEnvironments).map((env) => (
-                      <SelectItem key={env.id} value={env.id}>
-                        <div className="flex items-center gap-2">
-                          <Code className="h-4 w-4" />
-                          <div>
-                            <div className="font-medium">{env.name}</div>
-                            <div className="text-xs text-muted-foreground">
-                              {env.description}
+                {isLoadingEnvironments ? (
+                  <div className="flex items-center justify-center h-10 rounded-md border bg-muted/50">
+                    <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />
+                    <span className="ml-2 text-sm text-muted-foreground">
+                      Loading environments...
+                    </span>
+                  </div>
+                ) : (
+                  <Select
+                    value={selectedEnvironment}
+                    onValueChange={handleEnvironmentChange}
+                    disabled={isLoadingEnvironments || createSandboxMutation.isPending || isEnvironmentsError}
+                  >
+                    <SelectTrigger id="environment">
+                      <SelectValue placeholder="Select environment..." />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {environments?.map((env) => (
+                        <SelectItem key={env.id} value={env.id}>
+                          <div className="flex items-center gap-2">
+                            <Code className="h-4 w-4" />
+                            <div>
+                              <div className="font-medium">{env.name}</div>
+                              <div className="text-xs text-muted-foreground">
+                                {env.description}
+                              </div>
                             </div>
                           </div>
-                        </div>
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                )}
               </div>
 
-              {currentSandbox && (
+              {createSandboxMutation.isPending && (
+                <div className="rounded-lg border p-3 bg-blue-500/10 border-blue-500/30">
+                  <div className="flex items-center gap-2">
+                    <Loader2 className="h-4 w-4 animate-spin text-blue-500" />
+                    <span className="text-sm font-medium">Creating sandbox...</span>
+                  </div>
+                </div>
+              )}
+
+              {currentSandbox && !createSandboxMutation.isPending && (
                 <div className="rounded-lg border p-3 bg-muted/50">
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-2">
