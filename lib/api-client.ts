@@ -43,6 +43,48 @@ class ApiClient {
   }
 
   /**
+   * Extract error message from nested error object
+   * Tries common error patterns to find a meaningful string message
+   * Returns null if no string message can be extracted
+   *
+   * Issue #578: Prevent [object Object] by properly handling nested error structures
+   */
+  private extractErrorFromObject(obj: unknown): string | null {
+    if (!obj || typeof obj !== 'object') return null;
+
+    // Common error message fields in order of preference
+    const messageFields = [
+      'error_message',
+      'message',
+      'description',
+      'text',
+      'msg',
+      'error',
+      'reason',
+      'detail',
+    ];
+
+    const objRecord = obj as Record<string, unknown>;
+
+    for (const field of messageFields) {
+      if (field in objRecord && typeof objRecord[field] === 'string' && (objRecord[field] as string).trim().length > 0) {
+        return objRecord[field] as string;
+      }
+    }
+
+    // If we still can't find a string, try JSON.stringify with truncation
+    try {
+      const jsonStr = JSON.stringify(obj);
+      if (jsonStr.length > 200) {
+        return jsonStr.substring(0, 200) + '...';
+      }
+      return jsonStr;
+    } catch {
+      return null;
+    }
+  }
+
+  /**
    * Attempt to refresh the access token
    * Prevents concurrent refresh attempts by using a shared promise
    */
@@ -181,13 +223,55 @@ class ApiClient {
           });
         }
 
-        const errorMessage = typeof data === 'object' && data?.message
-          ? data.message
-          : typeof data === 'object' && data?.detail
-          ? data.detail
-          : typeof data === 'string'
-          ? data
-          : `HTTP ${response.status}: ${response.statusText}`;
+        // Extract error message with proper string validation to prevent [object Object]
+        // See issue #578: ZeroDB getStats error handling
+        let errorMessage: string;
+
+        // Try to extract message from data.message (if it's a string)
+        if (typeof data === 'object' && data !== null && 'message' in data) {
+          if (typeof data.message === 'string' && data.message.trim().length > 0) {
+            errorMessage = data.message;
+          } else if (typeof data.message === 'object' && data.message !== null) {
+            // Handle nested object - try to extract meaningful text
+            // e.g., { message: { code: "ERR", text: "..." } }
+            errorMessage = this.extractErrorFromObject(data.message) || `HTTP ${response.status}: ${response.statusText}`;
+          } else {
+            errorMessage = `HTTP ${response.status}: ${response.statusText}`;
+          }
+        }
+        // Try data.detail (FastAPI/Pydantic validation errors)
+        else if (typeof data === 'object' && data !== null && 'detail' in data) {
+          if (typeof data.detail === 'string' && data.detail.trim().length > 0) {
+            errorMessage = data.detail;
+          } else if (Array.isArray(data.detail)) {
+            // FastAPI validation errors: [{ loc: [], msg: "", type: "" }]
+            const errors = data.detail.map((err: unknown) => {
+              const errObj = err as Record<string, unknown>;
+              return errObj.msg || JSON.stringify(err);
+            }).join(', ');
+            errorMessage = `Validation error: ${errors}`;
+          } else if (typeof data.detail === 'object' && data.detail !== null) {
+            errorMessage = this.extractErrorFromObject(data.detail) || `HTTP ${response.status}: ${response.statusText}`;
+          } else {
+            errorMessage = `HTTP ${response.status}: ${response.statusText}`;
+          }
+        }
+        // Plain string response
+        else if (typeof data === 'string' && data.trim().length > 0) {
+          errorMessage = data;
+        }
+        // Fallback to HTTP status
+        else {
+          errorMessage = `HTTP ${response.status}: ${response.statusText}`;
+        }
+
+        // Log the extracted error for debugging
+        console.error('🚨 [ApiClient] Error:', {
+          endpoint,
+          status: response.status,
+          errorMessage,
+          rawData: data,
+        });
 
         throw new Error(errorMessage);
       }
