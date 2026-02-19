@@ -531,3 +531,75 @@ export interface ApplySignatureRequest {
   model_id: string;
   signature_id: string;
 }
+
+// ==================== Dashboard Aggregated Data Types ====================
+
+/**
+ * Aggregated dashboard data from /v1/dashboard/qnn endpoint
+ */
+export interface QNNDashboardData {
+  models: Model[];
+  trainingJobs: TrainingJob[];
+  quantumMetrics: QuantumMetrics | null;
+  stats: DashboardStats;
+  timestamp: string;
+}
+
+/**
+ * Dashboard statistics summary
+ */
+export interface DashboardStats {
+  totalModels: number;
+  deployedModels: number;
+  activeTraining: number;
+  queuedJobs: number;
+  averageAccuracy: number;
+}
+
+/**
+ * Quantum health data from /v1/public/quantum/health
+ */
+export interface QuantumHealth {
+  status: 'healthy' | 'degraded' | 'offline';
+  devices: QuantumDevice[];
+  timestamp: string;
+}
+
+/**
+ * Quantum device information
+ */
+export interface QuantumDevice {
+  id: string;
+  name: string;
+  status: 'online' | 'offline' | 'maintenance';
+  qubits: number;
+  availability: number;
+  queue: number;
+  fidelity?: number;
+  coherence?: number;
+}
+
+/**
+ * Quantum job from /v1/public/quantum/jobs
+ */
+export interface QuantumJob {
+  id: string;
+  modelId: string;
+  deviceId: string;
+  status: 'pending' | 'running' | 'completed' | 'failed';
+  progress: number;
+  createdAt: string;
+  startedAt?: string;
+  completedAt?: string;
+}
+
+/**
+ * Quantum system info from /v1/public/quantum/info
+ */
+export interface QuantumInfo {
+  version: string;
+  availableBackends: string[];
+  supportedArchitectures: ModelArchitecture[];
+  maxQubits: number;
+  maxCircuitDepth: number;
+}
