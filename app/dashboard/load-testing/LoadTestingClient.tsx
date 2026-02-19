@@ -78,96 +78,6 @@ const stagger = {
   }
 };
 
-// Mock data
-const mockScenarios: LoadTestScenario[] = [
-  {
-    id: 'scenario-1',
-    name: 'API Endpoint Stress Test',
-    description: 'High-load test for main API endpoints',
-    type: 'api',
-    config: {
-      targetUrl: 'https://api.ainative.studio/v1/completions',
-      method: 'POST',
-      duration: 300,
-      virtualUsers: 100,
-      rampUp: 60,
-    },
-    createdAt: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString(),
-    updatedAt: new Date().toISOString(),
-  },
-  {
-    id: 'scenario-2',
-    name: 'WebSocket Connection Test',
-    description: 'Test WebSocket connection stability under load',
-    type: 'websocket',
-    config: {
-      targetUrl: 'wss://api.ainative.studio/ws',
-      method: 'CONNECT',
-      duration: 600,
-      virtualUsers: 500,
-      rampUp: 120,
-    },
-    createdAt: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000).toISOString(),
-    updatedAt: new Date().toISOString(),
-  },
-  {
-    id: 'scenario-3',
-    name: 'Mixed Workload Test',
-    description: 'Simulate realistic mixed API usage patterns',
-    type: 'mixed',
-    config: {
-      targetUrl: 'https://api.ainative.studio/v1',
-      method: 'MIXED',
-      duration: 900,
-      virtualUsers: 200,
-      rampUp: 180,
-    },
-    createdAt: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000).toISOString(),
-    updatedAt: new Date().toISOString(),
-  },
-];
-
-const mockTests: LoadTest[] = [
-  {
-    id: 'test-001',
-    scenarioId: 'scenario-1',
-    scenarioName: 'API Endpoint Stress Test',
-    status: 'completed',
-    progress: 100,
-    startedAt: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString(),
-    completedAt: new Date(Date.now() - 1 * 60 * 60 * 1000).toISOString(),
-    createdBy: 'user@example.com',
-    config: { duration: 300, virtualUsers: 100, rampUp: 60 },
-  },
-  {
-    id: 'test-002',
-    scenarioId: 'scenario-2',
-    scenarioName: 'WebSocket Connection Test',
-    status: 'running',
-    progress: 45,
-    startedAt: new Date(Date.now() - 30 * 60 * 1000).toISOString(),
-    createdBy: 'user@example.com',
-    config: { duration: 600, virtualUsers: 500, rampUp: 120 },
-  },
-];
-
-const mockMetrics = {
-  testId: 'test-001',
-  dataPoints: [
-    { timestamp: '00:00', activeUsers: 10, requestsPerSecond: 50, avgResponseTime: 120, errorRate: 0.1, throughput: 1200 },
-    { timestamp: '01:00', activeUsers: 30, requestsPerSecond: 150, avgResponseTime: 135, errorRate: 0.2, throughput: 3500 },
-    { timestamp: '02:00', activeUsers: 60, requestsPerSecond: 320, avgResponseTime: 145, errorRate: 0.3, throughput: 7200 },
-    { timestamp: '03:00', activeUsers: 80, requestsPerSecond: 420, avgResponseTime: 160, errorRate: 0.5, throughput: 9500 },
-    { timestamp: '04:00', activeUsers: 100, requestsPerSecond: 480, avgResponseTime: 180, errorRate: 0.8, throughput: 11000 },
-    { timestamp: '05:00', activeUsers: 100, requestsPerSecond: 450, avgResponseTime: 175, errorRate: 0.6, throughput: 10500 },
-  ],
-  latencyDistribution: [
-    { range: '0-100ms', count: 4500, percentage: 45 },
-    { range: '100-200ms', count: 3000, percentage: 30 },
-    { range: '200-500ms', count: 1500, percentage: 15 },
-    { range: '500ms+', count: 1000, percentage: 10 },
-  ],
-};
 
 // API Endpoints from OpenAPI spec at api.ainative.studio
 interface APIEndpoint {
@@ -543,10 +453,14 @@ function StatusBadge({ status }: { status: LoadTest['status'] }) {
 
 function ScenarioCard({
   scenario,
-  onRunTest
+  onRunTest,
+  isRunning,
+  runError
 }: {
   scenario: LoadTestScenario;
   onRunTest: (scenario: LoadTestScenario) => void;
+  isRunning?: boolean;
+  runError?: Error | null;
 }) {
   return (
     <motion.div variants={fadeUp}>
@@ -574,6 +488,13 @@ function ScenarioCard({
               <span className="text-gray-300">{scenario.config.duration}s</span>
             </div>
           </div>
+          {runError && (
+            <div className="mb-4 p-3 bg-red-900/20 border border-red-800/50 rounded-lg">
+              <p className="text-xs text-red-400">
+                {runError.message || 'Failed to run test'}
+              </p>
+            </div>
+          )}
           <div className="flex items-center justify-between pt-4 border-t border-border">
             <span className="text-xs text-gray-500">
               Updated {new Date(scenario.updatedAt).toLocaleDateString()}
@@ -581,10 +502,20 @@ function ScenarioCard({
             <Button
               size="sm"
               onClick={() => onRunTest(scenario)}
-              className="bg-[#4B6FED] hover:bg-[#3D5BD9] text-white"
+              disabled={isRunning}
+              className="bg-[#4B6FED] hover:bg-[#3D5BD9] text-white disabled:opacity-50"
             >
-              <Play className="w-4 h-4 mr-1" />
-              Run Test
+              {isRunning ? (
+                <>
+                  <Loader2 className="w-4 h-4 mr-1 animate-spin" />
+                  Starting...
+                </>
+              ) : (
+                <>
+                  <Play className="w-4 h-4 mr-1" />
+                  Run Test
+                </>
+              )}
             </Button>
           </div>
         </CardContent>
@@ -826,16 +757,16 @@ export default function LoadTestingClient() {
   const [localScenarios, setLocalScenarios] = useState<LoadTestScenario[]>([]);
 
   // Fetch scenarios
-  const { data: scenarios, isLoading: scenariosLoading } = useQuery({
+  const {
+    data: scenarios,
+    isLoading: scenariosLoading,
+    error: scenariosError,
+    isError: isScenariosError
+  } = useQuery({
     queryKey: ['load-testing-scenarios'],
-    queryFn: async () => {
-      try {
-        return await loadTestingService.getScenarios();
-      } catch {
-        return mockScenarios;
-      }
-    },
+    queryFn: loadTestingService.getScenarios,
     staleTime: 60000,
+    retry: 2,
   });
 
   // Fetch test history
@@ -843,31 +774,29 @@ export default function LoadTestingClient() {
     data: tests,
     isLoading: testsLoading,
     refetch: refetchTests,
+    error: testsError,
+    isError: isTestsError,
   } = useQuery({
     queryKey: ['load-testing-tests'],
-    queryFn: async () => {
-      try {
-        return await loadTestingService.getTestHistory();
-      } catch {
-        return mockTests;
-      }
-    },
+    queryFn: loadTestingService.getTestHistory,
     staleTime: 10000,
     refetchInterval: 5000,
+    retry: 2,
   });
 
   // Fetch metrics for selected test
-  const { data: metrics } = useQuery({
+  const {
+    data: metrics,
+    error: metricsError,
+    isError: isMetricsError
+  } = useQuery({
     queryKey: ['load-testing-metrics', selectedMetrics],
-    queryFn: async () => {
+    queryFn: () => {
       if (!selectedMetrics) return null;
-      try {
-        return await loadTestingService.getTestMetrics(selectedMetrics);
-      } catch {
-        return mockMetrics;
-      }
+      return loadTestingService.getTestMetrics(selectedMetrics);
     },
     enabled: !!selectedMetrics,
+    retry: 2,
   });
 
   // Run test mutation
@@ -880,6 +809,9 @@ export default function LoadTestingClient() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['load-testing-tests'] });
     },
+    onError: (error) => {
+      console.error('Failed to run test:', error);
+    },
   });
 
   // Cancel test mutation
@@ -888,27 +820,13 @@ export default function LoadTestingClient() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['load-testing-tests'] });
     },
+    onError: (error) => {
+      console.error('Failed to cancel test:', error);
+    },
   });
 
   const handleRunTest = async (scenario: LoadTestScenario) => {
-    try {
-      await runTestMutation.mutateAsync(scenario);
-    } catch {
-      // Mock test creation
-      const newTest: LoadTest = {
-        id: `test-${Date.now()}`,
-        scenarioId: scenario.id,
-        scenarioName: scenario.name,
-        status: 'running',
-        progress: 0,
-        startedAt: new Date().toISOString(),
-        createdBy: 'user@example.com',
-        config: scenario.config,
-      };
-      queryClient.setQueryData(['load-testing-tests'], (old: LoadTest[] | undefined) =>
-        old ? [newTest, ...old] : [newTest]
-      );
-    }
+    await runTestMutation.mutateAsync(scenario);
     setActiveTab('tests');
   };
 
@@ -917,7 +835,7 @@ export default function LoadTestingClient() {
   };
 
   // Combine fetched scenarios with locally created ones
-  const allScenarios = [...localScenarios, ...(scenarios || mockScenarios)];
+  const allScenarios = [...localScenarios, ...(scenarios || [])];
 
   if (!mounted) {
     return (
@@ -996,9 +914,58 @@ export default function LoadTestingClient() {
       </motion.div>
 
       {/* Metrics Panel (if selected) */}
-      {selectedMetrics && metrics && (
+      {selectedMetrics && (
         <div className="mb-6">
-          <MetricsPanel metrics={metrics} onClose={() => setSelectedMetrics(null)} />
+          {isMetricsError ? (
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: 20 }}
+            >
+              <Card className="border-none bg-surface-secondary shadow-lg">
+                <CardHeader className="border-b border-border flex flex-row items-center justify-between">
+                  <CardTitle className="text-lg flex items-center gap-2 text-white">
+                    <XCircle className="h-5 w-5 text-red-500" />
+                    Failed to Load Metrics
+                  </CardTitle>
+                  <Button
+                    size="sm"
+                    variant="ghost"
+                    onClick={() => setSelectedMetrics(null)}
+                    className="text-gray-400 hover:text-white"
+                  >
+                    Close
+                  </Button>
+                </CardHeader>
+                <CardContent className="p-6">
+                  <p className="text-gray-400 mb-4">
+                    {metricsError instanceof Error ? metricsError.message : 'An error occurred while fetching test metrics'}
+                  </p>
+                  <Button
+                    onClick={() => queryClient.invalidateQueries({ queryKey: ['load-testing-metrics', selectedMetrics] })}
+                    className="bg-[#4B6FED] hover:bg-[#3D5BD9] text-white"
+                  >
+                    <RefreshCcw className="w-4 h-4 mr-2" />
+                    Try Again
+                  </Button>
+                </CardContent>
+              </Card>
+            </motion.div>
+          ) : metrics ? (
+            <MetricsPanel metrics={metrics} onClose={() => setSelectedMetrics(null)} />
+          ) : (
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+            >
+              <Card className="border-none bg-surface-secondary shadow-lg">
+                <CardContent className="p-12 text-center">
+                  <Loader2 className="w-8 h-8 animate-spin text-[#4B6FED] mx-auto mb-4" />
+                  <p className="text-gray-400">Loading metrics...</p>
+                </CardContent>
+              </Card>
+            </motion.div>
+          )}
         </div>
       )}
 
@@ -1017,6 +984,25 @@ export default function LoadTestingClient() {
                 <div className="flex items-center justify-center py-12">
                   <Loader2 className="w-8 h-8 animate-spin text-[#4B6FED]" />
                 </div>
+              ) : isTestsError ? (
+                <motion.div variants={fadeUp}>
+                  <Card className="border-none bg-surface-secondary shadow-lg">
+                    <CardContent className="py-12 text-center">
+                      <XCircle className="w-12 h-12 text-red-500 mx-auto mb-4" />
+                      <h3 className="text-lg font-medium text-white mb-2">Failed to load test history</h3>
+                      <p className="text-gray-400 mb-6">
+                        {testsError instanceof Error ? testsError.message : 'An error occurred while fetching test history'}
+                      </p>
+                      <Button
+                        onClick={() => refetchTests()}
+                        className="bg-[#4B6FED] hover:bg-[#3D5BD9] text-white"
+                      >
+                        <RefreshCcw className="w-4 h-4 mr-2" />
+                        Try Again
+                      </Button>
+                    </CardContent>
+                  </Card>
+                </motion.div>
               ) : tests && tests.length > 0 ? (
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   {tests.map((test) => (
@@ -1064,6 +1050,35 @@ export default function LoadTestingClient() {
                 <div className="flex items-center justify-center py-12">
                   <Loader2 className="w-8 h-8 animate-spin text-[#4B6FED]" />
                 </div>
+              ) : isScenariosError ? (
+                <motion.div variants={fadeUp}>
+                  <Card className="border-none bg-surface-secondary shadow-lg">
+                    <CardContent className="py-12 text-center">
+                      <XCircle className="w-12 h-12 text-red-500 mx-auto mb-4" />
+                      <h3 className="text-lg font-medium text-white mb-2">Failed to load scenarios</h3>
+                      <p className="text-gray-400 mb-6">
+                        {scenariosError instanceof Error ? scenariosError.message : 'An error occurred while fetching scenarios'}
+                      </p>
+                      <div className="flex gap-3 justify-center">
+                        <Button
+                          onClick={() => queryClient.invalidateQueries({ queryKey: ['load-testing-scenarios'] })}
+                          className="bg-[#4B6FED] hover:bg-[#3D5BD9] text-white"
+                        >
+                          <RefreshCcw className="w-4 h-4 mr-2" />
+                          Try Again
+                        </Button>
+                        <Button
+                          onClick={() => setAddScenarioOpen(true)}
+                          variant="outline"
+                          className="border-gray-700 hover:bg-gray-800 text-white"
+                        >
+                          <Plus className="w-4 h-4 mr-2" />
+                          Add Scenario Manually
+                        </Button>
+                      </div>
+                    </CardContent>
+                  </Card>
+                </motion.div>
               ) : (
                 <div className="space-y-6">
                   {/* Add Scenario Button */}
@@ -1078,15 +1093,38 @@ export default function LoadTestingClient() {
                   </motion.div>
 
                   {/* Scenarios Grid */}
-                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                    {allScenarios.map((scenario) => (
-                      <ScenarioCard
-                        key={scenario.id}
-                        scenario={scenario}
-                        onRunTest={handleRunTest}
-                      />
-                    ))}
-                  </div>
+                  {allScenarios.length > 0 ? (
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                      {allScenarios.map((scenario) => (
+                        <ScenarioCard
+                          key={scenario.id}
+                          scenario={scenario}
+                          onRunTest={handleRunTest}
+                          isRunning={runTestMutation.isPending}
+                          runError={runTestMutation.error}
+                        />
+                      ))}
+                    </div>
+                  ) : (
+                    <motion.div variants={fadeUp}>
+                      <Card className="border-none bg-surface-secondary shadow-lg">
+                        <CardContent className="py-12 text-center">
+                          <Target className="w-12 h-12 text-gray-600 mx-auto mb-4" />
+                          <h3 className="text-lg font-medium text-white mb-2">No scenarios available</h3>
+                          <p className="text-gray-400 mb-6">
+                            Create your first load test scenario to get started
+                          </p>
+                          <Button
+                            onClick={() => setAddScenarioOpen(true)}
+                            className="bg-[#4B6FED] hover:bg-[#3D5BD9] text-white"
+                          >
+                            <Plus className="w-4 h-4 mr-2" />
+                            Add Scenario
+                          </Button>
+                        </CardContent>
+                      </Card>
+                    </motion.div>
+                  )}
                 </div>
               )}
             </motion.div>

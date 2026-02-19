@@ -2,9 +2,28 @@
  * Load Testing Service - Backend integration for Load Testing Dashboard
  * Integrates with all backend load testing endpoints
  * Fixed in Bug #445: All endpoints now use /v1/public/ prefix
+ * Fixed in Issue #564: Removed mock data fallbacks, added proper error handling
  */
 
 import apiClient from './api-client';
+
+// Error Types
+export interface LoadTestingError {
+  code: string;
+  message: string;
+  details?: Record<string, any>;
+}
+
+export class LoadTestingServiceError extends Error {
+  constructor(
+    message: string,
+    public code?: string,
+    public details?: Record<string, any>
+  ) {
+    super(message);
+    this.name = 'LoadTestingServiceError';
+  }
+}
 
 // Types
 export interface LoadTestScenario {
