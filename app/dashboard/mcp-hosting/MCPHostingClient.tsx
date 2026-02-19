@@ -45,67 +45,6 @@ const stagger = {
   }
 };
 
-// Mock data for when backend is unavailable
-const mockCatalog: MCPServer[] = [
-  {
-    id: 'github',
-    name: 'GitHub MCP',
-    description: 'Access GitHub repositories, issues, PRs, and more through MCP',
-    version: '1.2.0',
-    category: 'Development',
-    features: ['Repository access', 'Issue management', 'PR operations', 'Code search'],
-    pricing: { type: 'free' },
-  },
-  {
-    id: 'filesystem',
-    name: 'Filesystem MCP',
-    description: 'Secure file system operations with sandboxed access',
-    version: '1.0.5',
-    category: 'Utilities',
-    features: ['Read/write files', 'Directory operations', 'Sandboxed access'],
-    pricing: { type: 'free' },
-  },
-  {
-    id: 'zerodb',
-    name: 'ZeroDB MCP',
-    description: 'Vector database operations with semantic search',
-    version: '2.1.0',
-    category: 'Database',
-    features: ['Vector search', 'Document storage', 'Semantic queries', 'RLHF data'],
-    pricing: { type: 'usage-based', perRequestPrice: 0.001 },
-  },
-  {
-    id: 'slack',
-    name: 'Slack MCP',
-    description: 'Integrate with Slack workspaces for messaging and automation',
-    version: '1.1.0',
-    category: 'Communication',
-    features: ['Send messages', 'Channel management', 'User lookup', 'File sharing'],
-    pricing: { type: 'paid', basePrice: 9.99 },
-  },
-];
-
-const mockInstances: MCPInstance[] = [
-  {
-    id: 'inst-001',
-    serverId: 'github',
-    serverName: 'GitHub MCP',
-    status: 'running',
-    region: 'us-east-1',
-    createdAt: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString(),
-    lastActiveAt: new Date().toISOString(),
-  },
-  {
-    id: 'inst-002',
-    serverId: 'zerodb',
-    serverName: 'ZeroDB MCP',
-    status: 'running',
-    region: 'us-west-2',
-    createdAt: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000).toISOString(),
-    lastActiveAt: new Date().toISOString(),
-  },
-];
-
 function StatusBadge({ status }: { status: MCPInstance['status'] }) {
   const statusConfig = {
     running: { icon: CheckCircle, color: 'text-green-400', bg: 'bg-green-400/10' },
@@ -186,19 +125,27 @@ function ServerCard({ server, onDeploy }: { server: MCPServer; onDeploy: (server
 
 function InstanceCard({
   instance,
-  onRestart,
+  onStart,
+  onStop,
   onDelete,
   onViewLogs,
-  isRestarting,
+  isStarting,
+  isStopping,
   isDeleting,
 }: {
   instance: MCPInstance;
-  onRestart: (id: string) => void;
+  onStart: (id: string) => void;
+  onStop: (id: string) => void;
   onDelete: (id: string) => void;
   onViewLogs: (id: string) => void;
-  isRestarting: boolean;
+  isStarting: boolean;
+  isStopping: boolean;
   isDeleting: boolean;
 }) {
+  const isRunning = instance.status === 'running';
+  const isStopped = instance.status === 'stopped';
+  const isTransitioning = instance.status === 'starting' || instance.status === 'stopping';
+
   return (
     <motion.div variants={fadeUp}>
       <Card className="border-none bg-surface-secondary shadow-lg overflow-hidden">
@@ -237,20 +184,38 @@ function InstanceCard({
               <Terminal className="w-4 h-4 mr-1" />
               Logs
             </Button>
-            <Button
-              size="sm"
-              variant="outline"
-              onClick={() => onRestart(instance.id)}
-              disabled={isRestarting || instance.status !== 'running'}
-              className="flex-1 border-gray-700 hover:bg-gray-800 text-gray-300"
-            >
-              {isRestarting ? (
-                <Loader2 className="w-4 h-4 mr-1 animate-spin" />
-              ) : (
-                <RefreshCcw className="w-4 h-4 mr-1" />
-              )}
-              Restart
-            </Button>
+            {isRunning && (
+              <Button
+                size="sm"
+                variant="outline"
+                onClick={() => onStop(instance.id)}
+                disabled={isStopping || isTransitioning}
+                className="flex-1 border-gray-700 hover:bg-gray-800 text-gray-300"
+              >
+                {isStopping ? (
+                  <Loader2 className="w-4 h-4 mr-1 animate-spin" />
+                ) : (
+                  <Square className="w-4 h-4 mr-1" />
+                )}
+                Stop
+              </Button>
+            )}
+            {isStopped && (
+              <Button
+                size="sm"
+                variant="outline"
+                onClick={() => onStart(instance.id)}
+                disabled={isStarting || isTransitioning}
+                className="flex-1 border-gray-700 hover:bg-gray-800 text-green-300"
+              >
+                {isStarting ? (
+                  <Loader2 className="w-4 h-4 mr-1 animate-spin" />
+                ) : (
+                  <Play className="w-4 h-4 mr-1" />
+                )}
+                Start
+              </Button>
+            )}
             <Button
               size="sm"
               variant="outline"
@@ -343,14 +308,9 @@ export default function MCPHostingClient() {
     error: catalogError,
   } = useQuery({
     queryKey: ['mcp-catalog'],
-    queryFn: async () => {
-      try {
-        return await mcpService.getCatalog();
-      } catch {
-        return mockCatalog;
-      }
-    },
+    queryFn: () => mcpService.getCatalog(),
     staleTime: 60000,
+    retry: 2,
   });
 
   // Fetch instances
@@ -361,33 +321,25 @@ export default function MCPHostingClient() {
     refetch: refetchInstances,
   } = useQuery({
     queryKey: ['mcp-instances'],
-    queryFn: async () => {
-      try {
-        return await mcpService.getInstances();
-      } catch {
-        return mockInstances;
-      }
-    },
+    queryFn: () => mcpService.getInstances(),
     staleTime: 30000,
+    retry: 2,
   });
 
   // Fetch logs for selected instance
-  const { data: logs } = useQuery({
+  const {
+    data: logs,
+    isLoading: logsLoading,
+    error: logsError,
+  } = useQuery({
     queryKey: ['mcp-logs', selectedLogs],
-    queryFn: async () => {
-      if (!selectedLogs) return [];
-      try {
-        return await mcpService.getServerLogs(selectedLogs, { limit: 100 });
-      } catch {
-        return [
-          { timestamp: new Date().toISOString(), level: 'info' as const, message: 'Server started successfully' },
-          { timestamp: new Date().toISOString(), level: 'info' as const, message: 'Listening on port 8080' },
-          { timestamp: new Date().toISOString(), level: 'debug' as const, message: 'Health check passed' },
-        ];
-      }
+    queryFn: () => {
+      if (!selectedLogs) return Promise.resolve([]);
+      return mcpService.getServerLogs(selectedLogs, { limit: 100 });
     },
     enabled: !!selectedLogs,
     refetchInterval: selectedLogs ? 5000 : false,
+    retry: 1,
   });
 
   // Deploy mutation
@@ -403,9 +355,17 @@ export default function MCPHostingClient() {
     },
   });
 
-  // Restart mutation
-  const restartMutation = useMutation({
-    mutationFn: (id: string) => mcpService.restartServer(id),
+  // Start mutation
+  const startMutation = useMutation({
+    mutationFn: (id: string) => mcpService.startServer(id),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['mcp-instances'] });
+    },
+  });
+
+  // Stop mutation
+  const stopMutation = useMutation({
+    mutationFn: (id: string) => mcpService.stopServer(id),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['mcp-instances'] });
     },
@@ -419,24 +379,8 @@ export default function MCPHostingClient() {
     },
   });
 
-  const handleDeploy = async (server: MCPServer) => {
-    try {
-      await deployMutation.mutateAsync(server);
-    } catch {
-      // Mock deployment for demo
-      const newInstance: MCPInstance = {
-        id: `inst-${Date.now()}`,
-        serverId: server.id,
-        serverName: server.name,
-        status: 'starting',
-        region: 'us-east-1',
-        createdAt: new Date().toISOString(),
-        lastActiveAt: new Date().toISOString(),
-      };
-      queryClient.setQueryData(['mcp-instances'], (old: MCPInstance[] | undefined) =>
-        old ? [...old, newInstance] : [newInstance]
-      );
-    }
+  const handleDeploy = (server: MCPServer) => {
+    deployMutation.mutate(server);
     setActiveTab('instances');
   };
 
@@ -530,16 +474,37 @@ export default function MCPHostingClient() {
               <div className="flex items-center justify-center py-12">
                 <Loader2 className="w-8 h-8 animate-spin text-[#4B6FED]" />
               </div>
+            ) : instancesError ? (
+              <motion.div variants={fadeUp}>
+                <Card className="border-none bg-surface-secondary shadow-lg">
+                  <CardContent className="py-12 text-center">
+                    <AlertCircle className="w-12 h-12 text-red-400 mx-auto mb-4" />
+                    <h3 className="text-lg font-medium text-white mb-2">Failed to load instances</h3>
+                    <p className="text-gray-400 mb-6">
+                      {instancesError instanceof Error ? instancesError.message : 'An error occurred while fetching your MCP instances'}
+                    </p>
+                    <Button
+                      onClick={() => refetchInstances()}
+                      className="bg-[#4B6FED] hover:bg-[#3D5BD9] text-white"
+                    >
+                      <RefreshCcw className="w-4 h-4 mr-2" />
+                      Retry
+                    </Button>
+                  </CardContent>
+                </Card>
+              </motion.div>
             ) : instances && instances.length > 0 ? (
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 {instances.map((instance) => (
                   <InstanceCard
                     key={instance.id}
                     instance={instance}
-                    onRestart={(id) => restartMutation.mutate(id)}
+                    onStart={(id) => startMutation.mutate(id)}
+                    onStop={(id) => stopMutation.mutate(id)}
                     onDelete={(id) => deleteMutation.mutate(id)}
                     onViewLogs={(id) => setSelectedLogs(id)}
-                    isRestarting={restartMutation.isPending}
+                    isStarting={startMutation.isPending}
+                    isStopping={stopMutation.isPending}
                     isDeleting={deleteMutation.isPending}
                   />
                 ))}
@@ -566,9 +531,41 @@ export default function MCPHostingClient() {
             )}
 
             {/* Logs Panel */}
-            {selectedLogs && logs && (
+            {selectedLogs && (
               <div className="mt-6">
-                <LogsPanel logs={logs} onClose={() => setSelectedLogs(null)} />
+                {logsLoading ? (
+                  <Card className="border-none bg-surface-secondary shadow-lg overflow-hidden">
+                    <CardContent className="py-12 text-center">
+                      <Loader2 className="w-8 h-8 animate-spin text-[#4B6FED] mx-auto" />
+                      <p className="text-gray-400 mt-4">Loading logs...</p>
+                    </CardContent>
+                  </Card>
+                ) : logsError ? (
+                  <Card className="border-none bg-surface-secondary shadow-lg overflow-hidden">
+                    <CardHeader className="border-b border-border flex flex-row items-center justify-between">
+                      <CardTitle className="text-lg flex items-center gap-2 text-white">
+                        <Terminal className="h-5 w-5 text-[#4B6FED]" />
+                        Server Logs
+                      </CardTitle>
+                      <Button
+                        size="sm"
+                        variant="ghost"
+                        onClick={() => setSelectedLogs(null)}
+                        className="text-gray-400 hover:text-white"
+                      >
+                        Close
+                      </Button>
+                    </CardHeader>
+                    <CardContent className="py-12 text-center">
+                      <AlertCircle className="w-8 h-8 text-red-400 mx-auto mb-4" />
+                      <p className="text-gray-400">
+                        {logsError instanceof Error ? logsError.message : 'Failed to load logs'}
+                      </p>
+                    </CardContent>
+                  </Card>
+                ) : logs ? (
+                  <LogsPanel logs={logs} onClose={() => setSelectedLogs(null)} />
+                ) : null}
               </div>
             )}
           </motion.div>
@@ -586,9 +583,28 @@ export default function MCPHostingClient() {
               <div className="flex items-center justify-center py-12">
                 <Loader2 className="w-8 h-8 animate-spin text-[#4B6FED]" />
               </div>
-            ) : (
+            ) : catalogError ? (
+              <motion.div variants={fadeUp}>
+                <Card className="border-none bg-surface-secondary shadow-lg">
+                  <CardContent className="py-12 text-center">
+                    <AlertCircle className="w-12 h-12 text-red-400 mx-auto mb-4" />
+                    <h3 className="text-lg font-medium text-white mb-2">Failed to load catalog</h3>
+                    <p className="text-gray-400 mb-6">
+                      {catalogError instanceof Error ? catalogError.message : 'An error occurred while fetching the MCP catalog'}
+                    </p>
+                    <Button
+                      onClick={() => queryClient.invalidateQueries({ queryKey: ['mcp-catalog'] })}
+                      className="bg-[#4B6FED] hover:bg-[#3D5BD9] text-white"
+                    >
+                      <RefreshCcw className="w-4 h-4 mr-2" />
+                      Retry
+                    </Button>
+                  </CardContent>
+                </Card>
+              </motion.div>
+            ) : catalog && catalog.length > 0 ? (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {(catalog || mockCatalog).map((server) => (
+                {catalog.map((server) => (
                   <ServerCard
                     key={server.id}
                     server={server}
@@ -596,6 +612,18 @@ export default function MCPHostingClient() {
                   />
                 ))}
               </div>
+            ) : (
+              <motion.div variants={fadeUp}>
+                <Card className="border-none bg-surface-secondary shadow-lg">
+                  <CardContent className="py-12 text-center">
+                    <Server className="w-12 h-12 text-gray-600 mx-auto mb-4" />
+                    <h3 className="text-lg font-medium text-white mb-2">No servers available</h3>
+                    <p className="text-gray-400">
+                      The MCP catalog is currently empty
+                    </p>
+                  </CardContent>
+                </Card>
+              </motion.div>
             )}
           </motion.div>
         )}
