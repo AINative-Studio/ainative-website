@@ -2,8 +2,8 @@
 
 import { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { motion, AnimatePresence } from 'framer-motion';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
+import { motion } from 'framer-motion';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
@@ -41,15 +41,9 @@ import {
   XCircle,
   Loader2,
   Zap,
-  Eye,
-  Edit,
   RefreshCcw,
   Terminal,
-  BarChart2,
-  MessageSquare,
-  Workflow,
   Wrench,
-  Code,
   Sparkles,
 } from 'lucide-react';
 import agentService, {
@@ -74,211 +68,6 @@ const stagger = {
   }
 };
 
-// Mock data for graceful degradation
-const mockTemplates: AgentTemplate[] = [
-  {
-    id: 'template-1',
-    name: 'Customer Support Agent',
-    description: 'Intelligent agent for handling customer inquiries and support tickets',
-    category: 'customer-service',
-    icon: 'MessageSquare',
-    defaultConfig: {
-      model: 'claude-3-5-sonnet-20241022',
-      temperature: 0.7,
-      maxTokens: 4096,
-      systemPrompt: 'You are a helpful customer support agent. Provide clear, empathetic, and accurate responses.',
-      tools: ['web-search', 'knowledge-base', 'ticket-system'],
-      capabilities: ['conversation', 'ticket-management', 'escalation'],
-    },
-    tags: ['customer-service', 'conversational', 'support'],
-  },
-  {
-    id: 'template-2',
-    name: 'Code Assistant',
-    description: 'AI-powered coding assistant for development tasks',
-    category: 'development',
-    icon: 'Code',
-    defaultConfig: {
-      model: 'claude-3-5-sonnet-20241022',
-      temperature: 0.3,
-      maxTokens: 8192,
-      systemPrompt: 'You are an expert software engineer. Write clean, efficient, and well-documented code.',
-      tools: ['code-analysis', 'github', 'documentation'],
-      capabilities: ['code-generation', 'debugging', 'review'],
-    },
-    tags: ['development', 'coding', 'automation'],
-  },
-  {
-    id: 'template-3',
-    name: 'Data Analyst',
-    description: 'Analyze data, generate insights, and create visualizations',
-    category: 'data-analysis',
-    icon: 'BarChart2',
-    defaultConfig: {
-      model: 'claude-3-5-sonnet-20241022',
-      temperature: 0.5,
-      maxTokens: 8192,
-      systemPrompt: 'You are a data analyst. Analyze data thoroughly and provide actionable insights.',
-      tools: ['data-query', 'visualization', 'statistical-analysis'],
-      capabilities: ['data-analysis', 'visualization', 'reporting'],
-    },
-    tags: ['data-analysis', 'analytics', 'reporting'],
-  },
-  {
-    id: 'template-4',
-    name: 'Workflow Automation',
-    description: 'Automate complex workflows and business processes',
-    category: 'productivity',
-    icon: 'Workflow',
-    defaultConfig: {
-      model: 'claude-3-5-sonnet-20241022',
-      temperature: 0.4,
-      maxTokens: 4096,
-      systemPrompt: 'You are a workflow automation expert. Streamline processes and ensure efficiency.',
-      tools: ['api-integration', 'email', 'slack', 'calendar'],
-      capabilities: ['automation', 'integration', 'scheduling'],
-    },
-    tags: ['automation', 'workflow', 'productivity'],
-  },
-];
-
-const mockAgents: Agent[] = [
-  {
-    id: 'agent-1',
-    name: 'Support Bot Alpha',
-    description: 'Main customer support agent',
-    type: 'conversational',
-    status: 'idle',
-    config: {
-      model: 'claude-3-5-sonnet-20241022',
-      temperature: 0.7,
-      maxTokens: 4096,
-      systemPrompt: 'You are a helpful customer support agent.',
-      tools: ['web-search', 'knowledge-base'],
-      capabilities: ['conversation', 'ticket-management'],
-    },
-    templateId: 'template-1',
-    createdAt: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString(),
-    updatedAt: new Date().toISOString(),
-    lastRunAt: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString(),
-    runCount: 156,
-  },
-  {
-    id: 'agent-2',
-    name: 'Code Review Assistant',
-    description: 'Automated code review and suggestions',
-    type: 'task-based',
-    status: 'running',
-    config: {
-      model: 'claude-3-5-sonnet-20241022',
-      temperature: 0.3,
-      maxTokens: 8192,
-      systemPrompt: 'You are an expert code reviewer.',
-      tools: ['github', 'code-analysis'],
-      capabilities: ['code-review', 'static-analysis'],
-    },
-    templateId: 'template-2',
-    createdAt: new Date(Date.now() - 14 * 24 * 60 * 60 * 1000).toISOString(),
-    updatedAt: new Date().toISOString(),
-    lastRunAt: new Date().toISOString(),
-    runCount: 89,
-  },
-  {
-    id: 'agent-3',
-    name: 'Data Pipeline Monitor',
-    description: 'Monitor and analyze data pipelines',
-    type: 'workflow',
-    status: 'idle',
-    config: {
-      model: 'claude-3-5-sonnet-20241022',
-      temperature: 0.5,
-      maxTokens: 8192,
-      systemPrompt: 'You monitor data pipelines and provide insights.',
-      tools: ['data-query', 'visualization'],
-      capabilities: ['monitoring', 'alerting', 'analysis'],
-    },
-    templateId: 'template-3',
-    createdAt: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString(),
-    updatedAt: new Date().toISOString(),
-    lastRunAt: new Date(Date.now() - 5 * 60 * 60 * 1000).toISOString(),
-    runCount: 342,
-  },
-];
-
-const mockRuns: AgentRun[] = [
-  {
-    id: 'run-1',
-    agentId: 'agent-1',
-    agentName: 'Support Bot Alpha',
-    status: 'completed',
-    input: 'How do I reset my password?',
-    output: 'To reset your password, please follow these steps: 1. Click on "Forgot Password" on the login page...',
-    startedAt: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString(),
-    completedAt: new Date(Date.now() - 2 * 60 * 60 * 1000 + 3000).toISOString(),
-    duration: 3000,
-    tokensUsed: 245,
-    cost: 0.0012,
-  },
-  {
-    id: 'run-2',
-    agentId: 'agent-2',
-    agentName: 'Code Review Assistant',
-    status: 'running',
-    input: 'Review the authentication module',
-    startedAt: new Date().toISOString(),
-    tokensUsed: 1024,
-  },
-  {
-    id: 'run-3',
-    agentId: 'agent-3',
-    agentName: 'Data Pipeline Monitor',
-    status: 'failed',
-    input: 'Check pipeline status',
-    error: 'Connection timeout to database',
-    startedAt: new Date(Date.now() - 5 * 60 * 60 * 1000).toISOString(),
-    completedAt: new Date(Date.now() - 5 * 60 * 60 * 1000 + 15000).toISOString(),
-    duration: 15000,
-  },
-];
-
-const mockLogs: AgentLog[] = [
-  {
-    id: 'log-1',
-    agentId: 'agent-1',
-    runId: 'run-1',
-    timestamp: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString(),
-    level: 'info',
-    message: 'Agent started successfully',
-  },
-  {
-    id: 'log-2',
-    agentId: 'agent-1',
-    runId: 'run-1',
-    timestamp: new Date(Date.now() - 2 * 60 * 60 * 1000 + 1000).toISOString(),
-    level: 'info',
-    message: 'Processing user query',
-    metadata: { input_length: 26 },
-  },
-  {
-    id: 'log-3',
-    agentId: 'agent-1',
-    runId: 'run-1',
-    timestamp: new Date(Date.now() - 2 * 60 * 60 * 1000 + 2000).toISOString(),
-    level: 'info',
-    message: 'Generated response',
-    metadata: { tokens_used: 245 },
-  },
-  {
-    id: 'log-4',
-    agentId: 'agent-3',
-    runId: 'run-3',
-    timestamp: new Date(Date.now() - 5 * 60 * 60 * 1000).toISOString(),
-    level: 'error',
-    message: 'Database connection failed',
-    metadata: { error: 'ETIMEDOUT' },
-  },
-];
-
 export default function AgentsClient() {
   const queryClient = useQueryClient();
   const [selectedAgent, setSelectedAgent] = useState<Agent | null>(null);
@@ -294,130 +83,109 @@ export default function AgentsClient() {
   const [selectedTemplate, setSelectedTemplate] = useState<AgentTemplate | null>(null);
   const [agentType, setAgentType] = useState<'conversational' | 'task-based' | 'workflow' | 'custom'>('conversational');
 
-  // Queries with mock fallback
-  const { data: agents = mockAgents, isLoading: agentsLoading } = useQuery({
+  // Queries - Real backend API calls with proper error handling
+  const {
+    data: agents = [],
+    isLoading: agentsLoading,
+    isError: agentsError,
+    error: agentsErrorMessage
+  } = useQuery({
     queryKey: ['agents'],
     queryFn: async () => {
-      try {
-        return await agentService.getAgents();
-      } catch (error) {
-        console.warn('Using mock agents data:', error);
-        return mockAgents;
-      }
+      return await agentService.getAgents();
     },
     refetchInterval: 5000, // Poll every 5 seconds for real-time updates
+    retry: 2,
+    retryDelay: 1000,
   });
 
-  const { data: templates = mockTemplates } = useQuery({
+  const {
+    data: templates = [],
+    isError: templatesError,
+    error: templatesErrorMessage
+  } = useQuery({
     queryKey: ['agent-templates'],
     queryFn: async () => {
-      try {
-        return await agentService.getTemplates();
-      } catch (error) {
-        console.warn('Using mock templates:', error);
-        return mockTemplates;
-      }
+      return await agentService.getTemplates();
     },
+    retry: 2,
+    retryDelay: 1000,
   });
 
-  const { data: runs = mockRuns } = useQuery({
+  const {
+    data: runs = [],
+    isError: runsError,
+    error: runsErrorMessage
+  } = useQuery({
     queryKey: ['agent-runs', selectedAgent?.id],
     queryFn: async () => {
-      if (!selectedAgent) return mockRuns;
-      try {
-        return await agentService.getAgentRuns(selectedAgent.id);
-      } catch (error) {
-        console.warn('Using mock runs:', error);
-        return mockRuns.filter(r => r.agentId === selectedAgent.id);
-      }
+      if (!selectedAgent) return [];
+      return await agentService.getAgentRuns(selectedAgent.id);
     },
     enabled: !!selectedAgent,
     refetchInterval: 3000,
+    retry: 2,
+    retryDelay: 1000,
   });
 
-  const { data: logs = mockLogs } = useQuery({
+  const {
+    data: logs = [],
+    isError: logsError,
+    error: logsErrorMessage
+  } = useQuery({
     queryKey: ['agent-logs', selectedAgent?.id, selectedRun?.id],
     queryFn: async () => {
-      if (!selectedAgent) return mockLogs;
-      try {
-        return await agentService.getAgentLogs(selectedAgent.id, selectedRun?.id);
-      } catch (error) {
-        console.warn('Using mock logs:', error);
-        return mockLogs.filter(l =>
-          l.agentId === selectedAgent.id &&
-          (!selectedRun || l.runId === selectedRun.id)
-        );
-      }
+      if (!selectedAgent) return [];
+      return await agentService.getAgentLogs(selectedAgent.id, selectedRun?.id);
     },
     enabled: !!selectedAgent && showLogsDialog,
+    retry: 2,
+    retryDelay: 1000,
   });
 
-  // Mutations
+  // Mutations - Real backend API calls with proper error handling
   const createAgentMutation = useMutation({
     mutationFn: async (request: CreateAgentRequest) => {
-      try {
-        return await agentService.createAgent(request);
-      } catch (error) {
-        console.warn('Mock creating agent:', error);
-        const newAgent: Agent = {
-          id: `agent-${Date.now()}`,
-          name: request.name,
-          description: request.description || '',
-          type: request.type,
-          status: 'idle',
-          config: request.config,
-          templateId: request.templateId,
-          createdAt: new Date().toISOString(),
-          updatedAt: new Date().toISOString(),
-          runCount: 0,
-        };
-        return newAgent;
-      }
+      return await agentService.createAgent(request);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['agents'] });
       setShowCreateDialog(false);
       resetCreateForm();
     },
+    onError: (error: Error) => {
+      console.error('Failed to create agent:', error);
+      // Error is displayed via the UI (mutation.isError state)
+    },
   });
 
   const deleteAgentMutation = useMutation({
     mutationFn: async (agentId: string) => {
-      try {
-        return await agentService.deleteAgent(agentId);
-      } catch (error) {
-        console.warn('Mock deleting agent:', error);
-        return { success: true };
-      }
+      return await agentService.deleteAgent(agentId);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['agents'] });
       setSelectedAgent(null);
     },
+    onError: (error: Error) => {
+      console.error('Failed to delete agent:', error);
+      // Error is displayed via the UI (mutation.isError state)
+    },
   });
 
   const runAgentMutation = useMutation({
     mutationFn: async ({ agentId, request }: { agentId: string; request: RunAgentRequest }) => {
-      try {
-        return await agentService.runAgent(agentId, request);
-      } catch (error) {
-        console.warn('Mock running agent:', error);
-        const newRun: AgentRun = {
-          id: `run-${Date.now()}`,
-          agentId,
-          agentName: selectedAgent?.name || '',
-          status: 'running',
-          input: request.input,
-          startedAt: new Date().toISOString(),
-        };
-        return newRun;
-      }
+      return await agentService.runAgent(agentId, request);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['agent-runs'] });
       queryClient.invalidateQueries({ queryKey: ['agents'] });
       setShowRunDialog(false);
       setRunInput('');
+    },
+    onError: (error: Error) => {
+      console.error('Failed to run agent:', error);
+      // Error is displayed via the UI (mutation.isError state)
     },
   });
 
@@ -477,7 +245,7 @@ export default function AgentsClient() {
   };
 
   const getStatusBadge = (status: Agent['status']) => {
-    const variants = {
+    const variants: Record<Agent['status'], 'default' | 'secondary' | 'outline' | 'destructive'> = {
       running: 'default',
       idle: 'secondary',
       paused: 'outline',
@@ -485,7 +253,7 @@ export default function AgentsClient() {
       stopped: 'outline',
     };
     return (
-      <Badge variant={variants[status] as any}>
+      <Badge variant={variants[status]}>
         {status.charAt(0).toUpperCase() + status.slice(1)}
       </Badge>
     );
@@ -573,7 +341,7 @@ export default function AgentsClient() {
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="agent-type">Agent Type</Label>
-                  <Select value={agentType} onValueChange={(v: any) => setAgentType(v)}>
+                  <Select value={agentType} onValueChange={(v) => setAgentType(v as typeof agentType)}>
                     <SelectTrigger>
                       <SelectValue />
                     </SelectTrigger>
@@ -587,39 +355,68 @@ export default function AgentsClient() {
                 </div>
                 <div className="space-y-2">
                   <Label>Choose a Template (Optional)</Label>
-                  <div className="grid grid-cols-2 gap-3">
-                    {templates.map((template) => (
-                      <Card
-                        key={template.id}
-                        className={`cursor-pointer transition-all hover:shadow-lg ${
-                          selectedTemplate?.id === template.id
-                            ? 'border-purple-500 bg-purple-50 dark:bg-purple-950'
-                            : ''
-                        }`}
-                        onClick={() => setSelectedTemplate(template)}
-                      >
-                        <CardHeader className="pb-3">
-                          <CardTitle className="text-sm flex items-center gap-2">
-                            <Sparkles className="h-4 w-4" />
-                            {template.name}
-                          </CardTitle>
-                        </CardHeader>
-                        <CardContent>
-                          <p className="text-xs text-gray-600 dark:text-gray-400">
-                            {template.description}
-                          </p>
-                          <div className="flex flex-wrap gap-1 mt-2">
-                            {template.tags.slice(0, 2).map((tag) => (
-                              <Badge key={tag} variant="outline" className="text-xs">
-                                {tag}
-                              </Badge>
-                            ))}
-                          </div>
-                        </CardContent>
-                      </Card>
-                    ))}
-                  </div>
+                  {templatesError ? (
+                    <div className="text-center py-6 text-red-500">
+                      <AlertCircle className="h-8 w-8 mx-auto mb-2" />
+                      <p className="text-sm">Failed to load templates</p>
+                      <p className="text-xs mt-1 text-gray-600 dark:text-gray-400">
+                        {templatesErrorMessage?.message || 'An error occurred'}
+                      </p>
+                    </div>
+                  ) : templates.length === 0 ? (
+                    <div className="text-center py-6 text-gray-500">
+                      <p className="text-sm">No templates available</p>
+                    </div>
+                  ) : (
+                    <div className="grid grid-cols-2 gap-3">
+                      {templates.map((template) => (
+                        <Card
+                          key={template.id}
+                          className={`cursor-pointer transition-all hover:shadow-lg ${
+                            selectedTemplate?.id === template.id
+                              ? 'border-purple-500 bg-purple-50 dark:bg-purple-950'
+                              : ''
+                          }`}
+                          onClick={() => setSelectedTemplate(template)}
+                        >
+                          <CardHeader className="pb-3">
+                            <CardTitle className="text-sm flex items-center gap-2">
+                              <Sparkles className="h-4 w-4" />
+                              {template.name}
+                            </CardTitle>
+                          </CardHeader>
+                          <CardContent>
+                            <p className="text-xs text-gray-600 dark:text-gray-400">
+                              {template.description}
+                            </p>
+                            <div className="flex flex-wrap gap-1 mt-2">
+                              {template.tags.slice(0, 2).map((tag) => (
+                                <Badge key={tag} variant="outline" className="text-xs">
+                                  {tag}
+                                </Badge>
+                              ))}
+                            </div>
+                          </CardContent>
+                        </Card>
+                      ))}
+                    </div>
+                  )}
                 </div>
+                {createAgentMutation.isError && (
+                  <div className="p-3 bg-red-50 dark:bg-red-950 rounded-lg border border-red-200 dark:border-red-800">
+                    <div className="flex items-start gap-2">
+                      <AlertCircle className="h-5 w-5 text-red-500 flex-shrink-0 mt-0.5" />
+                      <div>
+                        <p className="text-sm font-semibold text-red-700 dark:text-red-300">
+                          Failed to create agent
+                        </p>
+                        <p className="text-xs text-red-600 dark:text-red-400 mt-1">
+                          {(createAgentMutation.error as Error)?.message || 'An error occurred'}
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                )}
                 <div className="flex justify-end gap-2">
                   <Button variant="outline" onClick={() => setShowCreateDialog(false)}>
                     Cancel
@@ -711,6 +508,22 @@ export default function AgentsClient() {
                   <div className="flex items-center justify-center h-40">
                     <Loader2 className="h-8 w-8 animate-spin text-purple-600" />
                   </div>
+                ) : agentsError ? (
+                  <div className="text-center py-12 text-red-500">
+                    <AlertCircle className="h-12 w-12 mx-auto mb-4" />
+                    <p className="font-semibold">Failed to load agents</p>
+                    <p className="text-sm mt-2 text-gray-600 dark:text-gray-400">
+                      {agentsErrorMessage?.message || 'An error occurred while fetching agents'}
+                    </p>
+                    <Button
+                      variant="outline"
+                      className="mt-4"
+                      onClick={() => queryClient.invalidateQueries({ queryKey: ['agents'] })}
+                    >
+                      <RefreshCcw className="h-4 w-4 mr-2" />
+                      Retry
+                    </Button>
+                  </div>
                 ) : agents.length === 0 ? (
                   <div className="text-center py-12 text-gray-500">
                     <Bot className="h-12 w-12 mx-auto mb-4 opacity-50" />
@@ -791,6 +604,21 @@ export default function AgentsClient() {
                               rows={5}
                             />
                           </div>
+                          {runAgentMutation.isError && (
+                            <div className="p-3 bg-red-50 dark:bg-red-950 rounded-lg border border-red-200 dark:border-red-800">
+                              <div className="flex items-start gap-2">
+                                <AlertCircle className="h-5 w-5 text-red-500 flex-shrink-0 mt-0.5" />
+                                <div>
+                                  <p className="text-sm font-semibold text-red-700 dark:text-red-300">
+                                    Failed to run agent
+                                  </p>
+                                  <p className="text-xs text-red-600 dark:text-red-400 mt-1">
+                                    {(runAgentMutation.error as Error)?.message || 'An error occurred'}
+                                  </p>
+                                </div>
+                              </div>
+                            </div>
+                          )}
                           <div className="flex justify-end gap-2">
                             <Button variant="outline" onClick={() => setShowRunDialog(false)}>
                               Cancel
@@ -943,7 +771,23 @@ export default function AgentsClient() {
                   </TabsContent>
                   <TabsContent value="runs">
                     <div className="h-[400px] overflow-y-auto pr-4">
-                      {runs.length === 0 ? (
+                      {runsError ? (
+                        <div className="text-center py-12 text-red-500">
+                          <AlertCircle className="h-12 w-12 mx-auto mb-4" />
+                          <p className="font-semibold">Failed to load run history</p>
+                          <p className="text-sm mt-2 text-gray-600 dark:text-gray-400">
+                            {runsErrorMessage?.message || 'An error occurred while fetching runs'}
+                          </p>
+                          <Button
+                            variant="outline"
+                            className="mt-4"
+                            onClick={() => queryClient.invalidateQueries({ queryKey: ['agent-runs'] })}
+                          >
+                            <RefreshCcw className="h-4 w-4 mr-2" />
+                            Retry
+                          </Button>
+                        </div>
+                      ) : runs.length === 0 ? (
                         <div className="text-center py-12 text-gray-500">
                           <Activity className="h-12 w-12 mx-auto mb-4 opacity-50" />
                           <p>No runs yet</p>
@@ -1024,7 +868,23 @@ export default function AgentsClient() {
             </DialogHeader>
             <div className="h-[500px] w-full overflow-y-auto">
               <div className="space-y-2 font-mono text-sm">
-                {logs.length === 0 ? (
+                {logsError ? (
+                  <div className="text-center py-12 text-red-500">
+                    <AlertCircle className="h-12 w-12 mx-auto mb-4" />
+                    <p className="font-semibold">Failed to load logs</p>
+                    <p className="text-sm mt-2 text-gray-600 dark:text-gray-400">
+                      {logsErrorMessage?.message || 'An error occurred while fetching logs'}
+                    </p>
+                    <Button
+                      variant="outline"
+                      className="mt-4"
+                      onClick={() => queryClient.invalidateQueries({ queryKey: ['agent-logs'] })}
+                    >
+                      <RefreshCcw className="h-4 w-4 mr-2" />
+                      Retry
+                    </Button>
+                  </div>
+                ) : logs.length === 0 ? (
                   <div className="text-center py-12 text-gray-500">
                     <Terminal className="h-12 w-12 mx-auto mb-4 opacity-50" />
                     <p>No logs available</p>
