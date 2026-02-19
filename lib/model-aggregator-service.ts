@@ -2,6 +2,7 @@
  * Model Aggregator Service
  * Aggregates AI models from multiple backend API endpoints into a unified model list
  * Reference: docs/ai-models/AI_MODEL_REGISTRY_SYSTEM.md
+ * Refs #566 - Replace hardcoded models with AI Registry API
  */
 
 import apiClient from './api-client';
@@ -39,6 +40,7 @@ export interface UnifiedAIModel {
   is_premium?: boolean;
   speed?: string;
   quality?: string;
+  available?: boolean;
 
   // Example prompts
   examplePrompts?: string[];
@@ -71,22 +73,82 @@ interface EmbeddingModel {
   loaded?: boolean;
 }
 
+// AI Registry API response types (Refs #566)
+interface AIRegistryModel {
+  id: string;
+  name: string;
+  provider: string;
+  category: string;
+  capabilities: string[];
+  description: string;
+  thumbnail_url?: string;
+  endpoint: string;
+  method?: string;
+  pricing?: {
+    credits: number;
+    usd: number;
+    unit?: string;
+  };
+  is_default?: boolean;
+  is_premium?: boolean;
+  speed?: string;
+  quality?: string;
+  parameters?: Array<{
+    name: string;
+    type: string;
+    required: boolean;
+    default?: unknown;
+    description: string;
+    min?: number;
+    max?: number;
+    options?: unknown[];
+  }>;
+  example_request?: string;
+  example_response?: string;
+  examplePrompts?: string[];
+}
+
+interface AIRegistryResponse {
+  models: AIRegistryModel[];
+  total?: number;
+}
+
+// Multimodal health check response
+interface MultimodalHealthResponse {
+  status: string;
+  services: {
+    [key: string]: {
+      available: boolean;
+      models?: string[];
+    };
+  };
+}
+
 /**
  * Model Aggregator Service
  * Fetches and normalizes models from all available endpoints
  */
 class ModelAggregatorService {
+  private healthCheckCache: MultimodalHealthResponse | null = null;
+  private healthCheckTimestamp: number = 0;
+  private readonly HEALTH_CHECK_TTL = 5 * 60 * 1000; // 5 minutes
+
   /**
-   * Aggregate all models from all endpoints
+   * Aggregate all models from all endpoints (Refs #566)
+   * Fetches from AI Registry API instead of hardcoded data
    */
   async aggregateAllModels(): Promise<UnifiedAIModel[]> {
-    console.log('[ModelAggregator] Starting model aggregation...');
+    console.log('[ModelAggregator] Starting model aggregation (using AI Registry API)...');
     const models: UnifiedAIModel[] = [];
 
-    // Fetch from all endpoints in parallel
-    const [chatModels, embeddingModels] = await Promise.allSettled([
+    // Fetch multimodal health status first
+    const healthStatus = await this.fetchMultimodalHealth();
+
+    // Fetch from all endpoints in parallel (Refs #566)
+    const [chatModels, embeddingModels, registryModels] = await Promise.allSettled([
       this.fetchChatModels(),
       this.fetchEmbeddingModels(),
+      this.fetchAIRegistryModels(), // NEW: Replaces hardcoded Image/Video/Audio
     ]);
 
     // Add chat models
@@ -108,30 +170,148 @@ class ModelAggregatorService {
       models.push(...hardcodedEmbeddings);
     }
 
-    // Add hardcoded coding models
-    const codingModels = this.getCodingModels();
-    console.log('[ModelAggregator] Coding models (hardcoded):', codingModels.length);
-    models.push(...codingModels);
-
-    // Add hardcoded image generation models
-    const imageModels = this.getImageGenerationModels();
-    console.log('[ModelAggregator] Image models (hardcoded):', imageModels.length);
-    models.push(...imageModels);
-
-    // Add hardcoded video generation models
-    const videoModels = this.getVideoGenerationModels();
-    console.log('[ModelAggregator] Video models (hardcoded):', videoModels.length);
-    models.push(...videoModels);
-
-    // Add hardcoded audio models
-    const audioModels = this.getAudioModels();
-    console.log('[ModelAggregator] Audio models (hardcoded):', audioModels.length);
-    models.push(...audioModels);
+    // Add models from AI Registry (Image, Video, Audio) - Refs #566
+    if (registryModels.status === 'fulfilled' && registryModels.value.length > 0) {
+      console.log('[ModelAggregator] AI Registry models (from API):', registryModels.value.length);
+      // Apply health check status
+      const modelsWithHealth = registryModels.value.map(model => ({
+        ...model,
+        available: this.checkModelAvailability(model, healthStatus),
+      }));
+      models.push(...modelsWithHealth);
+    } else {
+      console.warn('[ModelAggregator] AI Registry API failed, using hardcoded fallback');
+      // Fallback to hardcoded models if API fails
+      const hardcodedModels = [
+        ...this.getCodingModels(),
+        ...this.getImageGenerationModels(),
+        ...this.getVideoGenerationModels(),
+        ...this.getAudioModels(),
+      ];
+      console.log('[ModelAggregator] Hardcoded fallback models:', hardcodedModels.length);
+      models.push(...hardcodedModels);
+    }
 
     console.log('[ModelAggregator] Total models aggregated:', models.length);
     console.log('[ModelAggregator] Sample of first model:', models[0]);
 
     return models;
+  }
+
+  /**
+   * Fetch multimodal service health status (Refs #566)
+   */
+  private async fetchMultimodalHealth(): Promise<MultimodalHealthResponse | null> {
+    // Use cache if still valid
+    const now = Date.now();
+    if (this.healthCheckCache && (now - this.healthCheckTimestamp) < this.HEALTH_CHECK_TTL) {
+      console.log('[ModelAggregator] Using cached health check');
+      return this.healthCheckCache;
+    }
+
+    try {
+      const response = await apiClient.get<MultimodalHealthResponse>('/v1/multimodal/health');
+      this.healthCheckCache = response.data;
+      this.healthCheckTimestamp = now;
+      console.log('[ModelAggregator] Multimodal health check:', response.data);
+      return response.data;
+    } catch (error) {
+      console.error('[ModelAggregator] Failed to fetch multimodal health:', error);
+      return null;
+    }
+  }
+
+  /**
+   * Fetch models from AI Registry API (Refs #566)
+   * Replaces hardcoded Image, Video, and Audio models
+   */
+  private async fetchAIRegistryModels(): Promise<UnifiedAIModel[]> {
+    try {
+      const response = await apiClient.get<AIRegistryResponse>('/v1/public/ai-registry/models');
+      const registryModels = response.data.models || [];
+
+      console.log('[ModelAggregator] Fetched from AI Registry:', registryModels.length, 'models');
+
+      return registryModels.map(model => this.transformRegistryModel(model));
+    } catch (error) {
+      console.error('[ModelAggregator] Failed to fetch AI Registry models:', error);
+      return [];
+    }
+  }
+
+  /**
+   * Transform AI Registry model to UnifiedAIModel format (Refs #566)
+   */
+  private transformRegistryModel(model: AIRegistryModel): UnifiedAIModel {
+    // Map category string to ModelCategory
+    const categoryMap: Record<string, ModelCategory> = {
+      image: 'Image',
+      video: 'Video',
+      audio: 'Audio',
+      coding: 'Coding',
+      embedding: 'Embedding',
+    };
+
+    const category = categoryMap[model.category.toLowerCase()] || 'Coding';
+
+    // Determine source_type from category
+    const sourceTypeMap: Record<string, UnifiedAIModel['source_type']> = {
+      Image: 'image',
+      Video: 'video',
+      Audio: 'audio',
+      Coding: 'chat',
+      Embedding: 'embedding',
+    };
+
+    return {
+      id: model.id,
+      slug: this.generateSlug(model.name),
+      name: model.name,
+      provider: model.provider,
+      category,
+      capabilities: model.capabilities || [],
+      description: model.description || '',
+      thumbnail_url: model.thumbnail_url || getThumbnailUrl({
+        provider: model.provider,
+        category,
+      }),
+      endpoint: model.endpoint,
+      method: (model.method as 'GET' | 'POST') || 'POST',
+      pricing: model.pricing,
+      is_default: model.is_default || false,
+      is_premium: model.is_premium || false,
+      speed: model.speed,
+      quality: model.quality,
+      examplePrompts: model.examplePrompts || [],
+      source_type: sourceTypeMap[category] || 'chat',
+    };
+  }
+
+  /**
+   * Check if model is available based on health status (Refs #566)
+   */
+  private checkModelAvailability(
+    model: UnifiedAIModel,
+    healthStatus: MultimodalHealthResponse | null
+  ): boolean {
+    if (!healthStatus || !healthStatus.services) {
+      return true; // Assume available if no health data
+    }
+
+    // Map category to service name
+    const serviceMap: Record<string, string> = {
+      Image: 'image',
+      Video: 'video',
+      Audio: 'audio',
+    };
+
+    const serviceName = serviceMap[model.category];
+    if (!serviceName) {
+      return true; // Non-multimodal models are always available
+    }
+
+    const service = healthStatus.services[serviceName];
+    return service?.available !== false;
   }
 
   /**
@@ -710,6 +890,16 @@ class ModelAggregatorService {
       .split('-')
       .map(word => word.charAt(0).toUpperCase() + word.slice(1))
       .join(' ');
+  }
+
+  /**
+   * Generate URL-friendly slug from model name (Refs #566)
+   */
+  private generateSlug(text: string): string {
+    return text
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, '-')
+      .replace(/^-+|-+$/g, '');
   }
 }
 
