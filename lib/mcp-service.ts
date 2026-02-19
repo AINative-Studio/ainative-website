@@ -173,11 +173,20 @@ const mcpService = {
   },
 
   /**
-   * Restart a server instance
-   * POST /v1/public/mcp/{id}/restart
+   * Start a server instance
+   * POST /v1/public/mcp/instances/{id}/start
    */
-  async restartServer(id: string): Promise<{ status: string }> {
-    const response = await apiClient.post<{ status: string }>(`/v1/public/mcp/${id}/restart`);
+  async startServer(id: string): Promise<{ status: string }> {
+    const response = await apiClient.post<{ status: string }>(`/v1/public/mcp/instances/${id}/start`);
+    return response.data;
+  },
+
+  /**
+   * Stop a server instance
+   * POST /v1/public/mcp/instances/{id}/stop
+   */
+  async stopServer(id: string): Promise<{ status: string }> {
+    const response = await apiClient.post<{ status: string }>(`/v1/public/mcp/instances/${id}/stop`);
     return response.data;
   },
 
@@ -191,13 +200,51 @@ const mcpService = {
   },
 
   /**
+   * Get usage metrics for a specific instance
+   * GET /v1/public/mcp/instances/{id}/usage
+   */
+  async getInstanceUsage(id: string, period?: string): Promise<MCPUsageMetrics> {
+    const params = period ? `?period=${period}` : '';
+    const response = await apiClient.get<MCPUsageMetrics>(`/v1/public/mcp/instances/${id}/usage${params}`);
+    return response.data;
+  },
+
+  /**
+   * Get MCP billing summary across all instances
+   * GET /v1/public/mcp/billing/summary
+   */
+  async getBillingSummary(): Promise<{
+    currentPeriod: { start: string; end: string };
+    totalCost: number;
+    instanceCount: number;
+    instances: Array<{
+      instanceId: string;
+      name: string;
+      cost: number;
+      usage: number;
+    }>;
+  }> {
+    const response = await apiClient.get<{
+      currentPeriod: { start: string; end: string };
+      totalCost: number;
+      instanceCount: number;
+      instances: Array<{
+        instanceId: string;
+        name: string;
+        cost: number;
+        usage: number;
+      }>;
+    }>('/v1/public/mcp/billing/summary');
+    return response.data;
+  },
+
+  /**
+   * @deprecated Use getInstanceUsage instead
    * Get usage metrics for a server
    * GET /v1/public/mcp/{id}/usage
    */
   async getUsageMetrics(id: string, period?: string): Promise<MCPUsageMetrics> {
-    const params = period ? `?period=${period}` : '';
-    const response = await apiClient.get<MCPUsageMetrics>(`/v1/public/mcp/${id}/usage${params}`);
-    return response.data;
+    return this.getInstanceUsage(id, period);
   },
 
   /**
