@@ -83,9 +83,9 @@ export default function UsageClient() {
       let nextRefresh = '';
 
       if (creditsResult.status === 'fulfilled' && creditsResult.value) {
-        creditsUsed = creditsResult.value.used;
-        creditsTotal = creditsResult.value.total;
-        nextRefresh = creditsResult.value.next_reset_date || '';
+        creditsUsed = creditsResult.value.used_credits;
+        creditsTotal = creditsResult.value.total_credits;
+        nextRefresh = creditsResult.value.period_end || '';
       }
 
       if (usageLimitsResult.status === 'fulfilled' && usageLimitsResult.value) {

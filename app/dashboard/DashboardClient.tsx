@@ -100,9 +100,9 @@ interface AiMetrics {
   };
 }
 
-function mapCreditsToUsageData(credits: { used: number; total: number; next_reset_date?: string }): UsageData {
-  const nextRefreshDate = credits.next_reset_date
-    ? new Date(credits.next_reset_date)
+function mapCreditsToUsageData(credits: { used_credits: number; total_credits: number; period_end: string | null }): UsageData {
+  const nextRefreshDate = credits.period_end
+    ? new Date(credits.period_end)
     : new Date(Date.now() + 30 * 24 * 60 * 60 * 1000);
   const now = new Date();
   const diffDays = Math.max(0, Math.ceil(
@@ -115,8 +115,8 @@ function mapCreditsToUsageData(credits: { used: number; total: number; next_rese
 
   return {
     basePromptCredits: {
-      used: credits.used,
-      total: credits.total
+      used: credits.used_credits,
+      total: credits.total_credits
     },
     additionalPromptCredits: {
       used: 0,
