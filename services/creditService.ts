@@ -16,14 +16,16 @@ export interface ApiResponse<T> {
 }
 
 /**
- * Credit balance information
+ * Credit balance information - matches backend /v1/public/credits/balance response
  */
 export interface CreditBalance {
-  available: number;
-  used: number;
-  total: number;
-  currency: string;
-  next_reset_date?: string;
+  total_credits: number;
+  used_credits: number;
+  remaining_credits: number;
+  plan: string;
+  period_start: string;
+  period_end: string | null;
+  usage_percentage: number;
 }
 
 /**
@@ -59,7 +61,8 @@ export interface CreditPackage {
 }
 
 /**
- * Credit balance response for dashboard display
+ * @deprecated Use CreditBalance instead - this type no longer matches backend response
+ * Kept for backward compatibility only
  */
 export interface CreditBalanceResponse {
   base_used: number;
@@ -110,21 +113,34 @@ export class CreditService {
 
   /**
    * Get current credit balance
+   * Backend returns flattened response without wrapper
    */
   async getCreditBalance(): Promise<CreditBalance | null> {
     try {
-      const response = await apiClient.get<ApiResponse<{ balance: CreditBalance }>>(
+      const response = await apiClient.get<CreditBalance>(
         `${this.basePath}/balance`
       );
 
-      if (!response.data.success || !response.data.data?.balance) {
-        throw new Error(response.data.message || 'Failed to fetch credit balance');
+      // Backend returns the data directly, not wrapped in ApiResponse
+      if (!response.data) {
+        throw new Error('No credit balance data received from server');
       }
 
-      return response.data.data.balance;
+      // Validate response structure
+      const balance = response.data;
+      if (typeof balance.total_credits !== 'number' ||
+          typeof balance.used_credits !== 'number' ||
+          typeof balance.remaining_credits !== 'number') {
+        throw new Error('Invalid credit balance format received from server');
+      }
+
+      return balance;
     } catch (error) {
       console.error('Error fetching credit balance:', error);
-      return null;
+      if (error instanceof Error) {
+        throw new Error(`Failed to fetch credit balance: ${error.message}`);
+      }
+      throw new Error('Failed to fetch credit balance: Unknown error');
     }
   }
 
@@ -215,41 +231,16 @@ export class CreditService {
   }
 
   /**
-   * Get credits information in the format expected by DashboardPage
-   * Includes robust error handling and logging for debugging
+   * Get credits information - alias for getCreditBalance
+   * @deprecated Use getCreditBalance() instead for clearer naming
    */
-  async getCredits(): Promise<CreditBalanceResponse> {
-    try {
-      console.log('Fetching credits data...');
-
-      const response = await apiClient.get<ApiResponse<CreditBalanceResponse>>(`${this.basePath}/balance`);
-
-      if (!response.data.success || !response.data.data) {
-        throw new Error(response.data.message || 'Failed to fetch credits information');
+  async getCredits(): Promise<CreditBalance> {
+    return this.getCreditBalance().then(balance => {
+      if (!balance) {
+        throw new Error('Failed to fetch credit balance');
       }
-
-      console.log('Credits data fetched successfully');
-      return response.data.data;
-    } catch (error: unknown) {
-      console.error('Error fetching credits information:', error);
-
-      // Enhanced error logging with more context
-      if (error instanceof Error) {
-        if (error.message === 'Network Error') {
-          console.warn('This appears to be a CORS or network connectivity issue');
-        }
-      }
-
-      // Check for response status if available
-      const errorWithResponse = error as { response?: { status?: number } };
-      if (errorWithResponse?.response?.status === 404) {
-        console.warn('Credits endpoint not found - check API route configuration');
-      } else if (errorWithResponse?.response?.status === 401) {
-        console.warn('Authentication failed when fetching credits');
-      }
-
-      throw error;
-    }
+      return balance;
+    });
   }
 
   /**
@@ -310,21 +301,18 @@ export class CreditService {
    * @param balance - Credit balance object
    */
   calculateUsagePercentage(balance: CreditBalance): number {
-    if (balance.total === 0) return 0;
-    return Math.round((balance.used / balance.total) * 100);
+    if (balance.total_credits === 0) return 0;
+    return Math.round((balance.used_credits / balance.total_credits) * 100);
   }
 
   /**
    * Format credit amount for display
    * @param amount - Credit amount
-   * @param currency - Currency code
    */
-  formatCreditAmount(amount: number, currency: string = 'USD'): string {
+  formatCreditAmount(amount: number): string {
     return new Intl.NumberFormat('en-US', {
-      style: 'currency',
-      currency,
       minimumFractionDigits: 0,
-      maximumFractionDigits: 2
+      maximumFractionDigits: 0
     }).format(amount);
   }
 
