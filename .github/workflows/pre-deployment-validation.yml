@@ -1,0 +1,273 @@
+name: Pre-Deployment Validation
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Target environment'
+        required: true
+        default: 'production'
+        type: choice
+        options:
+          - production
+          - staging
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build-validation:
+    name: Build Validation
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run build validation tests
+        run: npm test -- __tests__/deployment/build-validation.test.ts
+        env:
+          NODE_ENV: test
+
+      - name: Upload test results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: build-validation-results
+          path: coverage/
+          retention-days: 7
+
+  environment-validation:
+    name: Environment Validation
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Validate environment variables
+        run: npm test -- __tests__/deployment/environment-validation.test.ts
+        env:
+          NODE_ENV: production
+          NEXT_PUBLIC_API_URL: https://api.ainative.studio
+          NEXT_PUBLIC_API_BASE_URL: https://api.ainative.studio
+          NEXTAUTH_URL: https://www.ainative.studio
+          NEXTAUTH_SECRET: ${{ secrets.NEXTAUTH_SECRET }}
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+          GITHUB_CLIENT_ID: ${{ secrets.GITHUB_CLIENT_ID }}
+          GITHUB_CLIENT_SECRET: ${{ secrets.GITHUB_CLIENT_SECRET }}
+
+      - name: Check for test keys in production
+        if: github.ref == 'refs/heads/main'
+        run: |
+          if [[ "${{ secrets.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY }}" == pk_test_* ]]; then
+            echo "::warning::Using Stripe test key in production"
+          fi
+
+  config-validation:
+    name: Configuration Validation
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run configuration validation tests
+        run: npm test -- __tests__/deployment/config-validation.test.ts
+        env:
+          NODE_ENV: production
+          NEXTAUTH_SECRET: test-secret-minimum-32-characters-long-12345
+          NEXTAUTH_URL: https://www.ainative.studio
+          GITHUB_CLIENT_ID: test-client-id
+          GITHUB_CLIENT_SECRET: test-client-secret-minimum-20-chars
+
+  pre-deployment-check:
+    name: Pre-Deployment Check
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    needs: [build-validation, environment-validation, config-validation]
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run pre-deployment check script
+        run: npx ts-node scripts/pre-deployment-check.ts
+        env:
+          NODE_ENV: production
+          NEXT_PUBLIC_API_URL: https://api.ainative.studio
+          NEXT_PUBLIC_API_BASE_URL: https://api.ainative.studio
+          NEXTAUTH_URL: https://www.ainative.studio
+          NEXTAUTH_SECRET: ${{ secrets.NEXTAUTH_SECRET }}
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+          GITHUB_CLIENT_ID: ${{ secrets.GITHUB_CLIENT_ID }}
+          GITHUB_CLIENT_SECRET: ${{ secrets.GITHUB_CLIENT_SECRET }}
+
+      - name: Upload check results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: pre-deployment-check-results
+          path: |
+            deployment-*.json
+            *.log
+          retention-days: 30
+
+  deployment-confidence-score:
+    name: Calculate Deployment Confidence Score
+    runs-on: ubuntu-latest
+    needs: [build-validation, environment-validation, config-validation, pre-deployment-check]
+    if: always()
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Calculate confidence score
+        id: confidence
+        run: |
+          PASSED=0
+          FAILED=0
+
+          if [ "${{ needs.build-validation.result }}" == "success" ]; then
+            PASSED=$((PASSED + 1))
+          else
+            FAILED=$((FAILED + 1))
+          fi
+
+          if [ "${{ needs.environment-validation.result }}" == "success" ]; then
+            PASSED=$((PASSED + 1))
+          else
+            FAILED=$((FAILED + 1))
+          fi
+
+          if [ "${{ needs.config-validation.result }}" == "success" ]; then
+            PASSED=$((PASSED + 1))
+          else
+            FAILED=$((FAILED + 1))
+          fi
+
+          if [ "${{ needs.pre-deployment-check.result }}" == "success" ]; then
+            PASSED=$((PASSED + 1))
+          else
+            FAILED=$((FAILED + 1))
+          fi
+
+          TOTAL=$((PASSED + FAILED))
+          SCORE=$(( (PASSED * 100) / TOTAL ))
+
+          echo "score=$SCORE" >> $GITHUB_OUTPUT
+          echo "passed=$PASSED" >> $GITHUB_OUTPUT
+          echo "failed=$FAILED" >> $GITHUB_OUTPUT
+
+      - name: Comment on PR with confidence score
+        if: github.event_name == 'pull_request'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const score = ${{ steps.confidence.outputs.score }};
+            const passed = ${{ steps.confidence.outputs.passed }};
+            const failed = ${{ steps.confidence.outputs.failed }};
+
+            const emoji = score >= 80 ? '✅' : (score >= 60 ? '⚠️' : '❌');
+            const status = score >= 80 ? 'READY TO DEPLOY' : (score >= 60 ? 'DEPLOY WITH CAUTION' : 'NOT READY');
+
+            const body = `## ${emoji} Deployment Confidence Score: ${score}%
+
+            **Status:** ${status}
+
+            ### Validation Results
+            - ✅ Passed: ${passed}
+            - ❌ Failed: ${failed}
+
+            ### Details
+            - Build Validation: ${{ needs.build-validation.result }}
+            - Environment Validation: ${{ needs.environment-validation.result }}
+            - Config Validation: ${{ needs.config-validation.result }}
+            - Pre-Deployment Check: ${{ needs.pre-deployment-check.result }}
+
+            ${score < 80 ? '⚠️ Please fix failing checks before deploying to production.' : ''}
+            `;
+
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: body
+            });
+
+      - name: Set deployment gate status
+        run: |
+          SCORE=${{ steps.confidence.outputs.score }}
+
+          if [ $SCORE -ge 80 ]; then
+            echo "✅ Deployment confidence score is $SCORE%. Safe to deploy."
+            exit 0
+          elif [ $SCORE -ge 60 ]; then
+            echo "⚠️ Deployment confidence score is $SCORE%. Deploy with caution."
+            exit 0
+          else
+            echo "❌ Deployment confidence score is $SCORE%. Not safe to deploy."
+            exit 1
+          fi
+
+  deployment-gate:
+    name: Deployment Gate
+    runs-on: ubuntu-latest
+    needs: [deployment-confidence-score]
+    if: always()
+
+    steps:
+      - name: Check all validations passed
+        run: |
+          if [[ "${{ needs.deployment-confidence-score.result }}" != "success" ]]; then
+            echo "❌ Deployment gate FAILED. One or more validation checks failed."
+            exit 1
+          fi
+
+          echo "✅ Deployment gate PASSED. Safe to deploy to production."
+          exit 0
