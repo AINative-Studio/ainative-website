@@ -320,12 +320,13 @@ export class DashboardService {
 
   /**
    * Get Kong gateway metrics (Prometheus format)
+   * Uses /admin/billing/kong/metrics endpoint (requires admin auth)
    */
   async getKongMetrics(projectId?: string): Promise<KongMetricsResponse> {
     try {
       const endpoint = projectId
-        ? `/database/admin/kong/metrics?project_id=${projectId}`
-        : '/database/admin/kong/metrics';
+        ? `/admin/billing/kong/metrics?project_id=${projectId}`
+        : '/admin/billing/kong/metrics';
 
       const response = await apiClient.get<KongMetricsApiResponse>(endpoint);
 
@@ -355,12 +356,13 @@ export class DashboardService {
 
   /**
    * Get system health status
+   * Uses /admin/database/health endpoint (requires admin auth)
    */
   async getSystemHealth(projectId?: string): Promise<SystemHealthResponse> {
     try {
       const endpoint = projectId
-        ? `/database/admin/health?project_id=${projectId}`
-        : '/database/admin/health';
+        ? `/admin/database/health?project_id=${projectId}`
+        : '/admin/database/health';
 
       const response = await apiClient.get<SystemHealthResponse>(endpoint);
       return response.data;
@@ -376,12 +378,16 @@ export class DashboardService {
 
   /**
    * Get Kong services list
+   * NOTE: This endpoint does not exist in the backend OpenAPI spec.
+   * Consider removing if not used, or implement as a Kong Admin API proxy.
+   * @deprecated This endpoint path is not available in the backend
    */
   async getKongServices(projectId?: string): Promise<KongService[]> {
+    console.warn('getKongServices: This endpoint is not available in the backend API');
     try {
       const endpoint = projectId
-        ? `/database/admin/kong/services?project_id=${projectId}`
-        : '/database/admin/kong/services';
+        ? `/admin/kong/services?project_id=${projectId}`
+        : '/admin/kong/services';
 
       const response = await apiClient.get<{ data: KongService[] }>(endpoint);
       return response.data.data || [];
