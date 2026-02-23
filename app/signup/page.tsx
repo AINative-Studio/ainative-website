@@ -3,7 +3,6 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
-import { signIn } from 'next-auth/react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -23,25 +22,18 @@ export default function SignupPage() {
     setError('');
 
     try {
-      // Register the user with authService
-      await authService.register({
+      // Register the user (register() calls login() internally, stores tokens)
+      const result = await authService.register({
         email,
         password,
         preferred_name: name,
       });
 
-      // Auto-login after successful registration
-      const result = await signIn('credentials', {
-        email,
-        password,
-        redirect: false,
-        callbackUrl: '/dashboard',
-      });
-
-      if (result?.error) {
-        setError('Registration successful, but login failed. Please try signing in.');
-      } else if (result?.url) {
-        window.location.href = result.url;
+      if (result.access_token) {
+        // Tokens already stored by authService — redirect to dashboard
+        window.location.href = '/dashboard';
+      } else {
+        setError('Registration succeeded but login failed. Please sign in.');
       }
     } catch (err) {
       const errorMessage = err instanceof Error && err.message
@@ -54,7 +46,12 @@ export default function SignupPage() {
   };
 
   const handleGitHubSignup = () => {
-    signIn('github', { callbackUrl: '/dashboard' });
+    // Use the same direct GitHub OAuth flow as the login page
+    const githubUrl = authService.getGitHubAuthUrl();
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('oauth_callback_url', '/dashboard');
+    }
+    window.location.href = githubUrl;
   };
 
   const benefits = [
