@@ -54,7 +54,7 @@ export default function Comments({ contentType, contentId }: CommentsProps) {
     setIsLoading(true);
     setError(null);
 
-    const STRAPI_URL = process.env.NEXT_PUBLIC_STRAPI_URL || 'http://localhost:1337';
+    const STRAPI_URL = process.env.NEXT_PUBLIC_STRAPI_URL || 'https://ainative-community-production.up.railway.app';
 
     try {
       const response = await fetch(`${STRAPI_URL}/api/comments?` + new URLSearchParams({
@@ -114,7 +114,7 @@ export default function Comments({ contentType, contentId }: CommentsProps) {
     setIsSubmitting(true);
     setError(null);
 
-    const STRAPI_URL = process.env.NEXT_PUBLIC_STRAPI_URL || 'http://localhost:1337';
+    const STRAPI_URL = process.env.NEXT_PUBLIC_STRAPI_URL || 'https://ainative-community-production.up.railway.app';
 
     try {
       // Get user info from localStorage

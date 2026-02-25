@@ -6,7 +6,7 @@
 import axios from 'axios';
 
 // Strapi backend URL (handles ZeroDB authentication)
-const STRAPI_URL = process.env.NEXT_PUBLIC_STRAPI_URL || 'http://localhost:1337';
+const STRAPI_URL = process.env.NEXT_PUBLIC_STRAPI_URL || 'https://ainative-community-production.up.railway.app';
 const SIMILARITY_THRESHOLD = 0.7;
 
 export interface SearchResult {

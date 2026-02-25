@@ -4,7 +4,7 @@
 
 import { Webinar, StrapiResponse, StrapiSingleResponse } from '@/types/strapi';
 
-const STRAPI_URL = process.env.NEXT_PUBLIC_STRAPI_URL || 'http://localhost:1337';
+const STRAPI_URL = process.env.NEXT_PUBLIC_STRAPI_URL || 'https://ainative-community-production.up.railway.app';
 
 export interface WebinarFilters {
   status?: 'upcoming' | 'live' | 'completed' | 'cancelled';
