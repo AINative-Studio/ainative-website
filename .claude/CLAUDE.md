@@ -1,230 +1,255 @@
-# AINative Studio Next.js - Project Memory
+# AINative Studio - Frontend (Next.js)
 
----
-## CRITICAL: GIT COMMIT RULES - ZERO TOLERANCE
+## Quick Reference
 
-**READ AND FOLLOW: `.claude/rules/git-rules.md`**
-
-**NEVER include in commits, PRs, or GitHub activity:**
-- "Claude" / "Anthropic" / "claude.com"
-- "Generated with Claude" / "Claude Code"
-- "Co-Authored-By: Claude" or any Claude/Anthropic reference
-
-**EVERY commit must be checked before pushing.** Violations require immediate cleanup with force push.
-
----
-
-**Project**: AINative Studio Marketing Website (Next.js Migration)
-**Tech Stack**: Next.js 16 + TypeScript + Tailwind CSS + shadcn/ui
-**Repository**: ainative-website-nextjs-staging
-**Last Updated**: 2025-12-24
+| Item | Value |
+|------|-------|
+| **Framework** | Next.js 16.1.1 + React 19 + TypeScript 5 |
+| **Styling** | Tailwind CSS v4 + shadcn/ui (Radix primitives) |
+| **State** | TanStack React Query 5 |
+| **Auth** | NextAuth v4 + Custom JWT + Prisma adapter |
+| **Payments** | Stripe (react-stripe-js) |
+| **API Client** | `lib/api-client.ts` (fetch-based singleton) |
+| **Backend URL** | `https://api.ainative.studio` |
+| **QNN API URL** | `https://qnn-api.ainative.studio` |
+| **Dev Server** | `npm run dev` (port 3000) |
+| **Deploy** | Railway (standalone output) |
+| **Build Errors** | `typescript.ignoreBuildErrors: true` in next.config |
 
 ---
 
-## MCP Servers (Required for Development)
+## Mandatory Rules
 
-This project uses the following MCP servers configured in `~/.claude/settings.json`:
+### 1. No AI Attribution (Zero Tolerance)
+**NEVER include in commits/PRs/code:**
+- "Claude", "Anthropic", "Generated with", "Co-Authored-By: Claude"
+- Any AI tool attribution
 
-### ZeroDB MCP Server
-- **Purpose**: Vector database, embeddings, agent memory, RLHF
-- **Package**: `ainative-zerodb-mcp-server`
-- **Key Tools**:
-  - `zerodb_semantic_search` - Search vectors
-  - `zerodb_store_memory` - Persist agent context
-  - `zerodb_embed_and_store` - Store embeddings
+### 2. File Placement
+| Type | Location |
+|------|----------|
+| Documentation | `docs/{category}/` |
+| Scripts | `scripts/` |
+| Root `.md` allowed | Only `README.md` |
 
-### GitHub MCP Server
-- **Purpose**: GitHub API integration for issues, PRs, commits
-- **Package**: `@modelcontextprotocol/server-github`
-
-### Sequential Thinking MCP Server
-- **Purpose**: Complex multi-step reasoning
-- **Package**: `@modelcontextprotocol/server-sequential-thinking`
-
-### Memory MCP Server
-- **Purpose**: Persistent knowledge graph
-- **Package**: `@modelcontextprotocol/server-memory`
-
-### Filesystem MCP Server
-- **Purpose**: Extended file access
-- **Package**: `@modelcontextprotocol/server-filesystem`
-
----
-
-## Project Agents (`.claude/agents/`)
-
-Specialized agents available for parallel work:
-
-| Agent | Purpose | Color |
-|-------|---------|-------|
-| `frontend-ux-architect` | UI/UX design and implementation | cyan |
-| `frontend-ui-builder` | Component building | - |
-| `backend-api-architect` | API design and TDD | - |
-| `devops-orchestrator` | CI/CD and deployment | - |
-| `qa-bug-hunter` | QA testing and bug detection | - |
-| `test-automation-specialist` | Test coverage and TDD | - |
-| `playwright-frontend-qa` | E2E browser testing | - |
-| `system-architect` | System design | - |
-| `quantum-computing-expert` | Quantum algorithms | - |
-| `ux-research-investigator` | User research | - |
-
----
-
-## SEO Implementation (SSR-Enabled)
-
-### Root Layout (`app/layout.tsx`)
-- Comprehensive `metadata` export with Open Graph, Twitter Cards
-- Structured Data via `components/seo/StructuredData.tsx`
-- JSON-LD schemas: Organization, SoftwareApplication, WebSite
-
-### Per-Page Metadata Pattern
-```tsx
-// app/[page]/page.tsx
-export const metadata: Metadata = {
-  title: 'Page Title', // Uses template: '%s | AI Native Studio'
-  description: 'Page description',
-  openGraph: { ... },
-  twitter: { ... },
-};
-```
-
-### SEO Assets (`public/`)
-- `card.png` - OG/Twitter share image (1200x630)
-- `code_simple_logo.jpg` - Favicon and app icon
-- `manifest.json` - PWA manifest
-
-### Structured Data Components
-```tsx
-import { BreadcrumbSchema, FAQSchema, ProductSchema, ArticleSchema } from '@/components/seo/StructuredData';
-```
-
----
-
-## Development Conventions
-
-### Port Assignments (CRITICAL)
-
-- **Port 3000**: Reserved for AINative Studio Next.js dev server
-  - If port 3000 is occupied, KILL the other service and take over
-  - Always maintain port 3000 during development sessions
-  - Run: `pkill -f "next" && npm run dev` to reclaim the port
-
-- **Port 3001**: Reserved for other local services
-
-### Local Development Workflow
-
+### 3. TDD Required
 ```bash
-# Start dev server (kills existing processes if needed)
-pkill -f "next" 2>/dev/null; rm -rf .next && npm run dev
-
-# Quick restart
-npm run dev
-
-# Build verification before commit
-npm run lint && npm run type-check && npm run build
-
-# Run tests
-npm test
+npm test -- --coverage
+# Coverage >= 80% for new code
+# Jest configs: jest.config.js (50%), jest.integration.config.js (70%), jest.aikit.config.js (80-90%)
 ```
 
-### Pre-Commit Checklist
-
-1. Run `npm run lint` - must pass (warnings OK, no errors)
-2. Run `npm run type-check` - must pass
-3. Run `npm run build` - must succeed
-4. Run `npm test` - all tests must pass
+### 4. Test Safety
+- NEVER run tests in watch mode from Claude
+- ALWAYS use `--run` flag with vitest
+- Check for orphaned processes: `ps aux | grep -E "(jest|vitest)" | grep -v grep`
 
 ---
 
-## Architecture Patterns
+## Architecture Overview
 
-### Page Migration Pattern (from Vite SPA)
+### Provider Hierarchy (Root Layout)
+```
+ThemeProvider (dark default)
+  └── SessionProvider (NextAuth + token sync to localStorage)
+       └── QueryProvider (TanStack React Query + DevTools in dev)
+            └── ConditionalLayout (Header/Footer for non-dashboard routes)
+```
 
-When migrating pages from the original Vite SPA:
+### Page Pattern (used by ~95% of pages)
+```
+app/[route]/page.tsx           → Server Component: exports metadata, renders *Client
+app/[route]/[Feature]Client.tsx → Client Component: 'use client', all interactivity
+```
 
-1. **Server Component** (`app/[page]/page.tsx`):
-   - Export `metadata` for SEO (replaces react-helmet-async)
-   - Import and render the client component
-   - No 'use client' directive
-
-2. **Client Component** (`app/[page]/[Page]Client.tsx`):
-   - Add `'use client'` directive at top
-   - Convert `react-router-dom` Link to Next.js Link (`to=` → `href=`)
-   - Remove Helmet imports
-   - Keep framer-motion for animations
-   - Import services from `@/services/`
-
-3. **Test Script** (`test/issue-[N]-[page].test.sh`):
-   - Verify file structure
-   - Check for required patterns
-   - Validate no forbidden imports (react-router-dom, react-helmet-async)
+### Layout Hierarchy
+- **Root** (`app/layout.tsx`): Providers, analytics (GA4, GTM, Meta Pixel), SEO, fonts (Poppins)
+- **Dashboard** (`app/dashboard/layout.tsx`): `DashboardLayout` with responsive sidebar
+- **Admin** (`app/admin/layout.tsx`): `AdminSidebar` + `AdminHeader`
+- **Account routes** (billing, invoices, settings, etc.): Each wrap in `DashboardLayout`
+- **ConditionalLayout**: Shows Header/Footer except on dashboard, auth, admin routes
 
 ---
 
 ## Key Directories
 
 ```
-app/                    # Next.js App Router pages
-  layout.tsx           # Root layout with SEO metadata
-  sitemap.ts           # Dynamic sitemap generation
-  robots.ts            # Robots.txt configuration
-components/
-  layout/              # Header, Footer, navigation
-  ui/                  # shadcn/ui components
-  seo/                 # SEO components (StructuredData)
-lib/
-  config/app.ts        # Centralized app configuration
-  api-client.ts        # HTTP client for API calls
-  env.ts               # Environment variable validation
-services/
-  pricingService.ts    # Stripe checkout integration
-  apiKeyService.ts     # API key management
-  creditService.ts     # Credit system
-  usageService.ts      # Usage tracking
-  subscriptionService.ts # Subscription management
-  userSettingsService.ts # User settings
-  billingService.ts    # Billing operations
-test/                  # Page-specific test scripts
-public/
-  card.png             # OG share image
-  code_simple_logo.jpg # Logo/favicon
-  manifest.json        # PWA manifest
-.claude/
-  agents/              # Specialized agent definitions
-  rules/               # Git and project rules
+app/                     # 95 page routes + 12 API routes
+  api/backend/[...path]  # Proxy to api.ainative.studio (60 req/min)
+  api/github/[...path]   # Proxy to GitHub API
+  api/luma/[...path]     # Proxy to Luma API
+  api/auth/              # NextAuth handlers + logout
+  api/revalidate/        # ISR cache revalidation (Edge)
+components/              # 269 components in 35 subdirectories
+  ui/                    # 44+ shadcn/ui primitives + custom branded variants
+  layout/                # Header, Footer, Sidebar, DashboardLayout
+  providers/             # QueryProvider, SessionProvider, ThemeProvider
+  agent-swarm/           # 23 files: wizard (7 steps), terminal, RLHF
+  zerodb/                # 14+ files: DB management, vector search, 8 tab modules
+  qnn/                   # 16 files: models, training, benchmarks, quantum monitoring
+  webinar/               # 13 files: registration, calendar, certificates, Q&A
+  billing/ + invoices/   # 12 files: credit charts, payment, invoices
+  guards/                # AdminRouteGuard
+  seo/                   # StructuredData (10+ JSON-LD schemas)
+  analytics/             # GA4, GTM, Meta Pixel, Speed Insights, Web Vitals
+services/                # API service layer (30+ files)
+  zerodb/                # 8 ZeroDB service modules
+  admin/                 # 12 admin service files (AdminApiClient prefix)
+  luma/                  # Luma events API (axios)
+hooks/                   # 22 custom hooks (React Query-based)
+contexts/                # QNNContext (repo/model/training state)
+lib/                     # 60+ files
+  api-client.ts          # Core fetch-based API client (auto token refresh)
+  config/app.ts          # Company info, links, pricing, Stripe IDs
+  env.ts                 # Zod-validated env vars (client + server)
+  auth/options.ts        # NextAuth config
+  rate-limit.ts          # In-memory LRU rate limiting
+  [40+ service files]    # Agent, email, notification, team, org, video, webhook, etc.
+types/                   # 11 type definition files
+utils/                   # 7 utility files (API client, auth cookies, geo detection)
+config/pricing.ts        # Regional pricing (USD + INR)
+middleware.ts            # Auth route protection (edge)
+mocks/                   # MSW (26 files, 12 handlers, 6 factories) - currently disabled in Jest
+prisma/                  # Schema: User, Account, Session, VerificationToken
 ```
 
 ---
 
-## GitHub Workflow
+## API Integration Map
 
-- **Staging Repo**: No GitHub Actions (use local verification)
-- **CI/CD**: Disabled for staging, use local `npm run build` for verification
-- **PRs**: Create against `main` branch
+### Core API Client (`lib/api-client.ts`)
+- Base: `appConfig.api.baseUrl` → `https://api.ainative.studio`
+- Auto Bearer token from `getAuthToken()` (cookies + localStorage)
+- Auto 401 → refresh token → retry or redirect `/login`
+- Methods: `get`, `post`, `put`, `patch`, `delete`
+
+### Backend API Patterns
+| Category | Prefix | Key Services |
+|----------|--------|-------------|
+| Auth | `/v1/public/auth/` | authService (login, register, refresh, me) |
+| Profile | `/v1/public/profile/` | userService |
+| ZeroDB | `/v1/public/zerodb/` | 8 services (DB, vectors, files, events, memory, security, RLHF, analytics) |
+| Agent Swarm | `/v1/public/agent-swarms/` | agentSwarmService, agentSwarmAIService |
+| Agents | `/v1/agents/` | agentService |
+| Organizations | `/v1/public/organizations/` | organizationService |
+| Models | `/v1/models` | modelAggregatorService |
+| Search | `/v1/public/search/` | semanticSearchService |
+| Webhooks | `/v1/public/webhooks/` | webhookService |
+| Email | `/v1/email/` | emailService |
+| Notifications | `/v1/notifications/` | notificationService |
+| Admin | `/admin/` | 9 admin service modules |
+| WebSocket | `ws://host:8000/ws/admin/agent-swarm/{id}` | useAgentSwarmWebSocket |
+
+### QNN Backend (Separate - Axios-based)
+- URL: `https://qnn-api.ainative.studio/v1/`
+- Services: repositories, models, training, benchmarks
+- Client: `services/qnnApiClient.ts`
+
+### Proxied External APIs
+- `/api/backend/[...path]` → `api.ainative.studio` (60 req/min, 30s timeout)
+- `/api/github/[...path]` → `api.github.com` (server-side GITHUB_TOKEN)
+- `/api/luma/[...path]` → `api.lu.ma` (LUMA_API_KEY)
 
 ---
 
-## Parallel Agent Workflow (REQUIRED)
+## Auth System
 
-For PRD-driven, spec-driven, TDD, or BDD projects, **always prefer running multiple agents in parallel**:
+### Flow
+1. Login → `authService.login()` → `/v1/public/auth/login` → JWT tokens
+2. Storage → cookies (`ainative_access_token`) + localStorage (backward compat)
+3. Cross-subdomain SSO → cookie domain `.ainative.studio`
+4. Token refresh → auto on 401 with concurrent-safe promise sharing
+5. NextAuth → GitHub OAuth + credentials, Prisma adapter
 
-1. **Analyze the work** - Identify independent workstreams (frontend, backend, tests, docs)
-2. **Launch agents concurrently** - Use Task tool with multiple agents in a single message
-3. **Track progress** - Each agent displays with distinct color showing its current task
+### Protected Routes (middleware.ts)
+`/dashboard`, `/account`, `/plan`, `/billing`, `/profile`, `/settings`, `/notifications`, `/credit-history`, `/refills`, `/developer-settings`
 
-### Example Parallel Launch
+### Admin Guard
+`AdminRouteGuard` component checks localStorage for admin role, wraps all `/admin/*` pages
+
+---
+
+## Design System
+
+### Colors
 ```
-When implementing a feature from a PRD:
-- frontend-ux-architect → UI components
-- backend-api-architect → API endpoints
-- test-automation-specialist → Test coverage
-- devops-orchestrator → Deployment config
+Surface: #131726 (primary), #22263c (secondary), #31395a (accent)
+Brand:   #4B6FED (primary blue), #3955B8 (dark), #6B88F0 (light)
+Accent:  #FCAE39 (gold), #22BCDE (teal), #8A63F4 (purple)
+```
+
+### Custom Tailwind Utilities
+- Glassmorphism: `.glass-sm` through `.glass-xl`, `.glass-card`, `.glass-modal`
+- Gradients: `.gradient-primary`, `.gradient-hero`, `.gradient-text-primary`
+- Shadows: `ds-sm`, `ds-md`, `ds-lg`
+- Animations: fade-in, slide-in, shimmer, pulse-glow, float, stagger-in
+
+### Font: Poppins (primary), loaded via next/font in root layout
+
+### Component Variants
+- `button-custom.tsx`: primary/outline/ghost with shimmer
+- `card-advanced.tsx`: glassmorphism + gradient-border variants
+- `gradient-text.tsx`: 6 color variants + typography scale
+
+---
+
+## ISR (Incremental Static Regeneration)
+
+| Page | Revalidation |
+|------|-------------|
+| Homepage | 600s (10 min) |
+| Pricing | 300s (5 min) |
+| Blog detail | 300s (5 min) |
+| Webinar detail | 300s (5 min) |
+| Video detail | 900s (15 min) |
+| FAQ | 1800s (30 min) |
+| Products | 1800s (30 min) |
+| About | 3600s (1 hr) |
+| Auth pages | force-dynamic |
+
+---
+
+## Testing
+
+### Jest Configs
+| Config | Target | Coverage |
+|--------|--------|----------|
+| `jest.config.js` | General | 50% |
+| `jest.integration.config.js` | Integration | 70% |
+| `jest.aikit.config.js` | AIKit components | 80-90% |
+
+### Playwright (7 browser configs)
+chromium, firefox, webkit, mobile (375x812), tablet (768x1024), desktop (1920x1080), accessibility
+
+### MSW Mocks (`mocks/`)
+12 handler modules + 6 data factories. **Note**: Currently disabled in Jest due to ESM compatibility.
+
+### Commands
+```bash
+npm test                           # Unit tests
+npm run test:coverage              # With coverage report
+npm run test:e2e                   # Playwright E2E
+ANALYZE=true npm run build         # Bundle analysis
 ```
 
 ---
 
-## Original Site Reference
+## Key Files for Common Tasks
 
-- **Location**: `/Users/tobymorning/Desktop/AINative-website-main/`
-- **SEO Reference**: `index.html` contains full OG/Twitter/Schema markup
-- **Assets**: `public/` folder has `card.png`, `code_simple_logo.jpg`
+| Task | Files to Check |
+|------|---------------|
+| Add new page | `app/[route]/page.tsx` + `[Route]Client.tsx` |
+| Add API service | `services/` or `lib/` + corresponding hook in `hooks/` |
+| Add component | `components/[category]/` + update barrel export if exists |
+| Modify auth | `lib/auth/options.ts`, `middleware.ts`, `utils/authCookies.ts` |
+| Update design tokens | `tailwind.config.ts`, `app/globals.css` |
+| Add API route | `app/api/[route]/route.ts` with rate limiting |
+| Modify dashboard nav | `components/layout/Sidebar.tsx` |
+| Add SEO | `components/seo/StructuredData.tsx` + page metadata export |
+| Add admin page | `app/admin/` + wrap with `AdminRouteGuard` |
+
+---
+
+## Complete Architecture Map
+For exhaustive details (all 107 routes, 269 components, full API URL map, type definitions):
+`docs/architecture/FRONTEND_ARCHITECTURE_MAP.md`

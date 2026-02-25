@@ -8,7 +8,7 @@ import {
     ChevronDown, Database, Code,
     Server, Wrench, Home, Network, Package, Users, Receipt, GitBranch,
     Cpu, Activity, Brain, DollarSign, HardDrive,
-    MessageSquare, HelpCircle, Bot
+    MessageSquare, HelpCircle
 } from 'lucide-react';
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -29,7 +29,6 @@ const buildLinks: MenuItem[] = [
     { name: 'ZeroDB Serverless', to: '/dashboard/zerodb', icon: Database },
     { name: 'Sessions', to: '/dashboard/sessions', icon: Brain },
     { name: 'Agent Swarm', to: '/dashboard/agent-swarm', icon: GitBranch },
-    { name: 'OpenClaw Agents', to: '/dashboard/openclaw', icon: Bot },
     { name: 'Storage', to: '/dashboard/storage', icon: HardDrive },
     { name: 'QNN', to: '/dashboard/qnn', icon: Network },
     { name: 'My Earnings', to: '/developer/earnings', icon: DollarSign },

@@ -37,6 +37,7 @@ const DASHBOARD_ROUTES = [
   '/credit-history',
   '/notifications',
   '/admin',
+  '/landing-v2',
 ];
 
 export default function ConditionalLayout({ children }: ConditionalLayoutProps) {

@@ -743,6 +743,13 @@ a {
   --color-chart-4: hsl(var(--chart-4));
   --color-chart-5: hsl(var(--chart-5));
 
+  /* Landing V2 colors */
+  --color-v2-highlight: #A3ADFF;
+  --color-v2-highlight-hover: #C4CBFF;
+  --color-v2-nav-gray: #A0A8C4;
+  --color-v2-body-gray: #AEAEAE;
+  --color-v2-btn-hover: #6B78F5;
+
   /* Fonts */
   --font-sans: 'Poppins', system-ui, sans-serif;
   --font-mono: var(--font-geist-mono);

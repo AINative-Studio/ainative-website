@@ -31,6 +31,8 @@ const config: Config = {
        */
       fontFamily: {
         sans: ['Poppins', 'sans-serif'],
+        montserrat: ['var(--font-montserrat)', 'sans-serif'],
+        outfit: ['var(--font-outfit)', 'sans-serif'],
       },
 
       /**
@@ -51,6 +53,15 @@ const config: Config = {
         'dark-2': '#22263c',
         'dark-3': '#31395a',
         'brand-primary': '#5867EF',
+
+        // Landing V2 specific colors
+        'v2': {
+          highlight: '#A3ADFF',
+          'highlight-hover': '#C4CBFF',
+          'nav-gray': '#A0A8C4',
+          'body-gray': '#AEAEAE',
+          'btn-hover': '#6B78F5',
+        },
 
         // Semantic Surface Colors (PREFERRED)
         'surface-primary': '#131726',

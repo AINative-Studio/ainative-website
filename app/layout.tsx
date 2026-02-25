@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono, Poppins } from "next/font/google";
+import { Geist, Geist_Mono, Poppins, Montserrat, Outfit } from "next/font/google";
 import { QueryProvider } from "@/components/providers/QueryProvider";
 import { ThemeProvider } from "@/components/providers/ThemeProvider";
 import SessionProvider from "@/components/providers/session-provider";
@@ -31,6 +31,21 @@ const geistSans = Geist({
 const geistMono = Geist_Mono({
   variable: "--font-geist-mono",
   subsets: ["latin"],
+  display: "swap",
+});
+
+// Landing V2 fonts
+const montserrat = Montserrat({
+  variable: "--font-montserrat",
+  subsets: ["latin"],
+  weight: ["400", "500", "600", "700", "800"],
+  display: "swap",
+});
+
+const outfit = Outfit({
+  variable: "--font-outfit",
+  subsets: ["latin"],
+  weight: ["700", "800"],
   display: "swap",
 });
 
@@ -229,7 +244,7 @@ export default function RootLayout({
         <StructuredData />
       </head>
       <body
-        className={`${poppins.variable} ${geistSans.variable} ${geistMono.variable} font-sans antialiased bg-background text-foreground`}
+        className={`${poppins.variable} ${geistSans.variable} ${geistMono.variable} ${montserrat.variable} ${outfit.variable} font-sans antialiased bg-background text-foreground`}
       >
         {/* GTM noscript fallback */}
         <GoogleTagManagerNoscript />
