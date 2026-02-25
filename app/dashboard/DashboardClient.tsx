@@ -229,11 +229,30 @@ export default function DashboardClient() {
       // Map AI usage to metrics
       if (aiUsageResult.status === 'fulfilled' && aiUsageResult.value) {
         const metrics = aiUsageResult.value;
+        const usage = metrics.usage;
+
+        // Build model usage from usage categories
         const modelUsage: Record<string, number> = {};
-        if (metrics.by_feature) {
-          metrics.by_feature.forEach((f) => {
-            modelUsage[f.feature] = Math.round(f.percentage);
-          });
+        if (usage) {
+          const totalUsed = (usage.api_credits?.used || 0)
+            + (usage.llm_tokens?.used || 0)
+            + (usage.storage_gb?.used || 0)
+            + (usage.mcp_hours?.used || 0);
+
+          if (totalUsed > 0) {
+            if (usage.api_credits?.used) {
+              modelUsage['API Credits'] = Math.round((usage.api_credits.used / totalUsed) * 100);
+            }
+            if (usage.llm_tokens?.used) {
+              modelUsage['LLM Tokens'] = Math.round((usage.llm_tokens.used / totalUsed) * 100);
+            }
+            if (usage.storage_gb?.used) {
+              modelUsage['Storage'] = Math.round((usage.storage_gb.used / totalUsed) * 100);
+            }
+            if (usage.mcp_hours?.used) {
+              modelUsage['MCP Hours'] = Math.round((usage.mcp_hours.used / totalUsed) * 100);
+            }
+          }
         }
 
         setAiMetrics({
@@ -246,9 +265,7 @@ export default function DashboardClient() {
           modelUsage,
           apiIntegrations: {
             activeProviders: Object.keys(modelUsage),
-            totalRequests: metrics.daily_usage?.reduce(
-              (sum, d) => sum + d.credits_used, 0
-            ) || 0,
+            totalRequests: metrics.total_requests || 0,
             avgResponseTime: 0
           },
           aiAssistance: {
@@ -335,8 +352,7 @@ export default function DashboardClient() {
             actionLabel="Get Your API Key"
             actionHref="/developer-settings"
             userName={user?.name || sessionUser?.name}
-            backgroundImage="/card.png"
-            showImage
+            showImage={false}
             showDismiss
             onDismiss={handleWelcomeDismiss}
             animate
@@ -382,14 +398,16 @@ export default function DashboardClient() {
               <Download className="h-4 w-4" />
               Export JSON
             </AIKitButton>
-            <Link href="/pricing">
-              <AIKitButton
-                variant="link"
-                className="flex items-center gap-1 whitespace-nowrap">
+            <AIKitButton
+              variant="link"
+              asChild
+              className="flex items-center gap-1 whitespace-nowrap"
+            >
+              <Link href="/pricing">
                 See updates to pricing structure
                 <ChevronRight className="h-4 w-4" />
-              </AIKitButton>
-            </Link>
+              </Link>
+            </AIKitButton>
           </div>
         </div>
 
@@ -481,12 +499,12 @@ export default function DashboardClient() {
                   </div>
 
                   <div className="mt-6 flex flex-col sm:flex-row gap-3">
-                    <Link href="/refills">
-                      <AIKitButton className="font-medium w-full sm:w-auto">
+                    <AIKitButton asChild className="font-medium w-full sm:w-auto">
+                      <Link href="/refills">
                         <Settings className="h-4 w-4 mr-2" />
                         Setup automatic refills
-                      </AIKitButton>
-                    </Link>
+                      </Link>
+                    </AIKitButton>
                     <AIKitButton
                       variant="outline"
                       onClick={handlePurchaseCredits}
@@ -508,7 +526,7 @@ export default function DashboardClient() {
 
         {/* Cost Breakdown Section */}
         {costData && (
-          <motion.div variants={fadeUp}>
+          <motion.div initial="hidden" animate="visible" variants={fadeUp}>
             <Card className="border-none bg-surface-secondary shadow-lg overflow-hidden">
               <CardHeader className="border-b border-border px-6 py-4">
                 <CardTitle className="text-xl flex items-center gap-2 text-white">
@@ -558,7 +576,7 @@ export default function DashboardClient() {
 
         {/* AI Metrics Section */}
         {aiMetrics && (
-          <motion.div variants={fadeUp}>
+          <motion.div initial="hidden" animate="visible" variants={fadeUp}>
             <Card className="border-none bg-surface-secondary shadow-lg overflow-hidden">
               <CardHeader className="border-b border-border px-6 py-4">
                 <CardTitle className="text-xl flex items-center gap-2 text-white">

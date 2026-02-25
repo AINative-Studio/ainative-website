@@ -281,16 +281,16 @@ export class DashboardService {
    */
   async getAiUsageAggregate(period: string = '30d'): Promise<AiUsageAggregate | null> {
     try {
-      const response = await apiClient.get<ApiResponse<{ metrics: AiUsageAggregate }>>(
+      const response = await apiClient.get<AiUsageAggregate>(
         `${this.publicPath}/ai-usage/aggregate?period=${period}`
       );
 
-      if (!response.data.success) {
-        console.warn('AI usage aggregate returned unsuccessful:', response.data.message);
+      if (!response.data || typeof response.data.total_requests !== 'number') {
+        console.warn('AI usage aggregate returned invalid response');
         return null;
       }
 
-      return response.data.data?.metrics || null;
+      return response.data;
     } catch (error) {
       console.error('Failed to fetch AI usage aggregate:', error);
       return null;
@@ -302,16 +302,16 @@ export class DashboardService {
    */
   async getAiUsageCosts(): Promise<AiUsageCosts | null> {
     try {
-      const response = await apiClient.get<ApiResponse<AiUsageCosts>>(
+      const response = await apiClient.get<AiUsageCosts>(
         `${this.publicPath}/ai-usage/costs`
       );
 
-      if (!response.data.success || !response.data.data) {
-        console.warn('AI usage costs returned unsuccessful:', response.data.message);
+      if (!response.data || typeof response.data.total_cost !== 'number') {
+        console.warn('AI usage costs returned invalid response');
         return null;
       }
 
-      return response.data.data;
+      return response.data;
     } catch (error) {
       console.error('Failed to fetch AI usage costs:', error);
       return null;

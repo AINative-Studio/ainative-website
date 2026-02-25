@@ -16,25 +16,41 @@ export interface ApiResponse<T> {
 }
 
 /**
- * Usage metrics for a specific period
+ * Usage category breakdown from backend
+ */
+export interface UsageCategory {
+  used: number;
+  limit: number;
+  remaining: number;
+  percentage: number;
+  status: string;
+  unit: string;
+}
+
+/**
+ * Usage metrics from /v1/public/ai-usage/aggregate
+ * Matches the actual backend response shape
  */
 export interface UsageMetrics {
-  period: {
+  total_tokens: number;
+  total_requests: number;
+  period: string;
+  usage: {
+    api_credits: UsageCategory;
+    llm_tokens: UsageCategory;
+    storage_gb: UsageCategory;
+    mcp_hours: UsageCategory;
+  };
+  plan: {
+    name: string;
+    tier: string;
+    status: string;
+  };
+  period_info?: {
     start: string;
     end: string;
+    type: string;
   };
-  total_credits_used: number;
-  credits_remaining: number;
-  daily_usage: Array<{
-    date: string;
-    credits_used: number;
-    endpoint: string;
-  }>;
-  by_feature: Array<{
-    feature: string;
-    credits_used: number;
-    percentage: number;
-  }>;
 }
 
 /**
@@ -80,15 +96,15 @@ export class UsageService {
    */
   async getUsageMetrics(period: UsagePeriod = '30d'): Promise<UsageMetrics | null> {
     try {
-      const response = await apiClient.get<ApiResponse<{ metrics: UsageMetrics }>>(
+      const response = await apiClient.get<UsageMetrics>(
         `${this.basePath}/ai-usage/aggregate?period=${period}`
       );
 
-      if (!response.data.success || !response.data.data?.metrics) {
-        throw new Error(response.data.message || 'Failed to fetch usage metrics');
+      if (!response.data || typeof response.data.total_requests !== 'number') {
+        throw new Error('Invalid usage metrics response from server');
       }
 
-      return response.data.data.metrics;
+      return response.data;
     } catch (error) {
       console.error('Error fetching usage metrics:', error);
       return null;

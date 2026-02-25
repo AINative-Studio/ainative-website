@@ -102,22 +102,11 @@ export default function UsageClient() {
 
       if (metricsResult.status === 'fulfilled' && metricsResult.value) {
         const metrics = metricsResult.value;
-        const dailyUsage = metrics.daily_usage || [];
-        totalApiCalls = dailyUsage.reduce((sum, d) => sum + d.credits_used, 0);
-
-        // Calculate this month vs last month from daily data
-        const now = new Date();
-        const thisMonthStart = new Date(now.getFullYear(), now.getMonth(), 1);
-        const lastMonthStart = new Date(now.getFullYear(), now.getMonth() - 1, 1);
-
-        dailyUsage.forEach((d) => {
-          const date = new Date(d.date);
-          if (date >= thisMonthStart) {
-            thisMonthCalls += d.credits_used;
-          } else if (date >= lastMonthStart && date < thisMonthStart) {
-            lastMonthCalls += d.credits_used;
-          }
-        });
+        totalApiCalls = metrics.total_requests || 0;
+        // Backend returns aggregate totals, not daily breakdown
+        // Use total_requests as this month's calls
+        thisMonthCalls = metrics.usage?.api_credits?.used || totalApiCalls;
+        lastMonthCalls = 0;
       }
 
       // Build billing section from plan

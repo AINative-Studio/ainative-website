@@ -15,20 +15,21 @@ describe('UsageService', () => {
   let usageService: UsageServiceType;
 
   const mockUsageMetrics = {
-    period: {
+    total_tokens: 3272,
+    total_requests: 10178,
+    period: '30d',
+    usage: {
+      api_credits: { used: 10178, limit: 0, remaining: 0, percentage: 0, status: 'ok', unit: 'credits' },
+      llm_tokens: { used: 3272, limit: 0, remaining: 0, percentage: 0, status: 'ok', unit: 'tokens' },
+      storage_gb: { used: 0, limit: 0, remaining: 0, percentage: 0, status: 'ok', unit: 'GB' },
+      mcp_hours: { used: 0, limit: 0, remaining: 0, percentage: 0, status: 'ok', unit: 'hours' },
+    },
+    plan: { name: 'swarm', tier: 'ENTERPRISE', status: 'active' },
+    period_info: {
       start: '2025-01-01T00:00:00Z',
       end: '2025-01-31T23:59:59Z',
+      type: '30d',
     },
-    total_credits_used: 3500,
-    credits_remaining: 6500,
-    daily_usage: [
-      { date: '2025-01-14', credits_used: 150, endpoint: '/api/v1/generate' },
-      { date: '2025-01-15', credits_used: 200, endpoint: '/api/v1/generate' },
-    ],
-    by_feature: [
-      { feature: 'Text Generation', credits_used: 2000, percentage: 57 },
-      { feature: 'Image Analysis', credits_used: 1500, percentage: 43 },
-    ],
   };
 
   const mockUsageLimits = {
@@ -56,45 +57,33 @@ describe('UsageService', () => {
   describe('getUsageMetrics()', () => {
     it('should fetch usage metrics with default period', async () => {
       mockedApiClient.get.mockResolvedValue({
-        data: {
-          success: true,
-          message: 'Success',
-          data: { metrics: mockUsageMetrics },
-        },
+        data: mockUsageMetrics,
       });
 
       const result = await usageService.getUsageMetrics();
 
-      expect(mockedApiClient.get).toHaveBeenCalledWith('/api/v1/usage/metrics?period=30d');
+      expect(mockedApiClient.get).toHaveBeenCalledWith('/v1/public/ai-usage/aggregate?period=30d');
       expect(result).toEqual(mockUsageMetrics);
     });
 
     it('should fetch usage metrics with 7-day period', async () => {
       mockedApiClient.get.mockResolvedValue({
-        data: {
-          success: true,
-          message: 'Success',
-          data: { metrics: mockUsageMetrics },
-        },
+        data: mockUsageMetrics,
       });
 
       await usageService.getUsageMetrics('7d');
 
-      expect(mockedApiClient.get).toHaveBeenCalledWith('/api/v1/usage/metrics?period=7d');
+      expect(mockedApiClient.get).toHaveBeenCalledWith('/v1/public/ai-usage/aggregate?period=7d');
     });
 
     it('should fetch usage metrics with 90-day period', async () => {
       mockedApiClient.get.mockResolvedValue({
-        data: {
-          success: true,
-          message: 'Success',
-          data: { metrics: mockUsageMetrics },
-        },
+        data: mockUsageMetrics,
       });
 
       await usageService.getUsageMetrics('90d');
 
-      expect(mockedApiClient.get).toHaveBeenCalledWith('/api/v1/usage/metrics?period=90d');
+      expect(mockedApiClient.get).toHaveBeenCalledWith('/v1/public/ai-usage/aggregate?period=90d');
     });
 
     it('should return null when fetch fails', async () => {
@@ -105,13 +94,9 @@ describe('UsageService', () => {
       expect(result).toBeNull();
     });
 
-    it('should return null when API returns unsuccessful', async () => {
+    it('should return null when response is invalid', async () => {
       mockedApiClient.get.mockResolvedValue({
-        data: {
-          success: false,
-          message: 'Metrics unavailable',
-          data: null,
-        },
+        data: { some_other_field: 'no total_requests here' },
       });
 
       const result = await usageService.getUsageMetrics();
@@ -119,13 +104,9 @@ describe('UsageService', () => {
       expect(result).toBeNull();
     });
 
-    it('should return null when metrics data is missing', async () => {
+    it('should return null when data is null', async () => {
       mockedApiClient.get.mockResolvedValue({
-        data: {
-          success: true,
-          message: 'Success',
-          data: {},
-        },
+        data: null,
       });
 
       const result = await usageService.getUsageMetrics();
