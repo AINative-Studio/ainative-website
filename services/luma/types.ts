@@ -36,7 +36,7 @@ export interface LumaTicketType {
 }
 
 export interface LumaTicketTypeListResponse {
-  entries: LumaTicketType[];
+  ticket_types: LumaTicketType[];
 }
 
 // Actual event data structure from Luma API

@@ -250,7 +250,7 @@ export async function getEventTicketTypes(eventApiId: string): Promise<LumaTicke
     const response = await lumaClient.get<LumaTicketTypeListResponse>('/event/ticket-types/list', {
       params: { event_api_id: eventApiId },
     });
-    return response.entries || [];
+    return response.ticket_types || [];
   } catch (error) {
     console.error(`Failed to fetch ticket types for event ${eventApiId}:`, error);
     return [];
