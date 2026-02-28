@@ -622,7 +622,7 @@ export default function AgentSwarmWizard() {
         className="mt-8 text-center text-sm text-gray-500"
       >
         Need help? Check out our{' '}
-        <a href="/docs" className="text-primary hover:underline">
+        <a href="https://docs.ainative.studio" className="text-primary hover:underline">
           documentation
         </a>{' '}
         or{' '}

@@ -27,14 +27,15 @@ async function handleProxyRequest(
   }
 
   if (!LUMA_API_KEY) {
+    // Return empty successful response when API key not configured (dev mode)
+    console.warn('[Luma Proxy] API key not configured, returning empty response');
     return NextResponse.json(
       {
-        error: {
-          code: 'CONFIG_ERROR',
-          message: 'Luma API key not configured',
-        },
+        entries: [],
+        has_more: false,
+        next_cursor: null,
       },
-      { status: 500 }
+      { status: 200 }
     );
   }
 

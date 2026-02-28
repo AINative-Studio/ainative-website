@@ -7,8 +7,17 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Skeleton } from '@/components/ui/skeleton';
-import { Calendar, Clock, Users, Video, MapPin, AlertCircle, Sparkles } from 'lucide-react';
-import { getAllEvents, type LumaEvent } from '@/services/luma';
+import { Input } from '@/components/ui/input';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+} from '@/components/ui/dialog';
+import { Calendar, Clock, Users, Video, MapPin, AlertCircle, Sparkles, CheckCircle2, Loader2 } from 'lucide-react';
+import { getAllEvents, addEventGuest, type LumaEvent } from '@/services/luma';
 import ReactMarkdown from 'react-markdown';
 
 const CardTitle = ({ children, className = '' }: { children: React.ReactNode; className?: string }) => (
@@ -44,6 +53,14 @@ export default function EventsCalendarClient() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
+  // Registration dialog state
+  const [registerDialogOpen, setRegisterDialogOpen] = useState(false);
+  const [selectedEvent, setSelectedEvent] = useState<LumaEvent | null>(null);
+  const [registrationForm, setRegistrationForm] = useState({ name: '', email: '' });
+  const [registrationLoading, setRegistrationLoading] = useState(false);
+  const [registrationSuccess, setRegistrationSuccess] = useState(false);
+  const [registrationError, setRegistrationError] = useState<string | null>(null);
+
   useEffect(() => {
     const fetchEvents = async () => {
       try {
@@ -65,6 +82,57 @@ export default function EventsCalendarClient() {
   const now = new Date();
   const upcomingEvents = events.filter(e => new Date(e.event.start_at) >= now);
   const pastEvents = events.filter(e => new Date(e.event.start_at) < now);
+
+  const handleOpenRegistration = (event: LumaEvent) => {
+    setSelectedEvent(event);
+    setRegistrationForm({ name: '', email: '' });
+    setRegistrationSuccess(false);
+    setRegistrationError(null);
+    setRegisterDialogOpen(true);
+  };
+
+  const handleCloseRegistration = () => {
+    setRegisterDialogOpen(false);
+    setSelectedEvent(null);
+    setRegistrationForm({ name: '', email: '' });
+    setRegistrationSuccess(false);
+    setRegistrationError(null);
+  };
+
+  const handleSubmitRegistration = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    if (!selectedEvent || !registrationForm.name || !registrationForm.email) {
+      setRegistrationError('Please fill in all fields');
+      return;
+    }
+
+    try {
+      setRegistrationLoading(true);
+      setRegistrationError(null);
+
+      await addEventGuest({
+        event_api_id: selectedEvent.api_id,
+        name: registrationForm.name,
+        email: registrationForm.email,
+        approval_status: 'approved', // Auto-approve
+      });
+
+      setRegistrationSuccess(true);
+      setRegistrationForm({ name: '', email: '' });
+
+      // Close dialog after 2 seconds on success
+      setTimeout(() => {
+        handleCloseRegistration();
+      }, 2000);
+    } catch (err: unknown) {
+      console.error('Registration failed:', err);
+      const errorMessage = err instanceof Error ? err.message : 'Failed to register. Please try again.';
+      setRegistrationError(errorMessage);
+    } finally {
+      setRegistrationLoading(false);
+    }
+  };
 
   const renderEvent = (lumaEvent: LumaEvent) => {
     const eventData = lumaEvent.event;
@@ -158,11 +226,20 @@ export default function EventsCalendarClient() {
                 </div>
               )}
               <div className="pt-3">
-                <Button className="w-full bg-[#4B6FED] hover:bg-[#3A56D3] text-white" asChild>
-                  <a href={eventData.url} target="_blank" rel="noopener noreferrer">
-                    {isPast ? 'View Details' : 'Register Now'}
-                  </a>
-                </Button>
+                {isPast ? (
+                  <Button className="w-full bg-[#4B6FED] hover:bg-[#3A56D3] text-white" asChild>
+                    <a href={eventData.url} target="_blank" rel="noopener noreferrer">
+                      View Details
+                    </a>
+                  </Button>
+                ) : (
+                  <Button
+                    className="w-full bg-[#5867EF] hover:bg-[#4756D3] text-white"
+                    onClick={() => handleOpenRegistration(lumaEvent)}
+                  >
+                    Register Now
+                  </Button>
+                )}
               </div>
             </div>
           </CardContent>
@@ -365,6 +442,103 @@ export default function EventsCalendarClient() {
             </TabsContent>
           </Tabs>
         )}
+
+        {/* Registration Dialog */}
+        <Dialog open={registerDialogOpen} onOpenChange={setRegisterDialogOpen}>
+          <DialogContent className="bg-[#161B22] border-[#2D333B] text-white sm:max-w-md">
+            {registrationSuccess ? (
+              <div className="text-center py-8">
+                <div className="flex justify-center mb-4">
+                  <div className="rounded-full bg-green-500/10 p-3">
+                    <CheckCircle2 className="h-12 w-12 text-green-500" />
+                  </div>
+                </div>
+                <DialogTitle className="text-2xl font-bold text-white mb-2">
+                  Registration Successful!
+                </DialogTitle>
+                <DialogDescription className="text-gray-400">
+                  You&apos;ve been registered for {selectedEvent?.event.name}. Check your email for event details.
+                </DialogDescription>
+              </div>
+            ) : (
+              <>
+                <DialogHeader>
+                  <DialogTitle className="text-white">Register for Event</DialogTitle>
+                  <DialogDescription className="text-gray-400">
+                    {selectedEvent?.event.name}
+                  </DialogDescription>
+                </DialogHeader>
+                <form onSubmit={handleSubmitRegistration} className="space-y-4">
+                  <div className="space-y-2">
+                    <label htmlFor="name" className="text-sm font-medium text-gray-300">
+                      Full Name *
+                    </label>
+                    <Input
+                      id="name"
+                      type="text"
+                      placeholder="John Doe"
+                      value={registrationForm.name}
+                      onChange={(e) =>
+                        setRegistrationForm({ ...registrationForm, name: e.target.value })
+                      }
+                      required
+                      className="bg-[#0D1117] border-[#2D333B] text-white placeholder:text-gray-500"
+                      disabled={registrationLoading}
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <label htmlFor="email" className="text-sm font-medium text-gray-300">
+                      Email Address *
+                    </label>
+                    <Input
+                      id="email"
+                      type="email"
+                      placeholder="john@example.com"
+                      value={registrationForm.email}
+                      onChange={(e) =>
+                        setRegistrationForm({ ...registrationForm, email: e.target.value })
+                      }
+                      required
+                      className="bg-[#0D1117] border-[#2D333B] text-white placeholder:text-gray-500"
+                      disabled={registrationLoading}
+                    />
+                  </div>
+                  {registrationError && (
+                    <div className="bg-red-900/20 border border-red-800 rounded p-3 flex items-start gap-2">
+                      <AlertCircle className="h-4 w-4 text-red-400 flex-shrink-0 mt-0.5" />
+                      <p className="text-sm text-red-300">{registrationError}</p>
+                    </div>
+                  )}
+                  <DialogFooter className="flex-col sm:flex-row gap-2">
+                    <Button
+                      type="button"
+                      variant="outline"
+                      onClick={handleCloseRegistration}
+                      disabled={registrationLoading}
+                      className="border-[#2D333B] text-gray-300 hover:bg-[#21262D] hover:text-white"
+                    >
+                      Cancel
+                    </Button>
+                    <Button
+                      type="submit"
+                      disabled={registrationLoading}
+                      className="bg-[#5867EF] hover:bg-[#4756D3] text-white"
+                    >
+                      {registrationLoading ? (
+                        <>
+                          <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                          Registering...
+                        </>
+                      ) : (
+                        'Complete Registration'
+                      )}
+                    </Button>
+                  </DialogFooter>
+                </form>
+              </>
+            )}
+          </DialogContent>
+        </Dialog>
       </main>
     </div>
   );

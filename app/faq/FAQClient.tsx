@@ -170,7 +170,7 @@ export default function FAQClient() {
                 variant="outline"
                 className="border-gray-200 dark:border-gray-700"
               >
-                <Link href="/docs">
+                <Link href="https://docs.ainative.studio">
                   <Book className="mr-2 h-4 w-4" />
                   View Documentation
                 </Link>

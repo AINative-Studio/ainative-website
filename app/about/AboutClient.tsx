@@ -121,7 +121,7 @@ export default function AboutClient() {
                 variant="outline"
                 className="border-[#2D333B] text-white hover:bg-[#1C2128]"
               >
-                <Link href="/docs">View Documentation</Link>
+                <Link href="https://docs.ainative.studio">View Documentation</Link>
               </Button>
             </div>
           </motion.div>

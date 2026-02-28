@@ -109,8 +109,8 @@ export default function DownloadClient() {
           transition={{ duration: 0.7 }}
           className="text-center max-w-3xl mx-auto"
         >
-          <Download className="h-12 w-12 mx-auto text-[#4B6FED] mb-6 animate-bounce" />
-          <h1 className="text-5xl md:text-6xl font-extrabold mb-4 bg-gradient-to-r from-[#4B6FED] via-white to-[#4B6FED] bg-clip-text text-transparent">
+          <Download className="h-12 w-12 mx-auto text-[#5867EF] mb-6 animate-bounce" />
+          <h1 className="text-5xl md:text-6xl font-extrabold mb-4 bg-gradient-to-r from-[#5867EF] via-white to-[#5867EF] bg-clip-text text-transparent">
             Download AI Native Studio
           </h1>
           <p className="text-lg text-gray-400 leading-relaxed">
@@ -131,14 +131,14 @@ export default function DownloadClient() {
               <Card
                 className={`rounded-2xl transition-transform duration-300 transform hover:scale-[1.03]
                 ${platform.available
-                    ? 'bg-[#1C2128]/80 border border-white/10 hover:shadow-[0_0_30px_#4B6FED33]'
+                    ? 'bg-[#1C2128]/80 border border-white/10 hover:shadow-[0_0_30px_#5867EF33]'
                     : 'bg-[#1C2128]/40 border border-white/5 cursor-not-allowed'}
               `}
               >
                 <CardHeader className="pb-2">
                   <div className="flex items-center gap-2 mb-1">
-                    <platform.icon className="h-6 w-6 text-[#4B6FED]" />
-                    <CardTitle className={`text-lg font-semibold ${!platform.available && 'text-gray-500'}`}>
+                    <platform.icon className="h-6 w-6 text-[#5867EF]" />
+                    <CardTitle className={`text-lg font-semibold ${platform.available ? 'text-white' : 'text-gray-500'}`}>
                       {platform.name}
                     </CardTitle>
                   </div>
@@ -175,8 +175,8 @@ export default function DownloadClient() {
           className="bg-[#161B22]/50 backdrop-blur-sm rounded-3xl p-8 border border-[#30363D]/50"
         >
           <div className="text-center mb-8">
-            <Github className="h-12 w-12 mx-auto text-[#4B6FED] mb-4" />
-            <h2 className="text-3xl font-bold mb-4 bg-gradient-to-r from-[#4B6FED] to-[#8A63F4] bg-clip-text text-transparent">
+            <Github className="h-12 w-12 mx-auto text-[#5867EF] mb-4" />
+            <h2 className="text-3xl font-bold mb-4 bg-gradient-to-r from-[#5867EF] to-[#8A63F4] bg-clip-text text-transparent">
               Open Source & Community
             </h2>
             <p className="text-lg text-gray-400 max-w-2xl mx-auto mb-6">
@@ -193,7 +193,7 @@ export default function DownloadClient() {
             >
               <Button
                 size="lg"
-                className="w-full group bg-[#21262D] hover:bg-[#30363D] border border-[#30363D] hover:border-[#4B6FED]/40 text-white transition-all duration-300"
+                className="w-full group bg-[#21262D] hover:bg-[#30363D] border border-[#30363D] hover:border-[#5867EF]/40 text-white transition-all duration-300"
               >
                 <Github className="mr-2 h-5 w-5" />
                 <span>View Repository</span>
@@ -215,7 +215,7 @@ export default function DownloadClient() {
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-center">
             <div className="bg-vite-bg/50 rounded-lg p-4 border border-[#21262D]">
-              <Code className="h-6 w-6 mx-auto text-[#4B6FED] mb-2" />
+              <Code className="h-6 w-6 mx-auto text-[#5867EF] mb-2" />
               <h4 className="text-sm font-semibold text-white mb-1">IDE Source</h4>
               <p className="text-xs text-gray-400">Main IDE application code</p>
             </div>
@@ -235,7 +235,7 @@ export default function DownloadClient() {
         {/* Plugin Availability */}
         <section className="space-y-12">
           <div className="text-center max-w-3xl mx-auto">
-            <h2 className="text-4xl md:text-5xl font-extrabold mb-6 bg-gradient-to-r from-[#4B6FED] via-[#6B8FFF] to-[#4B6FED] bg-clip-text text-transparent">
+            <h2 className="text-4xl md:text-5xl font-extrabold mb-6 bg-gradient-to-r from-[#5867EF] via-[#6B8FFF] to-[#5867EF] bg-clip-text text-transparent">
               IDE Plugins
             </h2>
             <p className="text-2xl md:text-3xl font-bold text-white mb-4">
@@ -247,16 +247,16 @@ export default function DownloadClient() {
             <div className="flex justify-center">
               <ul className="text-base text-gray-300 space-y-2 text-left">
                 <li className="flex items-center gap-2">
-                  <span className="text-[#4B6FED]">-</span> VS Code Extension
+                  <span className="text-[#5867EF]">-</span> VS Code Extension
                 </li>
                 <li className="flex items-center gap-2">
-                  <span className="text-[#4B6FED]">-</span> JetBrains IDEs
+                  <span className="text-[#5867EF]">-</span> JetBrains IDEs
                 </li>
                 <li className="flex items-center gap-2">
-                  <span className="text-[#4B6FED]">-</span> Vim/NeoVim
+                  <span className="text-[#5867EF]">-</span> Vim/NeoVim
                 </li>
                 <li className="flex items-center gap-2">
-                  <span className="text-[#4B6FED]">-</span> Sublime Text
+                  <span className="text-[#5867EF]">-</span> Sublime Text
                 </li>
               </ul>
             </div>
@@ -265,7 +265,7 @@ export default function DownloadClient() {
 
         {/* Feature Cards - "What's Inside" */}
         <section className="space-y-12">
-          <h2 className="text-3xl font-bold text-center">What&apos;s Inside</h2>
+          <h2 className="text-3xl font-bold text-center text-white">What&apos;s Inside</h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
             {features.map((feature, i) => (
               <motion.div
@@ -275,9 +275,9 @@ export default function DownloadClient() {
                 transition={{ delay: i * 0.1, duration: 0.6 }}
                 viewport={{ once: true }}
               >
-                <Card className="bg-[#1C2128] border border-white/10 hover:border-[#4B6FED] hover:shadow-[0_0_20px_#4B6FED33] rounded-xl p-6 flex flex-col items-start h-full justify-between transition-all">
+                <Card className="bg-[#1C2128] border border-white/10 hover:border-[#5867EF] hover:shadow-[0_0_20px_#5867EF33] rounded-xl p-6 flex flex-col items-start h-full justify-between transition-all">
                   <CardHeader className="p-0 space-y-4">
-                    <feature.icon className="h-6 w-6 text-[#4B6FED]" />
+                    <feature.icon className="h-6 w-6 text-[#5867EF]" />
                     <div>
                       <CardTitle className="text-white text-lg mb-1">{feature.title}</CardTitle>
                       <CardDescription className="text-sm text-gray-400 leading-relaxed">
@@ -293,9 +293,9 @@ export default function DownloadClient() {
 
         {/* LLM Provider Support */}
         <section className="space-y-12">
-          <h2 className="text-3xl font-bold text-center">LLM Provider Support</h2>
+          <h2 className="text-3xl font-bold text-center text-white">LLM Provider Support</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-            <Card className="bg-[#1C2128]/90 border border-white/10 rounded-2xl p-6 hover:shadow-[0_0_25px_#4B6FED33] transition-all">
+            <Card className="bg-[#1C2128]/90 border border-white/10 rounded-2xl p-6 hover:shadow-[0_0_25px_#5867EF33] transition-all">
               <CardHeader className="pb-4">
                 <CardTitle className="text-white text-xl">Private LLMs</CardTitle>
                 <CardDescription className="text-gray-400">
@@ -312,7 +312,7 @@ export default function DownloadClient() {
                 </ul>
               </CardContent>
             </Card>
-            <Card className="bg-[#1C2128]/90 border border-white/10 rounded-2xl p-6 hover:shadow-[0_0_25px_#4B6FED33] transition-all">
+            <Card className="bg-[#1C2128]/90 border border-white/10 rounded-2xl p-6 hover:shadow-[0_0_25px_#5867EF33] transition-all">
               <CardHeader className="pb-4">
                 <CardTitle className="text-white text-xl">Frontier LLMs</CardTitle>
                 <CardDescription className="text-gray-400">

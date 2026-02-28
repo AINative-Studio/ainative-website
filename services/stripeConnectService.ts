@@ -98,7 +98,7 @@ export interface AccountLinkingResult {
  * Manages Stripe Connect OAuth flow and account operations
  */
 export class StripeConnectService {
-  private readonly basePath = '/api/v1/stripe-connect';
+  private readonly basePath = '/v1/stripe-connect';
 
   // ==========================================================================
   // OAuth Flow Methods

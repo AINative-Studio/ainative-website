@@ -70,8 +70,8 @@
   --card-foreground: 210 40% 98%;
   --popover: 215 19% 11%;
   --popover-foreground: 210 40% 98%;
-  /* Primary: #4B6FED -> HSL(225, 82%, 61%) */
-  --primary: 225 82% 61%;
+  /* Primary: #5867EF -> HSL(234, 82%, 64%) */
+  --primary: 234 82% 64%;
   --primary-foreground: 0 0% 100%;
   /* Secondary: #8A63F4 -> HSL(261, 87%, 67%) */
   --secondary: 261 87% 67%;
@@ -87,23 +87,19 @@
   /* Border: #2D333B -> HSL(214, 13%, 20%) */
   --border: 214 13% 20%;
   --input: 214 13% 20%;
-  /* Ring: #4B6FED */
-  --ring: 225 82% 61%;
+  /* Ring: #5867EF */
+  --ring: 234 82% 64%;
 
   /* Vite-specific colors */
   --vite-bg: #0D1117;
   --vite-surface: #161B22;
   --vite-border: #2D333B;
-  --vite-border-hover: #4B6FED;
-  --vite-primary: #4B6FED;
-  --vite-primary-hover: #3A56D3;
+  --vite-border-hover: #5867EF;
+  --vite-primary: #5867EF;
+  --vite-primary-hover: #4756D3;
 }
 
 /* Base styles */
-* {
-  border-color: hsl(var(--border));
-}
-
 body {
   background: hsl(var(--background));
   color: hsl(var(--foreground));

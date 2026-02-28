@@ -42,8 +42,8 @@ export interface ApiError {
 const API_CONFIG = {
   baseUrl: process.env.VITE_QNN_API_URL || 'http://localhost:8000',
   endpoints: {
-    extractFeatures: '/api/v1/features/extract-from-code',
-    analyzeQuality: '/api/v1/quality/analyze',
+    extractFeatures: '/v1/features/extract-from-code',
+    analyzeQuality: '/v1/quality/analyze',
   },
   timeout: 30000, // 30 seconds
 };

@@ -238,9 +238,9 @@ export default function DesignSystemShowcaseClient() {
               Build Stunning AI-Native Interfaces
             </GradientText>
 
-            <p className="text-xl text-gray-400 max-w-3xl mx-auto leading-relaxed">
-              Production-ready design system with <strong className="text-white">AINative Design MCP server</strong>,
-              <strong className="text-white"> NPM packages</strong>, <strong className="text-white">UI components</strong>, and premium AI primitives.
+            <p className="text-xl text-muted-foreground max-w-3xl mx-auto leading-relaxed">
+              Production-ready design system with <strong className="text-foreground">AINative Design MCP server</strong>,
+              <strong className="text-foreground"> NPM packages</strong>, <strong className="text-foreground">UI components</strong>, and premium AI primitives.
               Ship beautiful AI applications 10x faster.
             </p>
 
@@ -248,7 +248,7 @@ export default function DesignSystemShowcaseClient() {
               <Link href="/ai-kit">
                 <Button
                   size="lg"
-                  className="bg-gradient-to-r from-[#4B6FED] to-[#8A63F5] hover:opacity-90 text-white px-8 gap-2"
+                  className="bg-gradient-to-r from-[#5867EF] to-[#8A63F4] hover:opacity-90 text-foreground px-8 gap-2"
                 >
                   <Download className="w-5 h-5" />
                   Explore AI Kit
@@ -257,7 +257,7 @@ export default function DesignSystemShowcaseClient() {
               <Button
                 size="lg"
                 variant="outline"
-                className="border-[#4B6FED]/30 text-white hover:bg-[#4B6FED]/10 px-8 gap-2"
+                className="border-[#5867EF]/30 text-foreground hover:bg-[#5867EF]/10 px-8 gap-2"
                 onClick={() => {
                   const mcpSection = document.getElementById('mcp-server');
                   mcpSection?.scrollIntoView({ behavior: 'smooth' });
@@ -279,7 +279,7 @@ export default function DesignSystemShowcaseClient() {
               <GradientText variant="primary" size="display-3" as="h2" className="font-bold">
                 AINative Design MCP Server
               </GradientText>
-              <p className="text-xl text-gray-400 max-w-3xl mx-auto">
+              <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
                 Instant access to design tokens, components, and AI-powered design assistance through Claude Desktop
               </p>
             </div>
@@ -289,7 +289,7 @@ export default function DesignSystemShowcaseClient() {
               <CardAdvanced variant="glassmorphism" hoverEffect="lift">
                 <CardAdvancedHeader>
                   <CardAdvancedTitle className="flex items-center gap-2">
-                    <Terminal className="w-5 h-5 text-[#4B6FED]" />
+                    <Terminal className="w-5 h-5 text-[#5867EF]" />
                     Quick Installation
                   </CardAdvancedTitle>
                   <CardAdvancedDescription>
@@ -298,12 +298,12 @@ export default function DesignSystemShowcaseClient() {
                 </CardAdvancedHeader>
                 <CardAdvancedContent>
                   <div className="bg-black/50 rounded-lg p-4 font-mono text-sm">
-                    <div className="text-gray-400"># Install globally</div>
+                    <div className="text-muted-foreground"># Install globally</div>
                     <div className="text-green-400">npm install -g @ainative/design-mcp</div>
-                    <div className="mt-3 text-gray-400"># Or with Claude Desktop</div>
+                    <div className="mt-3 text-muted-foreground"># Or with Claude Desktop</div>
                     <div className="text-green-400">claude mcp add @ainative/design-mcp</div>
                   </div>
-                  <div className="mt-4 flex items-center gap-2 text-sm text-gray-400">
+                  <div className="mt-4 flex items-center gap-2 text-sm text-muted-foreground">
                     <Check className="w-4 h-4 text-green-500" />
                     <span>Auto-syncs with Claude Desktop</span>
                   </div>
@@ -314,7 +314,7 @@ export default function DesignSystemShowcaseClient() {
               <CardAdvanced variant="gradient-border" hoverEffect="glow">
                 <CardAdvancedHeader>
                   <CardAdvancedTitle className="flex items-center gap-2">
-                    <Sparkles className="w-5 h-5 text-[#8A63F5]" />
+                    <Sparkles className="w-5 h-5 text-[#8A63F4]" />
                     MCP Features
                   </CardAdvancedTitle>
                   <CardAdvancedDescription>
@@ -332,8 +332,8 @@ export default function DesignSystemShowcaseClient() {
                       'Component library analysis',
                     ].map((feature, i) => (
                       <div key={i} className="flex items-start gap-2">
-                        <Zap className="w-4 h-4 text-[#4B6FED] mt-0.5 flex-shrink-0" />
-                        <span className="text-sm text-gray-300">{feature}</span>
+                        <Zap className="w-4 h-4 text-[#5867EF] mt-0.5 flex-shrink-0" />
+                        <span className="text-sm text-foreground">{feature}</span>
                       </div>
                     ))}
                   </div>
@@ -351,7 +351,7 @@ export default function DesignSystemShowcaseClient() {
             <GradientText variant="secondary" size="display-3" as="h2" className="font-bold">
               AI Kit - 14 Production-Ready Packages
             </GradientText>
-            <p className="text-xl text-gray-400 max-w-3xl mx-auto">
+            <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
               Framework-agnostic components for React, Vue, Svelte, and Next.js
             </p>
           </div>
@@ -365,8 +365,8 @@ export default function DesignSystemShowcaseClient() {
                 size="sm"
                 onClick={() => setSelectedCategory(category)}
                 className={selectedCategory === category
-                  ? 'bg-[#4B6FED] text-white'
-                  : 'border-gray-700 text-gray-400 hover:border-[#4B6FED]/50'
+                  ? 'bg-[#5867EF] text-foreground'
+                  : 'border-vite-border text-muted-foreground hover:border-[#5867EF]/50'
                 }
               >
                 {category}
@@ -388,10 +388,10 @@ export default function DesignSystemShowcaseClient() {
                   <CardAdvanced variant="default" hoverEffect="lift-glow" interactive>
                     <CardAdvancedHeader>
                       <div className="flex items-start justify-between">
-                        <div className="bg-[#4B6FED]/10 p-2 rounded-lg">
-                          <Icon className="w-5 h-5 text-[#4B6FED]" />
+                        <div className="bg-[#5867EF]/10 p-2 rounded-lg">
+                          <Icon className="w-5 h-5 text-[#5867EF]" />
                         </div>
-                        <Badge className="bg-[#161B22] text-gray-400 text-xs">
+                        <Badge className="bg-[#161B22] text-muted-foreground text-xs">
                           {pkg.category}
                         </Badge>
                       </div>
@@ -413,7 +413,7 @@ export default function DesignSystemShowcaseClient() {
                           <Button
                             size="sm"
                             variant="outline"
-                            className="w-full text-xs border-gray-700 hover:border-[#4B6FED]"
+                            className="w-full text-xs border-vite-border hover:border-[#5867EF]"
                           >
                             NPM
                           </Button>
@@ -427,7 +427,7 @@ export default function DesignSystemShowcaseClient() {
                           <Button
                             size="sm"
                             variant="outline"
-                            className="w-full text-xs border-gray-700 hover:border-[#4B6FED]"
+                            className="w-full text-xs border-vite-border hover:border-[#5867EF]"
                           >
                             GitHub
                           </Button>
@@ -450,7 +450,7 @@ export default function DesignSystemShowcaseClient() {
               <GradientText variant="rainbow" size="display-3" as="h2" className="font-bold">
                 Complete Component Library
               </GradientText>
-              <p className="text-xl text-gray-400 max-w-3xl mx-auto">
+              <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
                 57+ production-ready components with live demos and copy-paste code
               </p>
             </div>
@@ -470,51 +470,51 @@ export default function DesignSystemShowcaseClient() {
               <TabsContent value="forms" className="space-y-8">
                 <div className="grid md:grid-cols-2 gap-6">
                   {/* Input */}
-                  <Card className="bg-[#1C2128] border-gray-800">
+                  <Card className="bg-vite-surface border-vite-border">
                     <CardHeader>
-                      <CardTitle className="text-white">Input & Input Branded</CardTitle>
+                      <CardTitle className="text-foreground">Input & Input Branded</CardTitle>
                       <CardDescription>Text input fields with variants</CardDescription>
                     </CardHeader>
                     <CardContent className="space-y-4">
                       <div>
-                        <Label className="text-gray-400 mb-2 block">Standard Input</Label>
-                        <Input placeholder="Enter your name..." className="bg-vite-bg text-white border-[#2D333B]" />
+                        <Label className="text-muted-foreground mb-2 block">Standard Input</Label>
+                        <Input placeholder="Enter your name..." className="bg-vite-bg text-foreground border-vite-border" />
                       </div>
                       <div>
-                        <Label className="text-gray-400 mb-2 block">Branded Input</Label>
+                        <Label className="text-muted-foreground mb-2 block">Branded Input</Label>
                         <InputBranded placeholder="Enhanced input with branding..." />
                       </div>
                     </CardContent>
                   </Card>
 
                   {/* Textarea */}
-                  <Card className="bg-[#1C2128] border-gray-800">
+                  <Card className="bg-vite-surface border-vite-border">
                     <CardHeader>
-                      <CardTitle className="text-white">Textarea & Textarea Branded</CardTitle>
+                      <CardTitle className="text-foreground">Textarea & Textarea Branded</CardTitle>
                       <CardDescription>Multi-line text input areas</CardDescription>
                     </CardHeader>
                     <CardContent className="space-y-4">
                       <div>
-                        <Label className="text-gray-400 mb-2 block">Standard Textarea</Label>
-                        <Textarea placeholder="Enter your message..." className="bg-vite-bg text-white border-[#2D333B]" />
+                        <Label className="text-muted-foreground mb-2 block">Standard Textarea</Label>
+                        <Textarea placeholder="Enter your message..." className="bg-vite-bg text-foreground border-vite-border" />
                       </div>
                       <div>
-                        <Label className="text-gray-400 mb-2 block">Branded Textarea</Label>
+                        <Label className="text-muted-foreground mb-2 block">Branded Textarea</Label>
                         <TextareaBranded placeholder="Enhanced textarea..." />
                       </div>
                     </CardContent>
                   </Card>
 
                   {/* Select */}
-                  <Card className="bg-[#1C2128] border-gray-800">
+                  <Card className="bg-vite-surface border-vite-border">
                     <CardHeader>
-                      <CardTitle className="text-white">Select Dropdown</CardTitle>
+                      <CardTitle className="text-foreground">Select Dropdown</CardTitle>
                       <CardDescription>Dropdown selection component</CardDescription>
                     </CardHeader>
                     <CardContent>
-                      <Label className="text-gray-400 mb-2 block">Choose Framework</Label>
+                      <Label className="text-muted-foreground mb-2 block">Choose Framework</Label>
                       <Select value={selectedFramework} onValueChange={setSelectedFramework}>
-                        <SelectTrigger className="bg-vite-bg text-white border-[#2D333B]">
+                        <SelectTrigger className="bg-vite-bg text-foreground border-vite-border">
                           <SelectValue placeholder="Select framework" />
                         </SelectTrigger>
                         <SelectContent>
@@ -528,20 +528,20 @@ export default function DesignSystemShowcaseClient() {
                   </Card>
 
                   {/* Switch & Slider */}
-                  <Card className="bg-[#1C2128] border-gray-800">
+                  <Card className="bg-vite-surface border-vite-border">
                     <CardHeader>
-                      <CardTitle className="text-white">Switch & Slider</CardTitle>
+                      <CardTitle className="text-foreground">Switch & Slider</CardTitle>
                       <CardDescription>Toggle and range inputs</CardDescription>
                     </CardHeader>
                     <CardContent className="space-y-6">
                       <div className="flex items-center justify-between">
-                        <Label className="text-gray-300">Enable notifications</Label>
+                        <Label className="text-foreground">Enable notifications</Label>
                         <Switch checked={switchChecked} onCheckedChange={setSwitchChecked} />
                       </div>
                       <div>
                         <div className="flex justify-between mb-2">
-                          <Label className="text-gray-300">Volume</Label>
-                          <span className="text-sm text-gray-400">{sliderValue[0]}%</span>
+                          <Label className="text-foreground">Volume</Label>
+                          <span className="text-sm text-muted-foreground">{sliderValue[0]}%</span>
                         </div>
                         <Slider
                           value={sliderValue}
@@ -560,16 +560,16 @@ export default function DesignSystemShowcaseClient() {
               <TabsContent value="feedback" className="space-y-8">
                 <div className="grid md:grid-cols-2 gap-6">
                   {/* Alerts */}
-                  <Card className="bg-[#1C2128] border-gray-800">
+                  <Card className="bg-vite-surface border-vite-border">
                     <CardHeader>
-                      <CardTitle className="text-white">Alert</CardTitle>
+                      <CardTitle className="text-foreground">Alert</CardTitle>
                       <CardDescription>Contextual alert messages</CardDescription>
                     </CardHeader>
                     <CardContent className="space-y-4">
-                      <Alert variant="default" className="bg-vite-bg border-[#2D333B]">
-                        <Info className="h-4 w-4 text-[#4B6FED]" />
-                        <AlertTitle className="text-white">Information</AlertTitle>
-                        <AlertDescription className="text-gray-400">
+                      <Alert variant="default" className="bg-vite-bg border-vite-border">
+                        <Info className="h-4 w-4 text-[#5867EF]" />
+                        <AlertTitle className="text-foreground">Information</AlertTitle>
+                        <AlertDescription className="text-muted-foreground">
                           This is an informational alert message.
                         </AlertDescription>
                       </Alert>
@@ -584,16 +584,16 @@ export default function DesignSystemShowcaseClient() {
                   </Card>
 
                   {/* Progress */}
-                  <Card className="bg-[#1C2128] border-gray-800">
+                  <Card className="bg-vite-surface border-vite-border">
                     <CardHeader>
-                      <CardTitle className="text-white">Progress</CardTitle>
+                      <CardTitle className="text-foreground">Progress</CardTitle>
                       <CardDescription>Progress bar indicators</CardDescription>
                     </CardHeader>
                     <CardContent className="space-y-6">
                       <div>
                         <div className="flex justify-between mb-2">
-                          <span className="text-sm text-gray-400">Upload progress</span>
-                          <span className="text-sm text-gray-400">{progress}%</span>
+                          <span className="text-sm text-muted-foreground">Upload progress</span>
+                          <span className="text-sm text-muted-foreground">{progress}%</span>
                         </div>
                         <Progress value={progress} className="h-2" />
                       </div>
@@ -601,33 +601,33 @@ export default function DesignSystemShowcaseClient() {
                   </Card>
 
                   {/* Spinners */}
-                  <Card className="bg-[#1C2128] border-gray-800">
+                  <Card className="bg-vite-surface border-vite-border">
                     <CardHeader>
-                      <CardTitle className="text-white">Spinner Variants</CardTitle>
+                      <CardTitle className="text-foreground">Spinner Variants</CardTitle>
                       <CardDescription>Loading state indicators</CardDescription>
                     </CardHeader>
                     <CardContent>
                       <div className="flex flex-wrap items-center gap-8 justify-center py-4">
                         <div className="text-center">
                           <Spinner size="md" variant="primary" />
-                          <p className="text-xs text-gray-400 mt-2">Spinner</p>
+                          <p className="text-xs text-muted-foreground mt-2">Spinner</p>
                         </div>
                         <div className="text-center">
                           <SpinnerDots variant="primary" />
-                          <p className="text-xs text-gray-400 mt-2">Dots</p>
+                          <p className="text-xs text-muted-foreground mt-2">Dots</p>
                         </div>
                         <div className="text-center">
                           <SpinnerPulse size="md" />
-                          <p className="text-xs text-gray-400 mt-2">Pulse</p>
+                          <p className="text-xs text-muted-foreground mt-2">Pulse</p>
                         </div>
                       </div>
                     </CardContent>
                   </Card>
 
                   {/* Skeletons */}
-                  <Card className="bg-[#1C2128] border-gray-800">
+                  <Card className="bg-vite-surface border-vite-border">
                     <CardHeader>
-                      <CardTitle className="text-white">Skeleton Loaders</CardTitle>
+                      <CardTitle className="text-foreground">Skeleton Loaders</CardTitle>
                       <CardDescription>Content loading placeholders</CardDescription>
                     </CardHeader>
                     <CardContent className="space-y-4">
@@ -638,15 +638,15 @@ export default function DesignSystemShowcaseClient() {
                 </div>
 
                 {/* RLHF Feedback Component */}
-                <Card className="bg-[#1C2128] border-gray-800">
+                <Card className="bg-vite-surface border-vite-border">
                   <CardHeader>
-                    <CardTitle className="text-white">RLHF Feedback Component</CardTitle>
+                    <CardTitle className="text-foreground">RLHF Feedback Component</CardTitle>
                     <CardDescription>Reinforcement Learning from Human Feedback UI</CardDescription>
                   </CardHeader>
                   <CardContent className="space-y-6">
-                    <div className="bg-vite-bg rounded-lg p-6 border border-[#2D333B]">
-                      <h4 className="text-white font-medium mb-2">Agent Output Example</h4>
-                      <p className="text-gray-400 text-sm mb-4">
+                    <div className="bg-vite-bg rounded-lg p-6 border border-vite-border">
+                      <h4 className="text-foreground font-medium mb-2">Agent Output Example</h4>
+                      <p className="text-muted-foreground text-sm mb-4">
                         The code refactoring was completed using TypeScript strict mode.
                       </p>
                       <RLHFFeedback
@@ -666,26 +666,26 @@ export default function DesignSystemShowcaseClient() {
               {/* LAYOUT TAB */}
               <TabsContent value="layout" className="space-y-8">
                 <div className="grid md:grid-cols-2 gap-6">
-                  <Card className="bg-[#1C2128] border-gray-800">
+                  <Card className="bg-vite-surface border-vite-border">
                     <CardHeader>
-                      <CardTitle className="text-white">Accordion</CardTitle>
+                      <CardTitle className="text-foreground">Accordion</CardTitle>
                       <CardDescription>Collapsible content sections</CardDescription>
                     </CardHeader>
                     <CardContent>
                       <Accordion type="single" collapsible className="w-full">
-                        <AccordionItem value="item-1" className="border-[#2D333B]">
-                          <AccordionTrigger className="text-gray-300 hover:text-white">
+                        <AccordionItem value="item-1" className="border-vite-border">
+                          <AccordionTrigger className="text-foreground hover:text-foreground">
                             What is AINative Studio?
                           </AccordionTrigger>
-                          <AccordionContent className="text-gray-400">
+                          <AccordionContent className="text-muted-foreground">
                             AINative Studio is a comprehensive platform for building AI-native applications.
                           </AccordionContent>
                         </AccordionItem>
-                        <AccordionItem value="item-2" className="border-[#2D333B]">
-                          <AccordionTrigger className="text-gray-300 hover:text-white">
+                        <AccordionItem value="item-2" className="border-vite-border">
+                          <AccordionTrigger className="text-foreground hover:text-foreground">
                             How many components are included?
                           </AccordionTrigger>
-                          <AccordionContent className="text-gray-400">
+                          <AccordionContent className="text-muted-foreground">
                             The AI Kit includes 57+ production-ready UI components across 14 NPM packages.
                           </AccordionContent>
                         </AccordionItem>
@@ -693,15 +693,15 @@ export default function DesignSystemShowcaseClient() {
                     </CardContent>
                   </Card>
 
-                  <Card className="bg-[#1C2128] border-gray-800">
+                  <Card className="bg-vite-surface border-vite-border">
                     <CardHeader>
-                      <CardTitle className="text-white">Separator</CardTitle>
+                      <CardTitle className="text-foreground">Separator</CardTitle>
                       <CardDescription>Divider lines for content sections</CardDescription>
                     </CardHeader>
                     <CardContent className="space-y-4">
-                      <p className="text-sm text-gray-400">Section 1</p>
+                      <p className="text-sm text-muted-foreground">Section 1</p>
                       <Separator className="bg-[#2D333B]" />
-                      <p className="text-sm text-gray-400">Section 2</p>
+                      <p className="text-sm text-muted-foreground">Section 2</p>
                     </CardContent>
                   </Card>
                 </div>
@@ -710,9 +710,9 @@ export default function DesignSystemShowcaseClient() {
               {/* DATA TAB */}
               <TabsContent value="data" className="space-y-8">
                 <div className="grid md:grid-cols-2 gap-6">
-                  <Card className="bg-[#1C2128] border-gray-800">
+                  <Card className="bg-vite-surface border-vite-border">
                     <CardHeader>
-                      <CardTitle className="text-white">Badge</CardTitle>
+                      <CardTitle className="text-foreground">Badge</CardTitle>
                       <CardDescription>Labels and status indicators</CardDescription>
                     </CardHeader>
                     <CardContent>
@@ -721,14 +721,14 @@ export default function DesignSystemShowcaseClient() {
                         <Badge variant="secondary">Secondary</Badge>
                         <Badge variant="destructive">Destructive</Badge>
                         <Badge variant="outline">Outline</Badge>
-                        <Badge className="bg-[#4B6FED] text-white">Custom</Badge>
+                        <Badge className="bg-[#5867EF] text-foreground">Custom</Badge>
                       </div>
                     </CardContent>
                   </Card>
 
-                  <Card className="bg-[#1C2128] border-gray-800">
+                  <Card className="bg-vite-surface border-vite-border">
                     <CardHeader>
-                      <CardTitle className="text-white">Avatar</CardTitle>
+                      <CardTitle className="text-foreground">Avatar</CardTitle>
                       <CardDescription>User profile images with fallbacks</CardDescription>
                     </CardHeader>
                     <CardContent>
@@ -738,10 +738,10 @@ export default function DesignSystemShowcaseClient() {
                           <AvatarFallback>CN</AvatarFallback>
                         </Avatar>
                         <Avatar>
-                          <AvatarFallback className="bg-[#4B6FED] text-white">JD</AvatarFallback>
+                          <AvatarFallback className="bg-[#5867EF] text-foreground">JD</AvatarFallback>
                         </Avatar>
                         <Avatar className="h-12 w-12">
-                          <AvatarFallback className="bg-[#8A63F5] text-white">AI</AvatarFallback>
+                          <AvatarFallback className="bg-[#8A63F4] text-foreground">AI</AvatarFallback>
                         </Avatar>
                       </div>
                     </CardContent>
@@ -749,30 +749,30 @@ export default function DesignSystemShowcaseClient() {
 
                   <Card className="bg-[#1C2128] border-gray-800 md:col-span-2">
                     <CardHeader>
-                      <CardTitle className="text-white">Table</CardTitle>
+                      <CardTitle className="text-foreground">Table</CardTitle>
                       <CardDescription>Data tables with styling</CardDescription>
                     </CardHeader>
                     <CardContent>
-                      <div className="rounded-lg border border-[#2D333B] overflow-hidden">
+                      <div className="rounded-lg border border-vite-border overflow-hidden">
                         <Table>
                           <TableHeader>
-                            <TableRow className="border-[#2D333B] hover:bg-vite-bg">
-                              <TableHead className="text-gray-400">Package</TableHead>
-                              <TableHead className="text-gray-400">Downloads</TableHead>
-                              <TableHead className="text-gray-400">Status</TableHead>
+                            <TableRow className="border-vite-border hover:bg-vite-bg">
+                              <TableHead className="text-muted-foreground">Package</TableHead>
+                              <TableHead className="text-muted-foreground">Downloads</TableHead>
+                              <TableHead className="text-muted-foreground">Status</TableHead>
                             </TableRow>
                           </TableHeader>
                           <TableBody>
-                            <TableRow className="border-[#2D333B] hover:bg-vite-bg">
-                              <TableCell className="text-white">@ainative/ai-kit</TableCell>
-                              <TableCell className="text-gray-400">12.5K</TableCell>
+                            <TableRow className="border-vite-border hover:bg-vite-bg">
+                              <TableCell className="text-foreground">@ainative/ai-kit</TableCell>
+                              <TableCell className="text-muted-foreground">12.5K</TableCell>
                               <TableCell>
                                 <Badge className="bg-green-900/20 text-green-400 border-green-800">Active</Badge>
                               </TableCell>
                             </TableRow>
-                            <TableRow className="border-[#2D333B] hover:bg-vite-bg">
-                              <TableCell className="text-white">@ainative/ai-kit-nextjs</TableCell>
-                              <TableCell className="text-gray-400">8.3K</TableCell>
+                            <TableRow className="border-vite-border hover:bg-vite-bg">
+                              <TableCell className="text-foreground">@ainative/ai-kit-nextjs</TableCell>
+                              <TableCell className="text-muted-foreground">8.3K</TableCell>
                               <TableCell>
                                 <Badge className="bg-green-900/20 text-green-400 border-green-800">Active</Badge>
                               </TableCell>
@@ -788,28 +788,28 @@ export default function DesignSystemShowcaseClient() {
               {/* NAVIGATION TAB */}
               <TabsContent value="navigation" className="space-y-8">
                 <div className="grid md:grid-cols-2 gap-6">
-                  <Card className="bg-[#1C2128] border-gray-800">
+                  <Card className="bg-vite-surface border-vite-border">
                     <CardHeader>
-                      <CardTitle className="text-white">Breadcrumb</CardTitle>
+                      <CardTitle className="text-foreground">Breadcrumb</CardTitle>
                       <CardDescription>Navigation hierarchy indicator</CardDescription>
                     </CardHeader>
                     <CardContent>
                       <nav className="flex items-center space-x-2 text-sm">
-                        <a href="#" className="text-gray-400 hover:text-white flex items-center gap-1">
+                        <a href="#" className="text-muted-foreground hover:text-foreground flex items-center gap-1">
                           <Home className="w-4 h-4" />
                           Home
                         </a>
                         <ChevronRight className="w-4 h-4 text-gray-600" />
-                        <a href="#" className="text-gray-400 hover:text-white">Documentation</a>
+                        <a href="#" className="text-muted-foreground hover:text-foreground">Documentation</a>
                         <ChevronRight className="w-4 h-4 text-gray-600" />
-                        <span className="text-white">Components</span>
+                        <span className="text-foreground">Components</span>
                       </nav>
                     </CardContent>
                   </Card>
 
-                  <Card className="bg-[#1C2128] border-gray-800">
+                  <Card className="bg-vite-surface border-vite-border">
                     <CardHeader>
-                      <CardTitle className="text-white">Button</CardTitle>
+                      <CardTitle className="text-foreground">Button</CardTitle>
                       <CardDescription>Interactive button components</CardDescription>
                     </CardHeader>
                     <CardContent>
@@ -828,9 +828,9 @@ export default function DesignSystemShowcaseClient() {
               {/* OVERLAY TAB */}
               <TabsContent value="overlay" className="space-y-8">
                 <div className="grid md:grid-cols-2 gap-6">
-                  <Card className="bg-[#1C2128] border-gray-800">
+                  <Card className="bg-vite-surface border-vite-border">
                     <CardHeader>
-                      <CardTitle className="text-white">Tooltip</CardTitle>
+                      <CardTitle className="text-foreground">Tooltip</CardTitle>
                       <CardDescription>Hover information popups</CardDescription>
                     </CardHeader>
                     <CardContent>
@@ -847,9 +847,9 @@ export default function DesignSystemShowcaseClient() {
                     </CardContent>
                   </Card>
 
-                  <Card className="bg-[#1C2128] border-gray-800">
+                  <Card className="bg-vite-surface border-vite-border">
                     <CardHeader>
-                      <CardTitle className="text-white">Dropdown Menu</CardTitle>
+                      <CardTitle className="text-foreground">Dropdown Menu</CardTitle>
                       <CardDescription>Contextual action menus</CardDescription>
                     </CardHeader>
                     <CardContent>
@@ -857,12 +857,12 @@ export default function DesignSystemShowcaseClient() {
                         <DropdownMenuTrigger asChild>
                           <Button variant="outline">Open Menu</Button>
                         </DropdownMenuTrigger>
-                        <DropdownMenuContent className="bg-[#1C2128] border-[#2D333B]">
-                          <DropdownMenuItem className="text-gray-300 hover:bg-vite-bg">
+                        <DropdownMenuContent className="bg-[#1C2128] border-vite-border">
+                          <DropdownMenuItem className="text-foreground hover:bg-vite-bg">
                             <User className="mr-2 h-4 w-4" />
                             Profile
                           </DropdownMenuItem>
-                          <DropdownMenuItem className="text-gray-300 hover:bg-vite-bg">
+                          <DropdownMenuItem className="text-foreground hover:bg-vite-bg">
                             <Settings className="mr-2 h-4 w-4" />
                             Settings
                           </DropdownMenuItem>
@@ -875,9 +875,9 @@ export default function DesignSystemShowcaseClient() {
 
               {/* BRANDED TAB */}
               <TabsContent value="branded" className="space-y-8">
-                <Card className="bg-[#1C2128] border-gray-800">
+                <Card className="bg-vite-surface border-vite-border">
                   <CardHeader>
-                    <CardTitle className="text-white">Gradient Text</CardTitle>
+                    <CardTitle className="text-foreground">Gradient Text</CardTitle>
                     <CardDescription>Animated gradient text effects</CardDescription>
                   </CardHeader>
                   <CardContent className="space-y-6 text-center">
@@ -887,9 +887,9 @@ export default function DesignSystemShowcaseClient() {
                   </CardContent>
                 </Card>
 
-                <Card className="bg-[#1C2128] border-gray-800">
+                <Card className="bg-vite-surface border-vite-border">
                   <CardHeader>
-                    <CardTitle className="text-white">CardAdvanced Variants</CardTitle>
+                    <CardTitle className="text-foreground">CardAdvanced Variants</CardTitle>
                     <CardDescription>All card styles and hover effects</CardDescription>
                   </CardHeader>
                   <CardContent>
@@ -931,7 +931,7 @@ export default function DesignSystemShowcaseClient() {
               <GradientText variant="accent" size="display-3" as="h2" className="font-bold">
                 Copy-Paste Ready Examples
               </GradientText>
-              <p className="text-xl text-gray-400 max-w-3xl mx-auto">
+              <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
                 Start building immediately with production-ready code snippets
               </p>
             </div>
@@ -940,7 +940,7 @@ export default function DesignSystemShowcaseClient() {
               {COMPONENT_EXAMPLES.map((example, index) => (
                 <div key={index} className="space-y-4">
                   <div className="flex items-center justify-between">
-                    <h3 className="text-lg font-semibold text-white">{example.title}</h3>
+                    <h3 className="text-lg font-semibold text-foreground">{example.title}</h3>
                     <Button
                       size="sm"
                       variant="ghost"
@@ -962,7 +962,7 @@ export default function DesignSystemShowcaseClient() {
                   </div>
 
                   <div className="bg-black/50 rounded-lg p-4 font-mono text-sm overflow-x-auto">
-                    <pre className="text-gray-300">
+                    <pre className="text-foreground">
                       <code>{example.code}</code>
                     </pre>
                   </div>
@@ -981,14 +981,14 @@ export default function DesignSystemShowcaseClient() {
               <GradientText variant="rainbow" size="display-3" as="h2" className="font-bold">
                 Ready to Build?
               </GradientText>
-              <p className="text-xl text-gray-400 max-w-2xl mx-auto">
+              <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
                 Join thousands of developers building beautiful AI-native applications
               </p>
               <div className="flex flex-col sm:flex-row gap-4 justify-center pt-4">
                 <Link href="/ai-kit">
                   <Button
                     size="lg"
-                    className="bg-gradient-to-r from-[#4B6FED] to-[#8A63F5] hover:opacity-90 text-white px-8 gap-2"
+                    className="bg-gradient-to-r from-[#5867EF] to-[#8A63F4] hover:opacity-90 text-foreground px-8 gap-2"
                   >
                     <Rocket className="w-5 h-5" />
                     Get Started with AI Kit
@@ -1002,7 +1002,7 @@ export default function DesignSystemShowcaseClient() {
                   <Button
                     size="lg"
                     variant="outline"
-                    className="border-gray-700 text-white hover:bg-white/5 px-8 gap-2"
+                    className="border-vite-border text-foreground hover:bg-white/5 px-8 gap-2"
                   >
                     <Code2 className="w-5 h-5" />
                     View on GitHub
