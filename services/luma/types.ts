@@ -35,6 +35,10 @@ export interface LumaTicketType {
   quantity_sold?: number;
 }
 
+export interface LumaTicketTypeListResponse {
+  entries: LumaTicketType[];
+}
+
 // Actual event data structure from Luma API
 export interface LumaEventData {
   id: string;

@@ -16,8 +16,8 @@ import {
   DialogTitle,
   DialogFooter,
 } from '@/components/ui/dialog';
-import { Calendar, Clock, Users, Video, MapPin, AlertCircle, Sparkles, CheckCircle2, Loader2 } from 'lucide-react';
-import { getAllEvents, addEventGuest, type LumaEvent } from '@/services/luma';
+import { Calendar, Clock, Users, Video, MapPin, AlertCircle, Sparkles, CheckCircle2, Loader2, DollarSign } from 'lucide-react';
+import { getAllEvents, addEventGuest, hasEventPaidTickets, type LumaEvent } from '@/services/luma';
 import ReactMarkdown from 'react-markdown';
 
 const CardTitle = ({ children, className = '' }: { children: React.ReactNode; className?: string }) => (
@@ -53,6 +53,9 @@ export default function EventsCalendarClient() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
+  // Track which events have paid tickets
+  const [paidEventIds, setPaidEventIds] = useState<Set<string>>(new Set());
+
   // Registration dialog state
   const [registerDialogOpen, setRegisterDialogOpen] = useState(false);
   const [selectedEvent, setSelectedEvent] = useState<LumaEvent | null>(null);
@@ -68,6 +71,18 @@ export default function EventsCalendarClient() {
         setError(null);
         const lumaEvents = await getAllEvents();
         setEvents(lumaEvents || []);
+
+        // Check which events have paid tickets
+        const paidIds = new Set<string>();
+        await Promise.all(
+          (lumaEvents || []).map(async (event) => {
+            const hasPaidTickets = await hasEventPaidTickets(event.api_id);
+            if (hasPaidTickets) {
+              paidIds.add(event.api_id);
+            }
+          })
+        );
+        setPaidEventIds(paidIds);
       } catch (err) {
         console.error('Failed to fetch events:', err);
         setError('Failed to load events. Please try again later.');
@@ -83,12 +98,21 @@ export default function EventsCalendarClient() {
   const upcomingEvents = events.filter(e => new Date(e.event.start_at) >= now);
   const pastEvents = events.filter(e => new Date(e.event.start_at) < now);
 
-  const handleOpenRegistration = (event: LumaEvent) => {
-    setSelectedEvent(event);
-    setRegistrationForm({ name: '', email: '' });
-    setRegistrationSuccess(false);
-    setRegistrationError(null);
-    setRegisterDialogOpen(true);
+  const handleRegisterClick = (event: LumaEvent) => {
+    // Check if this is a paid event
+    const isPaidEvent = paidEventIds.has(event.api_id);
+
+    if (isPaidEvent) {
+      // Redirect to Luma for paid events
+      window.open(event.event.url, '_blank', 'noopener,noreferrer');
+    } else {
+      // Show our registration modal for free events
+      setSelectedEvent(event);
+      setRegistrationForm({ name: '', email: '' });
+      setRegistrationSuccess(false);
+      setRegistrationError(null);
+      setRegisterDialogOpen(true);
+    }
   };
 
   const handleCloseRegistration = () => {
@@ -140,6 +164,7 @@ export default function EventsCalendarClient() {
     const endDate = new Date(eventData.end_at);
     const durationMinutes = Math.round((endDate.getTime() - startDate.getTime()) / 60000);
     const isPast = startDate < now;
+    const isPaidEvent = paidEventIds.has(lumaEvent.api_id);
 
     return (
       <motion.div
@@ -161,15 +186,23 @@ export default function EventsCalendarClient() {
           )}
           <CardHeader>
             <div className="flex items-start justify-between mb-3 gap-2">
-              {eventData.meeting_url || eventData.zoom_meeting_url ? (
-                <Badge className="bg-blue-900/30 text-blue-400">
-                  Online
-                </Badge>
-              ) : eventData.geo_address_json?.full_address ? (
-                <Badge className="bg-purple-900/30 text-purple-400">
-                  In-Person
-                </Badge>
-              ) : null}
+              <div className="flex gap-2 flex-wrap">
+                {eventData.meeting_url || eventData.zoom_meeting_url ? (
+                  <Badge className="bg-blue-900/30 text-blue-400">
+                    Online
+                  </Badge>
+                ) : eventData.geo_address_json?.full_address ? (
+                  <Badge className="bg-purple-900/30 text-purple-400">
+                    In-Person
+                  </Badge>
+                ) : null}
+                {isPaidEvent && (
+                  <Badge className="bg-green-900/30 text-green-400 flex items-center gap-1">
+                    <DollarSign className="h-3 w-3" />
+                    Paid
+                  </Badge>
+                )}
+              </div>
               {lumaEvent.tags && lumaEvent.tags.length > 0 && (
                 <div className="flex gap-1 flex-wrap">
                   {lumaEvent.tags.slice(0, 2).map((tag) => (
@@ -235,9 +268,9 @@ export default function EventsCalendarClient() {
                 ) : (
                   <Button
                     className="w-full bg-[#5867EF] hover:bg-[#4756D3] text-white"
-                    onClick={() => handleOpenRegistration(lumaEvent)}
+                    onClick={() => handleRegisterClick(lumaEvent)}
                   >
-                    Register Now
+                    {isPaidEvent ? 'Register on Luma' : 'Register Now'}
                   </Button>
                 )}
               </div>
