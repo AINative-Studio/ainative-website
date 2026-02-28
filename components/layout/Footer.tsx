@@ -95,7 +95,7 @@ const Footer = () => {
             <h3 className="text-sm font-semibold text-white uppercase tracking-wider mb-4">RESOURCES</h3>
             <ul className="space-y-3">
               <li>
-                <Link href="/docs" className="text-gray-400 hover:text-white text-sm transition-colors">
+                <Link href="https://docs.ainative.studio" className="text-gray-400 hover:text-white text-sm transition-colors">
                   Documentation
                 </Link>
               </li>

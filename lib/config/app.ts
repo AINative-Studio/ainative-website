@@ -57,7 +57,7 @@ export const appConfig = {
 
   theme: {
     colors: {
-      primary: process.env.NEXT_PUBLIC_THEME_PRIMARY || '#4B6FED',
+      primary: process.env.NEXT_PUBLIC_THEME_PRIMARY || '#5867EF',
       secondary: process.env.NEXT_PUBLIC_THEME_SECONDARY || '#8A63F4',
       accent: process.env.NEXT_PUBLIC_THEME_ACCENT || '#D04BF4',
       background: process.env.NEXT_PUBLIC_THEME_BACKGROUND || '#0D1117',

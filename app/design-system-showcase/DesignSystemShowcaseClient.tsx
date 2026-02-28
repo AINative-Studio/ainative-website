@@ -239,8 +239,8 @@ export default function DesignSystemShowcaseClient() {
             </GradientText>
 
             <p className="text-xl text-muted-foreground max-w-3xl mx-auto leading-relaxed">
-              Production-ready design system with <strong className="text-white">AINative Design MCP server</strong>,
-              <strong className="text-white"> NPM packages</strong>, <strong className="text-white">UI components</strong>, and premium AI primitives.
+              Production-ready design system with <strong className="text-foreground">AINative Design MCP server</strong>,
+              <strong className="text-foreground"> NPM packages</strong>, <strong className="text-foreground">UI components</strong>, and premium AI primitives.
               Ship beautiful AI applications 10x faster.
             </p>
 
@@ -248,7 +248,7 @@ export default function DesignSystemShowcaseClient() {
               <Link href="/ai-kit">
                 <Button
                   size="lg"
-                  className="bg-gradient-to-r from-[#4B6FED] to-[#8A63F5] hover:opacity-90 text-white px-8 gap-2"
+                  className="bg-gradient-to-r from-[#5867EF] to-[#8A63F4] hover:opacity-90 text-foreground px-8 gap-2"
                 >
                   <Download className="w-5 h-5" />
                   Explore AI Kit
@@ -257,7 +257,7 @@ export default function DesignSystemShowcaseClient() {
               <Button
                 size="lg"
                 variant="outline"
-                className="border-[#4B6FED]/30 text-white hover:bg-[#4B6FED]/10 px-8 gap-2"
+                className="border-[#5867EF]/30 text-foreground hover:bg-[#5867EF]/10 px-8 gap-2"
                 onClick={() => {
                   const mcpSection = document.getElementById('mcp-server');
                   mcpSection?.scrollIntoView({ behavior: 'smooth' });
@@ -289,7 +289,7 @@ export default function DesignSystemShowcaseClient() {
               <CardAdvanced variant="glassmorphism" hoverEffect="lift">
                 <CardAdvancedHeader>
                   <CardAdvancedTitle className="flex items-center gap-2">
-                    <Terminal className="w-5 h-5 text-[#4B6FED]" />
+                    <Terminal className="w-5 h-5 text-[#5867EF]" />
                     Quick Installation
                   </CardAdvancedTitle>
                   <CardAdvancedDescription>
@@ -314,7 +314,7 @@ export default function DesignSystemShowcaseClient() {
               <CardAdvanced variant="gradient-border" hoverEffect="glow">
                 <CardAdvancedHeader>
                   <CardAdvancedTitle className="flex items-center gap-2">
-                    <Sparkles className="w-5 h-5 text-[#8A63F5]" />
+                    <Sparkles className="w-5 h-5 text-[#8A63F4]" />
                     MCP Features
                   </CardAdvancedTitle>
                   <CardAdvancedDescription>
@@ -332,7 +332,7 @@ export default function DesignSystemShowcaseClient() {
                       'Component library analysis',
                     ].map((feature, i) => (
                       <div key={i} className="flex items-start gap-2">
-                        <Zap className="w-4 h-4 text-[#4B6FED] mt-0.5 flex-shrink-0" />
+                        <Zap className="w-4 h-4 text-[#5867EF] mt-0.5 flex-shrink-0" />
                         <span className="text-sm text-foreground">{feature}</span>
                       </div>
                     ))}
@@ -365,8 +365,8 @@ export default function DesignSystemShowcaseClient() {
                 size="sm"
                 onClick={() => setSelectedCategory(category)}
                 className={selectedCategory === category
-                  ? 'bg-[#4B6FED] text-white'
-                  : 'border-vite-border text-muted-foreground hover:border-[#4B6FED]/50'
+                  ? 'bg-[#5867EF] text-foreground'
+                  : 'border-vite-border text-muted-foreground hover:border-[#5867EF]/50'
                 }
               >
                 {category}
@@ -388,8 +388,8 @@ export default function DesignSystemShowcaseClient() {
                   <CardAdvanced variant="default" hoverEffect="lift-glow" interactive>
                     <CardAdvancedHeader>
                       <div className="flex items-start justify-between">
-                        <div className="bg-[#4B6FED]/10 p-2 rounded-lg">
-                          <Icon className="w-5 h-5 text-[#4B6FED]" />
+                        <div className="bg-[#5867EF]/10 p-2 rounded-lg">
+                          <Icon className="w-5 h-5 text-[#5867EF]" />
                         </div>
                         <Badge className="bg-[#161B22] text-muted-foreground text-xs">
                           {pkg.category}
@@ -413,7 +413,7 @@ export default function DesignSystemShowcaseClient() {
                           <Button
                             size="sm"
                             variant="outline"
-                            className="w-full text-xs border-vite-border hover:border-[#4B6FED]"
+                            className="w-full text-xs border-vite-border hover:border-[#5867EF]"
                           >
                             NPM
                           </Button>
@@ -427,7 +427,7 @@ export default function DesignSystemShowcaseClient() {
                           <Button
                             size="sm"
                             variant="outline"
-                            className="w-full text-xs border-vite-border hover:border-[#4B6FED]"
+                            className="w-full text-xs border-vite-border hover:border-[#5867EF]"
                           >
                             GitHub
                           </Button>
@@ -567,8 +567,8 @@ export default function DesignSystemShowcaseClient() {
                     </CardHeader>
                     <CardContent className="space-y-4">
                       <Alert variant="default" className="bg-vite-bg border-vite-border">
-                        <Info className="h-4 w-4 text-[#4B6FED]" />
-                        <AlertTitle className="text-white">Information</AlertTitle>
+                        <Info className="h-4 w-4 text-[#5867EF]" />
+                        <AlertTitle className="text-foreground">Information</AlertTitle>
                         <AlertDescription className="text-muted-foreground">
                           This is an informational alert message.
                         </AlertDescription>
@@ -645,7 +645,7 @@ export default function DesignSystemShowcaseClient() {
                   </CardHeader>
                   <CardContent className="space-y-6">
                     <div className="bg-vite-bg rounded-lg p-6 border border-vite-border">
-                      <h4 className="text-white font-medium mb-2">Agent Output Example</h4>
+                      <h4 className="text-foreground font-medium mb-2">Agent Output Example</h4>
                       <p className="text-muted-foreground text-sm mb-4">
                         The code refactoring was completed using TypeScript strict mode.
                       </p>
@@ -674,7 +674,7 @@ export default function DesignSystemShowcaseClient() {
                     <CardContent>
                       <Accordion type="single" collapsible className="w-full">
                         <AccordionItem value="item-1" className="border-vite-border">
-                          <AccordionTrigger className="text-foreground hover:text-white">
+                          <AccordionTrigger className="text-foreground hover:text-foreground">
                             What is AINative Studio?
                           </AccordionTrigger>
                           <AccordionContent className="text-muted-foreground">
@@ -682,7 +682,7 @@ export default function DesignSystemShowcaseClient() {
                           </AccordionContent>
                         </AccordionItem>
                         <AccordionItem value="item-2" className="border-vite-border">
-                          <AccordionTrigger className="text-foreground hover:text-white">
+                          <AccordionTrigger className="text-foreground hover:text-foreground">
                             How many components are included?
                           </AccordionTrigger>
                           <AccordionContent className="text-muted-foreground">
@@ -721,7 +721,7 @@ export default function DesignSystemShowcaseClient() {
                         <Badge variant="secondary">Secondary</Badge>
                         <Badge variant="destructive">Destructive</Badge>
                         <Badge variant="outline">Outline</Badge>
-                        <Badge className="bg-[#4B6FED] text-white">Custom</Badge>
+                        <Badge className="bg-[#5867EF] text-foreground">Custom</Badge>
                       </div>
                     </CardContent>
                   </Card>
@@ -738,10 +738,10 @@ export default function DesignSystemShowcaseClient() {
                           <AvatarFallback>CN</AvatarFallback>
                         </Avatar>
                         <Avatar>
-                          <AvatarFallback className="bg-[#4B6FED] text-white">JD</AvatarFallback>
+                          <AvatarFallback className="bg-[#5867EF] text-foreground">JD</AvatarFallback>
                         </Avatar>
                         <Avatar className="h-12 w-12">
-                          <AvatarFallback className="bg-[#8A63F5] text-white">AI</AvatarFallback>
+                          <AvatarFallback className="bg-[#8A63F4] text-foreground">AI</AvatarFallback>
                         </Avatar>
                       </div>
                     </CardContent>
@@ -764,14 +764,14 @@ export default function DesignSystemShowcaseClient() {
                           </TableHeader>
                           <TableBody>
                             <TableRow className="border-vite-border hover:bg-vite-bg">
-                              <TableCell className="text-white">@ainative/ai-kit</TableCell>
+                              <TableCell className="text-foreground">@ainative/ai-kit</TableCell>
                               <TableCell className="text-muted-foreground">12.5K</TableCell>
                               <TableCell>
                                 <Badge className="bg-green-900/20 text-green-400 border-green-800">Active</Badge>
                               </TableCell>
                             </TableRow>
                             <TableRow className="border-vite-border hover:bg-vite-bg">
-                              <TableCell className="text-white">@ainative/ai-kit-nextjs</TableCell>
+                              <TableCell className="text-foreground">@ainative/ai-kit-nextjs</TableCell>
                               <TableCell className="text-muted-foreground">8.3K</TableCell>
                               <TableCell>
                                 <Badge className="bg-green-900/20 text-green-400 border-green-800">Active</Badge>
@@ -795,14 +795,14 @@ export default function DesignSystemShowcaseClient() {
                     </CardHeader>
                     <CardContent>
                       <nav className="flex items-center space-x-2 text-sm">
-                        <a href="#" className="text-muted-foreground hover:text-white flex items-center gap-1">
+                        <a href="#" className="text-muted-foreground hover:text-foreground flex items-center gap-1">
                           <Home className="w-4 h-4" />
                           Home
                         </a>
                         <ChevronRight className="w-4 h-4 text-gray-600" />
-                        <a href="#" className="text-muted-foreground hover:text-white">Documentation</a>
+                        <a href="#" className="text-muted-foreground hover:text-foreground">Documentation</a>
                         <ChevronRight className="w-4 h-4 text-gray-600" />
-                        <span className="text-white">Components</span>
+                        <span className="text-foreground">Components</span>
                       </nav>
                     </CardContent>
                   </Card>
@@ -940,7 +940,7 @@ export default function DesignSystemShowcaseClient() {
               {COMPONENT_EXAMPLES.map((example, index) => (
                 <div key={index} className="space-y-4">
                   <div className="flex items-center justify-between">
-                    <h3 className="text-lg font-semibold text-white">{example.title}</h3>
+                    <h3 className="text-lg font-semibold text-foreground">{example.title}</h3>
                     <Button
                       size="sm"
                       variant="ghost"
@@ -988,7 +988,7 @@ export default function DesignSystemShowcaseClient() {
                 <Link href="/ai-kit">
                   <Button
                     size="lg"
-                    className="bg-gradient-to-r from-[#4B6FED] to-[#8A63F5] hover:opacity-90 text-white px-8 gap-2"
+                    className="bg-gradient-to-r from-[#5867EF] to-[#8A63F4] hover:opacity-90 text-foreground px-8 gap-2"
                   >
                     <Rocket className="w-5 h-5" />
                     Get Started with AI Kit
@@ -1002,7 +1002,7 @@ export default function DesignSystemShowcaseClient() {
                   <Button
                     size="lg"
                     variant="outline"
-                    className="border-vite-border text-white hover:bg-white/5 px-8 gap-2"
+                    className="border-vite-border text-foreground hover:bg-white/5 px-8 gap-2"
                   >
                     <Code2 className="w-5 h-5" />
                     View on GitHub

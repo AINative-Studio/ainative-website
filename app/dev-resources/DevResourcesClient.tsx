@@ -1080,7 +1080,7 @@ export default function DevResourcesClient() {
               >
                 Get Your API Key
               </Button>
-              <Link href="/docs" target="_blank" rel="noopener noreferrer">
+              <Link href="https://docs.ainative.studio" target="_blank" rel="noopener noreferrer">
                 <Button variant="outline" size="lg" className="px-8 border-[#2D333B] text-white hover:bg-[#1C2128]">
                   View Documentation
                 </Button>

@@ -325,7 +325,7 @@ export default function ContactClient() {
               Check out our documentation and community resources for quick answers.
             </p>
             <div className="flex flex-wrap justify-center gap-4">
-              <Link href="/docs">
+              <Link href="https://docs.ainative.studio">
                 <Button variant="outline" className="border-[#2D333B] text-white hover:bg-[#1C2128]">Documentation</Button>
               </Link>
               <Link href={appConfig.links.discord} target="_blank" rel="noopener noreferrer">
