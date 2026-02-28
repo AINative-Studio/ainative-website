@@ -47,6 +47,8 @@ export {
   getAllEventGuests,
   getUpcomingEvents,
   getPastEvents,
+  getEventTicketTypes,
+  hasEventPaidTickets,
 } from './endpoints/events';
 
 // Export calendar endpoints

@@ -13,6 +13,8 @@ import type {
   LumaGuestListResponse,
   LumaGuestAddParams,
   LumaGuestUpdateParams,
+  LumaTicketType,
+  LumaTicketTypeListResponse,
 } from '../types';
 
 /**
@@ -237,4 +239,28 @@ export async function getPastEvents(calendarApiId?: string): Promise<LumaEvent[]
 
   // Filter on client side since API doesn't properly filter by dates
   return allEvents.filter(event => event.event.start_at < now);
+}
+
+/**
+ * Get ticket types for an event
+ * GET /v1/event/ticket-types/list
+ */
+export async function getEventTicketTypes(eventApiId: string): Promise<LumaTicketType[]> {
+  try {
+    const response = await lumaClient.get<LumaTicketTypeListResponse>('/event/ticket-types/list', {
+      params: { event_api_id: eventApiId },
+    });
+    return response.entries || [];
+  } catch (error) {
+    console.error(`Failed to fetch ticket types for event ${eventApiId}:`, error);
+    return [];
+  }
+}
+
+/**
+ * Helper to check if an event has paid tickets
+ */
+export async function hasEventPaidTickets(eventApiId: string): Promise<boolean> {
+  const ticketTypes = await getEventTicketTypes(eventApiId);
+  return ticketTypes.some(ticket => ticket.price && ticket.price.amount > 0);
 }
