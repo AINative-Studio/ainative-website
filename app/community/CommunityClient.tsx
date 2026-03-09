@@ -7,7 +7,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
-import { getBlogPosts, getTutorials } from '@/src/lib/strapi';
+import { getBlogPosts, getTutorials, getShowcases } from '@/src/lib/strapi';
 import {
   BookOpen,
   Calendar,
@@ -41,6 +41,14 @@ interface Tutorial {
   description?: string;
   difficulty?: string;
   estimated_time?: number;
+  slug: string;
+}
+
+interface Showcase {
+  id: number;
+  title: string;
+  company_name?: string;
+  description?: string;
   slug: string;
 }
 
@@ -85,8 +93,7 @@ const fallbackTutorials: Tutorial[] = [
   },
 ];
 
-// Static data for showcases (not in Strapi)
-const staticShowcases = [
+const fallbackShowcases: Showcase[] = [
   {
     id: 1,
     title: 'AI-Powered Customer Support Platform',
@@ -145,6 +152,7 @@ export default function CommunityClient() {
   const [isSubscribing, setIsSubscribing] = useState(false);
   const [blogPosts, setBlogPosts] = useState<BlogPost[]>(fallbackBlogPosts);
   const [tutorials, setTutorials] = useState<Tutorial[]>(fallbackTutorials);
+  const [showcases, setShowcases] = useState<Showcase[]>(fallbackShowcases);
   const [loading, setLoading] = useState(true);
   const [nextEvent, setNextEvent] = useState<LumaEvent | null>(null);
   const [eventsLoading, setEventsLoading] = useState(true);
@@ -153,9 +161,10 @@ export default function CommunityClient() {
     const fetchData = async () => {
       try {
         setLoading(true);
-        const [blogResponse, tutorialResponse] = await Promise.all([
+        const [blogResponse, tutorialResponse, showcaseResponse] = await Promise.all([
           getBlogPosts({ pagination: { limit: 2 } }),
           getTutorials({ pagination: { limit: 2 } }),
+          getShowcases({ pagination: { limit: 2 } }),
         ]);
 
         if (blogResponse?.data?.length > 0) {
@@ -178,6 +187,16 @@ export default function CommunityClient() {
             difficulty: tutorial.difficulty || 'beginner',
             estimated_time: tutorial.estimated_time || 15,
             slug: tutorial.slug,
+          })));
+        }
+
+        if (showcaseResponse?.data?.length > 0) {
+          setShowcases(showcaseResponse.data.slice(0, 2).map((showcase: Showcase) => ({
+            id: showcase.id,
+            title: showcase.title,
+            company_name: showcase.company_name || '',
+            description: showcase.description || '',
+            slug: showcase.slug,
           })));
         }
       } catch (error) {
@@ -520,20 +539,39 @@ export default function CommunityClient() {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {staticShowcases.map((showcase) => (
-              <Link key={showcase.id} href={`/showcases/${showcase.slug}`} className="h-full">
-                <Card className="h-full hover:shadow-lg hover:shadow-[#4B6FED]/10 transition-all duration-200 bg-[#161B22] border-[#2D333B] hover:border-[#4B6FED]/40">
+            {loading ? (
+              <>
+                <Card className="h-full bg-[#161B22] border-[#2D333B]">
                   <CardHeader>
-                    <div className="flex items-center gap-2 mb-2">
-                      <Sparkles className="h-4 w-4 text-yellow-500" />
-                      <span className="text-sm font-medium text-gray-300">{showcase.company_name}</span>
-                    </div>
-                    <CardTitle className="text-white">{showcase.title}</CardTitle>
-                    <CardDescription className="mt-2 text-gray-400">{showcase.description}</CardDescription>
+                    <Skeleton className="h-5 w-20 bg-[#1C2128] mb-2" />
+                    <Skeleton className="h-6 w-full bg-[#1C2128] mb-2" />
+                    <Skeleton className="h-16 w-full bg-[#1C2128]" />
                   </CardHeader>
                 </Card>
-              </Link>
-            ))}
+                <Card className="h-full bg-[#161B22] border-[#2D333B]">
+                  <CardHeader>
+                    <Skeleton className="h-5 w-20 bg-[#1C2128] mb-2" />
+                    <Skeleton className="h-6 w-full bg-[#1C2128] mb-2" />
+                    <Skeleton className="h-16 w-full bg-[#1C2128]" />
+                  </CardHeader>
+                </Card>
+              </>
+            ) : (
+              showcases.map((showcase) => (
+                <Link key={showcase.id} href={`/showcases/${showcase.slug}`} className="h-full">
+                  <Card className="h-full hover:shadow-lg hover:shadow-[#4B6FED]/10 transition-all duration-200 bg-[#161B22] border-[#2D333B] hover:border-[#4B6FED]/40">
+                    <CardHeader>
+                      <div className="flex items-center gap-2 mb-2">
+                        <Sparkles className="h-4 w-4 text-yellow-500" />
+                        <span className="text-sm font-medium text-gray-300">{showcase.company_name}</span>
+                      </div>
+                      <CardTitle className="text-white">{showcase.title}</CardTitle>
+                      <CardDescription className="mt-2 text-gray-400">{showcase.description}</CardDescription>
+                    </CardHeader>
+                  </Card>
+                </Link>
+              ))
+            )}
           </div>
         </section>
 

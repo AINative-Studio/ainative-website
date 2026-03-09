@@ -90,7 +90,11 @@ export async function getEventGuests(
  * POST /v1/event/add-guests
  */
 export async function addEventGuest(params: LumaGuestAddParams): Promise<LumaGuest> {
-  return lumaClient.post<LumaGuest>('/event/add-guests', params);
+  const { event_api_id, ...guestData } = params;
+  return lumaClient.post<LumaGuest>('/event/add-guests', {
+    event_api_id,
+    guests: [guestData],
+  });
 }
 
 /**

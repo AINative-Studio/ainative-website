@@ -335,7 +335,7 @@ export default function ProductsClient() {
               </Button>
               <Button
                 variant="outline"
-                className="text-lg px-8 py-6 rounded-xl border-white/20 hover:bg-white/5 hover:border-white/30 transition-all duration-300 transform hover:-translate-y-1"
+                className="text-white text-lg px-8 py-6 rounded-xl border-white/20 hover:bg-white/5 hover:border-white/30 transition-all duration-300 transform hover:-translate-y-1"
                 asChild
               >
                 <Link href={appConfig.links.calendly} target="_blank" rel="noopener noreferrer">

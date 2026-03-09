@@ -142,21 +142,37 @@ class SessionService {
 
   /**
    * List all sessions with optional filters
+   * NOTE: This endpoint may not be available on all backend deployments
    */
   async listSessions(params: SessionListParams = {}): Promise<SessionsListResponse> {
-    const queryParams = new URLSearchParams(
-      Object.entries(params).reduce((acc, [key, value]) => {
-        if (value !== undefined) {
-          acc[key] = String(value);
-        }
-        return acc;
-      }, {} as Record<string, string>)
-    );
-    const endpoint = queryParams.toString()
-      ? `/v1/public/sessions?${queryParams.toString()}`
-      : '/v1/public/sessions';
-    const response = await apiClient.get<SessionsListResponse>(endpoint);
-    return response.data;
+    try {
+      const queryParams = new URLSearchParams(
+        Object.entries(params).reduce((acc, [key, value]) => {
+          if (value !== undefined) {
+            acc[key] = String(value);
+          }
+          return acc;
+        }, {} as Record<string, string>)
+      );
+      const endpoint = queryParams.toString()
+        ? `/v1/public/sessions?${queryParams.toString()}`
+        : '/v1/public/sessions';
+      const response = await apiClient.get<SessionsListResponse>(endpoint);
+      return response.data;
+    } catch (error) {
+      // Handle 404 gracefully - this endpoint may not be available yet
+      if (error instanceof Error && error.message.includes('Not Found')) {
+        console.warn('[Sessions] Endpoint /v1/public/sessions is not available on this backend deployment');
+        return {
+          sessions: [],
+          total: 0,
+          page: params.page || 1,
+          page_size: params.page_size || 10,
+        };
+      }
+      // Re-throw other errors
+      throw error;
+    }
   }
 
   /**

@@ -26,6 +26,7 @@ import { strapiClient, type Webinar as StrapiWebinar } from '@/lib/strapi-client
 import { getUnsplashImageUrl } from '@/lib/unsplash';
 import { RegistrationForm } from '@/components/webinar/RegistrationForm';
 import { CalendarButtons } from '@/components/webinar/CalendarButtons';
+import { LiveVideoPlayer } from '@/components/webinar/LiveVideoPlayer';
 import { Webinar as WebinarAPIType } from '@/lib/webinarAPI';
 
 interface WebinarTag {
@@ -267,6 +268,7 @@ export default function WebinarDetailClient({ slug }: WebinarDetailClientProps) 
               <Card className="overflow-hidden shadow-xl bg-[#161B22] border-[#2D333B]">
                 <div className="relative aspect-video bg-vite-bg">
                   {isPast && webinar.video?.video_url ? (
+                    // On-demand playback: Keep HTML5 video tag
                     <video
                       ref={videoRef}
                       controls
@@ -276,6 +278,14 @@ export default function WebinarDetailClient({ slug }: WebinarDetailClientProps) 
                       <source src={webinar.video.video_url} type="application/x-mpegURL" />
                       Your browser does not support the video tag.
                     </video>
+                  ) : isLive && webinar.meeting_url ? (
+                    // Live webinar: Use aiKIT-based LiveVideoPlayer
+                    <LiveVideoPlayer
+                      streamUrl={webinar.video?.video_url}
+                      posterUrl={webinar.video?.poster_url || webinar.thumbnail?.url}
+                      title={webinar.title}
+                      showLiveBadge={true}
+                    />
                   ) : (
                     <div className="relative w-full h-full">
                       <img

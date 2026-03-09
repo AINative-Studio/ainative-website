@@ -94,12 +94,39 @@ export interface PresignedUrlResponse {
  */
 class StorageService {
   private defaultProjectId = 'default'; // Fallback project ID
+  private projectIdWarningShown = false;
+
+  /**
+   * Check if a project ID is a valid UUID
+   */
+  private isValidUUID(projectId: string): boolean {
+    const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+    return uuidRegex.test(projectId);
+  }
+
+  /**
+   * Get the project ID and warn if it's invalid
+   */
+  private getValidProjectId(): string {
+    if (!this.isValidUUID(this.defaultProjectId) && !this.projectIdWarningShown) {
+      console.warn(
+        '[Storage] Project ID is not a valid UUID. Please set a valid project ID using storageService.setProjectId(). ' +
+        'Current value:', this.defaultProjectId
+      );
+      this.projectIdWarningShown = true;
+    }
+    return this.defaultProjectId;
+  }
 
   /**
    * Set the default project ID for storage operations
    */
   setProjectId(projectId: string): void {
+    if (!this.isValidUUID(projectId)) {
+      throw new Error(`Invalid project ID: "${projectId}" is not a valid UUID`);
+    }
     this.defaultProjectId = projectId;
+    this.projectIdWarningShown = false;
   }
 
   /**
@@ -113,12 +140,21 @@ class StorageService {
 
   /**
    * List all storage buckets
+   * NOTE: The old endpoint /v1/public/zerodb/storage/buckets is deprecated
+   * Using canonical path: /v1/projects/{project_id}/database/files
+   * Refs #729
    */
   async listBuckets(): Promise<BucketsListResponse> {
-    const response = await apiClient.get<BucketsListResponse>(
-      '/v1/public/zerodb/storage/buckets'
-    );
-    return response.data;
+    try {
+      const response = await apiClient.get<BucketsListResponse>(
+        `/v1/projects/${this.defaultProjectId}/database/files`
+      );
+      return response.data;
+    } catch (error) {
+      // If the endpoint fails, return empty buckets array with graceful degradation
+      console.warn('[Storage] Failed to load buckets:', error);
+      return { buckets: [], total: 0 };
+    }
   }
 
   // ===== File Management Endpoints =====
@@ -127,6 +163,20 @@ class StorageService {
    * List files in the current project
    */
   async listFiles(params: ListFilesParams = {}): Promise<FilesListResponse> {
+    const projectId = this.getValidProjectId();
+
+    // If project ID is invalid, return empty result with helpful error
+    if (!this.isValidUUID(projectId)) {
+      console.error('[Storage] Cannot list files: Invalid project ID. Please set a valid UUID using storageService.setProjectId()');
+      return {
+        files: [],
+        total: 0,
+        page: params.page || 1,
+        page_size: params.page_size || 20,
+        has_more: false,
+      };
+    }
+
     const queryParams = new URLSearchParams();
     if (params.page !== undefined) {
       queryParams.set('page', String(params.page));
@@ -135,11 +185,23 @@ class StorageService {
       queryParams.set('page_size', String(params.page_size));
     }
 
-    const endpoint = `/v1/public/zerodb/${this.defaultProjectId}/files${
+    const endpoint = `/v1/public/zerodb/${projectId}/files${
       queryParams.toString() ? '?' + queryParams.toString() : ''
     }`;
-    const response = await apiClient.get<FilesListResponse>(endpoint);
-    return response.data;
+
+    try {
+      const response = await apiClient.get<FilesListResponse>(endpoint);
+      return response.data;
+    } catch (error) {
+      console.error('[Storage] Failed to list files:', error);
+      return {
+        files: [],
+        total: 0,
+        page: params.page || 1,
+        page_size: params.page_size || 20,
+        has_more: false,
+      };
+    }
   }
 
   /**
@@ -168,10 +230,37 @@ class StorageService {
    * Get file statistics
    */
   async getFileStats(): Promise<FileStatsResponse> {
-    const response = await apiClient.get<FileStatsResponse>(
-      `/v1/public/zerodb/${this.defaultProjectId}/files/stats/summary`
-    );
-    return response.data;
+    const projectId = this.getValidProjectId();
+
+    // If project ID is invalid, return empty stats
+    if (!this.isValidUUID(projectId)) {
+      console.error('[Storage] Cannot get file stats: Invalid project ID. Please set a valid UUID using storageService.setProjectId()');
+      return {
+        total_files: 0,
+        total_size_bytes: 0,
+        total_size_mb: 0,
+        average_file_size_bytes: 0,
+        largest_file_bytes: 0,
+        by_content_type: [],
+      };
+    }
+
+    try {
+      const response = await apiClient.get<FileStatsResponse>(
+        `/v1/public/zerodb/${projectId}/files/stats/summary`
+      );
+      return response.data;
+    } catch (error) {
+      console.error('[Storage] Failed to get file stats:', error);
+      return {
+        total_files: 0,
+        total_size_bytes: 0,
+        total_size_mb: 0,
+        average_file_size_bytes: 0,
+        largest_file_bytes: 0,
+        by_content_type: [],
+      };
+    }
   }
 
   /**

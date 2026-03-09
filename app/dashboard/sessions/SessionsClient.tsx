@@ -70,8 +70,17 @@ export default function SessionsClient() {
       const params = statusFilter !== 'all' ? { status: statusFilter as SessionStatus } : {};
       const response = await sessionService.listSessions(params);
       setSessions(response.sessions);
+
+      // Check if the endpoint returned empty due to unavailability
+      if (response.sessions.length === 0 && response.total === 0) {
+        // Don't set error if it's just empty - let the UI handle it
+      }
     } catch (err) {
-      setError('Failed to load sessions');
+      if (err instanceof Error && err.message.includes('Not Found')) {
+        setError('Sessions endpoint is not available on this backend deployment. This feature may not be implemented yet.');
+      } else {
+        setError('Failed to load sessions');
+      }
       console.error('Error fetching sessions:', err);
     }
   }, [statusFilter]);

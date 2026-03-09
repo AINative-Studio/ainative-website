@@ -39,6 +39,10 @@ export default function StorageClient() {
   const [currentPage, setCurrentPage] = useState(1);
   const [hasMore, setHasMore] = useState(false);
 
+  // Project ID configuration states
+  const [showProjectIdPrompt, setShowProjectIdPrompt] = useState(false);
+  const [projectIdInput, setProjectIdInput] = useState('');
+
   // Upload states
   const [showUpload, setShowUpload] = useState(false);
   const [uploadProgress, setUploadProgress] = useState(0);
@@ -198,6 +202,29 @@ export default function StorageClient() {
     fetchStats();
   };
 
+  const handleSetProjectId = () => {
+    const trimmedId = projectIdInput.trim();
+    if (!trimmedId) {
+      setError('Project ID cannot be empty');
+      return;
+    }
+
+    try {
+      storageService.setProjectId(trimmedId);
+      setShowProjectIdPrompt(false);
+      setProjectIdInput('');
+      setError(null);
+      // Refresh data with new project ID
+      handleRefresh();
+    } catch (err) {
+      if (err instanceof Error) {
+        setError(err.message);
+      } else {
+        setError('Failed to set project ID');
+      }
+    }
+  };
+
   // ===== Filtering =====
 
   const filteredFiles = files.filter((file) =>
@@ -247,6 +274,35 @@ export default function StorageClient() {
             </motion.button>
           </div>
         </div>
+
+        {/* Project ID Warning */}
+        {storageService.getProjectId() === 'default' && !showProjectIdPrompt && (
+          <div className="mb-6 p-4 bg-yellow-500/10 border border-yellow-500/50 rounded-lg">
+            <div className="flex items-start gap-3">
+              <AlertCircle className="w-5 h-5 text-yellow-500 flex-shrink-0 mt-0.5" />
+              <div className="flex-1">
+                <h3 className="text-yellow-200 font-medium mb-1">Project ID Required</h3>
+                <p className="text-yellow-200/80 text-sm mb-3">
+                  Storage operations require a valid project UUID. Please configure your project ID to access storage features.
+                </p>
+                <button
+                  onClick={() => setShowProjectIdPrompt(true)}
+                  className="px-4 py-2 bg-yellow-500 hover:bg-yellow-600 text-gray-900 rounded-lg transition-colors text-sm font-medium"
+                >
+                  Configure Project ID
+                </button>
+              </div>
+              <button
+                onClick={() => {
+                  // User dismissed, don't show again this session
+                }}
+                className="text-yellow-400 hover:text-yellow-300"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+          </div>
+        )}
 
         {/* Error Alert */}
         <AnimatePresence>
@@ -684,6 +740,78 @@ export default function StorageClient() {
                       </div>
                     </div>
                   )}
+                </div>
+              </motion.div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+
+        {/* Project ID Configuration Modal */}
+        <AnimatePresence>
+          {showProjectIdPrompt && (
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4"
+              onClick={() => !projectIdInput && setShowProjectIdPrompt(false)}
+            >
+              <motion.div
+                initial={{ scale: 0.9, opacity: 0 }}
+                animate={{ scale: 1, opacity: 1 }}
+                exit={{ scale: 0.9, opacity: 0 }}
+                onClick={(e) => e.stopPropagation()}
+                className="bg-gray-800 border border-gray-700 rounded-lg p-6 max-w-md w-full"
+              >
+                <div className="flex items-center justify-between mb-4">
+                  <h3 className="text-xl font-semibold text-white">Configure Project ID</h3>
+                  <button
+                    onClick={() => setShowProjectIdPrompt(false)}
+                    className="text-gray-400 hover:text-white"
+                  >
+                    <X className="w-5 h-5" />
+                  </button>
+                </div>
+
+                <div className="space-y-4">
+                  <div>
+                    <p className="text-gray-300 text-sm mb-4">
+                      Enter your ZeroDB project UUID to access storage features. You can find this in your project settings or dashboard.
+                    </p>
+
+                    <label className="block text-sm text-gray-400 mb-2">
+                      Project ID (UUID format)
+                    </label>
+                    <input
+                      type="text"
+                      value={projectIdInput}
+                      onChange={(e) => setProjectIdInput(e.target.value)}
+                      placeholder="00000000-0000-0000-0000-000000000000"
+                      className="w-full px-4 py-2 bg-gray-900 border border-gray-700 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-primary font-mono text-sm"
+                      onKeyDown={(e) => e.key === 'Enter' && handleSetProjectId()}
+                    />
+                    <p className="text-gray-500 text-xs mt-2">
+                      Example: 550e8400-e29b-41d4-a716-446655440000
+                    </p>
+                  </div>
+
+                  <div className="flex items-center gap-3 pt-4">
+                    <button
+                      onClick={handleSetProjectId}
+                      className="flex-1 px-4 py-2 bg-primary hover:bg-primary/80 text-white rounded-lg transition-colors font-medium"
+                    >
+                      Save Project ID
+                    </button>
+                    <button
+                      onClick={() => {
+                        setShowProjectIdPrompt(false);
+                        setProjectIdInput('');
+                      }}
+                      className="flex-1 px-4 py-2 bg-gray-700 hover:bg-gray-600 text-white rounded-lg transition-colors"
+                    >
+                      Cancel
+                    </button>
+                  </div>
                 </div>
               </motion.div>
             </motion.div>
