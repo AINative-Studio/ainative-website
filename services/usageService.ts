@@ -87,7 +87,7 @@ export type UsagePeriod = '7d' | '30d' | '90d';
  * Manages all usage-related API operations
  */
 export class UsageService {
-  private readonly basePath = '/v1/public';
+  private readonly basePath = '/api/v1/public';
 
   /**
    * Get usage metrics for a specified period

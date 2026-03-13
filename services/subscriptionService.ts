@@ -166,7 +166,7 @@ export interface CurrentPlanInfo {
  * Manages all subscription-related API operations
  */
 export class SubscriptionService {
-  private readonly basePath = '/v1/public/subscription';
+  private readonly basePath = '/api/v1/public/subscription';
 
   /**
    * Get current subscription details

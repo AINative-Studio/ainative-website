@@ -209,8 +209,8 @@ export interface APIUsageResponse {
  * Provides methods to fetch dashboard data, Kong metrics, system health, and usage data
  */
 export class DashboardService {
-  private readonly dashboardPath = '/v1/dashboard';
-  private readonly publicPath = '/v1/public';
+  private readonly dashboardPath = '/api/v1/dashboard';
+  private readonly publicPath = '/api/v1/public';
 
   /**
    * Get dashboard quick stats

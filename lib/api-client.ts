@@ -266,7 +266,9 @@ class ApiClient {
         }
 
         // Log the extracted error for debugging
-        console.error('🚨 [ApiClient] Error:', {
+        // Use warn for 404 errors (expected when features are disabled)
+        const logFn = response.status === 404 ? console.warn : console.error;
+        logFn('🚨 [ApiClient] Error:', {
           endpoint,
           status: response.status,
           errorMessage,

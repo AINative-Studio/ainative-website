@@ -64,6 +64,17 @@ export default function EventsCalendarClient() {
   const [registrationSuccess, setRegistrationSuccess] = useState(false);
   const [registrationError, setRegistrationError] = useState<string | null>(null);
 
+  // Featured events rotation state
+  const [currentFeaturedIndex, setCurrentFeaturedIndex] = useState(0);
+
+  // Featured event names to highlight (partial match)
+  const featuredEventKeywords = [
+    'Local AI Starter Lab',
+    'AI Native Camp - Santa Cruz',
+    'Vibe Coding Camp SF',
+    'Proof of Fiesta'
+  ];
+
   useEffect(() => {
     const fetchEvents = async () => {
       try {
@@ -97,6 +108,24 @@ export default function EventsCalendarClient() {
   const now = new Date();
   const upcomingEvents = events.filter(e => new Date(e.event.start_at) >= now);
   const pastEvents = events.filter(e => new Date(e.event.start_at) < now);
+
+  // Filter featured events based on keywords
+  const featuredEvents = upcomingEvents.filter(event =>
+    featuredEventKeywords.some(keyword =>
+      event.event.name.toLowerCase().includes(keyword.toLowerCase())
+    )
+  );
+
+  // Auto-rotate featured events every 8 seconds
+  useEffect(() => {
+    if (featuredEvents.length === 0) return;
+
+    const interval = setInterval(() => {
+      setCurrentFeaturedIndex((prev) => (prev + 1) % featuredEvents.length);
+    }, 8000); // Rotate every 8 seconds
+
+    return () => clearInterval(interval);
+  }, [featuredEvents.length]);
 
   const handleRegisterClick = (event: LumaEvent) => {
     // Check if this is a paid event
@@ -296,6 +325,102 @@ export default function EventsCalendarClient() {
             Join us for webinars, workshops, and office hours
           </p>
         </motion.div>
+
+        {/* Featured Events Rotating Banner */}
+        {!loading && featuredEvents.length > 0 && (
+          <motion.div
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.2 }}
+            className="max-w-6xl mx-auto mb-8"
+          >
+            <Card className="relative overflow-hidden border-2 border-[#4B6FED] bg-gradient-to-r from-[#4B6FED]/10 via-[#8A63F4]/10 to-[#4B6FED]/10 cursor-pointer hover:shadow-2xl transition-all duration-300"
+              onClick={() => window.open(featuredEvents[currentFeaturedIndex].event.url, '_blank', 'noopener,noreferrer')}
+            >
+              {/* Background gradient animation */}
+              <div className="absolute inset-0 bg-gradient-to-r from-[#4B6FED]/5 via-[#8A63F4]/5 to-[#4B6FED]/5 animate-pulse" />
+
+              <CardContent className="relative py-6 px-6">
+                <div className="flex items-center justify-between gap-4">
+                  <div className="flex-1">
+                    <motion.div
+                      key={currentFeaturedIndex}
+                      initial={{ opacity: 0, x: 20 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      exit={{ opacity: 0, x: -20 }}
+                      transition={{ duration: 0.5 }}
+                    >
+                      <div className="flex items-center gap-3 mb-2">
+                        <Badge className="bg-gradient-to-r from-[#4B6FED] to-[#8A63F4] text-white">
+                          Featured Event
+                        </Badge>
+                        {paidEventIds.has(featuredEvents[currentFeaturedIndex].api_id) && (
+                          <Badge className="bg-green-900/30 text-green-400 flex items-center gap-1">
+                            <DollarSign className="h-3 w-3" />
+                            Paid
+                          </Badge>
+                        )}
+                        <div className="flex gap-1 ml-auto">
+                          {featuredEvents.map((_, index) => (
+                            <div
+                              key={index}
+                              className={`h-2 w-2 rounded-full transition-all ${
+                                index === currentFeaturedIndex
+                                  ? 'bg-[#4B6FED] w-6'
+                                  : 'bg-gray-600'
+                              }`}
+                            />
+                          ))}
+                        </div>
+                      </div>
+                      <h3 className="text-2xl font-bold text-white mb-3 line-clamp-2">
+                        {featuredEvents[currentFeaturedIndex].event.name}
+                      </h3>
+                      <div className="flex flex-wrap items-center gap-4 text-sm text-gray-300">
+                        <div className="flex items-center gap-2">
+                          <Calendar className="h-4 w-4 text-[#4B6FED]" />
+                          <span>
+                            {new Date(featuredEvents[currentFeaturedIndex].event.start_at).toLocaleDateString('en-US', {
+                              month: 'long',
+                              day: 'numeric',
+                              year: 'numeric'
+                            })}
+                          </span>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <Clock className="h-4 w-4 text-[#4B6FED]" />
+                          <span>
+                            {new Date(featuredEvents[currentFeaturedIndex].event.start_at).toLocaleTimeString([], {
+                              hour: '2-digit',
+                              minute: '2-digit'
+                            })}
+                          </span>
+                        </div>
+                        {featuredEvents[currentFeaturedIndex].event.geo_address_json?.city && (
+                          <div className="flex items-center gap-2">
+                            <MapPin className="h-4 w-4 text-[#4B6FED]" />
+                            <span>{featuredEvents[currentFeaturedIndex].event.geo_address_json.city}</span>
+                          </div>
+                        )}
+                      </div>
+                    </motion.div>
+                  </div>
+                  <div className="hidden md:flex items-center">
+                    <Button
+                      className="bg-gradient-to-r from-[#4B6FED] to-[#8A63F4] hover:from-[#3A56D3] hover:to-[#7952D3] text-white px-8 py-6 text-lg"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        window.open(featuredEvents[currentFeaturedIndex].event.url, '_blank', 'noopener,noreferrer');
+                      }}
+                    >
+                      View Event →
+                    </Button>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </motion.div>
+        )}
 
         {/* VibeCoding Workshops Promotion */}
         <motion.div

@@ -150,7 +150,7 @@ export interface PayoutBalance {
  * Manages developer payouts, Stripe Connect, tax forms, and settings
  */
 export class PayoutService {
-  private readonly basePath = '/v1/public/developer/payouts';
+  private readonly basePath = '/api/v1/public/developer/payouts';
 
   // ==========================================================================
   // Stripe Connect Methods
