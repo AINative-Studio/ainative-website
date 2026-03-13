@@ -39,7 +39,7 @@ export class PricingService {
    */
   async getPricingPlans(): Promise<PricingPlan[]> {
     try {
-      const response = await apiClient.get<ApiResponse<{ plans: PricingPlan[] }>>('/v1/public/pricing/plans');
+      const response = await apiClient.get<ApiResponse<{ plans: PricingPlan[] }>>('/api/v1/public/pricing/plans');
 
       if (!response.data.success || !response.data.data) {
         throw new Error(response.data.message || 'Failed to fetch pricing plans');
@@ -93,7 +93,7 @@ export class PricingService {
    */
   async getPricingPlan(planId: string): Promise<PricingPlan> {
     try {
-      const response = await apiClient.get<ApiResponse<PricingPlan>>(`/v1/public/pricing/plans/${planId}`);
+      const response = await apiClient.get<ApiResponse<PricingPlan>>(`/api/v1/public/pricing/plans/${planId}`);
 
       if (!response.data.success || !response.data.data) {
         throw new Error(response.data.message || 'Failed to fetch pricing plan');
@@ -123,7 +123,7 @@ export class PricingService {
         id?: string;
         sessionId?: string;
       }>>(
-        '/v1/public/pricing/checkout',
+        '/api/v1/public/pricing/checkout',
         {
           plan_id: planId,
           success_url: options?.successUrl || `${typeof window !== 'undefined' ? window.location.origin : ''}/billing/success`,
@@ -163,7 +163,7 @@ export class PricingService {
         currencies: string[];
         billing_periods: string[];
         features: Record<string, string[]>;
-      }>>('/v1/public/pricing/config');
+      }>>('/api/v1/public/pricing/config');
 
       if (!response.data.success || !response.data.data) {
         throw new Error(response.data.message || 'Failed to fetch pricing config');
