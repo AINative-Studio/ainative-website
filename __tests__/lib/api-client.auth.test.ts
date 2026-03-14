@@ -11,7 +11,7 @@
  * @jest-environment jsdom
  */
 
-/* eslint-disable @typescript-eslint/no-explicit-any */
+ 
 
 import { describe, it, expect, jest, beforeEach, afterEach } from '@jest/globals';
 

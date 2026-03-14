@@ -320,7 +320,7 @@ describe('Bug #484: Navbar Spacing Issue', () => {
       expect(menuButton).toBeTruthy();
 
       // Mobile menu is initially closed (not in DOM)
-      let mobileMenu = container.querySelector('.fixed.inset-0.z-40');
+      const mobileMenu = container.querySelector('.fixed.inset-0.z-40');
       expect(mobileMenu).toBeFalsy();
 
       // Note: Click testing with state updates requires act() wrapper
