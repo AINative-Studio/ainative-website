@@ -209,7 +209,7 @@ describe('AIKitTextField', () => {
     });
 
     it('should call onClear when clear button is clicked', async () => {
-      const onClear = jest.fn();
+      const onClear = jest.fn() as jest.Mock;
       render(
         <AIKitTextField
           value="test"
@@ -246,7 +246,7 @@ describe('AIKitTextField', () => {
 
   describe('User Interactions', () => {
     it('should handle onChange event', async () => {
-      const handleChange = jest.fn();
+      const handleChange = jest.fn() as jest.Mock;
       render(<AIKitTextField onChange={handleChange} />);
 
       const input = screen.getByRole('textbox');
@@ -257,7 +257,7 @@ describe('AIKitTextField', () => {
     });
 
     it('should handle onFocus event', async () => {
-      const handleFocus = jest.fn();
+      const handleFocus = jest.fn() as jest.Mock;
       render(<AIKitTextField onFocus={handleFocus} />);
 
       const input = screen.getByRole('textbox');
@@ -267,7 +267,7 @@ describe('AIKitTextField', () => {
     });
 
     it('should handle onBlur event', async () => {
-      const handleBlur = jest.fn();
+      const handleBlur = jest.fn() as jest.Mock;
       render(<AIKitTextField onBlur={handleBlur} />);
 
       const input = screen.getByRole('textbox');
@@ -348,7 +348,7 @@ describe('AIKitTextField', () => {
     });
 
     it('should be keyboard accessible', async () => {
-      const handleChange = jest.fn();
+      const handleChange = jest.fn() as jest.Mock;
       render(<AIKitTextField onChange={handleChange} />);
 
       const input = screen.getByRole('textbox');

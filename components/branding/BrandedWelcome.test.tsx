@@ -53,7 +53,7 @@ describe('BrandedWelcome', () => {
 
   describe('Dismiss Functionality', () => {
     it('renders dismiss button when showDismiss is true', () => {
-      const onDismiss = jest.fn();
+      const onDismiss = jest.fn() as jest.Mock;
       render(<BrandedWelcome {...defaultProps} showDismiss onDismiss={onDismiss} />);
 
       const dismissButton = screen.getByRole('button', { name: /dismiss welcome message/i });
@@ -68,7 +68,7 @@ describe('BrandedWelcome', () => {
     });
 
     it('calls onDismiss when dismiss button is clicked', async () => {
-      const onDismiss = jest.fn();
+      const onDismiss = jest.fn() as jest.Mock;
       render(<BrandedWelcome {...defaultProps} showDismiss onDismiss={onDismiss} animate={false} />);
 
       const dismissButton = screen.getByRole('button', { name: /dismiss welcome message/i });
@@ -81,7 +81,7 @@ describe('BrandedWelcome', () => {
 
     it('delays onDismiss callback to allow exit animation', async () => {
       jest.useFakeTimers();
-      const onDismiss = jest.fn();
+      const onDismiss = jest.fn() as jest.Mock;
       render(<BrandedWelcome {...defaultProps} showDismiss onDismiss={onDismiss} animate />);
 
       const dismissButton = screen.getByRole('button', { name: /dismiss welcome message/i });
@@ -101,7 +101,7 @@ describe('BrandedWelcome', () => {
 
   describe('Accessibility', () => {
     it('has proper ARIA label on dismiss button', () => {
-      const onDismiss = jest.fn();
+      const onDismiss = jest.fn() as jest.Mock;
       render(<BrandedWelcome {...defaultProps} showDismiss onDismiss={onDismiss} />);
 
       const dismissButton = screen.getByRole('button', { name: 'Dismiss welcome message' });
@@ -131,7 +131,7 @@ describe('BrandedWelcome', () => {
     });
 
     it('dismiss button is keyboard accessible', () => {
-      const onDismiss = jest.fn();
+      const onDismiss = jest.fn() as jest.Mock;
       render(<BrandedWelcome {...defaultProps} showDismiss onDismiss={onDismiss} animate={false} />);
 
       const dismissButton = screen.getByRole('button', { name: /dismiss welcome message/i });

@@ -53,19 +53,19 @@ global.WebSocket = MockWebSocket as any;
 
 // Mock localStorage
 const localStorageMock = {
-  getItem: jest.fn(),
-  setItem: jest.fn(),
-  removeItem: jest.fn(),
-  clear: jest.fn(),
+  getItem: jest.fn() as jest.Mock,
+  setItem: jest.fn() as jest.Mock,
+  removeItem: jest.fn() as jest.Mock,
+  clear: jest.fn() as jest.Mock,
 };
 global.localStorage = localStorageMock as any;
 
 // Mock URL methods
 global.URL.createObjectURL = jest.fn(() => 'blob:mock-url');
-global.URL.revokeObjectURL = jest.fn();
+global.URL.revokeObjectURL = jest.fn() as jest.Mock;
 
 // Mock scrollIntoView
-Element.prototype.scrollIntoView = jest.fn();
+Element.prototype.scrollIntoView = jest.fn() as jest.Mock;
 
 describe('AgentSwarmTerminal', () => {
   const mockProjectId = 'test-project-123';

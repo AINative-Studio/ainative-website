@@ -3,7 +3,7 @@ import userEvent from '@testing-library/user-event';
 
 // Mock next-auth
 jest.mock('next-auth/react', () => ({
-  signIn: jest.fn(),
+  signIn: jest.fn() as jest.Mock,
 }));
 
 // Import after mocking

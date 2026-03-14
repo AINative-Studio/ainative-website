@@ -4,7 +4,7 @@ import AdminSidebar from '../AdminSidebar';
 
 // Mock next/navigation
 jest.mock('next/navigation', () => ({
-  usePathname: jest.fn(),
+  usePathname: jest.fn() as jest.Mock,
 }));
 
 // Mock localStorage

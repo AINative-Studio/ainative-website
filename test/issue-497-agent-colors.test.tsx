@@ -137,7 +137,7 @@ describe('Issue #497: Agent Type Color Coding System', () => {
     });
 
     it('should support interactive mode', () => {
-      const handleClick = jest.fn();
+      const handleClick = jest.fn() as jest.Mock;
       render(
         <AgentTypeBadge
           type="quantum"
@@ -184,7 +184,7 @@ describe('Issue #497: Agent Type Color Coding System', () => {
     });
 
     it('should be keyboard accessible when interactive', () => {
-      const handleClick = jest.fn();
+      const handleClick = jest.fn() as jest.Mock;
       render(
         <AgentTypeBadge
           type="quantum"

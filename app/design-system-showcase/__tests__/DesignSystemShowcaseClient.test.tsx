@@ -5,12 +5,12 @@ import DesignSystemShowcaseClient from '../DesignSystemShowcaseClient';
 // Mock dependencies
 jest.mock('next/navigation', () => ({
   useRouter: () => ({
-    push: jest.fn(),
-    replace: jest.fn(),
-    prefetch: jest.fn(),
+    push: jest.fn() as jest.Mock,
+    replace: jest.fn() as jest.Mock,
+    prefetch: jest.fn() as jest.Mock,
   }),
   useSearchParams: () => ({
-    get: jest.fn(),
+    get: jest.fn() as jest.Mock,
   }),
   usePathname: () => '/test-path',
 }));
@@ -23,8 +23,8 @@ jest.mock('next-auth/react', () => ({
     },
     status: 'authenticated',
   }),
-  signIn: jest.fn(),
-  signOut: jest.fn(),
+  signIn: jest.fn() as jest.Mock,
+  signOut: jest.fn() as jest.Mock,
 }));
 
 // Mock API calls

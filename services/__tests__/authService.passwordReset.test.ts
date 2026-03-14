@@ -11,7 +11,7 @@ import { authService } from '../authService';
 describe('AuthService - Password Reset', () => {
   beforeEach(() => {
     jest.clearAllMocks();
-    global.fetch = jest.fn();
+    global.fetch = jest.fn() as jest.Mock;
   });
 
   afterEach(() => {

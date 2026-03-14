@@ -27,7 +27,7 @@ import {
 } from '../qnn-service';
 
 // Mock fetch for API calls
-global.fetch = jest.fn();
+global.fetch = jest.fn() as jest.Mock;
 
 // Mock sessionStorage for authentication
 const sessionStorageMock = (() => {

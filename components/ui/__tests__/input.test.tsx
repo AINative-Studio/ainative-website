@@ -45,7 +45,7 @@ describe('Input', () => {
   });
 
   it('handles onChange event', async () => {
-    const handleChange = jest.fn();
+    const handleChange = jest.fn() as jest.Mock;
     const user = userEvent.setup();
     render(<Input onChange={handleChange} data-testid="input" />);
 

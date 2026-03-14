@@ -20,8 +20,8 @@ jest.mock('next/navigation', () => ({
     throw new Error('NEXT_NOT_FOUND');
   }),
   useRouter: jest.fn(() => ({
-    push: jest.fn(),
-    back: jest.fn(),
+    push: jest.fn() as jest.Mock,
+    back: jest.fn() as jest.Mock,
   })),
   usePathname: jest.fn(() => '/dashboard/ai-settings/gpt-4'),
   useSearchParams: jest.fn(() => ({

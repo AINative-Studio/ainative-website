@@ -30,11 +30,11 @@ import { stripeConnectService } from '@/services/stripeConnectService';
 
 // Mock Next.js navigation
 jest.mock('next/navigation', () => ({
-  usePathname: jest.fn(),
+  usePathname: jest.fn() as jest.Mock,
   useRouter: jest.fn(() => ({
-    push: jest.fn(),
-    replace: jest.fn(),
-    prefetch: jest.fn(),
+    push: jest.fn() as jest.Mock,
+    replace: jest.fn() as jest.Mock,
+    prefetch: jest.fn() as jest.Mock,
   })),
 }));
 
@@ -140,7 +140,7 @@ describe('Developer Dashboard Integration Tests', () => {
 
     it('should support mobile navigation with close handler', async () => {
       const user = userEvent.setup();
-      const onClose = jest.fn();
+      const onClose = jest.fn() as jest.Mock;
 
       render(<Sidebar isMobile onClose={onClose} />);
 
@@ -284,7 +284,7 @@ describe('Developer Dashboard Integration Tests', () => {
     it('should copy API key to clipboard', async () => {
       const user = userEvent.setup();
       const mockClipboard = {
-        writeText: jest.fn().mockResolvedValue(undefined),
+        writeText: jest.fn() as jest.Mock.mockResolvedValue(undefined),
       };
       Object.defineProperty(navigator, 'clipboard', {
         value: mockClipboard,

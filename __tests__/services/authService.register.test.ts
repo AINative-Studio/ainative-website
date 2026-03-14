@@ -10,7 +10,7 @@
 import { authService, RegisterData } from '@/services/authService';
 
 // Mock fetch globally
-global.fetch = jest.fn();
+global.fetch = jest.fn() as jest.Mock;
 
 describe('authService.register - Field Mapping', () => {
   beforeEach(() => {

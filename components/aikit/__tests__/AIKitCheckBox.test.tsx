@@ -138,7 +138,7 @@ describe('AIKitCheckBox - TDD Test Suite', () => {
     });
 
     it('should call onCheckedChange with correct value', async () => {
-      const handleChange = jest.fn();
+      const handleChange = jest.fn() as jest.Mock;
       const user = userEvent.setup();
       render(<AIKitCheckBox onCheckedChange={handleChange} data-testid="checkbox" />);
 
@@ -150,7 +150,7 @@ describe('AIKitCheckBox - TDD Test Suite', () => {
     });
 
     it('should not trigger click when disabled', async () => {
-      const handleChange = jest.fn();
+      const handleChange = jest.fn() as jest.Mock;
       const user = userEvent.setup();
       render(<AIKitCheckBox disabled onCheckedChange={handleChange} data-testid="checkbox" />);
 
@@ -217,7 +217,7 @@ describe('AIKitCheckBox - TDD Test Suite', () => {
     });
 
     it('should not respond to keyboard when disabled', async () => {
-      const handleChange = jest.fn();
+      const handleChange = jest.fn() as jest.Mock;
       const user = userEvent.setup();
       render(<AIKitCheckBox disabled onCheckedChange={handleChange} data-testid="checkbox" />);
 
@@ -310,7 +310,7 @@ describe('AIKitCheckBox - TDD Test Suite', () => {
 
   describe('State Management', () => {
     it('should work as controlled component', async () => {
-      const handleChange = jest.fn();
+      const handleChange = jest.fn() as jest.Mock;
       const { rerender } = render(
         <AIKitCheckBox checked={false} onCheckedChange={handleChange} data-testid="checkbox" />
       );
@@ -335,7 +335,7 @@ describe('AIKitCheckBox - TDD Test Suite', () => {
     });
 
     it('should transition from indeterminate to checked on click', async () => {
-      const handleChange = jest.fn();
+      const handleChange = jest.fn() as jest.Mock;
       const user = userEvent.setup();
       render(<AIKitCheckBox checked="indeterminate" onCheckedChange={handleChange} data-testid="checkbox" />);
 
@@ -395,7 +395,7 @@ describe('AIKitCheckBox - TDD Test Suite', () => {
 
   describe('Focus Management', () => {
     it('should handle focus events', async () => {
-      const handleFocus = jest.fn();
+      const handleFocus = jest.fn() as jest.Mock;
       const user = userEvent.setup();
       render(<AIKitCheckBox onFocus={handleFocus} data-testid="checkbox" />);
 
@@ -405,7 +405,7 @@ describe('AIKitCheckBox - TDD Test Suite', () => {
     });
 
     it('should handle blur events', async () => {
-      const handleBlur = jest.fn();
+      const handleBlur = jest.fn() as jest.Mock;
       const user = userEvent.setup();
       render(<AIKitCheckBox onBlur={handleBlur} data-testid="checkbox" />);
 
@@ -509,7 +509,7 @@ describe('AIKitCheckBox - TDD Test Suite', () => {
     });
 
     it('should handle touch events like clicks', async () => {
-      const handleChange = jest.fn();
+      const handleChange = jest.fn() as jest.Mock;
       const user = userEvent.setup();
       render(<AIKitCheckBox onCheckedChange={handleChange} data-testid="checkbox" />);
 

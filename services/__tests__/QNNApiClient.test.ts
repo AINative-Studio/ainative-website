@@ -43,17 +43,17 @@ describe('QNNApiClient', () => {
 
     // Setup axios create mock
     mockAxiosInstance = {
-      get: jest.fn(),
-      post: jest.fn(),
-      put: jest.fn(),
-      delete: jest.fn(),
-      request: jest.fn(),
+      get: jest.fn() as jest.Mock,
+      post: jest.fn() as jest.Mock,
+      put: jest.fn() as jest.Mock,
+      delete: jest.fn() as jest.Mock,
+      request: jest.fn() as jest.Mock,
       interceptors: {
         request: {
-          use: jest.fn(),
+          use: jest.fn() as jest.Mock,
         },
         response: {
-          use: jest.fn(),
+          use: jest.fn() as jest.Mock,
         },
       },
     };

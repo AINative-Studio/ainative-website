@@ -17,9 +17,9 @@ jest.mock('@/services/earningsService');
 // Mock Next.js navigation
 jest.mock('next/navigation', () => ({
   useRouter: () => ({
-    push: jest.fn(),
-    replace: jest.fn(),
-    refresh: jest.fn(),
+    push: jest.fn() as jest.Mock,
+    replace: jest.fn() as jest.Mock,
+    refresh: jest.fn() as jest.Mock,
   }),
   usePathname: () => '/developer/earnings',
 }));
@@ -334,7 +334,7 @@ describe('Developer Earnings Page', () => {
 
     it('should trigger CSV download when export button is clicked', async () => {
       const user = userEvent.setup();
-      const mockExport = jest.fn().mockResolvedValue(true);
+      const mockExport = jest.fn() as jest.Mock.mockResolvedValue(true);
       (earningsService.exportTransactions as jest.Mock).mockImplementation(mockExport);
 
       render(<EarningsClient />);

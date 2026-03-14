@@ -27,14 +27,14 @@ import { Model, CreateModelRequest, UpdateModelRequest, PaginatedResponse } from
 
 // Mock the QNN API Client module
 jest.mock('@/services/QNNApiClient', () => ({
-  QNNApiClient: jest.fn(),
+  QNNApiClient: jest.fn() as jest.Mock,
   qnnApiClient: {
-    listModels: jest.fn(),
-    getModel: jest.fn(),
-    createModel: jest.fn(),
-    updateModel: jest.fn(),
-    deleteModel: jest.fn(),
-    getModelMetadata: jest.fn(),
+    listModels: jest.fn() as jest.Mock,
+    getModel: jest.fn() as jest.Mock,
+    createModel: jest.fn() as jest.Mock,
+    updateModel: jest.fn() as jest.Mock,
+    deleteModel: jest.fn() as jest.Mock,
+    getModelMetadata: jest.fn() as jest.Mock,
   },
 }));
 

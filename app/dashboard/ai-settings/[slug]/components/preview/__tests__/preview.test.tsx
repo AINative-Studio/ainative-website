@@ -88,7 +88,7 @@ describe('TextPreview', () => {
   });
 
   it('should call onCopy callback', async () => {
-    const onCopy = jest.fn();
+    const onCopy = jest.fn() as jest.Mock;
     render(<TextPreview result={mockTextResult} onCopy={onCopy} />);
 
     const copyButton = screen.getByLabelText(/Copy text/);
@@ -176,7 +176,7 @@ describe('CodePreview', () => {
   });
 
   it('should call onCopy callback', async () => {
-    const onCopy = jest.fn();
+    const onCopy = jest.fn() as jest.Mock;
     render(<CodePreview result={mockCodeResult} onCopy={onCopy} />);
 
     const copyButton = screen.getByLabelText(/Copy code/);

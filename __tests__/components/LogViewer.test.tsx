@@ -12,7 +12,7 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import LogViewer from '@/components/LogViewer';
 import '@testing-library/jest-dom';
 
-global.fetch = jest.fn();
+global.fetch = jest.fn() as jest.Mock;
 
 const createTestQueryClient = () => {
   return new QueryClient({
@@ -88,10 +88,10 @@ describe('LogViewer Component - Issue #1098', () => {
       json: async () => ({ logs: mockLogs })
     });
 
-    Element.prototype.scrollIntoView = jest.fn();
-    HTMLElement.prototype.hasPointerCapture = jest.fn();
-    HTMLElement.prototype.setPointerCapture = jest.fn();
-    HTMLElement.prototype.releasePointerCapture = jest.fn();
+    Element.prototype.scrollIntoView = jest.fn() as jest.Mock;
+    HTMLElement.prototype.hasPointerCapture = jest.fn() as jest.Mock;
+    HTMLElement.prototype.setPointerCapture = jest.fn() as jest.Mock;
+    HTMLElement.prototype.releasePointerCapture = jest.fn() as jest.Mock;
   });
 
   afterEach(() => {
@@ -230,7 +230,7 @@ describe('LogViewer Component - Issue #1098', () => {
 
   describe('Auto-scroll functionality', () => {
     it('should call scrollIntoView when logs are rendered', async () => {
-      const mockScrollIntoView = jest.fn();
+      const mockScrollIntoView = jest.fn() as jest.Mock;
       Element.prototype.scrollIntoView = mockScrollIntoView;
 
       render(<LogViewer projectId="test-project-123" />, { wrapper: createWrapper() });

@@ -16,9 +16,9 @@ jest.mock('@/services/earningsService');
 // Mock Next.js navigation
 jest.mock('next/navigation', () => ({
   useRouter: () => ({
-    push: jest.fn(),
-    replace: jest.fn(),
-    refresh: jest.fn(),
+    push: jest.fn() as jest.Mock,
+    replace: jest.fn() as jest.Mock,
+    refresh: jest.fn() as jest.Mock,
   }),
   usePathname: () => '/developer/earnings',
 }));

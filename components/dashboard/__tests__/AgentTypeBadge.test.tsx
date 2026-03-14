@@ -217,7 +217,7 @@ describe('AgentTypeBadge', () => {
     });
 
     it('should handle click events when interactive', () => {
-      const handleClick = jest.fn();
+      const handleClick = jest.fn() as jest.Mock;
       render(<AgentTypeBadge type="quantum" interactive onClick={handleClick} data-testid="badge" />);
       const badge = screen.getByTestId('badge');
 
@@ -226,7 +226,7 @@ describe('AgentTypeBadge', () => {
     });
 
     it('should handle Enter key press when interactive', () => {
-      const handleClick = jest.fn();
+      const handleClick = jest.fn() as jest.Mock;
       render(<AgentTypeBadge type="quantum" interactive onClick={handleClick} data-testid="badge" />);
       const badge = screen.getByTestId('badge');
 
@@ -236,7 +236,7 @@ describe('AgentTypeBadge', () => {
     });
 
     it('should handle Space key press when interactive', () => {
-      const handleClick = jest.fn();
+      const handleClick = jest.fn() as jest.Mock;
       render(<AgentTypeBadge type="quantum" interactive onClick={handleClick} data-testid="badge" />);
       const badge = screen.getByTestId('badge');
 
@@ -443,7 +443,7 @@ describe('AgentTypeBadge', () => {
     });
 
     it('should not call onClick when not interactive', () => {
-      const handleClick = jest.fn();
+      const handleClick = jest.fn() as jest.Mock;
       render(<AgentTypeBadge type="quantum" onClick={handleClick} data-testid="badge" />);
       const badge = screen.getByTestId('badge');
 
@@ -452,7 +452,7 @@ describe('AgentTypeBadge', () => {
     });
 
     it('should not handle keyboard events when not interactive', () => {
-      const handleClick = jest.fn();
+      const handleClick = jest.fn() as jest.Mock;
       render(<AgentTypeBadge type="quantum" onClick={handleClick} data-testid="badge" />);
       const badge = screen.getByTestId('badge');
 
@@ -461,7 +461,7 @@ describe('AgentTypeBadge', () => {
     });
 
     it('should ignore non-Enter/Space keys when interactive', () => {
-      const handleClick = jest.fn();
+      const handleClick = jest.fn() as jest.Mock;
       render(<AgentTypeBadge type="quantum" interactive onClick={handleClick} data-testid="badge" />);
       const badge = screen.getByTestId('badge');
 

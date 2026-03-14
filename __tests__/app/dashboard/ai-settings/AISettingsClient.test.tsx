@@ -12,23 +12,23 @@ import type { UnifiedAIModel } from '@/lib/model-aggregator-service';
 
 // Mock dependencies
 jest.mock('next/navigation', () => ({
-  useRouter: jest.fn(),
+  useRouter: jest.fn() as jest.Mock,
 }));
 
 jest.mock('@/lib/model-aggregator-service', () => ({
   modelAggregatorService: {
-    aggregateAllModels: jest.fn(),
+    aggregateAllModels: jest.fn() as jest.Mock,
   },
   ModelCategory: ['All', 'Image', 'Video', 'Audio', 'Coding', 'Embedding'],
 }));
 
 const mockRouter = {
-  push: jest.fn(),
-  back: jest.fn(),
-  forward: jest.fn(),
-  refresh: jest.fn(),
-  replace: jest.fn(),
-  prefetch: jest.fn(),
+  push: jest.fn() as jest.Mock,
+  back: jest.fn() as jest.Mock,
+  forward: jest.fn() as jest.Mock,
+  refresh: jest.fn() as jest.Mock,
+  replace: jest.fn() as jest.Mock,
+  prefetch: jest.fn() as jest.Mock,
 };
 
 describe('AISettingsClient', () => {

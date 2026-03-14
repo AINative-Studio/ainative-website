@@ -335,15 +335,15 @@ describe('Issue #493: Light Mode Support', () => {
       // Mock window.matchMedia for system preference
       Object.defineProperty(window, 'matchMedia', {
         writable: true,
-        value: jest.fn().mockImplementation((query) => ({
+        value: jest.fn() as jest.Mock.mockImplementation((query) => ({
           matches: query === '(prefers-color-scheme: light)',
           media: query,
           onchange: null,
-          addListener: jest.fn(),
-          removeListener: jest.fn(),
-          addEventListener: jest.fn(),
-          removeEventListener: jest.fn(),
-          dispatchEvent: jest.fn(),
+          addListener: jest.fn() as jest.Mock,
+          removeListener: jest.fn() as jest.Mock,
+          addEventListener: jest.fn() as jest.Mock,
+          removeEventListener: jest.fn() as jest.Mock,
+          dispatchEvent: jest.fn() as jest.Mock,
         })),
       });
 
@@ -387,11 +387,11 @@ describe('Issue #493: Light Mode Support', () => {
     it('should persist theme preference', () => {
       const mockLocalStorage = {
         getItem: jest.fn(() => 'light'),
-        setItem: jest.fn(),
-        removeItem: jest.fn(),
-        clear: jest.fn(),
+        setItem: jest.fn() as jest.Mock,
+        removeItem: jest.fn() as jest.Mock,
+        clear: jest.fn() as jest.Mock,
         length: 0,
-        key: jest.fn(),
+        key: jest.fn() as jest.Mock,
       };
 
       Object.defineProperty(window, 'localStorage', {

@@ -26,11 +26,11 @@ import { stripeConnectService } from '@/services/stripeConnectService';
 
 // Mock Next.js navigation
 jest.mock('next/navigation', () => ({
-  usePathname: jest.fn(),
+  usePathname: jest.fn() as jest.Mock,
   useRouter: jest.fn(() => ({
-    push: jest.fn(),
-    replace: jest.fn(),
-    prefetch: jest.fn(),
+    push: jest.fn() as jest.Mock,
+    replace: jest.fn() as jest.Mock,
+    prefetch: jest.fn() as jest.Mock,
   })),
 }));
 
@@ -129,7 +129,7 @@ describe('Developer Dashboard E2E Flow Tests', () => {
       });
 
       const mockClipboard = {
-        writeText: jest.fn().mockResolvedValue(undefined),
+        writeText: jest.fn() as jest.Mock.mockResolvedValue(undefined),
       };
       Object.defineProperty(navigator, 'clipboard', {
         value: mockClipboard,
@@ -549,7 +549,7 @@ describe('Developer Dashboard E2E Flow Tests', () => {
 
     it('should prevent payout request with zero balance', async () => {
       const user = userEvent.setup();
-      const toastSpy = jest.fn();
+      const toastSpy = jest.fn() as jest.Mock;
 
       localStorageMock.setItem('access_token', 'test_token');
 

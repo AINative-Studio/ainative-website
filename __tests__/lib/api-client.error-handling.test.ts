@@ -16,7 +16,7 @@
 
 describe('ApiClient Error Handling - Issue #578', () => {
   // Mock fetch before importing apiClient
-  const mockFetch = jest.fn();
+  const mockFetch = jest.fn() as jest.Mock;
   global.fetch = mockFetch as any;
 
   // Import after mocking

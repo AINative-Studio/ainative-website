@@ -5,10 +5,10 @@ import { emailService } from '../email-service';
 jest.mock('../api-client', () => ({
   __esModule: true,
   default: {
-    get: jest.fn(),
-    post: jest.fn(),
-    put: jest.fn(),
-    delete: jest.fn(),
+    get: jest.fn() as jest.Mock,
+    post: jest.fn() as jest.Mock,
+    put: jest.fn() as jest.Mock,
+    delete: jest.fn() as jest.Mock,
   },
 }));
 

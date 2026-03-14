@@ -43,9 +43,9 @@ class MockFormData {
   }
 }
 
-// @ts-ignore
+// @ts-expect-error
 global.File = MockFile;
-// @ts-ignore
+// @ts-expect-error
 global.FormData = MockFormData;
 
 describe('StorageService', () => {

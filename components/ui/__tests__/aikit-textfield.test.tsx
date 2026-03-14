@@ -111,7 +111,7 @@ describe('AIKit TextField/Input Component - TDD Suite', () => {
 
     it('should handle onChange event', async () => {
       // Given: Input with onChange handler
-      const handleChange = jest.fn();
+      const handleChange = jest.fn() as jest.Mock;
       const user = userEvent.setup();
       render(<Input onChange={handleChange} placeholder="Change test" />);
 
@@ -130,7 +130,7 @@ describe('AIKit TextField/Input Component - TDD Suite', () => {
 
     it('should handle onInput event', async () => {
       // Given: Input with onInput handler
-      const handleInput = jest.fn();
+      const handleInput = jest.fn() as jest.Mock;
       const user = userEvent.setup();
       render(<Input onInput={handleInput} placeholder="Input test" />);
 
@@ -144,8 +144,8 @@ describe('AIKit TextField/Input Component - TDD Suite', () => {
 
     it('should handle focus and blur events', async () => {
       // Given: Input with focus handlers
-      const handleFocus = jest.fn();
-      const handleBlur = jest.fn();
+      const handleFocus = jest.fn() as jest.Mock;
+      const handleBlur = jest.fn() as jest.Mock;
       const user = userEvent.setup();
 
       render(
@@ -455,7 +455,7 @@ describe('AIKit TextField/Input Component - TDD Suite', () => {
 
     it('should prevent input when disabled', async () => {
       // Given: Disabled input
-      const handleChange = jest.fn();
+      const handleChange = jest.fn() as jest.Mock;
       const user = userEvent.setup();
       render(<Input disabled onChange={handleChange} data-testid="disabled-input" />);
 
@@ -600,7 +600,7 @@ describe('AIKit TextField/Input Component - TDD Suite', () => {
 
     it('should handle rapid input changes', async () => {
       // Given: Input with change handler
-      const handleChange = jest.fn();
+      const handleChange = jest.fn() as jest.Mock;
       const user = userEvent.setup();
       render(<Input onChange={handleChange} data-testid="rapid-input" />);
 

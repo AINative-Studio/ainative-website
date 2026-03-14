@@ -13,7 +13,7 @@ import { usePathname } from 'next/navigation';
 
 // Mock Next.js navigation
 jest.mock('next/navigation', () => ({
-  usePathname: jest.fn(),
+  usePathname: jest.fn() as jest.Mock,
 }));
 
 // Mock next-auth

@@ -10,7 +10,7 @@ import apiClient from '@/lib/api-client';
 jest.mock('@/lib/api-client', () => ({
   __esModule: true,
   default: {
-    get: jest.fn(),
+    get: jest.fn() as jest.Mock,
   },
 }));
 

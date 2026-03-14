@@ -26,9 +26,9 @@ import {
 // Mock QNNApiClient module
 jest.mock('@/services/QNNApiClient', () => ({
   qnnApiClient: {
-    getBenchmarkMetrics: jest.fn(),
-    getBenchmarkResult: jest.fn(),
-    runBenchmark: jest.fn(),
+    getBenchmarkMetrics: jest.fn() as jest.Mock,
+    getBenchmarkResult: jest.fn() as jest.Mock,
+    runBenchmark: jest.fn() as jest.Mock,
   },
 }));
 

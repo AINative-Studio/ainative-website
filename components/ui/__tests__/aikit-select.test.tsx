@@ -144,7 +144,7 @@ describe('AIKit Select Component - TDD Suite', () => {
     });
 
     it('should call onValueChange when selection changes', async () => {
-      const handleChange = jest.fn();
+      const handleChange = jest.fn() as jest.Mock;
       const user = userEvent.setup();
 
       render(
@@ -321,7 +321,7 @@ describe('AIKit Select Component - TDD Suite', () => {
 
   describe('State Management', () => {
     it('should work as controlled component', async () => {
-      const handleChange = jest.fn();
+      const handleChange = jest.fn() as jest.Mock;
       const { rerender } = render(
         <Select value="opt1" onValueChange={handleChange}>
           <SelectTrigger data-testid="select-trigger">

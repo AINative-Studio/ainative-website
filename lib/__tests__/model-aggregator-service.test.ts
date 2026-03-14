@@ -9,7 +9,7 @@ import { modelAggregatorService } from '../model-aggregator-service';
 jest.mock('../api-client', () => ({
   __esModule: true,
   default: {
-    get: jest.fn(),
+    get: jest.fn() as jest.Mock,
   },
 }));
 

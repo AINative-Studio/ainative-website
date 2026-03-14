@@ -201,7 +201,7 @@ describe('Session Sync Utilities', () => {
 
   describe('Storage events', () => {
     it('should handle storage events', () => {
-      const listener = jest.fn();
+      const listener = jest.fn() as jest.Mock;
       window.addEventListener('storage', listener);
 
       localStorage.setItem('next-auth.session-sync', JSON.stringify({

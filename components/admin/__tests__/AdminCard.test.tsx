@@ -97,7 +97,7 @@ describe('AdminCard', () => {
     });
 
     it('should show error with retry button', () => {
-      const onRetry = jest.fn();
+      const onRetry = jest.fn() as jest.Mock;
 
       render(
         <AdminCard
@@ -114,7 +114,7 @@ describe('AdminCard', () => {
     });
 
     it('should call onRetry when retry button is clicked', () => {
-      const onRetry = jest.fn();
+      const onRetry = jest.fn() as jest.Mock;
 
       render(
         <AdminCard

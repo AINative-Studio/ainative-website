@@ -4,8 +4,8 @@ import AdminHeader from '../AdminHeader';
 
 // Mock next/navigation
 jest.mock('next/navigation', () => ({
-  useRouter: jest.fn(),
-  usePathname: jest.fn(),
+  useRouter: jest.fn() as jest.Mock,
+  usePathname: jest.fn() as jest.Mock,
 }));
 
 // Mock localStorage
@@ -30,7 +30,7 @@ Object.defineProperty(window, 'localStorage', {
 });
 
 describe('AdminHeader', () => {
-  const mockPush = jest.fn();
+  const mockPush = jest.fn() as jest.Mock;
 
   beforeEach(() => {
     mockLocalStorage.clear();

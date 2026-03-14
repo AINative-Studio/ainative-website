@@ -63,7 +63,7 @@ describe('AIKit Checkbox Component - TDD Suite', () => {
     });
 
     it('should call onCheckedChange when toggled', async () => {
-      const handleChange = jest.fn();
+      const handleChange = jest.fn() as jest.Mock;
       const user = userEvent.setup();
       render(<Checkbox onCheckedChange={handleChange} data-testid="checkbox" />);
 
@@ -97,8 +97,8 @@ describe('AIKit Checkbox Component - TDD Suite', () => {
     });
 
     it('should handle focus and blur', async () => {
-      const handleFocus = jest.fn();
-      const handleBlur = jest.fn();
+      const handleFocus = jest.fn() as jest.Mock;
+      const handleBlur = jest.fn() as jest.Mock;
       const user = userEvent.setup();
 
       render(<Checkbox onFocus={handleFocus} onBlur={handleBlur} data-testid="checkbox" />);
@@ -187,7 +187,7 @@ describe('AIKit Checkbox Component - TDD Suite', () => {
 
   describe('State Management', () => {
     it('should work as controlled component', async () => {
-      const handleChange = jest.fn();
+      const handleChange = jest.fn() as jest.Mock;
       const { rerender } = render(
         <Checkbox checked={false} onCheckedChange={handleChange} data-testid="checkbox" />
       );
@@ -217,7 +217,7 @@ describe('AIKit Checkbox Component - TDD Suite', () => {
     });
 
     it('should prevent interaction when disabled', async () => {
-      const handleChange = jest.fn();
+      const handleChange = jest.fn() as jest.Mock;
       const user = userEvent.setup();
       render(<Checkbox disabled onCheckedChange={handleChange} data-testid="checkbox" />);
 
@@ -264,7 +264,7 @@ describe('AIKit Checkbox Component - TDD Suite', () => {
     });
 
     it('should handle touch events', async () => {
-      const handleChange = jest.fn();
+      const handleChange = jest.fn() as jest.Mock;
       render(<Checkbox onCheckedChange={handleChange} data-testid="checkbox" />);
 
       const checkbox = screen.getByTestId('checkbox');
