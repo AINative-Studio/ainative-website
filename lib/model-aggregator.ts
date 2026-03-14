@@ -95,7 +95,7 @@ export class ModelAggregatorService {
    */
   async fetchChatModels(): Promise<UnifiedAIModel[]> {
     try {
-      const response = await apiClient.get<ChatModelsData>('/v1/models');
+      const response = await apiClient.get<ChatModelsData>('/api/v1/models');
       const models = response.data.models || [];
 
       return models.map(model => this.transformChatModel(model));
@@ -110,7 +110,7 @@ export class ModelAggregatorService {
    */
   async fetchEmbeddingModels(): Promise<UnifiedAIModel[]> {
     try {
-      const response = await apiClient.get<EmbeddingModelResponse[]>('/v1/public/embeddings/models');
+      const response = await apiClient.get<EmbeddingModelResponse[]>('/api/v1/public/embeddings/models');
       const models = Array.isArray(response.data) ? response.data : [];
 
       return models.map((model, index) => this.transformEmbeddingModel(model, index === 0));
@@ -137,7 +137,7 @@ export class ModelAggregatorService {
           provider: 'Qwen',
           category: 'Image',
         }),
-        endpoint: '/v1/multimodal/image',
+        endpoint: '/api/v1/multimodal/image',
         method: 'POST',
         pricing: {
           credits: 50,
@@ -200,7 +200,7 @@ export class ModelAggregatorService {
         capabilities: ['image-to-video', 'video-generation'],
         description: 'Wan 2.2 is an open-source AI video generation model that utilizes a diffusion transformer architecture and a novel 3D spatio-temporal VAE for image-to-video generation',
         thumbnail_url: 'https://image.ainative.studio/asset/alibaba/wan-2i2v720.png',
-        endpoint: '/v1/multimodal/video/i2v',
+        endpoint: '/api/v1/multimodal/video/i2v',
         method: 'POST',
         is_default: true,
         speed: 'Fast',
@@ -253,7 +253,7 @@ export class ModelAggregatorService {
             description: 'How closely to follow prompt',
           },
         ],
-        example_request: `curl -X POST https://api.ainative.studio/v1/multimodal/video/i2v \\
+        example_request: `curl -X POST https://api.ainative.studio/api/v1/multimodal/video/i2v \\
   -H 'Content-Type: application/json' \\
   -H 'Authorization: Bearer YOUR_API_KEY' \\
   -d '{
@@ -280,7 +280,7 @@ export class ModelAggregatorService {
           provider: 'Seedance',
           category: 'Video',
         }),
-        endpoint: '/v1/multimodal/video/i2v',
+        endpoint: '/api/v1/multimodal/video/i2v',
         method: 'POST',
         pricing: {
           credits: 520,
@@ -322,7 +322,7 @@ export class ModelAggregatorService {
           provider: 'Sora',
           category: 'Video',
         }),
-        endpoint: '/v1/multimodal/video/i2v',
+        endpoint: '/api/v1/multimodal/video/i2v',
         method: 'POST',
         is_premium: true,
         quality: 'Cinematic',
@@ -366,7 +366,7 @@ export class ModelAggregatorService {
           provider: 'Generic T2V',
           category: 'Video',
         }),
-        endpoint: '/v1/multimodal/video/t2v',
+        endpoint: '/api/v1/multimodal/video/t2v',
         method: 'POST',
         is_premium: true,
         pricing: {
@@ -405,7 +405,7 @@ export class ModelAggregatorService {
           provider: 'CogVideo',
           category: 'Video',
         }),
-        endpoint: '/v1/multimodal/video/cogvideox',
+        endpoint: '/api/v1/multimodal/video/cogvideox',
         method: 'POST',
         pricing: {
           credits: 800,
@@ -738,7 +738,7 @@ export class ModelAggregatorService {
         provider,
         category: 'Coding',
       }),
-      endpoint: '/v1/chat/completions',
+      endpoint: '/api/v1/chat/completions',
       method: 'POST',
       parameters: [
         {
@@ -781,7 +781,7 @@ export class ModelAggregatorService {
         provider: 'BAAI',
         category: 'Embedding',
       }),
-      endpoint: '/v1/embeddings',
+      endpoint: '/api/v1/embeddings',
       method: 'POST',
       speed: model.speed,
       is_default: isDefault,

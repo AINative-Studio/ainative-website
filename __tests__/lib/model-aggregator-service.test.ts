@@ -19,7 +19,7 @@ describe('ModelAggregatorService', () => {
     it('should aggregate models from all sources', async () => {
       // Mock chat models response
       mockedApiClient.get.mockImplementation((url: string) => {
-        if (url === '/v1/models') {
+        if (url === '/api/v1/models') {
           return Promise.resolve({
             data: {
               object: 'list',
@@ -42,7 +42,7 @@ describe('ModelAggregatorService', () => {
             },
           } as any);
         }
-        if (url === '/v1/public/embeddings/models') {
+        if (url === '/api/v1/public/embeddings/models') {
           return Promise.resolve({
             data: [
               {
@@ -118,7 +118,7 @@ describe('ModelAggregatorService', () => {
     it('should handle partial API failures', async () => {
       // Chat models succeed, embeddings fail
       mockedApiClient.get.mockImplementation((url: string) => {
-        if (url === '/v1/models') {
+        if (url === '/api/v1/models') {
           return Promise.resolve({
             data: {
               object: 'list',
@@ -149,7 +149,7 @@ describe('ModelAggregatorService', () => {
   describe('Model transformations', () => {
     it('should correctly transform chat models', async () => {
       mockedApiClient.get.mockImplementation((url: string) => {
-        if (url === '/v1/models') {
+        if (url === '/api/v1/models') {
           return Promise.resolve({
             data: {
               object: 'list',
@@ -177,13 +177,13 @@ describe('ModelAggregatorService', () => {
       expect(gpt4?.capabilities).toContain('text-generation');
       expect(gpt4?.capabilities).toContain('code');
       expect(gpt4?.capabilities).toContain('reasoning');
-      expect(gpt4?.endpoint).toBe('/v1/chat/completions');
+      expect(gpt4?.endpoint).toBe('/api/v1/chat/completions');
       expect(gpt4?.method).toBe('POST');
     });
 
     it('should correctly transform embedding models', async () => {
       mockedApiClient.get.mockImplementation((url: string) => {
-        if (url === '/v1/public/embeddings/models') {
+        if (url === '/api/v1/public/embeddings/models') {
           return Promise.resolve({
             data: [
               {
@@ -213,7 +213,7 @@ describe('ModelAggregatorService', () => {
 
     it('should mark default models correctly', async () => {
       mockedApiClient.get.mockImplementation((url: string) => {
-        if (url === '/v1/public/embeddings/models') {
+        if (url === '/api/v1/public/embeddings/models') {
           return Promise.resolve({
             data: [
               {
@@ -301,7 +301,7 @@ describe('ModelAggregatorService', () => {
       expect(nousCoder?.capabilities).toContain('code');
       expect(nousCoder?.capabilities).toContain('code-generation');
       expect(nousCoder?.capabilities).toContain('text-generation');
-      expect(nousCoder?.endpoint).toBe('/v1/chat/completions');
+      expect(nousCoder?.endpoint).toBe('/api/v1/chat/completions');
       expect(nousCoder?.method).toBe('POST');
     });
 

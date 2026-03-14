@@ -123,8 +123,8 @@ export interface HumanFeedbackCreateRequest {
 }
 
 export class RLHFService {
-  private static readonly BASE_PATH = '/v1/public/zerodb/rlhf';
-  private static readonly TRAINING_PATH = '/v1/public/zerodb/training';
+  private static readonly BASE_PATH = '/api/v1/public/zerodb/rlhf';
+  private static readonly TRAINING_PATH = '/api/v1/public/zerodb/training';
 
   // RLHF Dataset Management
   static async getDatasets(): Promise<RLHFDataset[]> {

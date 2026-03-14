@@ -62,7 +62,7 @@ describe('UsageService', () => {
 
       const result = await usageService.getUsageMetrics();
 
-      expect(mockedApiClient.get).toHaveBeenCalledWith('/v1/public/ai-usage/aggregate?period=30d');
+      expect(mockedApiClient.get).toHaveBeenCalledWith('/api/v1/public/ai-usage/aggregate?period=30d');
       expect(result).toEqual(mockUsageMetrics);
     });
 
@@ -73,7 +73,7 @@ describe('UsageService', () => {
 
       await usageService.getUsageMetrics('7d');
 
-      expect(mockedApiClient.get).toHaveBeenCalledWith('/v1/public/ai-usage/aggregate?period=7d');
+      expect(mockedApiClient.get).toHaveBeenCalledWith('/api/v1/public/ai-usage/aggregate?period=7d');
     });
 
     it('should fetch usage metrics with 90-day period', async () => {
@@ -83,7 +83,7 @@ describe('UsageService', () => {
 
       await usageService.getUsageMetrics('90d');
 
-      expect(mockedApiClient.get).toHaveBeenCalledWith('/v1/public/ai-usage/aggregate?period=90d');
+      expect(mockedApiClient.get).toHaveBeenCalledWith('/api/v1/public/ai-usage/aggregate?period=90d');
     });
 
     it('should return null when fetch fails', async () => {

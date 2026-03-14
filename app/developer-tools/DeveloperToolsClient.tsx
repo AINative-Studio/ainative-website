@@ -134,20 +134,20 @@ export default function DeveloperToolsClient() {
         const apiKeysCount = 3;
 
         // Fetch MCP instances
-        const mcpResponse = await apiClient.get('/v1/public/mcp/instances');
+        const mcpResponse = await apiClient.get('/api/v1/public/mcp/instances');
         const mcpData = mcpResponse.data as { instances?: unknown[] };
         const mcpCount = mcpData.instances?.length || 0;
 
         // Fetch credits data from the real credits API
         let creditsUsed = 0;
         try {
-          const creditsResponse = await apiClient.get('/v1/public/credits/balance');
+          const creditsResponse = await apiClient.get('/api/v1/public/credits/balance');
           const creditsData = creditsResponse.data as { used_credits?: number };
           creditsUsed = creditsData.used_credits || 0;
         } catch (error) {
           // Fallback to admin endpoint if needed
           try {
-            const adminResponse = await apiClient.get('/v1/admin/credits/balance');
+            const adminResponse = await apiClient.get('/api/v1/admin/credits/balance');
             const adminData = adminResponse.data as { transactions?: Array<{ amount: number }>; used_credits?: number };
             if (adminData.transactions) {
               // Calculate used credits from transactions
@@ -374,7 +374,7 @@ export default function DeveloperToolsClient() {
                       </a>
                     </Button>
                     <Button asChild size="sm" variant="outline" className="text-white border-white hover:bg-white hover:text-black">
-                      <a href="/v1/codegen/python" target="_blank" rel="noopener noreferrer">
+                      <a href="/api/v1/codegen/python" target="_blank" rel="noopener noreferrer">
                         <Download className="h-4 w-4 mr-2" />
                         Python Examples
                       </a>
@@ -394,13 +394,13 @@ export default function DeveloperToolsClient() {
                   </div>
                   <div className="flex gap-2">
                     <Button asChild size="sm" variant="outline" className="text-white border-white hover:bg-white hover:text-black">
-                      <a href="/v1/postman-collection-comprehensive" download>
+                      <a href="/api/v1/postman-collection-comprehensive" download>
                         <Download className="h-4 w-4 mr-2" />
                         Download Collection
                       </a>
                     </Button>
                     <Button asChild size="sm" variant="outline" className="text-white border-white hover:bg-white hover:text-black">
-                      <a href="/v1/postman-environment" download>
+                      <a href="/api/v1/postman-environment" download>
                         <Download className="h-4 w-4 mr-2" />
                         Environment
                       </a>

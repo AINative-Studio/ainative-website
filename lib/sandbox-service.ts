@@ -68,7 +68,7 @@ const sandboxService = {
    */
   async listEnvironments(): Promise<SandboxEnvironment[]> {
     try {
-      const response = await apiClient.get<SandboxEnvironment[]>('/v1/public/sandbox/environments');
+      const response = await apiClient.get<SandboxEnvironment[]>('/api/v1/public/sandbox/environments');
       return response.data;
     } catch (error) {
       console.error('Failed to list sandbox environments:', error);
@@ -82,7 +82,7 @@ const sandboxService = {
    */
   async createSandbox(request: CreateSandboxRequest): Promise<Sandbox> {
     try {
-      const response = await apiClient.post<Sandbox>('/v1/public/sandbox/create', request);
+      const response = await apiClient.post<Sandbox>('/api/v1/public/sandbox/create', request);
       return response.data;
     } catch (error) {
       console.error('Failed to create sandbox:', error);
@@ -96,7 +96,7 @@ const sandboxService = {
    */
   async getSandbox(sandboxId: string): Promise<Sandbox> {
     try {
-      const response = await apiClient.get<Sandbox>(`/v1/public/sandbox/${sandboxId}`);
+      const response = await apiClient.get(['"`]/api/v1/public/sandbox/${sandboxId}`);
       return response.data;
     } catch (error) {
       console.error(`Failed to get sandbox ${sandboxId}:`, error);
@@ -110,7 +110,7 @@ const sandboxService = {
    */
   async deleteSandbox(sandboxId: string): Promise<void> {
     try {
-      await apiClient.delete(`/v1/public/sandbox/${sandboxId}`);
+      await apiClient.delete(['"`]/api/v1/public/sandbox/${sandboxId}`);
     } catch (error) {
       console.error(`Failed to delete sandbox ${sandboxId}:`, error);
       throw error;
@@ -124,7 +124,7 @@ const sandboxService = {
   async execute(sandboxId: string, request: ExecutionRequest): Promise<ExecutionResult> {
     try {
       const response = await apiClient.post<ExecutionResult>(
-        `/v1/public/sandbox/${sandboxId}/execute`,
+        `/api/v1/public/sandbox/${sandboxId}/execute`,
         request
       );
       return response.data;
@@ -141,7 +141,7 @@ const sandboxService = {
   async getExecutionHistory(sandboxId: string, limit = 20): Promise<ExecutionResult[]> {
     try {
       const response = await apiClient.get<ExecutionResult[]>(
-        `/v1/public/sandbox/${sandboxId}/history?limit=${limit}`
+        `/api/v1/public/sandbox/${sandboxId}/history?limit=${limit}`
       );
       return response.data;
     } catch (error) {

@@ -41,7 +41,7 @@ describe('CreditService', () => {
 
       const result = await creditService.getCreditBalance();
 
-      expect(apiClient.get).toHaveBeenCalledWith('/v1/public/credits/balance');
+      expect(apiClient.get).toHaveBeenCalledWith('/api/v1/public/credits/balance');
       expect(result).toEqual(mockBalance);
     });
 
@@ -196,7 +196,7 @@ describe('CreditService', () => {
       });
 
       expect(apiClient.get).toHaveBeenCalledWith(
-        '/v1/public/credits/transactions?page=1&limit=10'
+        '/api/v1/public/credits/transactions?page=1&limit=10'
       );
       expect(result).toEqual(mockResponse.data);
     });
@@ -235,7 +235,7 @@ describe('CreditService', () => {
       });
 
       expect(apiClient.get).toHaveBeenCalledWith(
-        '/v1/public/credits/transactions?page=2&limit=20&type=purchase&start_date=2025-01-01&end_date=2025-01-31'
+        '/api/v1/public/credits/transactions?page=2&limit=20&type=purchase&start_date=2025-01-01&end_date=2025-01-31'
       );
     });
   });
@@ -281,7 +281,7 @@ describe('CreditService', () => {
 
       const result = await creditService.getCreditPackages();
 
-      expect(apiClient.get).toHaveBeenCalledWith('/v1/public/credits/packages');
+      expect(apiClient.get).toHaveBeenCalledWith('/api/v1/public/credits/packages');
       expect(result).toEqual(mockPackages);
     });
 
@@ -311,7 +311,7 @@ describe('CreditService', () => {
 
       const result = await creditService.purchaseCredits('pkg-1', 'pm_123');
 
-      expect(apiClient.post).toHaveBeenCalledWith('/v1/public/credits/purchase', {
+      expect(apiClient.post).toHaveBeenCalledWith('/api/v1/public/credits/purchase', {
         package_id: 'pkg-1',
         payment_method_id: 'pm_123'
       });

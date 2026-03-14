@@ -51,7 +51,7 @@ interface PlaygroundClientProps {
 // Fetch model data
 async function fetchModelData(modelId: string): Promise<ModelData> {
   const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || 'https://api.ainative.studio';
-  const response = await fetch(`${API_BASE_URL}/v1/public/ai-registry/models/${modelId}`);
+  const response = await fetch(`${API_BASE_URL}/api/v1/public/ai-registry/models/${modelId}`);
 
   if (!response.ok) {
     throw new Error('Failed to fetch model data');

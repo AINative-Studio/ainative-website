@@ -38,7 +38,7 @@ describe('AuthService - Password Reset', () => {
 
         // Then
         expect(global.fetch).toHaveBeenCalledWith(
-          expect.stringContaining('/v1/public/auth/forgot-password'),
+          expect.stringContaining('/api/v1/public/auth/forgot-password'),
           expect.objectContaining({
             method: 'POST',
             headers: {
@@ -175,7 +175,7 @@ describe('AuthService - Password Reset', () => {
 
       // Then
       expect(global.fetch).toHaveBeenCalledWith(
-        expect.stringContaining('/v1/public/auth/forgot-password'),
+        expect.stringContaining('/api/v1/public/auth/forgot-password'),
         expect.objectContaining({
           method: 'POST',
           headers: {
@@ -235,7 +235,7 @@ describe('AuthService - Password Reset', () => {
 
         // Then
         expect(global.fetch).toHaveBeenCalledWith(
-          expect.stringContaining('/v1/public/auth/reset-password'),
+          expect.stringContaining('/api/v1/public/auth/reset-password'),
           expect.objectContaining({
             method: 'POST',
             headers: {
@@ -457,7 +457,7 @@ describe('AuthService - Password Reset', () => {
 
       // Then
       expect(global.fetch).toHaveBeenCalledWith(
-        expect.stringContaining('/v1/public/auth/reset-password'),
+        expect.stringContaining('/api/v1/public/auth/reset-password'),
         expect.objectContaining({
           method: 'POST',
           headers: {

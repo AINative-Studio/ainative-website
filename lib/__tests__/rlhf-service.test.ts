@@ -52,7 +52,7 @@ describe('RLHFService', () => {
 
       const result = await rlhfService.submitFeedback(feedbackRequest);
 
-      expect(mockApiClient.post).toHaveBeenCalledWith('/v1/public/rlhf/feedback', feedbackRequest);
+      expect(mockApiClient.post).toHaveBeenCalledWith('/api/v1/public/rlhf/feedback', feedbackRequest);
       expect(result.id).toBe('feedback-123');
       expect(result.feedback).toBe(1);
     });
@@ -133,7 +133,7 @@ describe('RLHFService', () => {
 
       const result = await rlhfService.submitRating(ratingRequest);
 
-      expect(mockApiClient.post).toHaveBeenCalledWith('/v1/public/rlhf/rating', ratingRequest);
+      expect(mockApiClient.post).toHaveBeenCalledWith('/api/v1/public/rlhf/rating', ratingRequest);
       expect(result.rating).toBe(5);
     });
 
@@ -196,7 +196,7 @@ describe('RLHFService', () => {
       const result = await rlhfService.submitComparison(comparisonRequest);
 
       expect(mockApiClient.post).toHaveBeenCalledWith(
-        '/v1/public/rlhf/comparison',
+        '/api/v1/public/rlhf/comparison',
         comparisonRequest
       );
       expect(result.preference).toBe('a');
@@ -273,7 +273,7 @@ describe('RLHFService', () => {
 
       const result = await rlhfService.getSummary();
 
-      expect(mockApiClient.get).toHaveBeenCalledWith('/v1/public/rlhf/summary');
+      expect(mockApiClient.get).toHaveBeenCalledWith('/api/v1/public/rlhf/summary');
       expect(result.total_feedback).toBe(150);
       expect(result.average_rating).toBe(4.2);
       expect(result.feedback_by_date).toHaveLength(4);
@@ -295,7 +295,7 @@ describe('RLHFService', () => {
 
       const result = await rlhfService.getSummary('7d');
 
-      expect(mockApiClient.get).toHaveBeenCalledWith('/v1/public/rlhf/summary?time_range=7d');
+      expect(mockApiClient.get).toHaveBeenCalledWith('/api/v1/public/rlhf/summary?time_range=7d');
       expect(result.total_feedback).toBe(50);
     });
 
@@ -339,7 +339,7 @@ describe('RLHFService', () => {
 
       const result = await rlhfService.getFeedbackList({ page: 1, page_size: 10 });
 
-      expect(mockApiClient.get).toHaveBeenCalledWith('/v1/public/rlhf/feedback?page=1&page_size=10');
+      expect(mockApiClient.get).toHaveBeenCalledWith('/api/v1/public/rlhf/feedback?page=1&page_size=10');
       expect(result.items).toHaveLength(2);
       expect(result.total).toBe(2);
     });
@@ -353,7 +353,7 @@ describe('RLHFService', () => {
 
       await rlhfService.getFeedbackList({ page: 1, page_size: 10, feedback_type: 'positive' });
 
-      expect(mockApiClient.get).toHaveBeenCalledWith('/v1/public/rlhf/feedback?page=1&page_size=10&feedback_type=positive');
+      expect(mockApiClient.get).toHaveBeenCalledWith('/api/v1/public/rlhf/feedback?page=1&page_size=10&feedback_type=positive');
     });
   });
 
@@ -377,7 +377,7 @@ describe('RLHFService', () => {
 
       const result = await rlhfService.exportFeedback('json');
 
-      expect(mockApiClient.get).toHaveBeenCalledWith('/v1/public/rlhf/export?format=json');
+      expect(mockApiClient.get).toHaveBeenCalledWith('/api/v1/public/rlhf/export?format=json');
       expect(result.format).toBe('json');
       expect(result.total_records).toBe(2);
     });
@@ -413,7 +413,7 @@ describe('RLHFService', () => {
         end_date: '2025-12-23',
       });
 
-      expect(mockApiClient.get).toHaveBeenCalledWith('/v1/public/rlhf/export?format=json&start_date=2025-12-01&end_date=2025-12-23');
+      expect(mockApiClient.get).toHaveBeenCalledWith('/api/v1/public/rlhf/export?format=json&start_date=2025-12-01&end_date=2025-12-23');
     });
   });
 
@@ -427,7 +427,7 @@ describe('RLHFService', () => {
 
       const result = await rlhfService.deleteFeedback('feedback-123');
 
-      expect(mockApiClient.delete).toHaveBeenCalledWith('/v1/public/rlhf/feedback/feedback-123');
+      expect(mockApiClient.delete).toHaveBeenCalledWith('/api/v1/public/rlhf/feedback/feedback-123');
       expect(result.success).toBe(true);
     });
 

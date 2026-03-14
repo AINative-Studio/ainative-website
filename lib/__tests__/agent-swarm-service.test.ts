@@ -41,7 +41,7 @@ describe('AgentSwarmService', () => {
 
       const result = await agentSwarmService.healthCheck();
 
-      expect(mockApiClient.get).toHaveBeenCalledWith('/v1/public/agent-swarms/health');
+      expect(mockApiClient.get).toHaveBeenCalledWith('/api/v1/public/agent-swarms/health');
       expect(result).toEqual(mockResponse);
     });
 
@@ -79,7 +79,7 @@ describe('AgentSwarmService', () => {
       const result = await agentSwarmService.createProject(createRequest);
 
       expect(mockApiClient.post).toHaveBeenCalledWith(
-        '/v1/public/agent-swarms/orchestrate',
+        '/api/v1/public/agent-swarms/orchestrate',
         createRequest
       );
       expect(result.id).toBe('proj-123');
@@ -127,7 +127,7 @@ describe('AgentSwarmService', () => {
 
       const result = await agentSwarmService.getAllProjects();
 
-      expect(mockApiClient.get).toHaveBeenCalledWith('/v1/public/agent-swarms/projects');
+      expect(mockApiClient.get).toHaveBeenCalledWith('/api/v1/public/agent-swarms/projects');
       expect(result).toHaveLength(1);
       expect(result[0].id).toBe('proj-1');
       expect(result[0].status).toBe('building');
@@ -161,7 +161,7 @@ describe('AgentSwarmService', () => {
 
       const result = await agentSwarmService.getProject('proj-1');
 
-      expect(mockApiClient.get).toHaveBeenCalledWith('/v1/public/agent-swarms/projects/proj-1');
+      expect(mockApiClient.get).toHaveBeenCalledWith('/api/v1/public/agent-swarms/projects/proj-1');
       expect(result.id).toBe('proj-1');
       expect(result.progress).toBe(75);
     });
@@ -193,7 +193,7 @@ describe('AgentSwarmService', () => {
       const result = await agentSwarmService.getProjectStatus('proj-1');
 
       expect(mockApiClient.get).toHaveBeenCalledWith(
-        '/v1/public/agent-swarms/projects/proj-1/status'
+        '/api/v1/public/agent-swarms/projects/proj-1/status'
       );
       expect(result.progress).toBe(65);
       expect(result.stage).toBe('feature_development');
@@ -238,7 +238,7 @@ describe('AgentSwarmService', () => {
       const result = await agentSwarmService.getProjectLogs('proj-1', 50);
 
       expect(mockApiClient.get).toHaveBeenCalledWith(
-        '/v1/public/agent-swarms/projects/proj-1/logs?limit=50'
+        '/api/v1/public/agent-swarms/projects/proj-1/logs?limit=50'
       );
       expect(result).toHaveLength(2);
       expect(result[0].message).toBe('Project analysis started');
@@ -254,7 +254,7 @@ describe('AgentSwarmService', () => {
       await agentSwarmService.getProjectLogs('proj-1');
 
       expect(mockApiClient.get).toHaveBeenCalledWith(
-        '/v1/public/agent-swarms/projects/proj-1/logs?limit=100'
+        '/api/v1/public/agent-swarms/projects/proj-1/logs?limit=100'
       );
     });
 
@@ -278,7 +278,7 @@ describe('AgentSwarmService', () => {
       const result = await agentSwarmService.stopProject('proj-1');
 
       expect(mockApiClient.post).toHaveBeenCalledWith(
-        '/v1/public/agent-swarms/projects/proj-1/stop'
+        '/api/v1/public/agent-swarms/projects/proj-1/stop'
       );
       expect(result.message).toBe('Project stopped successfully');
     });
@@ -303,7 +303,7 @@ describe('AgentSwarmService', () => {
       const result = await agentSwarmService.restartProject('proj-1');
 
       expect(mockApiClient.post).toHaveBeenCalledWith(
-        '/v1/public/agent-swarms/projects/proj-1/restart'
+        '/api/v1/public/agent-swarms/projects/proj-1/restart'
       );
       expect(result.message).toBe('Project restarted successfully');
     });
@@ -333,7 +333,7 @@ describe('AgentSwarmService', () => {
       );
 
       expect(mockApiClient.post).toHaveBeenCalledWith(
-        '/v1/public/agent-swarms/orchestrate',
+        '/api/v1/public/agent-swarms/orchestrate',
         expect.objectContaining({
           project_type: 'web_app',
           description: '# PRD Content',
@@ -362,7 +362,7 @@ describe('AgentSwarmService', () => {
 
       const result = await agentSwarmService.getMetrics();
 
-      expect(mockApiClient.get).toHaveBeenCalledWith('/v1/public/agent-swarms/metrics');
+      expect(mockApiClient.get).toHaveBeenCalledWith('/api/v1/public/agent-swarms/metrics');
       expect(result.total_projects).toBe(25);
       expect(result.avg_completion_time).toBe(45);
     });

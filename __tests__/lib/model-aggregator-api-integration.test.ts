@@ -34,7 +34,7 @@ describe('ModelAggregatorService - AI Registry API Integration (Issue #566)', ()
               category: 'image',
               capabilities: ['image-generation', 'text-to-image'],
               description: 'Test image generation model',
-              endpoint: '/v1/multimodal/image',
+              endpoint: '/api/v1/multimodal/image',
               method: 'POST',
               pricing: {
                 credits: 50,
@@ -54,7 +54,7 @@ describe('ModelAggregatorService - AI Registry API Integration (Issue #566)', ()
               category: 'video',
               capabilities: ['video-generation', 'image-to-video'],
               description: 'Test video generation model',
-              endpoint: '/v1/multimodal/video/i2v',
+              endpoint: '/api/v1/multimodal/video/i2v',
               method: 'POST',
               pricing: {
                 credits: 400,
@@ -82,16 +82,16 @@ describe('ModelAggregatorService - AI Registry API Integration (Issue #566)', ()
       const mockChatResponse = { data: { object: 'list', data: [] } };
 
       mockApiClient.get.mockImplementation((endpoint: string) => {
-        if (endpoint === '/v1/public/ai-registry/models') {
+        if (endpoint === '/api/v1/public/ai-registry/models') {
           return Promise.resolve(mockRegistryResponse) as any;
         }
-        if (endpoint === '/v1/multimodal/health') {
+        if (endpoint === '/api/v1/multimodal/health') {
           return Promise.resolve(mockHealthResponse) as any;
         }
-        if (endpoint === '/v1/models') {
+        if (endpoint === '/api/v1/models') {
           return Promise.resolve(mockChatResponse) as any;
         }
-        if (endpoint === '/v1/public/embeddings/models') {
+        if (endpoint === '/api/v1/public/embeddings/models') {
           return Promise.resolve({ data: [] }) as any;
         }
         return Promise.reject(new Error('Unknown endpoint'));
@@ -101,8 +101,8 @@ describe('ModelAggregatorService - AI Registry API Integration (Issue #566)', ()
       const models = await modelAggregatorService.aggregateAllModels();
 
       // Assert
-      expect(mockApiClient.get).toHaveBeenCalledWith('/v1/public/ai-registry/models');
-      expect(mockApiClient.get).toHaveBeenCalledWith('/v1/multimodal/health');
+      expect(mockApiClient.get).toHaveBeenCalledWith('/api/v1/public/ai-registry/models');
+      expect(mockApiClient.get).toHaveBeenCalledWith('/api/v1/multimodal/health');
 
       // Verify models were transformed correctly
       const imageModel = models.find((m) => m.id === 'test-image-model');
@@ -120,16 +120,16 @@ describe('ModelAggregatorService - AI Registry API Integration (Issue #566)', ()
     it('should fallback to hardcoded models if AI Registry API fails', async () => {
       // Arrange: Mock API failure
       mockApiClient.get.mockImplementation((endpoint: string) => {
-        if (endpoint === '/v1/public/ai-registry/models') {
+        if (endpoint === '/api/v1/public/ai-registry/models') {
           return Promise.reject(new Error('API Error'));
         }
-        if (endpoint === '/v1/multimodal/health') {
+        if (endpoint === '/api/v1/multimodal/health') {
           return Promise.resolve({ data: { status: 'healthy', services: {} } }) as any;
         }
-        if (endpoint === '/v1/models') {
+        if (endpoint === '/api/v1/models') {
           return Promise.resolve({ data: { object: 'list', data: [] } }) as any;
         }
-        if (endpoint === '/v1/public/embeddings/models') {
+        if (endpoint === '/api/v1/public/embeddings/models') {
           return Promise.resolve({ data: [] }) as any;
         }
         return Promise.reject(new Error('Unknown endpoint'));
@@ -163,7 +163,7 @@ describe('ModelAggregatorService - AI Registry API Integration (Issue #566)', ()
               category: 'image',
               capabilities: ['image-generation'],
               description: 'Test model',
-              endpoint: '/v1/multimodal/image',
+              endpoint: '/api/v1/multimodal/image',
             },
           ],
         },
@@ -181,16 +181,16 @@ describe('ModelAggregatorService - AI Registry API Integration (Issue #566)', ()
       };
 
       mockApiClient.get.mockImplementation((endpoint: string) => {
-        if (endpoint === '/v1/public/ai-registry/models') {
+        if (endpoint === '/api/v1/public/ai-registry/models') {
           return Promise.resolve(mockRegistryResponse) as any;
         }
-        if (endpoint === '/v1/multimodal/health') {
+        if (endpoint === '/api/v1/multimodal/health') {
           return Promise.resolve(mockHealthResponse) as any;
         }
-        if (endpoint === '/v1/models') {
+        if (endpoint === '/api/v1/models') {
           return Promise.resolve({ data: { object: 'list', data: [] } }) as any;
         }
-        if (endpoint === '/v1/public/embeddings/models') {
+        if (endpoint === '/api/v1/public/embeddings/models') {
           return Promise.resolve({ data: [] }) as any;
         }
         return Promise.reject(new Error('Unknown endpoint'));
@@ -217,7 +217,7 @@ describe('ModelAggregatorService - AI Registry API Integration (Issue #566)', ()
               category: 'image',
               capabilities: ['image-generation'],
               description: 'Image model',
-              endpoint: '/v1/test',
+              endpoint: '/api/v1/test',
             },
             {
               id: 'model-2',
@@ -226,7 +226,7 @@ describe('ModelAggregatorService - AI Registry API Integration (Issue #566)', ()
               category: 'video',
               capabilities: ['video-generation'],
               description: 'Video model',
-              endpoint: '/v1/test',
+              endpoint: '/api/v1/test',
             },
             {
               id: 'model-3',
@@ -235,7 +235,7 @@ describe('ModelAggregatorService - AI Registry API Integration (Issue #566)', ()
               category: 'audio',
               capabilities: ['audio-generation'],
               description: 'Audio model',
-              endpoint: '/v1/test',
+              endpoint: '/api/v1/test',
             },
             {
               id: 'model-4',
@@ -244,7 +244,7 @@ describe('ModelAggregatorService - AI Registry API Integration (Issue #566)', ()
               category: 'coding',
               capabilities: ['code-generation'],
               description: 'Coding model',
-              endpoint: '/v1/test',
+              endpoint: '/api/v1/test',
             },
             {
               id: 'model-5',
@@ -253,23 +253,23 @@ describe('ModelAggregatorService - AI Registry API Integration (Issue #566)', ()
               category: 'embedding',
               capabilities: ['embedding'],
               description: 'Embedding model',
-              endpoint: '/v1/test',
+              endpoint: '/api/v1/test',
             },
           ],
         },
       };
 
       mockApiClient.get.mockImplementation((endpoint: string) => {
-        if (endpoint === '/v1/public/ai-registry/models') {
+        if (endpoint === '/api/v1/public/ai-registry/models') {
           return Promise.resolve(mockRegistryResponse) as any;
         }
-        if (endpoint === '/v1/multimodal/health') {
+        if (endpoint === '/api/v1/multimodal/health') {
           return Promise.resolve({ data: { status: 'healthy', services: {} } }) as any;
         }
-        if (endpoint === '/v1/models') {
+        if (endpoint === '/api/v1/models') {
           return Promise.resolve({ data: { object: 'list', data: [] } }) as any;
         }
-        if (endpoint === '/v1/public/embeddings/models') {
+        if (endpoint === '/api/v1/public/embeddings/models') {
           return Promise.resolve({ data: [] }) as any;
         }
         return Promise.reject(new Error('Unknown endpoint'));
@@ -305,7 +305,7 @@ describe('ModelAggregatorService - AI Registry API Integration (Issue #566)', ()
               category: 'image',
               capabilities: ['image-generation'],
               description: 'Test',
-              endpoint: '/v1/test',
+              endpoint: '/api/v1/test',
             },
             {
               id: 'test-2',
@@ -314,7 +314,7 @@ describe('ModelAggregatorService - AI Registry API Integration (Issue #566)', ()
               category: 'video',
               capabilities: ['video-generation'],
               description: 'Test',
-              endpoint: '/v1/test',
+              endpoint: '/api/v1/test',
             },
             {
               id: 'test-3',
@@ -323,23 +323,23 @@ describe('ModelAggregatorService - AI Registry API Integration (Issue #566)', ()
               category: 'audio',
               capabilities: ['audio-generation'],
               description: 'Test',
-              endpoint: '/v1/test',
+              endpoint: '/api/v1/test',
             },
           ],
         },
       };
 
       mockApiClient.get.mockImplementation((endpoint: string) => {
-        if (endpoint === '/v1/public/ai-registry/models') {
+        if (endpoint === '/api/v1/public/ai-registry/models') {
           return Promise.resolve(mockRegistryResponse) as any;
         }
-        if (endpoint === '/v1/multimodal/health') {
+        if (endpoint === '/api/v1/multimodal/health') {
           return Promise.resolve({ data: { status: 'healthy', services: {} } }) as any;
         }
-        if (endpoint === '/v1/models') {
+        if (endpoint === '/api/v1/models') {
           return Promise.resolve({ data: { object: 'list', data: [] } }) as any;
         }
-        if (endpoint === '/v1/public/embeddings/models') {
+        if (endpoint === '/api/v1/public/embeddings/models') {
           return Promise.resolve({ data: [] }) as any;
         }
         return Promise.reject(new Error('Unknown endpoint'));
@@ -366,7 +366,7 @@ describe('ModelAggregatorService - AI Registry API Integration (Issue #566)', ()
               category: 'image',
               capabilities: ['image-generation'],
               description: 'Test',
-              endpoint: '/v1/test',
+              endpoint: '/api/v1/test',
             },
           ],
         },
@@ -382,16 +382,16 @@ describe('ModelAggregatorService - AI Registry API Integration (Issue #566)', ()
       };
 
       mockApiClient.get.mockImplementation((endpoint: string) => {
-        if (endpoint === '/v1/public/ai-registry/models') {
+        if (endpoint === '/api/v1/public/ai-registry/models') {
           return Promise.resolve(mockRegistryResponse) as any;
         }
-        if (endpoint === '/v1/multimodal/health') {
+        if (endpoint === '/api/v1/multimodal/health') {
           return Promise.resolve(mockHealthResponse) as any;
         }
-        if (endpoint === '/v1/models') {
+        if (endpoint === '/api/v1/models') {
           return Promise.resolve({ data: { object: 'list', data: [] } }) as any;
         }
-        if (endpoint === '/v1/public/embeddings/models') {
+        if (endpoint === '/api/v1/public/embeddings/models') {
           return Promise.resolve({ data: [] }) as any;
         }
         return Promise.reject(new Error('Unknown endpoint'));
@@ -403,7 +403,7 @@ describe('ModelAggregatorService - AI Registry API Integration (Issue #566)', ()
 
       // Assert: Health check should only be called once (cached on second call)
       const healthCheckCalls = mockApiClient.get.mock.calls.filter(
-        (call) => call[0] === '/v1/multimodal/health'
+        (call) => call[0] === '/api/v1/multimodal/health'
       );
       expect(healthCheckCalls.length).toBe(1);
     });
@@ -423,7 +423,7 @@ describe('ModelAggregatorService - AI Registry API Integration (Issue #566)', ()
               capabilities: ['image-generation', 'text-to-image'],
               description: 'A complete model with all fields',
               thumbnail_url: 'https://example.com/thumb.png',
-              endpoint: '/v1/multimodal/image',
+              endpoint: '/api/v1/multimodal/image',
               method: 'POST',
               pricing: {
                 credits: 50,
@@ -441,16 +441,16 @@ describe('ModelAggregatorService - AI Registry API Integration (Issue #566)', ()
       };
 
       mockApiClient.get.mockImplementation((endpoint: string) => {
-        if (endpoint === '/v1/public/ai-registry/models') {
+        if (endpoint === '/api/v1/public/ai-registry/models') {
           return Promise.resolve(mockRegistryResponse) as any;
         }
-        if (endpoint === '/v1/multimodal/health') {
+        if (endpoint === '/api/v1/multimodal/health') {
           return Promise.resolve({ data: { status: 'healthy', services: {} } }) as any;
         }
-        if (endpoint === '/v1/models') {
+        if (endpoint === '/api/v1/models') {
           return Promise.resolve({ data: { object: 'list', data: [] } }) as any;
         }
-        if (endpoint === '/v1/public/embeddings/models') {
+        if (endpoint === '/api/v1/public/embeddings/models') {
           return Promise.resolve({ data: [] }) as any;
         }
         return Promise.reject(new Error('Unknown endpoint'));
@@ -471,7 +471,7 @@ describe('ModelAggregatorService - AI Registry API Integration (Issue #566)', ()
         capabilities: ['image-generation', 'text-to-image'],
         description: 'A complete model with all fields',
         thumbnail_url: 'https://example.com/thumb.png',
-        endpoint: '/v1/multimodal/image',
+        endpoint: '/api/v1/multimodal/image',
         method: 'POST',
         pricing: {
           credits: 50,

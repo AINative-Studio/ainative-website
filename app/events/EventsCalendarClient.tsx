@@ -16,8 +16,8 @@ import {
   DialogTitle,
   DialogFooter,
 } from '@/components/ui/dialog';
-import { Calendar, Clock, Users, Video, MapPin, AlertCircle, Sparkles, CheckCircle2, Loader2, DollarSign } from 'lucide-react';
-import { getAllEvents, addEventGuest, hasEventPaidTickets, type LumaEvent } from '@/services/luma';
+import { Calendar, Clock, Users, Video, MapPin, AlertCircle, Sparkles, CheckCircle2, Loader2 } from 'lucide-react';
+import { getAllEvents, addEventGuest, type LumaEvent } from '@/services/luma';
 import ReactMarkdown from 'react-markdown';
 
 const CardTitle = ({ children, className = '' }: { children: React.ReactNode; className?: string }) => (
@@ -53,9 +53,6 @@ export default function EventsCalendarClient() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  // Track which events have paid tickets
-  const [paidEventIds, setPaidEventIds] = useState<Set<string>>(new Set());
-
   // Registration dialog state
   const [registerDialogOpen, setRegisterDialogOpen] = useState(false);
   const [selectedEvent, setSelectedEvent] = useState<LumaEvent | null>(null);
@@ -82,18 +79,6 @@ export default function EventsCalendarClient() {
         setError(null);
         const lumaEvents = await getAllEvents();
         setEvents(lumaEvents || []);
-
-        // Check which events have paid tickets
-        const paidIds = new Set<string>();
-        await Promise.all(
-          (lumaEvents || []).map(async (event) => {
-            const hasPaidTickets = await hasEventPaidTickets(event.api_id);
-            if (hasPaidTickets) {
-              paidIds.add(event.api_id);
-            }
-          })
-        );
-        setPaidEventIds(paidIds);
       } catch (err) {
         console.error('Failed to fetch events:', err);
         setError('Failed to load events. Please try again later.');
@@ -128,20 +113,12 @@ export default function EventsCalendarClient() {
   }, [featuredEvents.length]);
 
   const handleRegisterClick = (event: LumaEvent) => {
-    // Check if this is a paid event
-    const isPaidEvent = paidEventIds.has(event.api_id);
-
-    if (isPaidEvent) {
-      // Redirect to Luma for paid events
-      window.open(event.event.url, '_blank', 'noopener,noreferrer');
-    } else {
-      // Show our registration modal for free events
-      setSelectedEvent(event);
-      setRegistrationForm({ name: '', email: '' });
-      setRegistrationSuccess(false);
-      setRegistrationError(null);
-      setRegisterDialogOpen(true);
-    }
+    // Show registration modal for all events
+    setSelectedEvent(event);
+    setRegistrationForm({ name: '', email: '' });
+    setRegistrationSuccess(false);
+    setRegistrationError(null);
+    setRegisterDialogOpen(true);
   };
 
   const handleCloseRegistration = () => {
@@ -193,7 +170,6 @@ export default function EventsCalendarClient() {
     const endDate = new Date(eventData.end_at);
     const durationMinutes = Math.round((endDate.getTime() - startDate.getTime()) / 60000);
     const isPast = startDate < now;
-    const isPaidEvent = paidEventIds.has(lumaEvent.api_id);
 
     return (
       <motion.div
@@ -225,12 +201,6 @@ export default function EventsCalendarClient() {
                     In-Person
                   </Badge>
                 ) : null}
-                {isPaidEvent && (
-                  <Badge className="bg-green-900/30 text-green-400 flex items-center gap-1">
-                    <DollarSign className="h-3 w-3" />
-                    Paid
-                  </Badge>
-                )}
               </div>
               {lumaEvent.tags && lumaEvent.tags.length > 0 && (
                 <div className="flex gap-1 flex-wrap">
@@ -299,7 +269,7 @@ export default function EventsCalendarClient() {
                     className="w-full bg-[#5867EF] hover:bg-[#4756D3] text-white"
                     onClick={() => handleRegisterClick(lumaEvent)}
                   >
-                    {isPaidEvent ? 'Register on Luma' : 'Register Now'}
+                    Register Now
                   </Button>
                 )}
               </div>
@@ -354,12 +324,6 @@ export default function EventsCalendarClient() {
                         <Badge className="bg-gradient-to-r from-[#4B6FED] to-[#8A63F4] text-white">
                           Featured Event
                         </Badge>
-                        {paidEventIds.has(featuredEvents[currentFeaturedIndex].api_id) && (
-                          <Badge className="bg-green-900/30 text-green-400 flex items-center gap-1">
-                            <DollarSign className="h-3 w-3" />
-                            Paid
-                          </Badge>
-                        )}
                         <div className="flex gap-1 ml-auto">
                           {featuredEvents.map((_, index) => (
                             <div
@@ -421,110 +385,6 @@ export default function EventsCalendarClient() {
             </Card>
           </motion.div>
         )}
-
-        {/* VibeCoding Workshops Promotion */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.1 }}
-          className="max-w-6xl mx-auto mb-12"
-        >
-          <Card className="border-2 border-[#4B6FED]/20 bg-gradient-to-br from-[#4B6FED]/5 via-[#8A63F4]/5 to-[#4B6FED]/5">
-            <CardHeader>
-              <div className="flex items-center justify-between mb-4">
-                <Badge className="bg-gradient-to-r from-[#4B6FED] to-[#8A63F4] text-white">
-                  February 2026 Workshops
-                </Badge>
-                <Badge variant="outline" className="text-green-400 border-green-500">
-                  Now Open for Registration
-                </Badge>
-              </div>
-              <CardTitle className="text-3xl mb-3 bg-clip-text text-transparent bg-gradient-to-r from-[#4B6FED] to-[#8A63F4]">
-                Master the World&apos;s First AI-Native Database
-              </CardTitle>
-              <CardDescription className="text-lg text-gray-400">
-                From ZeroDB Basics to AI Native Mastery - Choose your learning path with hands-on, project-based training.
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
-                {/* Free Workshop */}
-                <div className="relative p-6 rounded-lg border-2 border-dashed border-[#4B6FED]/30 bg-[#161B22] hover:border-[#4B6FED] transition-all">
-                  <Badge className="absolute -top-3 -right-3 bg-green-600">FREE</Badge>
-                  <h3 className="font-bold text-lg mb-2 text-white">ZeroDB Fundamentals</h3>
-                  <p className="text-sm text-gray-400 mb-4">
-                    1-hour intro session. Store your first embedding, understand the 9 unified APIs, and get your API key.
-                  </p>
-                  <div className="space-y-2 text-sm mb-4">
-                    <div className="flex items-center gap-2 text-gray-300">
-                      <Calendar className="h-4 w-4 text-[#4B6FED]" />
-                      <span>Feb 7, 2026</span>
-                    </div>
-                    <div className="flex items-center gap-2 text-gray-300">
-                      <Clock className="h-4 w-4 text-[#4B6FED]" />
-                      <span>10 AM PST (1 Hour)</span>
-                    </div>
-                    <div className="flex items-center gap-2 text-gray-300">
-                      <Users className="h-4 w-4 text-[#4B6FED]" />
-                      <span>Beginners Welcome</span>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Most Popular */}
-                <div className="relative p-6 rounded-lg border-2 border-[#4B6FED] bg-gradient-to-br from-[#4B6FED]/10 to-[#8A63F4]/10">
-                  <Badge className="absolute -top-3 -right-3 bg-gradient-to-r from-[#4B6FED] to-[#8A63F4] text-white">
-                    MOST POPULAR
-                  </Badge>
-                  <h3 className="font-bold text-lg mb-2 text-white">Multi-Tenant SaaS</h3>
-                  <p className="text-sm text-gray-400 mb-4">
-                    8-hour intensive. Build production-ready SaaS with ZeroDB, React, Node.js. Master all 9 APIs.
-                  </p>
-                  <div className="space-y-2 text-sm mb-4">
-                    <div className="flex items-center gap-2 text-gray-300">
-                      <Calendar className="h-4 w-4 text-[#4B6FED]" />
-                      <span>Feb 14, 2026</span>
-                    </div>
-                    <div className="flex items-center gap-2 text-gray-300">
-                      <Clock className="h-4 w-4 text-[#4B6FED]" />
-                      <span>9 AM - 5 PM PST</span>
-                    </div>
-                    <div className="flex items-center gap-2 text-gray-300">
-                      <Users className="h-4 w-4 text-[#4B6FED]" />
-                      <span className="font-semibold text-[#4B6FED]">$497</span>
-                    </div>
-                  </div>
-                  <div className="bg-vite-bg/60 rounded p-3 text-xs text-gray-400">
-                    <strong className="text-white">ROI:</strong> 80% cost reduction, 60s deploy time, 9 APIs unified
-                  </div>
-                </div>
-
-                {/* Certification */}
-                <div className="relative p-6 rounded-lg border-2 border-dashed border-[#8A63F4]/50 bg-[#161B22] hover:border-[#8A63F4] transition-all">
-                  <Badge className="absolute -top-3 -right-3 bg-[#8A63F4]">CERTIFICATION</Badge>
-                  <h3 className="font-bold text-lg mb-2 text-white">ZeroDB Expert</h3>
-                  <p className="text-sm text-gray-400 mb-4">
-                    2-day certification program. Advanced patterns, quantum boost, enterprise deployment + official certification.
-                  </p>
-                  <div className="space-y-2 text-sm mb-4">
-                    <div className="flex items-center gap-2 text-gray-300">
-                      <Calendar className="h-4 w-4 text-[#8A63F4]" />
-                      <span>Feb 21-22, 2026</span>
-                    </div>
-                    <div className="flex items-center gap-2 text-gray-300">
-                      <Clock className="h-4 w-4 text-[#8A63F4]" />
-                      <span>2 Days (16 hours)</span>
-                    </div>
-                    <div className="flex items-center gap-2 text-gray-300">
-                      <Users className="h-4 w-4 text-[#8A63F4]" />
-                      <span className="font-semibold text-[#8A63F4]">$249</span>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        </motion.div>
 
         {error && (
           <motion.div

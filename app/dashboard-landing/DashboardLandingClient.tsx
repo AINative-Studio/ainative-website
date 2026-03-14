@@ -119,7 +119,7 @@ const DashboardLandingClient: React.FC = () => {
             databases_weekly_change?: number;
             total_api_requests?: number;
             api_requests_daily_change?: number;
-          }>('/v1/admin/dashboard/stats');
+          }>('/api/v1/admin/dashboard/stats');
           const data = response.data.data || response.data;
 
           setStats({
@@ -154,7 +154,7 @@ const DashboardLandingClient: React.FC = () => {
               total_prompts?: number;
               top_coding_languages?: string[];
               total_sessions?: number;
-            }>('/v1/public/profile/stats');
+            }>('/api/v1/public/profile/stats');
             const data = response.data.data || response.data;
 
             setStats({

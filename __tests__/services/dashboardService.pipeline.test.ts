@@ -44,7 +44,7 @@ describe('DashboardService Response Format Validation', () => {
 
       const result = await dashboardService.getQuickStats();
 
-      expect(mockApiClient.get).toHaveBeenCalledWith('/v1/dashboard/quick-stats');
+      expect(mockApiClient.get).toHaveBeenCalledWith('/api/v1/dashboard/quick-stats');
       expect(result).toEqual(mockData);
     });
 
@@ -125,7 +125,7 @@ describe('DashboardService Response Format Validation', () => {
 
       const result = await dashboardService.getOverview();
 
-      expect(mockApiClient.get).toHaveBeenCalledWith('/v1/dashboard/overview');
+      expect(mockApiClient.get).toHaveBeenCalledWith('/api/v1/dashboard/overview');
       expect(result).toEqual(mockData);
     });
 
@@ -171,7 +171,7 @@ describe('DashboardService Response Format Validation', () => {
 
       const result = await dashboardService.getAnalytics();
 
-      expect(mockApiClient.get).toHaveBeenCalledWith('/v1/dashboard/analytics');
+      expect(mockApiClient.get).toHaveBeenCalledWith('/api/v1/dashboard/analytics');
       expect(result).toEqual(mockData);
     });
   });
@@ -209,7 +209,7 @@ describe('DashboardService Response Format Validation', () => {
 
       const result = await dashboardService.getAiUsageAggregate('30d');
 
-      expect(mockApiClient.get).toHaveBeenCalledWith('/v1/public/ai-usage/aggregate?period=30d');
+      expect(mockApiClient.get).toHaveBeenCalledWith('/api/v1/public/ai-usage/aggregate?period=30d');
       expect(result).toEqual(mockMetrics);
     });
 
@@ -242,7 +242,7 @@ describe('DashboardService Response Format Validation', () => {
 
       await dashboardService.getAiUsageAggregate();
 
-      expect(mockApiClient.get).toHaveBeenCalledWith('/v1/public/ai-usage/aggregate?period=30d');
+      expect(mockApiClient.get).toHaveBeenCalledWith('/api/v1/public/ai-usage/aggregate?period=30d');
     });
   });
 
@@ -277,7 +277,7 @@ describe('DashboardService Response Format Validation', () => {
 
       const result = await dashboardService.getAiUsageCosts();
 
-      expect(mockApiClient.get).toHaveBeenCalledWith('/v1/public/ai-usage/costs');
+      expect(mockApiClient.get).toHaveBeenCalledWith('/api/v1/public/ai-usage/costs');
       expect(result).toEqual(mockData);
     });
   });

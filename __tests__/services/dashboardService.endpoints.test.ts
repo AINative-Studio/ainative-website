@@ -227,7 +227,7 @@ describe('DashboardService - Endpoint Paths (Issue #619)', () => {
 
       const allCalls = mockApiClient.get.mock.calls;
       allCalls.forEach(call => {
-        expect(call[0]).not.toContain('/v1/database/admin');
+        expect(call[0]).not.toContain('/api/v1/database/admin');
       });
     });
   });

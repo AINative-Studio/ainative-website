@@ -63,7 +63,7 @@ export class GitHubService {
     
     try {
       // Use new per-user GitHub API endpoint
-      const response = await apiClient.get<GitHubApiResponse>('/v1/public/github/user');
+      const response = await apiClient.get<GitHubApiResponse>('/api/v1/public/github/user');
       const userData = response.data;
       
       console.log('GitHub user data successfully retrieved');
@@ -102,7 +102,7 @@ export class GitHubService {
       // Fallback to session user data if GitHub API fails
       try {
         console.log('Falling back to session user data...');
-        const sessionResponse = await apiClient.get('/v1/public/auth/me');
+        const sessionResponse = await apiClient.get('/api/v1/public/auth/me');
         const sessionUser = sessionResponse.data as {
           id: string;
           email?: string;
@@ -167,7 +167,7 @@ export class GitHubService {
         limit: limit.toString()
       });
 
-      const response = await apiClient.get(`/v1/public/github/repositories?${queryParams}`);
+      const response = await apiClient.get(['"`]/api/v1/public/github/repositories?${queryParams}`);
 
       // The new API returns repositories directly, not wrapped in success/data
       return (response.data as GitHubRepository[]) || [];
@@ -192,7 +192,7 @@ export class GitHubService {
    */
   async getConnectionStatus(): Promise<{ connected: boolean; github_username?: string; message?: string }> {
     try {
-      const response = await apiClient.get('/v1/public/github/connection-status');
+      const response = await apiClient.get('/api/v1/public/github/connection-status');
       return response.data as { connected: boolean; github_username?: string; message?: string };
     } catch (error: unknown) {
       console.error('Error checking GitHub connection status:', error);

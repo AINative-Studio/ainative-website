@@ -83,14 +83,14 @@ export default function ModelAPI({ model, slug, defaultFormat = 'curl' }: APIPro
 
   // Generate code snippets
   const curlSnippet = generateCurlCommand(
-    model.endpoint || `/v1/models/${slug}`,
+    model.endpoint || `/api/v1/models/${slug}`,
     model.method || 'POST',
     slug,
     model.name
   );
 
   const postRunSnippet = generatePostRunFormat(
-    model.endpoint || `/v1/models/${slug}`,
+    model.endpoint || `/api/v1/models/${slug}`,
     model.method || 'POST',
     slug,
     model.name
@@ -183,7 +183,7 @@ export default function ModelAPI({ model, slug, defaultFormat = 'curl' }: APIPro
       <div className="bg-white/[0.02] border border-white/10 rounded-lg p-4 space-y-3">
         <h3 className="text-sm font-medium text-white">API Endpoint</h3>
         <code className="block text-xs text-gray-400 font-mono bg-white/5 px-3 py-2 rounded">
-          {model.endpoint || `/v1/models/${slug}`}
+          {model.endpoint || `/api/v1/models/${slug}`}
         </code>
 
         <h3 className="text-sm font-medium text-white mt-4">Authentication</h3>

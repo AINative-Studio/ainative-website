@@ -39,11 +39,11 @@ export const zeroDBTabs: ZeroDBTab[] = [
     category: 'storage',
     enhanced: true,
     apiEndpoints: [
-      '/v1/zerodb/projects/{id}/postgresql/instances',
-      '/v1/zerodb/projects/{id}/postgresql/tables',
-      '/v1/zerodb/projects/{id}/collections',
-      '/v1/zerodb/projects/{id}/collections/{name}/documents',
-      '/v1/zerodb/schema/generate'
+      '/api/v1/zerodb/projects/{id}/postgresql/instances',
+      '/api/v1/zerodb/projects/{id}/postgresql/tables',
+      '/api/v1/zerodb/projects/{id}/collections',
+      '/api/v1/zerodb/projects/{id}/collections/{name}/documents',
+      '/api/v1/zerodb/schema/generate'
     ],
     subTabs: [
       {
@@ -52,9 +52,9 @@ export const zeroDBTabs: ZeroDBTab[] = [
         icon: HardDrive,
         description: 'Dedicated PostgreSQL instances and management',
         apiEndpoints: [
-          '/v1/zerodb/projects/{id}/postgresql/instances',
-          '/v1/zerodb/projects/{id}/postgresql/tables',
-          '/v1/zerodb/projects/{id}/postgresql/query'
+          '/api/v1/zerodb/projects/{id}/postgresql/instances',
+          '/api/v1/zerodb/projects/{id}/postgresql/tables',
+          '/api/v1/zerodb/projects/{id}/postgresql/query'
         ]
       },
       {
@@ -63,10 +63,10 @@ export const zeroDBTabs: ZeroDBTab[] = [
         icon: Table,
         description: 'NoSQL document collections and schema management',
         apiEndpoints: [
-          '/v1/zerodb/projects/{id}/collections',
-          '/v1/zerodb/projects/{id}/collections/{name}/documents',
-          '/v1/zerodb/projects/{id}/collections/{name}/query',
-          '/v1/zerodb/schema/generate'
+          '/api/v1/zerodb/projects/{id}/collections',
+          '/api/v1/zerodb/projects/{id}/collections/{name}/documents',
+          '/api/v1/zerodb/projects/{id}/collections/{name}/query',
+          '/api/v1/zerodb/schema/generate'
         ]
       }
     ]
@@ -79,13 +79,13 @@ export const zeroDBTabs: ZeroDBTab[] = [
     category: 'ai-ml',
     enhanced: true,
     apiEndpoints: [
-      '/v1/zerodb/projects/{id}/vectors/collections',
-      '/v1/zerodb/projects/{id}/vectors/points',
-      '/v1/zerodb/projects/{id}/vectors/search',
-      '/v1/zerodb/projects/{id}/quantum/compress',
-      '/v1/zerodb/projects/{id}/quantum/search',
-      '/v1/zerodb/projects/{id}/ml/models',
-      '/v1/zerodb/projects/{id}/ml/inference'
+      '/api/v1/zerodb/projects/{id}/vectors/collections',
+      '/api/v1/zerodb/projects/{id}/vectors/points',
+      '/api/v1/zerodb/projects/{id}/vectors/search',
+      '/api/v1/zerodb/projects/{id}/quantum/compress',
+      '/api/v1/zerodb/projects/{id}/quantum/search',
+      '/api/v1/zerodb/projects/{id}/ml/models',
+      '/api/v1/zerodb/projects/{id}/ml/inference'
     ],
     subTabs: [
       {
@@ -94,9 +94,9 @@ export const zeroDBTabs: ZeroDBTab[] = [
         icon: Brain,
         description: 'Qdrant vector collections and operations',
         apiEndpoints: [
-          '/v1/zerodb/projects/{id}/vectors/collections',
-          '/v1/zerodb/projects/{id}/vectors/points',
-          '/v1/zerodb/projects/{id}/vectors/search'
+          '/api/v1/zerodb/projects/{id}/vectors/collections',
+          '/api/v1/zerodb/projects/{id}/vectors/points',
+          '/api/v1/zerodb/projects/{id}/vectors/search'
         ]
       },
       {
@@ -105,9 +105,9 @@ export const zeroDBTabs: ZeroDBTab[] = [
         icon: Cpu,
         description: 'Quantum vector compression and enhanced search',
         apiEndpoints: [
-          '/v1/zerodb/projects/{id}/quantum/compress',
-          '/v1/zerodb/projects/{id}/quantum/search',
-          '/v1/zerodb/projects/{id}/quantum/hybrid-score'
+          '/api/v1/zerodb/projects/{id}/quantum/compress',
+          '/api/v1/zerodb/projects/{id}/quantum/search',
+          '/api/v1/zerodb/projects/{id}/quantum/hybrid-score'
         ]
       },
       {
@@ -116,10 +116,10 @@ export const zeroDBTabs: ZeroDBTab[] = [
         icon: GraduationCap,
         description: 'Machine learning model training and inference',
         apiEndpoints: [
-          '/v1/zerodb/projects/{id}/ml/models',
-          '/v1/zerodb/projects/{id}/ml/train',
-          '/v1/zerodb/projects/{id}/ml/inference',
-          '/v1/zerodb/projects/{id}/ml/deploy'
+          '/api/v1/zerodb/projects/{id}/ml/models',
+          '/api/v1/zerodb/projects/{id}/ml/train',
+          '/api/v1/zerodb/projects/{id}/ml/inference',
+          '/api/v1/zerodb/projects/{id}/ml/deploy'
         ]
       }
     ]
@@ -132,12 +132,12 @@ export const zeroDBTabs: ZeroDBTab[] = [
     category: 'streaming',
     newFeature: true,
     apiEndpoints: [
-      '/v1/zerodb/projects/{id}/streaming/topics',
-      '/v1/zerodb/projects/{id}/streaming/producers',
-      '/v1/zerodb/projects/{id}/streaming/consumers',
-      '/v1/zerodb/projects/{id}/streaming/processors',
-      '/v1/zerodb/projects/{id}/events/stream',
-      '/v1/zerodb/projects/{id}/events/triggers'
+      '/api/v1/zerodb/projects/{id}/streaming/topics',
+      '/api/v1/zerodb/projects/{id}/streaming/producers',
+      '/api/v1/zerodb/projects/{id}/streaming/consumers',
+      '/api/v1/zerodb/projects/{id}/streaming/processors',
+      '/api/v1/zerodb/projects/{id}/events/stream',
+      '/api/v1/zerodb/projects/{id}/events/triggers'
     ],
     subTabs: [
       {
@@ -146,9 +146,9 @@ export const zeroDBTabs: ZeroDBTab[] = [
         icon: MessageSquare,
         description: 'Redpanda topic management and configuration',
         apiEndpoints: [
-          '/v1/zerodb/projects/{id}/streaming/topics',
-          '/v1/zerodb/projects/{id}/streaming/topics/{name}/publish',
-          '/v1/zerodb/projects/{id}/streaming/topics/{name}/subscribe'
+          '/api/v1/zerodb/projects/{id}/streaming/topics',
+          '/api/v1/zerodb/projects/{id}/streaming/topics/{name}/publish',
+          '/api/v1/zerodb/projects/{id}/streaming/topics/{name}/subscribe'
         ]
       },
       {
@@ -157,9 +157,9 @@ export const zeroDBTabs: ZeroDBTab[] = [
         icon: Workflow,
         description: 'Real-time data processing and transformations',
         apiEndpoints: [
-          '/v1/zerodb/projects/{id}/streaming/processors',
-          '/v1/zerodb/projects/{id}/streaming/processors/{id}/start',
-          '/v1/zerodb/projects/{id}/streaming/processors/{id}/stop'
+          '/api/v1/zerodb/projects/{id}/streaming/processors',
+          '/api/v1/zerodb/projects/{id}/streaming/processors/{id}/start',
+          '/api/v1/zerodb/projects/{id}/streaming/processors/{id}/stop'
         ]
       },
       {
@@ -168,9 +168,9 @@ export const zeroDBTabs: ZeroDBTab[] = [
         icon: FileText,
         description: 'Event logging and real-time event streams',
         apiEndpoints: [
-          '/v1/zerodb/projects/{id}/events/stream',
-          '/v1/zerodb/projects/{id}/events/triggers',
-          '/v1/zerodb/projects/{id}/events/history'
+          '/api/v1/zerodb/projects/{id}/events/stream',
+          '/api/v1/zerodb/projects/{id}/events/triggers',
+          '/api/v1/zerodb/projects/{id}/events/history'
         ]
       }
     ]
@@ -183,11 +183,11 @@ export const zeroDBTabs: ZeroDBTab[] = [
     category: 'storage',
     enhanced: true,
     apiEndpoints: [
-      '/v1/zerodb/projects/{id}/storage/buckets',
-      '/v1/zerodb/projects/{id}/storage/objects',
-      '/v1/zerodb/projects/{id}/files/upload',
-      '/v1/zerodb/projects/{id}/files/download',
-      '/v1/zerodb/projects/{id}/files/metadata'
+      '/api/v1/zerodb/projects/{id}/storage/buckets',
+      '/api/v1/zerodb/projects/{id}/storage/objects',
+      '/api/v1/zerodb/projects/{id}/files/upload',
+      '/api/v1/zerodb/projects/{id}/files/download',
+      '/api/v1/zerodb/projects/{id}/files/metadata'
     ],
     subTabs: [
       {
@@ -196,8 +196,8 @@ export const zeroDBTabs: ZeroDBTab[] = [
         icon: FolderOpen,
         description: 'S3-compatible bucket management',
         apiEndpoints: [
-          '/v1/zerodb/projects/{id}/storage/buckets',
-          '/v1/zerodb/projects/{id}/storage/buckets/{name}/policy'
+          '/api/v1/zerodb/projects/{id}/storage/buckets',
+          '/api/v1/zerodb/projects/{id}/storage/buckets/{name}/policy'
         ]
       },
       {
@@ -206,10 +206,10 @@ export const zeroDBTabs: ZeroDBTab[] = [
         icon: Cloud,
         description: 'File upload, download, and object operations',
         apiEndpoints: [
-          '/v1/zerodb/projects/{id}/storage/objects',
-          '/v1/zerodb/projects/{id}/files/upload',
-          '/v1/zerodb/projects/{id}/files/download',
-          '/v1/zerodb/projects/{id}/files/metadata'
+          '/api/v1/zerodb/projects/{id}/storage/objects',
+          '/api/v1/zerodb/projects/{id}/files/upload',
+          '/api/v1/zerodb/projects/{id}/files/download',
+          '/api/v1/zerodb/projects/{id}/files/metadata'
         ]
       }
     ]
@@ -222,12 +222,12 @@ export const zeroDBTabs: ZeroDBTab[] = [
     category: 'agent',
     newFeature: true,
     apiEndpoints: [
-      '/v1/zerodb/projects/{id}/mcp/connections',
-      '/v1/zerodb/projects/{id}/mcp/send',
-      '/v1/zerodb/projects/{id}/agent-memory',
-      '/v1/zerodb/projects/{id}/agent-logs',
-      '/v1/zerodb/projects/{id}/rlhf/datasets',
-      '/v1/zerodb/projects/{id}/rlhf/feedback'
+      '/api/v1/zerodb/projects/{id}/mcp/connections',
+      '/api/v1/zerodb/projects/{id}/mcp/send',
+      '/api/v1/zerodb/projects/{id}/agent-memory',
+      '/api/v1/zerodb/projects/{id}/agent-logs',
+      '/api/v1/zerodb/projects/{id}/rlhf/datasets',
+      '/api/v1/zerodb/projects/{id}/rlhf/feedback'
     ],
     subTabs: [
       {
@@ -236,9 +236,9 @@ export const zeroDBTabs: ZeroDBTab[] = [
         icon: MessageSquare,
         description: 'Model Context Protocol connections and messaging',
         apiEndpoints: [
-          '/v1/zerodb/projects/{id}/mcp/connections',
-          '/v1/zerodb/projects/{id}/mcp/send',
-          '/v1/zerodb/projects/{id}/mcp/tools'
+          '/api/v1/zerodb/projects/{id}/mcp/connections',
+          '/api/v1/zerodb/projects/{id}/mcp/send',
+          '/api/v1/zerodb/projects/{id}/mcp/tools'
         ]
       },
       {
@@ -247,9 +247,9 @@ export const zeroDBTabs: ZeroDBTab[] = [
         icon: Brain,
         description: 'Intelligent memory storage and retrieval',
         apiEndpoints: [
-          '/v1/zerodb/projects/{id}/agent-memory',
-          '/v1/zerodb/projects/{id}/agent-memory/search',
-          '/v1/zerodb/projects/{id}/agent-logs'
+          '/api/v1/zerodb/projects/{id}/agent-memory',
+          '/api/v1/zerodb/projects/{id}/agent-memory/search',
+          '/api/v1/zerodb/projects/{id}/agent-logs'
         ]
       }
     ]
@@ -262,10 +262,10 @@ export const zeroDBTabs: ZeroDBTab[] = [
     category: 'ai-ml',
     newFeature: true,
     apiEndpoints: [
-      '/v1/zerodb/projects/{id}/rlhf/datasets',
-      '/v1/zerodb/projects/{id}/rlhf/feedback',
-      '/v1/zerodb/projects/{id}/rlhf/training',
-      '/v1/zerodb/projects/{id}/ml/training-jobs'
+      '/api/v1/zerodb/projects/{id}/rlhf/datasets',
+      '/api/v1/zerodb/projects/{id}/rlhf/feedback',
+      '/api/v1/zerodb/projects/{id}/rlhf/training',
+      '/api/v1/zerodb/projects/{id}/ml/training-jobs'
     ],
     subTabs: [
       {
@@ -274,8 +274,8 @@ export const zeroDBTabs: ZeroDBTab[] = [
         icon: FileText,
         description: 'Training dataset management and curation',
         apiEndpoints: [
-          '/v1/zerodb/projects/{id}/rlhf/datasets',
-          '/v1/zerodb/projects/{id}/rlhf/datasets/{id}/samples'
+          '/api/v1/zerodb/projects/{id}/rlhf/datasets',
+          '/api/v1/zerodb/projects/{id}/rlhf/datasets/{id}/samples'
         ]
       },
       {
@@ -284,8 +284,8 @@ export const zeroDBTabs: ZeroDBTab[] = [
         icon: MessageSquare,
         description: 'Collect and manage human feedback for training',
         apiEndpoints: [
-          '/v1/zerodb/projects/{id}/rlhf/feedback',
-          '/v1/zerodb/projects/{id}/rlhf/feedback/review'
+          '/api/v1/zerodb/projects/{id}/rlhf/feedback',
+          '/api/v1/zerodb/projects/{id}/rlhf/feedback/review'
         ]
       },
       {
@@ -294,8 +294,8 @@ export const zeroDBTabs: ZeroDBTab[] = [
         icon: Activity,
         description: 'Model training pipeline and job monitoring',
         apiEndpoints: [
-          '/v1/zerodb/projects/{id}/rlhf/training',
-          '/v1/zerodb/projects/{id}/ml/training-jobs'
+          '/api/v1/zerodb/projects/{id}/rlhf/training',
+          '/api/v1/zerodb/projects/{id}/ml/training-jobs'
         ]
       }
     ]
@@ -308,11 +308,11 @@ export const zeroDBTabs: ZeroDBTab[] = [
     category: 'monitoring',
     enhanced: true,
     apiEndpoints: [
-      '/v1/zerodb/projects/{id}/analytics/usage',
-      '/v1/zerodb/projects/{id}/monitoring/health',
-      '/v1/zerodb/projects/{id}/monitoring/metrics',
-      '/v1/zerodb/projects/{id}/billing/current',
-      '/v1/zerodb/projects/{id}/billing/history'
+      '/api/v1/zerodb/projects/{id}/analytics/usage',
+      '/api/v1/zerodb/projects/{id}/monitoring/health',
+      '/api/v1/zerodb/projects/{id}/monitoring/metrics',
+      '/api/v1/zerodb/projects/{id}/billing/current',
+      '/api/v1/zerodb/projects/{id}/billing/history'
     ],
     subTabs: [
       {
@@ -321,9 +321,9 @@ export const zeroDBTabs: ZeroDBTab[] = [
         icon: TrendingUp,
         description: 'API usage, performance metrics, and trends',
         apiEndpoints: [
-          '/v1/zerodb/projects/{id}/analytics/usage',
-          '/v1/zerodb/projects/{id}/analytics/performance',
-          '/v1/zerodb/projects/{id}/analytics/trends'
+          '/api/v1/zerodb/projects/{id}/analytics/usage',
+          '/api/v1/zerodb/projects/{id}/analytics/performance',
+          '/api/v1/zerodb/projects/{id}/analytics/trends'
         ]
       },
       {
@@ -332,9 +332,9 @@ export const zeroDBTabs: ZeroDBTab[] = [
         icon: Activity,
         description: 'Service health, uptime, and system status',
         apiEndpoints: [
-          '/v1/zerodb/projects/{id}/monitoring/health',
-          '/v1/zerodb/projects/{id}/monitoring/metrics',
-          '/v1/zerodb/projects/{id}/monitoring/alerts'
+          '/api/v1/zerodb/projects/{id}/monitoring/health',
+          '/api/v1/zerodb/projects/{id}/monitoring/metrics',
+          '/api/v1/zerodb/projects/{id}/monitoring/alerts'
         ]
       },
       {
@@ -343,9 +343,9 @@ export const zeroDBTabs: ZeroDBTab[] = [
         icon: DollarSign,
         description: 'Cost tracking, usage-based billing, and forecasts',
         apiEndpoints: [
-          '/v1/zerodb/projects/{id}/billing/current',
-          '/v1/zerodb/projects/{id}/billing/history',
-          '/v1/zerodb/projects/{id}/billing/forecast'
+          '/api/v1/zerodb/projects/{id}/billing/current',
+          '/api/v1/zerodb/projects/{id}/billing/history',
+          '/api/v1/zerodb/projects/{id}/billing/forecast'
         ]
       }
     ]
@@ -358,11 +358,11 @@ export const zeroDBTabs: ZeroDBTab[] = [
     category: 'monitoring',
     enhanced: true,
     apiEndpoints: [
-      '/v1/zerodb/projects/{id}/auth/api-keys',
-      '/v1/zerodb/projects/{id}/auth/permissions',
-      '/v1/zerodb/projects/{id}/rate-limits',
-      '/v1/zerodb/projects/{id}/security/audit-logs',
-      '/v1/zerodb/projects/{id}/proxy/kong/config'
+      '/api/v1/zerodb/projects/{id}/auth/api-keys',
+      '/api/v1/zerodb/projects/{id}/auth/permissions',
+      '/api/v1/zerodb/projects/{id}/rate-limits',
+      '/api/v1/zerodb/projects/{id}/security/audit-logs',
+      '/api/v1/zerodb/projects/{id}/proxy/kong/config'
     ],
     subTabs: [
       {
@@ -371,8 +371,8 @@ export const zeroDBTabs: ZeroDBTab[] = [
         icon: Key,
         description: 'API key generation and management',
         apiEndpoints: [
-          '/v1/zerodb/projects/{id}/auth/api-keys',
-          '/v1/zerodb/projects/{id}/auth/api-keys/{id}/rotate'
+          '/api/v1/zerodb/projects/{id}/auth/api-keys',
+          '/api/v1/zerodb/projects/{id}/auth/api-keys/{id}/rotate'
         ]
       },
       {
@@ -381,8 +381,8 @@ export const zeroDBTabs: ZeroDBTab[] = [
         icon: Settings,
         description: 'Permissions, roles, and rate limiting',
         apiEndpoints: [
-          '/v1/zerodb/projects/{id}/auth/permissions',
-          '/v1/zerodb/projects/{id}/rate-limits'
+          '/api/v1/zerodb/projects/{id}/auth/permissions',
+          '/api/v1/zerodb/projects/{id}/rate-limits'
         ]
       },
       {
@@ -391,9 +391,9 @@ export const zeroDBTabs: ZeroDBTab[] = [
         icon: AlertTriangle,
         description: 'Security logs, audit trails, and threat detection',
         apiEndpoints: [
-          '/v1/zerodb/projects/{id}/security/audit-logs',
-          '/v1/zerodb/projects/{id}/security/threats',
-          '/v1/zerodb/projects/{id}/proxy/kong/config'
+          '/api/v1/zerodb/projects/{id}/security/audit-logs',
+          '/api/v1/zerodb/projects/{id}/security/threats',
+          '/api/v1/zerodb/projects/{id}/proxy/kong/config'
         ]
       }
     ]

@@ -91,7 +91,7 @@ describe('StorageService', () => {
 
       const result = await storageService.listBuckets();
 
-      expect(mockedApiClient.get).toHaveBeenCalledWith('/v1/public/zerodb/storage/buckets');
+      expect(mockedApiClient.get).toHaveBeenCalledWith('/api/v1/public/zerodb/storage/buckets');
       expect(result).toEqual(mockBuckets);
     });
 
@@ -131,7 +131,7 @@ describe('StorageService', () => {
       const result = await storageService.listFiles({ page: 1, page_size: 20 });
 
       expect(mockedApiClient.get).toHaveBeenCalledWith(
-        '/v1/public/zerodb/test-project-id/files?page=1&page_size=20'
+        '/api/v1/public/zerodb/test-project-id/files?page=1&page_size=20'
       );
       expect(result).toEqual(mockFiles);
     });
@@ -153,7 +153,7 @@ describe('StorageService', () => {
 
       await storageService.listFiles();
 
-      expect(mockedApiClient.get).toHaveBeenCalledWith('/v1/public/zerodb/test-project-id/files');
+      expect(mockedApiClient.get).toHaveBeenCalledWith('/api/v1/public/zerodb/test-project-id/files');
     });
 
     it('should upload a file', async () => {
@@ -175,7 +175,7 @@ describe('StorageService', () => {
       const result = await storageService.uploadFile(mockFile);
 
       expect(mockedApiClient.post).toHaveBeenCalledWith(
-        '/v1/public/zerodb/test-project-id/files/upload',
+        '/api/v1/public/zerodb/test-project-id/files/upload',
         expect.any(FormData),
         {
           headers: {
@@ -235,7 +235,7 @@ describe('StorageService', () => {
       const result = await storageService.getFileStats();
 
       expect(mockedApiClient.get).toHaveBeenCalledWith(
-        '/v1/public/zerodb/test-project-id/files/stats/summary'
+        '/api/v1/public/zerodb/test-project-id/files/stats/summary'
       );
       expect(result).toEqual(mockStats);
     });
@@ -256,7 +256,7 @@ describe('StorageService', () => {
       const result = await storageService.updateFileMetadata('file-1', { description: 'Updated' });
 
       expect(mockedApiClient.post).toHaveBeenCalledWith(
-        '/v1/public/zerodb/test-project-id/files/metadata',
+        '/api/v1/public/zerodb/test-project-id/files/metadata',
         {
           file_id: 'file-1',
           metadata: { description: 'Updated' },
@@ -285,7 +285,7 @@ describe('StorageService', () => {
       const result = await storageService.getFile('file-1');
 
       expect(mockedApiClient.get).toHaveBeenCalledWith(
-        '/v1/public/zerodb/test-project-id/files/file-1'
+        '/api/v1/public/zerodb/test-project-id/files/file-1'
       );
       expect(result).toEqual(mockFile);
     });
@@ -305,7 +305,7 @@ describe('StorageService', () => {
       const result = await storageService.deleteFile('file-1');
 
       expect(mockedApiClient.delete).toHaveBeenCalledWith(
-        '/v1/public/zerodb/test-project-id/files/file-1'
+        '/api/v1/public/zerodb/test-project-id/files/file-1'
       );
       expect(result).toEqual(mockResponse);
     });
@@ -330,7 +330,7 @@ describe('StorageService', () => {
       const result = await storageService.listDatabaseFiles();
 
       expect(mockedApiClient.get).toHaveBeenCalledWith(
-        '/v1/public/zerodb/test-project-id/database/files'
+        '/api/v1/public/zerodb/test-project-id/database/files'
       );
       expect(result).toEqual(mockFiles);
     });
@@ -354,7 +354,7 @@ describe('StorageService', () => {
       const result = await storageService.createDatabaseFile(mockFile);
 
       expect(mockedApiClient.post).toHaveBeenCalledWith(
-        '/v1/public/zerodb/test-project-id/database/files',
+        '/api/v1/public/zerodb/test-project-id/database/files',
         expect.any(FormData),
         {
           headers: {
@@ -384,7 +384,7 @@ describe('StorageService', () => {
       const result = await storageService.getDatabaseFileStats();
 
       expect(mockedApiClient.get).toHaveBeenCalledWith(
-        '/v1/public/zerodb/test-project-id/database/files/stats'
+        '/api/v1/public/zerodb/test-project-id/database/files/stats'
       );
       expect(result).toEqual(mockStats);
     });
@@ -409,7 +409,7 @@ describe('StorageService', () => {
       const result = await storageService.getDatabaseFile('db-file-1');
 
       expect(mockedApiClient.get).toHaveBeenCalledWith(
-        '/v1/public/zerodb/test-project-id/database/files/db-file-1'
+        '/api/v1/public/zerodb/test-project-id/database/files/db-file-1'
       );
       expect(result).toEqual(mockFile);
     });
@@ -429,7 +429,7 @@ describe('StorageService', () => {
       const result = await storageService.deleteDatabaseFile('db-file-1');
 
       expect(mockedApiClient.delete).toHaveBeenCalledWith(
-        '/v1/public/zerodb/test-project-id/database/files/db-file-1'
+        '/api/v1/public/zerodb/test-project-id/database/files/db-file-1'
       );
       expect(result).toEqual(mockResponse);
     });
@@ -450,7 +450,7 @@ describe('StorageService', () => {
       const result = await storageService.getPresignedUrl('db-file-1', 7200);
 
       expect(mockedApiClient.post).toHaveBeenCalledWith(
-        '/v1/public/zerodb/test-project-id/database/files/db-file-1/presigned-url',
+        '/api/v1/public/zerodb/test-project-id/database/files/db-file-1/presigned-url',
         {
           expires_in: 7200,
         }
@@ -474,7 +474,7 @@ describe('StorageService', () => {
       await storageService.getPresignedUrl('db-file-1');
 
       expect(mockedApiClient.post).toHaveBeenCalledWith(
-        '/v1/public/zerodb/test-project-id/database/files/db-file-1/presigned-url',
+        '/api/v1/public/zerodb/test-project-id/database/files/db-file-1/presigned-url',
         {
           expires_in: 3600, // Default 1 hour
         }
@@ -500,7 +500,7 @@ describe('StorageService', () => {
       const result = await storageService.uploadDatabaseFile(mockFile);
 
       expect(mockedApiClient.post).toHaveBeenCalledWith(
-        '/v1/public/zerodb/test-project-id/database/storage/upload',
+        '/api/v1/public/zerodb/test-project-id/database/storage/upload',
         expect.any(FormData),
         {
           headers: {
