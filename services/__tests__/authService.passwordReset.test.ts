@@ -157,6 +157,10 @@ describe('AuthService - Password Reset', () => {
         // Then
         expect(result).toBeNull();
       });
+    });
+  });
+
+  describe('requestPasswordReset - Duplicate Tests', () => {
     it('should successfully request password reset with valid email', async () => {
       // Given
       const email = 'user@example.com';
@@ -438,6 +442,8 @@ describe('AuthService - Password Reset', () => {
           expect((error as Error).message).not.toContain(newPassword);
         }
       });
+    });
+
     it('should successfully reset password with valid token and new password', async () => {
       // Given
       const token = 'valid-reset-token-123';
