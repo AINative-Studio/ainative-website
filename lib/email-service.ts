@@ -139,7 +139,7 @@ class EmailService {
    * Get a single email template by ID
    */
   async getTemplate(id: number): Promise<EmailTemplate> {
-    const response = await apiClient.get(['"`]/api/v1/public/emails/templates/${id}`);
+    const response = await apiClient.get(`/api/v1/public/emails/templates/${id}`);
     return response.data;
   }
 
@@ -155,7 +155,7 @@ class EmailService {
    * Update an existing email template
    */
   async updateTemplate(id: number, data: UpdateTemplateData): Promise<EmailTemplate> {
-    const response = await apiClient.put(['"`]/api/v1/public/emails/templates/${id}`, data);
+    const response = await apiClient.put(`/api/v1/public/emails/templates/${id}`, data);
     return response.data;
   }
 
@@ -163,7 +163,7 @@ class EmailService {
    * Delete an email template
    */
   async deleteTemplate(id: number): Promise<DeleteResponse> {
-    const response = await apiClient.delete(['"`]/api/v1/public/emails/templates/${id}`);
+    const response = await apiClient.delete(`/api/v1/public/emails/templates/${id}`);
     return response.data;
   }
 

@@ -96,7 +96,7 @@ const videoService = {
    * Get video details
    */
   async getVideo(videoId: string): Promise<Video> {
-    const response = await apiClient.get(['"`]/api/v1/video/${videoId}`);
+    const response = await apiClient.get(`/api/v1/video/${videoId}`);
     return response.data;
   },
 
@@ -115,7 +115,7 @@ const videoService = {
    * Get video processing status
    */
   async getProcessingStatus(videoId: string): Promise<ProcessingStatus> {
-    const response = await apiClient.get(['"`]/api/v1/video/${videoId}/status`);
+    const response = await apiClient.get(`/api/v1/video/${videoId}/status`);
     return response.data;
   },
 
@@ -140,7 +140,7 @@ const videoService = {
    * Delete a video
    */
   async deleteVideo(videoId: string): Promise<{ success: boolean }> {
-    const response = await apiClient.delete(['"`]/api/v1/video/${videoId}`);
+    const response = await apiClient.delete(`/api/v1/video/${videoId}`);
     return response.data;
   },
 

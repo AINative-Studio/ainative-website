@@ -179,7 +179,7 @@ class SessionService {
    * Get session details by ID
    */
   async getSession(sessionId: string): Promise<SessionDetail> {
-    const response = await apiClient.get(['"`]/api/v1/public/sessions/${sessionId}`);
+    const response = await apiClient.get(`/api/v1/public/sessions/${sessionId}`);
     return response.data;
   }
 
@@ -187,7 +187,7 @@ class SessionService {
    * Delete a session
    */
   async deleteSession(sessionId: string): Promise<DeleteSessionResponse> {
-    const response = await apiClient.delete(['"`]/api/v1/public/sessions/${sessionId}`);
+    const response = await apiClient.delete(`/api/v1/public/sessions/${sessionId}`);
     return response.data;
   }
 
@@ -238,7 +238,7 @@ class SessionService {
    * Delete a specific memory entry
    */
   async deleteMemory(memoryId: string): Promise<DeleteMemoryResponse> {
-    const response = await apiClient.delete(['"`]/api/v1/public/memory/${memoryId}`);
+    const response = await apiClient.delete(`/api/v1/public/memory/${memoryId}`);
     return response.data;
   }
 

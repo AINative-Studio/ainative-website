@@ -191,7 +191,7 @@ const notificationService = {
   async getNotifications(filter?: 'all' | 'unread' | 'read'): Promise<Notification[]> {
     try {
       const params = filter ? `?filter=${filter}` : '';
-      const response = await apiClient.get(['"`]/api/v1/notifications${params}`);
+      const response = await apiClient.get(`/api/v1/notifications${params}`);
       return response.data.notifications || [];
     } catch (error) {
       // Only use mock data in development mode when API is disabled
@@ -222,7 +222,7 @@ const notificationService = {
    */
   async getNotification(id: string): Promise<Notification> {
     try {
-      const response = await apiClient.get(['"`]/api/v1/notifications/${id}`);
+      const response = await apiClient.get(`/api/v1/notifications/${id}`);
       return response.data;
     } catch (error) {
       // Only use mock data in development mode when API is disabled
@@ -252,7 +252,7 @@ const notificationService = {
    */
   async markAsRead(id: string): Promise<Notification> {
     try {
-      const response = await apiClient.put(['"`]/api/v1/notifications/${id}/read`);
+      const response = await apiClient.put(`/api/v1/notifications/${id}/read`);
       return response.data;
     } catch (error) {
       // Only use mock data in development mode when API is disabled
@@ -286,7 +286,7 @@ const notificationService = {
    */
   async markAsUnread(id: string): Promise<Notification> {
     try {
-      const response = await apiClient.put(['"`]/api/v1/notifications/${id}/unread`);
+      const response = await apiClient.put(`/api/v1/notifications/${id}/unread`);
       return response.data;
     } catch (error) {
       // Only use mock data in development mode when API is disabled
@@ -320,7 +320,7 @@ const notificationService = {
    */
   async deleteNotification(id: string): Promise<void> {
     try {
-      await apiClient.delete(['"`]/api/v1/notifications/${id}`);
+      await apiClient.delete(`/api/v1/notifications/${id}`);
     } catch (error) {
       // Only silently succeed in development mode when API is disabled
       if (isDevMockEnabled()) {

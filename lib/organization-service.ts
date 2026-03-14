@@ -83,7 +83,7 @@ class OrganizationService {
    * Get organization details by ID
    */
   async getOrganization(id: number): Promise<Organization> {
-    const response = await apiClient.get(['"`]/api/v1/public/organizations/${id}`);
+    const response = await apiClient.get(`/api/v1/public/organizations/${id}`);
     return response.data;
   }
 
@@ -91,7 +91,7 @@ class OrganizationService {
    * Update organization details
    */
   async updateOrganization(id: number, data: UpdateOrganizationData): Promise<Organization> {
-    const response = await apiClient.put(['"`]/api/v1/public/organizations/${id}`, data);
+    const response = await apiClient.put(`/api/v1/public/organizations/${id}`, data);
     return response.data;
   }
 
@@ -99,7 +99,7 @@ class OrganizationService {
    * Delete an organization
    */
   async deleteOrganization(id: number): Promise<DeleteResponse> {
-    const response = await apiClient.delete(['"`]/api/v1/public/organizations/${id}`);
+    const response = await apiClient.delete(`/api/v1/public/organizations/${id}`);
     return response.data;
   }
 

@@ -167,7 +167,7 @@ export class GitHubService {
         limit: limit.toString()
       });
 
-      const response = await apiClient.get(['"`]/api/v1/public/github/repositories?${queryParams}`);
+      const response = await apiClient.get(`/api/v1/public/github/repositories?${queryParams}`);
 
       // The new API returns repositories directly, not wrapped in success/data
       return (response.data as GitHubRepository[]) || [];

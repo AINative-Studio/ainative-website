@@ -166,7 +166,7 @@ export function AgentSwarmRulesUpload() {
 
   const activateRules = async (fileId: string) => {
     try {
-      await apiClient.post(['"`]/api/v1/public/agent-swarms/rules/${fileId}/activate`);
+      await apiClient.post(`/api/v1/public/agent-swarms/rules/${fileId}/activate`);
 
       setUploadedFiles(prev => prev.map(file =>
         file.id === fileId
@@ -184,7 +184,7 @@ export function AgentSwarmRulesUpload() {
     if (!confirm('Are you sure you want to delete this rules file?')) return;
 
     try {
-      await apiClient.delete(['"`]/api/v1/public/agent-swarms/rules/${fileId}`);
+      await apiClient.delete(`/api/v1/public/agent-swarms/rules/${fileId}`);
       setUploadedFiles(prev => prev.filter(file => file.id !== fileId));
     } catch {
       alert('Failed to delete rules file');

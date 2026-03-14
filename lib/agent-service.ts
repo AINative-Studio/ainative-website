@@ -127,7 +127,7 @@ const agentService = {
    * Get agent details
    */
   async getAgent(agentId: string): Promise<Agent> {
-    const response = await apiClient.get(['"`]/api/v1/agents/${agentId}`);
+    const response = await apiClient.get(`/api/v1/agents/${agentId}`);
     return response.data;
   },
 
@@ -135,7 +135,7 @@ const agentService = {
    * Update an agent
    */
   async updateAgent(agentId: string, request: UpdateAgentRequest): Promise<Agent> {
-    const response = await apiClient.put(['"`]/api/v1/agents/${agentId}`, request);
+    const response = await apiClient.put(`/api/v1/agents/${agentId}`, request);
     return response.data;
   },
 
@@ -143,7 +143,7 @@ const agentService = {
    * Delete an agent
    */
   async deleteAgent(agentId: string): Promise<{ success: boolean }> {
-    const response = await apiClient.delete(['"`]/api/v1/agents/${agentId}`);
+    const response = await apiClient.delete(`/api/v1/agents/${agentId}`);
     return response.data;
   },
 
@@ -151,7 +151,7 @@ const agentService = {
    * Run an agent
    */
   async runAgent(agentId: string, request: RunAgentRequest): Promise<AgentRun> {
-    const response = await apiClient.post(['"`]/api/v1/agents/${agentId}/run`, request);
+    const response = await apiClient.post(`/api/v1/agents/${agentId}/run`, request);
     return response.data;
   },
 
@@ -159,7 +159,7 @@ const agentService = {
    * Get agent run history
    */
   async getAgentRuns(agentId: string): Promise<AgentRun[]> {
-    const response = await apiClient.get(['"`]/api/v1/agents/${agentId}/runs`);
+    const response = await apiClient.get(`/api/v1/agents/${agentId}/runs`);
     return response.data.runs || [];
   },
 
@@ -186,7 +186,7 @@ const agentService = {
    * Cancel a running agent
    */
   async cancelRun(agentId: string, runId: string): Promise<{ success: boolean }> {
-    const response = await apiClient.post(['"`]/api/v1/agents/${agentId}/runs/${runId}/cancel`);
+    const response = await apiClient.post(`/api/v1/agents/${agentId}/runs/${runId}/cancel`);
     return response.data;
   },
 };

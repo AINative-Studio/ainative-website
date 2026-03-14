@@ -1002,7 +1002,7 @@ export class AgentSwarmAIService {
      */
     async getProjectStatus(projectId: string): Promise<ProjectStatus> {
         return withRetry(() =>
-            apiClient.get(['"`]/api/v1/public/agent-swarms/projects/${projectId}/status`)
+            apiClient.get(`/api/v1/public/agent-swarms/projects/${projectId}/status`)
         );
     }
 

@@ -107,7 +107,7 @@ export const webhookService = {
    * Get a specific webhook by ID
    */
   async getWebhook(id: string): Promise<Webhook> {
-    const response = await apiClient.get(['"`]/api/v1/public/webhooks/${id}`);
+    const response = await apiClient.get(`/api/v1/public/webhooks/${id}`);
 
     if (response.status === 404) {
       throw new Error('Webhook not found');
@@ -123,7 +123,7 @@ export const webhookService = {
     // Validate input
     validateWebhookInput(data);
 
-    const response = await apiClient.put(['"`]/api/v1/public/webhooks/${id}`, data);
+    const response = await apiClient.put(`/api/v1/public/webhooks/${id}`, data);
     return response.data.webhook;
   },
 

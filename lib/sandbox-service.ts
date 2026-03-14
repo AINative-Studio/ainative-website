@@ -96,7 +96,7 @@ const sandboxService = {
    */
   async getSandbox(sandboxId: string): Promise<Sandbox> {
     try {
-      const response = await apiClient.get(['"`]/api/v1/public/sandbox/${sandboxId}`);
+      const response = await apiClient.get(`/api/v1/public/sandbox/${sandboxId}`);
       return response.data;
     } catch (error) {
       console.error(`Failed to get sandbox ${sandboxId}:`, error);
@@ -110,7 +110,7 @@ const sandboxService = {
    */
   async deleteSandbox(sandboxId: string): Promise<void> {
     try {
-      await apiClient.delete(['"`]/api/v1/public/sandbox/${sandboxId}`);
+      await apiClient.delete(`/api/v1/public/sandbox/${sandboxId}`);
     } catch (error) {
       console.error(`Failed to delete sandbox ${sandboxId}:`, error);
       throw error;

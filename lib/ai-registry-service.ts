@@ -183,7 +183,7 @@ class AIRegistryService {
    * Get model details by ID
    */
   async getModelDetails(id: number): Promise<AIModel> {
-    const response = await apiClient.get(['"`]/api/v1/public/multi-model/models/${id}`);
+    const response = await apiClient.get(`/api/v1/public/multi-model/models/${id}`);
     return response.data;
   }
 

@@ -140,7 +140,7 @@ const loadTestingService = {
    * Get test details and results
    */
   async getTest(testId: string): Promise<LoadTest & { result?: LoadTestResult }> {
-    const response = await apiClient.get(['"`]/api/v1/public/load-testing/${testId}`);
+    const response = await apiClient.get(`/api/v1/public/load-testing/${testId}`);
     return response.data;
   },
 
@@ -156,7 +156,7 @@ const loadTestingService = {
    * Get performance metrics for a test
    */
   async getTestMetrics(testId: string): Promise<LoadTestMetrics> {
-    const response = await apiClient.get(['"`]/api/v1/public/load-testing/${testId}/metrics`);
+    const response = await apiClient.get(`/api/v1/public/load-testing/${testId}/metrics`);
     return response.data;
   },
 
@@ -164,7 +164,7 @@ const loadTestingService = {
    * Cancel a running test
    */
   async cancelTest(testId: string): Promise<{ status: string }> {
-    const response = await apiClient.post(['"`]/api/v1/public/load-testing/${testId}/cancel`);
+    const response = await apiClient.post(`/api/v1/public/load-testing/${testId}/cancel`);
     return response.data;
   },
 
@@ -181,7 +181,7 @@ const loadTestingService = {
    * Delete a test
    */
   async deleteTest(testId: string): Promise<void> {
-    await apiClient.delete(['"`]/api/v1/public/load-testing/${testId}`);
+    await apiClient.delete(`/api/v1/public/load-testing/${testId}`);
   },
 };
 
