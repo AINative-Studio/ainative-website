@@ -1,6 +1,6 @@
-import React from "react";
 
 'use client';
+import React from "react";
 
 import { signIn, useSession } from 'next-auth/react';
 import { useRouter, useSearchParams } from 'next/navigation';

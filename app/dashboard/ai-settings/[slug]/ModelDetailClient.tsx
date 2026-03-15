@@ -1,6 +1,6 @@
-import React from "react";
 
 'use client';
+import React from "react";
 
 import { useSearchParams, useRouter, usePathname } from 'next/navigation';
 import Link from 'next/link';

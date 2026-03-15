@@ -1,6 +1,6 @@
-import React from "react";
 
 'use client';
+import React from "react";
 
 import {
   Zap, Users, Shield, Terminal, Code, Brain, Bot,

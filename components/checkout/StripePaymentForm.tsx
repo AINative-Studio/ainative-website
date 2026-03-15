@@ -1,8 +1,8 @@
-import React from "react";
 
 // src/components/checkout/StripePaymentForm.tsx
 
 'use client';
+import React from "react";
 
 import { CardElement, useStripe, useElements } from '@stripe/react-stripe-js';
 import { Button } from '@/components/ui/button';

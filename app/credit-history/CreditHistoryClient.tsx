@@ -1,6 +1,6 @@
-import React from "react";
 
 'use client';
+import React from "react";
 
 import { motion } from 'framer-motion';
 import { FileText, Download, Search, ChevronsUpDown, Loader2 } from 'lucide-react';

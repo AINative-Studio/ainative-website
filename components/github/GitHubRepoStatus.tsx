@@ -1,6 +1,6 @@
-import React from "react";
 
 'use client';
+import React from "react";
 
 import { CheckCircle, ExternalLink, GitBranch, Shield, Loader2, XCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';

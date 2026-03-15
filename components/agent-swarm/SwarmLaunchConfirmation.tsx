@@ -1,4 +1,3 @@
-import React from "react";
 
 /**
  * SwarmLaunchConfirmation Component
@@ -11,6 +10,7 @@ import React from "react";
  */
 
 'use client';
+import React from "react";
 
 import { useState, useMemo } from 'react';
 import { motion } from 'framer-motion';

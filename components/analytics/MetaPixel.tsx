@@ -1,6 +1,6 @@
-import React from "react";
 
 'use client';
+import React from "react";
 
 import Script from 'next/script';
 import { useEffect, useState } from 'react';

@@ -1,4 +1,3 @@
-import React from "react";
 
 /**
  * Ignore Rule Editor Component
@@ -7,6 +6,7 @@ import React from "react";
  */
 
 'use client';
+import React from "react";
 
 import { useState, useEffect } from 'react';
 import { IgnoreFileService, IgnoreRule, IgnoreType } from '@/lib/ignore-file-service';

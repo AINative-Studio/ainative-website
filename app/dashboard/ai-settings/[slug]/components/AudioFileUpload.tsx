@@ -1,6 +1,6 @@
-import React from "react";
 
 'use client';
+import React from "react";
 
 import { useState, useRef } from 'react';
 import { Upload, File, X, Music, AlertCircle } from 'lucide-react';
