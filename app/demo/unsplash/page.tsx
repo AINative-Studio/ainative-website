@@ -1,3 +1,5 @@
+import React from "react";
+
 /**
  * Unsplash Integration Demo Page
  * Server component with metadata

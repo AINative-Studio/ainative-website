@@ -1,3 +1,5 @@
+import React from "react";
+
 import { DragHandleDots2Icon } from '@radix-ui/react-icons';
 import { Group, Panel, Separator } from 'react-resizable-panels';
 

@@ -1,3 +1,5 @@
+import React from "react";
+
 import { Metadata } from 'next';
 import { Suspense } from 'react';
 import SignInClient from './SignInClient';

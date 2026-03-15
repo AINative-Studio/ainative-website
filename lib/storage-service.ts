@@ -147,7 +147,7 @@ class StorageService {
   async listBuckets(): Promise<BucketsListResponse> {
     try {
       const response = await apiClient.get<BucketsListResponse>(
-        `/v1/projects/${this.defaultProjectId}/database/files`
+        `/api/v1/projects/${this.defaultProjectId}/database/files`
       );
       return response.data;
     } catch (error) {
@@ -185,7 +185,7 @@ class StorageService {
       queryParams.set('page_size', String(params.page_size));
     }
 
-    const endpoint = `/v1/public/zerodb/${projectId}/files${
+    const endpoint = `/api/v1/public/zerodb/${projectId}/files${
       queryParams.toString() ? '?' + queryParams.toString() : ''
     }`;
 
@@ -215,7 +215,7 @@ class StorageService {
     }
 
     const response = await apiClient.post<FileUploadResponse>(
-      `/v1/public/zerodb/${this.defaultProjectId}/files/upload`,
+      `/api/v1/public/zerodb/${this.defaultProjectId}/files/upload`,
       formData,
       {
         headers: {
@@ -247,7 +247,7 @@ class StorageService {
 
     try {
       const response = await apiClient.get<FileStatsResponse>(
-        `/v1/public/zerodb/${projectId}/files/stats/summary`
+        `/api/v1/public/zerodb/${projectId}/files/stats/summary`
       );
       return response.data;
     } catch (error) {
@@ -271,7 +271,7 @@ class StorageService {
     metadata: Record<string, unknown>
   ): Promise<FileMetadataResponse> {
     const response = await apiClient.post<FileMetadataResponse>(
-      `/v1/public/zerodb/${this.defaultProjectId}/files/metadata`,
+      `/api/v1/public/zerodb/${this.defaultProjectId}/files/metadata`,
       {
         file_id: fileId,
         metadata,
@@ -285,7 +285,7 @@ class StorageService {
    */
   async getFile(fileId: string): Promise<StorageFile> {
     const response = await apiClient.get<StorageFile>(
-      `/v1/public/zerodb/${this.defaultProjectId}/files/${fileId}`
+      `/api/v1/public/zerodb/${this.defaultProjectId}/files/${fileId}`
     );
     return response.data;
   }
@@ -295,7 +295,7 @@ class StorageService {
    */
   async deleteFile(fileId: string): Promise<DeleteFileResponse> {
     const response = await apiClient.delete<DeleteFileResponse>(
-      `/v1/public/zerodb/${this.defaultProjectId}/files/${fileId}`
+      `/api/v1/public/zerodb/${this.defaultProjectId}/files/${fileId}`
     );
     return response.data;
   }
@@ -305,7 +305,7 @@ class StorageService {
    */
   async getFileContent(fileId: string): Promise<string> {
     const response = await apiClient.get<Blob>(
-      `/v1/public/zerodb/${this.defaultProjectId}/files/${fileId}/content`,
+      `/api/v1/public/zerodb/${this.defaultProjectId}/files/${fileId}/content`,
       {
         headers: {
           Accept: '*/*',
@@ -320,7 +320,7 @@ class StorageService {
    */
   async downloadFile(fileId: string, filename?: string): Promise<void> {
     const response = await apiClient.get<Blob>(
-      `/v1/public/zerodb/${this.defaultProjectId}/files/${fileId}/download`,
+      `/api/v1/public/zerodb/${this.defaultProjectId}/files/${fileId}/download`,
       {
         headers: {
           Accept: '*/*',
@@ -353,7 +353,7 @@ class StorageService {
       queryParams.set('page_size', String(params.page_size));
     }
 
-    const endpoint = `/v1/public/zerodb/${this.defaultProjectId}/database/files${
+    const endpoint = `/api/v1/public/zerodb/${this.defaultProjectId}/database/files${
       queryParams.toString() ? '?' + queryParams.toString() : ''
     }`;
     const response = await apiClient.get<FilesListResponse>(endpoint);
@@ -368,7 +368,7 @@ class StorageService {
     formData.append('file', file);
 
     const response = await apiClient.post<FileUploadResponse>(
-      `/v1/public/zerodb/${this.defaultProjectId}/database/files`,
+      `/api/v1/public/zerodb/${this.defaultProjectId}/database/files`,
       formData,
       {
         headers: {
@@ -384,7 +384,7 @@ class StorageService {
    */
   async getDatabaseFileStats(): Promise<FileStatsResponse> {
     const response = await apiClient.get<FileStatsResponse>(
-      `/v1/public/zerodb/${this.defaultProjectId}/database/files/stats`
+      `/api/v1/public/zerodb/${this.defaultProjectId}/database/files/stats`
     );
     return response.data;
   }
@@ -394,7 +394,7 @@ class StorageService {
    */
   async getDatabaseFile(fileId: string): Promise<StorageFile> {
     const response = await apiClient.get<StorageFile>(
-      `/v1/public/zerodb/${this.defaultProjectId}/database/files/${fileId}`
+      `/api/v1/public/zerodb/${this.defaultProjectId}/database/files/${fileId}`
     );
     return response.data;
   }
@@ -404,7 +404,7 @@ class StorageService {
    */
   async deleteDatabaseFile(fileId: string): Promise<DeleteFileResponse> {
     const response = await apiClient.delete<DeleteFileResponse>(
-      `/v1/public/zerodb/${this.defaultProjectId}/database/files/${fileId}`
+      `/api/v1/public/zerodb/${this.defaultProjectId}/database/files/${fileId}`
     );
     return response.data;
   }
@@ -414,7 +414,7 @@ class StorageService {
    */
   async downloadDatabaseFile(fileId: string, filename?: string): Promise<void> {
     const response = await apiClient.get<Blob>(
-      `/v1/public/zerodb/${this.defaultProjectId}/database/files/${fileId}/download`,
+      `/api/v1/public/zerodb/${this.defaultProjectId}/database/files/${fileId}/download`,
       {
         headers: {
           Accept: '*/*',
@@ -437,7 +437,7 @@ class StorageService {
    */
   async getPresignedUrl(fileId: string, expiresIn?: number): Promise<PresignedUrlResponse> {
     const response = await apiClient.post<PresignedUrlResponse>(
-      `/v1/public/zerodb/${this.defaultProjectId}/database/files/${fileId}/presigned-url`,
+      `/api/v1/public/zerodb/${this.defaultProjectId}/database/files/${fileId}/presigned-url`,
       {
         expires_in: expiresIn || 3600, // Default 1 hour
       }
@@ -453,7 +453,7 @@ class StorageService {
     formData.append('file', file);
 
     const response = await apiClient.post<FileUploadResponse>(
-      `/v1/public/zerodb/${this.defaultProjectId}/database/storage/upload`,
+      `/api/v1/public/zerodb/${this.defaultProjectId}/database/storage/upload`,
       formData,
       {
         headers: {

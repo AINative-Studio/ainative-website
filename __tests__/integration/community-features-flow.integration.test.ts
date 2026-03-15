@@ -1,3 +1,5 @@
+import { render, screen } from "@testing-library/react";
+
 /**
  * Community Features Integration Tests
  * Tests complete community workflows including search, video sharing, and authenticated interactions

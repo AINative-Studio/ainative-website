@@ -1,3 +1,5 @@
+import { render, screen } from "@testing-library/react";
+
 /**
  * Tests for API Client Error Handling
  *
@@ -16,7 +18,7 @@
 
 describe('ApiClient Error Handling - Issue #578', () => {
   // Mock fetch before importing apiClient
-  const mockFetch = jest.fn();
+  const mockFetch = jest.fn() as jest.Mock as jest.Mock;
   global.fetch = mockFetch as any;
 
   // Import after mocking
@@ -44,7 +46,7 @@ describe('ApiClient Error Handling - Issue #578', () => {
       } as Response);
 
       try {
-        await apiClient.get('/v1/public/zerodb/stats');
+        await apiClient.get('/api/v1/public/zerodb/stats');
         fail('Should have thrown an error');
       } catch (error: any) {
         // Error message should NOT be [object Object]
@@ -145,7 +147,7 @@ describe('ApiClient Error Handling - Issue #578', () => {
       } as Response);
 
       try {
-        await apiClient.get('/v1/public/zerodb/stats');
+        await apiClient.get('/api/v1/public/zerodb/stats');
         fail('Should have thrown an error');
       } catch (error: any) {
         // Should NOT be [object Object]
@@ -225,7 +227,7 @@ describe('ApiClient Error Handling - Issue #578', () => {
       } as Response);
 
       try {
-        await apiClient.post('/v1/public/zerodb/namespaces', {});
+        await apiClient.post('/api/v1/public/zerodb/namespaces', {});
         fail('Should have thrown an error');
       } catch (error: any) {
         // Should handle array detail properly
@@ -305,7 +307,7 @@ describe('ApiClient Error Handling - Issue #578', () => {
       } as Response);
 
       try {
-        await apiClient.get('/v1/public/zerodb/stats');
+        await apiClient.get('/api/v1/public/zerodb/stats');
         fail('Should have thrown an error');
       } catch (error: any) {
         // This is the exact scenario from issue #578
@@ -331,7 +333,7 @@ describe('ApiClient Error Handling - Issue #578', () => {
       } as Response);
 
       try {
-        await apiClient.get('/v1/public/zerodb/stats');
+        await apiClient.get('/api/v1/public/zerodb/stats');
         fail('Should have thrown an error');
       } catch (error: any) {
         expect(error.message).not.toBe('[object Object]');

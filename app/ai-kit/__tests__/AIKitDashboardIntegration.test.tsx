@@ -1,3 +1,5 @@
+import React from "react";
+
 /**
  * AIKit Dashboard Integration Tests
  *

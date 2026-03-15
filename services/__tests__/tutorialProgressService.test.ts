@@ -1,3 +1,5 @@
+import { render, screen } from "@testing-library/react";
+
 /**
  * Integration Tests for TutorialProgressService
  *
@@ -75,7 +77,7 @@ describe('TutorialProgressService', () => {
 
       expect(result).toEqual(mockProgress);
       expect(apiClient.get).toHaveBeenCalledWith(
-        `/v1/tutorials/progress/${tutorialId}`,
+        `/api/v1/tutorials/progress/${tutorialId}`,
         { params: { userId } }
       );
     });
@@ -190,7 +192,7 @@ describe('TutorialProgressService', () => {
 
       expect(result).toEqual(mockProgress);
       expect(apiClient.post).toHaveBeenCalledWith(
-        `/v1/tutorials/progress/${tutorialId}/chapter`,
+        `/api/v1/tutorials/progress/${tutorialId}/chapter`,
         {
           userId,
           ...chapterUpdate,
@@ -262,7 +264,7 @@ describe('TutorialProgressService', () => {
 
       expect(result).toEqual(mockProgress);
       expect(apiClient.post).toHaveBeenCalledWith(
-        `/v1/tutorials/progress/${tutorialId}/quiz`,
+        `/api/v1/tutorials/progress/${tutorialId}/quiz`,
         {
           userId,
           ...quizScore,
@@ -349,7 +351,7 @@ describe('TutorialProgressService', () => {
       expect(result.certificateEarned).toBe(true);
       expect(result.completionPercentage).toBe(100);
       expect(apiClient.post).toHaveBeenCalledWith(
-        `/v1/tutorials/progress/${tutorialId}/complete`,
+        `/api/v1/tutorials/progress/${tutorialId}/complete`,
         { userId }
       );
     });
@@ -362,7 +364,7 @@ describe('TutorialProgressService', () => {
       await TutorialProgressService.resetProgress(tutorialId, userId);
 
       expect(apiClient.delete).toHaveBeenCalledWith(
-        `/v1/tutorials/progress/${tutorialId}`,
+        `/api/v1/tutorials/progress/${tutorialId}`,
         { params: { userId } }
       );
     });

@@ -1,3 +1,5 @@
+import { render, screen } from "@testing-library/react";
+
 /**
  * @jest-environment node
  */
@@ -9,8 +11,8 @@ import { ModelAggregatorService } from '../model-aggregator';
 jest.mock('../api-client', () => ({
   __esModule: true,
   default: {
-    get: jest.fn(),
-    post: jest.fn(),
+    get: jest.fn() as jest.Mock as jest.Mock,
+    post: jest.fn() as jest.Mock as jest.Mock,
   },
 }));
 
@@ -59,7 +61,7 @@ describe('ModelAggregatorService', () => {
 
       const result = await service.fetchChatModels();
 
-      expect(mockApiClient.get).toHaveBeenCalledWith('/v1/models');
+      expect(mockApiClient.get).toHaveBeenCalledWith('/api/v1/models');
       expect(result).toHaveLength(3);
       expect(result[0]).toMatchObject({
         id: expect.any(String),
@@ -68,7 +70,7 @@ describe('ModelAggregatorService', () => {
         provider: 'OpenAI',
         category: 'Coding',
         capabilities: expect.arrayContaining(['text-generation', 'code']),
-        endpoint: '/v1/chat/completions',
+        endpoint: '/api/v1/chat/completions',
         method: 'POST',
       });
     });
@@ -102,7 +104,7 @@ describe('ModelAggregatorService', () => {
         category: 'Coding',
         capabilities: ['text-generation', 'reasoning', 'code', 'vision'],
         description: "OpenAI's most capable model for complex reasoning and coding tasks",
-        endpoint: '/v1/chat/completions',
+        endpoint: '/api/v1/chat/completions',
         method: 'POST',
       });
     });
@@ -136,7 +138,7 @@ describe('ModelAggregatorService', () => {
         category: 'Coding',
         capabilities: ['text-generation', 'reasoning', 'code', 'vision'],
         description: 'Long context window, detailed analysis, and advanced reasoning capabilities',
-        endpoint: '/v1/chat/completions',
+        endpoint: '/api/v1/chat/completions',
         method: 'POST',
       });
     });
@@ -194,7 +196,7 @@ describe('ModelAggregatorService', () => {
 
       const result = await service.fetchEmbeddingModels();
 
-      expect(mockApiClient.get).toHaveBeenCalledWith('/v1/public/embeddings/models');
+      expect(mockApiClient.get).toHaveBeenCalledWith('/api/v1/public/embeddings/models');
       expect(result).toHaveLength(3);
       expect(result[0]).toMatchObject({
         id: 'BAAI/bge-small-en-v1.5',
@@ -205,7 +207,7 @@ describe('ModelAggregatorService', () => {
         capabilities: ['embedding', 'semantic-search'],
         description: 'Lightweight semantic search model',
         speed: 'fast',
-        endpoint: '/v1/embeddings',
+        endpoint: '/api/v1/embeddings',
         method: 'POST',
         is_default: true,
       });
@@ -261,7 +263,7 @@ describe('ModelAggregatorService', () => {
         category: 'Image',
         capabilities: ['image-generation', 'text-to-image'],
         description: 'High-quality image generation with LoRA style transfer support',
-        endpoint: '/v1/multimodal/image',
+        endpoint: '/api/v1/multimodal/image',
         method: 'POST',
         pricing: {
           credits: 50,
@@ -327,7 +329,7 @@ describe('ModelAggregatorService', () => {
         category: 'Video',
         capabilities: ['image-to-video', 'video-generation'],
         description: 'Wan 2.2 is an open-source AI video generation model that utilizes a diffusion transformer architecture and a novel 3D spatio-temporal VAE for image-to-video generation',
-        endpoint: '/v1/multimodal/video/i2v',
+        endpoint: '/api/v1/multimodal/video/i2v',
         method: 'POST',
         is_default: true,
         speed: 'Fast',
@@ -387,7 +389,7 @@ describe('ModelAggregatorService', () => {
         provider: 'Generic T2V',
         category: 'Video',
         capabilities: ['text-to-video', 'video-generation'],
-        endpoint: '/v1/multimodal/video/t2v',
+        endpoint: '/api/v1/multimodal/video/t2v',
         method: 'POST',
         is_premium: true,
         pricing: {
@@ -409,7 +411,7 @@ describe('ModelAggregatorService', () => {
         provider: 'CogVideo',
         category: 'Video',
         capabilities: ['text-to-video', 'video-generation'],
-        endpoint: '/v1/multimodal/video/cogvideox',
+        endpoint: '/api/v1/multimodal/video/cogvideox',
         method: 'POST',
         pricing: {
           credits: 800,
@@ -467,7 +469,7 @@ describe('ModelAggregatorService', () => {
         category: 'Audio',
         capabilities: ['audio', 'transcription', 'speech-to-text'],
         description: 'Convert audio/video to text in 99+ languages',
-        endpoint: '/v1/audio/transcriptions',
+        endpoint: '/api/v1/audio/transcriptions',
         method: 'POST',
       });
     });
@@ -484,7 +486,7 @@ describe('ModelAggregatorService', () => {
         category: 'Audio',
         capabilities: ['audio', 'translation'],
         description: 'Translate any language audio to English text',
-        endpoint: '/v1/audio/translations',
+        endpoint: '/api/v1/audio/translations',
         method: 'POST',
       });
     });
@@ -501,7 +503,7 @@ describe('ModelAggregatorService', () => {
         category: 'Audio',
         capabilities: ['audio-generation', 'text-to-speech'],
         description: 'Generate natural-sounding speech from text',
-        endpoint: '/v1/audio/speech',
+        endpoint: '/api/v1/audio/speech',
         method: 'POST',
       });
     });
@@ -528,7 +530,7 @@ describe('ModelAggregatorService', () => {
     beforeEach(() => {
       // Mock chat models response
       mockApiClient.get.mockImplementation((endpoint: string) => {
-        if (endpoint === '/v1/models') {
+        if (endpoint === '/api/v1/models') {
           return Promise.resolve({
             data: {
               models: [
@@ -545,7 +547,7 @@ describe('ModelAggregatorService', () => {
             statusText: 'OK',
           });
         }
-        if (endpoint === '/v1/public/embeddings/models') {
+        if (endpoint === '/api/v1/public/embeddings/models') {
           return Promise.resolve({
             data: [
               {
@@ -598,10 +600,10 @@ describe('ModelAggregatorService', () => {
 
     it('handles partial failures gracefully', async () => {
       mockApiClient.get.mockImplementation((endpoint: string) => {
-        if (endpoint === '/v1/models') {
+        if (endpoint === '/api/v1/models') {
           return Promise.reject(new Error('Chat models unavailable'));
         }
-        if (endpoint === '/v1/public/embeddings/models') {
+        if (endpoint === '/api/v1/public/embeddings/models') {
           return Promise.resolve({
             data: [
               {

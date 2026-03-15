@@ -1,4 +1,6 @@
+
 'use client';
+import React from "react";
 
 /**
  * Lazy-loaded video player component

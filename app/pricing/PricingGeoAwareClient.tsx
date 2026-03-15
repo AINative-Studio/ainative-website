@@ -1,4 +1,6 @@
+
 'use client';
+import React from "react";
 
 import { useState, useEffect } from 'react';
 import { Cpu, Users, Shield, Zap, Check, Map } from 'lucide-react';

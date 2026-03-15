@@ -1,3 +1,5 @@
+import { render, screen } from "@testing-library/react";
+
 /**
  * Auth Service Register Method Field Mapping Tests
  *
@@ -10,7 +12,7 @@
 import { authService, RegisterData } from '@/services/authService';
 
 // Mock fetch globally
-global.fetch = jest.fn();
+global.fetch = jest.fn() as jest.Mock as jest.Mock;
 
 describe('authService.register - Field Mapping', () => {
   beforeEach(() => {

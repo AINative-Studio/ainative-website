@@ -18,16 +18,16 @@ import HomeClient from '@/app/HomeClient';
 // Mock next-auth
 jest.mock('next-auth/react', () => ({
   useSession: () => ({ data: null, status: 'unauthenticated' }),
-  signOut: jest.fn(),
+  signOut: jest.fn() as jest.Mock as jest.Mock,
 }));
 
 // Mock next/navigation
 jest.mock('next/navigation', () => ({
   usePathname: () => '/',
   useRouter: () => ({
-    push: jest.fn(),
-    replace: jest.fn(),
-    prefetch: jest.fn(),
+    push: jest.fn() as jest.Mock as jest.Mock,
+    replace: jest.fn() as jest.Mock as jest.Mock,
+    prefetch: jest.fn() as jest.Mock as jest.Mock,
   }),
 }));
 
@@ -320,7 +320,7 @@ describe('Bug #484: Navbar Spacing Issue', () => {
       expect(menuButton).toBeTruthy();
 
       // Mobile menu is initially closed (not in DOM)
-      let mobileMenu = container.querySelector('.fixed.inset-0.z-40');
+      const mobileMenu = container.querySelector('.fixed.inset-0.z-40');
       expect(mobileMenu).toBeFalsy();
 
       // Note: Click testing with state updates requires act() wrapper

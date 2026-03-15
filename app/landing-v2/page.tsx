@@ -1,3 +1,5 @@
+import React from "react";
+
 import { Metadata } from 'next';
 import LandingV2Client from './LandingV2Client';
 

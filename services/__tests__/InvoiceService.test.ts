@@ -1,3 +1,5 @@
+import { render, screen } from "@testing-library/react";
+
 /**
  * InvoiceService Test Suite
  * Tests for invoice service with correct /v1/public/billing/invoices endpoints
@@ -78,7 +80,7 @@ describe('InvoiceService', () => {
 
       const result = await invoiceService.getMyInvoices();
 
-      expect(mockedApiClient.get).toHaveBeenCalledWith('/v1/public/billing/invoices/me');
+      expect(mockedApiClient.get).toHaveBeenCalledWith('/api/v1/public/billing/invoices/me');
       expect(result.invoices).toHaveLength(1);
       expect(result.total).toBe(1);
     });
@@ -108,7 +110,7 @@ describe('InvoiceService', () => {
       await invoiceService.getMyInvoices(filters);
 
       expect(mockedApiClient.get).toHaveBeenCalledWith(
-        '/v1/public/billing/invoices/me?status=paid&limit=10&offset=5'
+        '/api/v1/public/billing/invoices/me?status=paid&limit=10&offset=5'
       );
     });
 
@@ -136,7 +138,7 @@ describe('InvoiceService', () => {
 
       const result = await invoiceService.getMyInvoice('inv_123');
 
-      expect(mockedApiClient.get).toHaveBeenCalledWith('/v1/public/billing/invoices/me/inv_123');
+      expect(mockedApiClient.get).toHaveBeenCalledWith('/api/v1/public/billing/invoices/me/inv_123');
       expect(result).toEqual(mockInvoice);
     });
 
@@ -171,7 +173,7 @@ describe('InvoiceService', () => {
       const result = await invoiceService.createMyInvoicePaymentIntent('inv_123');
 
       expect(mockedApiClient.post).toHaveBeenCalledWith(
-        '/v1/public/billing/invoices/me/inv_123/payment-intent'
+        '/api/v1/public/billing/invoices/me/inv_123/payment-intent'
       );
       expect(result).toEqual(mockPaymentIntent);
     });
@@ -216,7 +218,7 @@ describe('InvoiceService', () => {
 
       const result = await invoiceService.list();
 
-      expect(mockedApiClient.get).toHaveBeenCalledWith('/v1/public/billing/invoices');
+      expect(mockedApiClient.get).toHaveBeenCalledWith('/api/v1/public/billing/invoices');
       expect(result.invoices).toHaveLength(1);
     });
 
@@ -245,7 +247,7 @@ describe('InvoiceService', () => {
       await invoiceService.list(filters);
 
       expect(mockedApiClient.get).toHaveBeenCalledWith(
-        '/v1/public/billing/invoices?status=overdue&limit=50&offset=10'
+        '/api/v1/public/billing/invoices?status=overdue&limit=50&offset=10'
       );
     });
   });
@@ -264,7 +266,7 @@ describe('InvoiceService', () => {
 
       const result = await invoiceService.get('inv_123');
 
-      expect(mockedApiClient.get).toHaveBeenCalledWith('/v1/public/billing/invoices/inv_123');
+      expect(mockedApiClient.get).toHaveBeenCalledWith('/api/v1/public/billing/invoices/inv_123');
       expect(result).toEqual(mockInvoice);
     });
   });
@@ -296,7 +298,7 @@ describe('InvoiceService', () => {
 
       const result = await invoiceService.create(createData);
 
-      expect(mockedApiClient.post).toHaveBeenCalledWith('/v1/public/billing/invoices', createData);
+      expect(mockedApiClient.post).toHaveBeenCalledWith('/api/v1/public/billing/invoices', createData);
       expect(result).toEqual(mockInvoice);
     });
   });

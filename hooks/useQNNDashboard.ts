@@ -58,7 +58,7 @@ export function useQNNDashboardData(
     queryFn: async () => {
       try {
         // Call the main API dashboard endpoint
-        const response = await apiClient.get<QNNDashboardData>('/v1/dashboard/qnn');
+        const response = await apiClient.get<QNNDashboardData>('/api/v1/dashboard/qnn');
         return response.data;
       } catch (error) {
         console.error('Failed to fetch QNN dashboard data:', error);
@@ -120,7 +120,7 @@ export function useQuantumHealth(
   return useQuery({
     queryKey: qnnDashboardQueryKeys.dashboard.quantumHealth(),
     queryFn: async () => {
-      const response = await apiClient.get<QuantumHealth>('/v1/public/quantum/health');
+      const response = await apiClient.get<QuantumHealth>('/api/v1/public/quantum/health');
       return response.data;
     },
     refetchInterval: refreshInterval,
@@ -151,7 +151,7 @@ export function useQuantumDevices(
   return useQuery({
     queryKey: qnnDashboardQueryKeys.dashboard.quantumDevices(),
     queryFn: async () => {
-      const response = await apiClient.get<QuantumDevice[]>('/v1/public/quantum/devices');
+      const response = await apiClient.get<QuantumDevice[]>('/api/v1/public/quantum/devices');
       return response.data;
     },
     refetchInterval: refreshInterval,
@@ -181,7 +181,7 @@ export function useQuantumJobs(
   return useQuery({
     queryKey: qnnDashboardQueryKeys.dashboard.quantumJobs(),
     queryFn: async () => {
-      const response = await apiClient.get<QuantumJob[]>('/v1/public/quantum/jobs');
+      const response = await apiClient.get<QuantumJob[]>('/api/v1/public/quantum/jobs');
       return response.data;
     },
     refetchInterval: refreshInterval,
@@ -208,7 +208,7 @@ export function useQuantumInfo(): UseQueryResult<QuantumInfo, Error> {
   return useQuery({
     queryKey: qnnDashboardQueryKeys.dashboard.quantumInfo(),
     queryFn: async () => {
-      const response = await apiClient.get<QuantumInfo>('/v1/public/quantum/info');
+      const response = await apiClient.get<QuantumInfo>('/api/v1/public/quantum/info');
       return response.data;
     },
     staleTime: 5 * 60 * 1000, // 5 minutes - rarely changes

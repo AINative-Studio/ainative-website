@@ -11,10 +11,10 @@ import userEvent from '@testing-library/user-event';
 import AIKitTabs from '../AIKitTabs';
 
 // Mock Next.js navigation
-const mockPush = jest.fn();
-const mockReplace = jest.fn();
-const mockPrefetch = jest.fn();
-const mockBack = jest.fn();
+const mockPush = jest.fn() as jest.Mock as jest.Mock;
+const mockReplace = jest.fn() as jest.Mock as jest.Mock;
+const mockPrefetch = jest.fn() as jest.Mock as jest.Mock;
+const mockBack = jest.fn() as jest.Mock as jest.Mock;
 
 jest.mock('next/navigation', () => ({
   useRouter: jest.fn(() => ({

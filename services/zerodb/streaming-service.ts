@@ -121,8 +121,8 @@ export interface TopicMetrics {
 }
 
 export class StreamingService {
-  private static readonly BASE_PATH = '/v1/public/zerodb/streaming';
-  private static readonly EVENTS_PATH = '/v1/public/zerodb/events';
+  private static readonly BASE_PATH = '/api/v1/public/zerodb/streaming';
+  private static readonly EVENTS_PATH = '/api/v1/public/zerodb/events';
 
   // Topic Management
   static async getTopics(): Promise<StreamingTopic[]> {

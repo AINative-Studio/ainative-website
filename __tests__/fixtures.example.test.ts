@@ -1,3 +1,5 @@
+import { render, screen } from "@testing-library/react";
+
 /**
  * Example test file demonstrating fixture usage
  * This file shows best practices for using centralized test fixtures

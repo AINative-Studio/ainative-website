@@ -1,3 +1,5 @@
+import { render, screen } from "@testing-library/react";
+
 /**
  * Video Upload and Processing Flow Integration Tests
  * Tests complete video workflows including upload, processing status, storage, and playback

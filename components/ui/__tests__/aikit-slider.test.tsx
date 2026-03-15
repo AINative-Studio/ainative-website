@@ -1,3 +1,5 @@
+import React from "react";
+
 /**
  * AIKit Slider Component - TDD Test Suite
  * Coverage Target: 100%
@@ -37,7 +39,7 @@ describe('AIKit Slider Component - TDD Suite', () => {
 
   describe('User Interaction', () => {
     it('should update value on interaction', async () => {
-      const onValueChange = jest.fn();
+      const onValueChange = jest.fn() as jest.Mock as jest.Mock;
       render(<Slider defaultValue={[50]} onValueChange={onValueChange} data-testid="slider" />);
 
       const slider = screen.getByTestId('slider');
@@ -48,7 +50,7 @@ describe('AIKit Slider Component - TDD Suite', () => {
 
     it('should handle keyboard navigation (Arrow Right increases)', async () => {
       const user = userEvent.setup();
-      const onValueChange = jest.fn();
+      const onValueChange = jest.fn() as jest.Mock as jest.Mock;
       render(<Slider defaultValue={[50]} onValueChange={onValueChange} step={1} data-testid="slider" />);
 
       const slider = screen.getByTestId('slider').querySelector('[role="slider"]') as HTMLElement;
@@ -162,7 +164,7 @@ describe('AIKit Slider Component - TDD Suite', () => {
     });
 
     it('should prevent interaction when disabled', async () => {
-      const onValueChange = jest.fn();
+      const onValueChange = jest.fn() as jest.Mock as jest.Mock;
       const user = userEvent.setup();
       render(<Slider disabled defaultValue={[50]} onValueChange={onValueChange} data-testid="slider" />);
 

@@ -1,3 +1,7 @@
+import { render, screen } from "@testing-library/react";
+
+import React from "react";
+
 /**
  * Tests for category filtering in AI Settings
  * Verifies that audio models show up when "Audio" filter is selected
@@ -35,7 +39,7 @@ describe('Category Filter - Audio Models', () => {
       category: 'Audio',
       capabilities: ['audio', 'transcription', 'speech-to-text'],
       description: 'Speech-to-text transcription',
-      endpoint: '/v1/audio/transcriptions',
+      endpoint: '/api/v1/audio/transcriptions',
       method: 'POST',
       source_type: 'audio',
     },
@@ -47,7 +51,7 @@ describe('Category Filter - Audio Models', () => {
       category: 'Audio',
       capabilities: ['audio', 'translation'],
       description: 'Audio translation',
-      endpoint: '/v1/audio/translations',
+      endpoint: '/api/v1/audio/translations',
       method: 'POST',
       source_type: 'audio',
     },
@@ -59,7 +63,7 @@ describe('Category Filter - Audio Models', () => {
       category: 'Audio',
       capabilities: ['audio-generation', 'text-to-speech', 'speech'],
       description: 'Text-to-speech',
-      endpoint: '/v1/audio/speech',
+      endpoint: '/api/v1/audio/speech',
       method: 'POST',
       source_type: 'audio',
     },
@@ -75,7 +79,7 @@ describe('Category Filter - Audio Models', () => {
       category: 'Video',
       capabilities: ['image-to-video', 'video-generation'],
       description: 'Video generation',
-      endpoint: '/v1/multimodal/video/i2v',
+      endpoint: '/api/v1/multimodal/video/i2v',
       method: 'POST',
       source_type: 'video',
     },
@@ -87,7 +91,7 @@ describe('Category Filter - Audio Models', () => {
       category: 'Coding',
       capabilities: ['text-generation', 'code', 'reasoning', 'vision'],
       description: 'Chat model',
-      endpoint: '/v1/chat/completions',
+      endpoint: '/api/v1/chat/completions',
       method: 'POST',
       source_type: 'chat',
     },

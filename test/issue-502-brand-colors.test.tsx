@@ -1,3 +1,5 @@
+import React from "react";
+
 /**
  * Issue #502: AINative Brand Color Variables
  *

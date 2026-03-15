@@ -596,7 +596,7 @@ export class GitHubOnboardingService {
      */
     async checkConnectionStatus(): Promise<GitHubConnectionStatus> {
         return withRetry(() =>
-            apiClient.get<GitHubConnectionStatus>('/v1/public/github/connection-status')
+            apiClient.get<GitHubConnectionStatus>('/api/v1/public/github/connection-status')
         );
     }
 
@@ -700,7 +700,7 @@ export class GitHubOnboardingService {
         };
 
         return withRetry(() =>
-            apiClient.post<GitHubPATStoreResponse>('/v1/public/github/token', request)
+            apiClient.post<GitHubPATStoreResponse>('/api/v1/public/github/token', request)
         );
     }
 }
@@ -730,7 +730,7 @@ export class ZeroDBSetupService {
      */
     async listProjects(): Promise<ZeroDBProjectListItem[]> {
         return withRetry(() =>
-            apiClient.get<ZeroDBProjectListItem[]>('/v1/public/projects')
+            apiClient.get<ZeroDBProjectListItem[]>('/api/v1/public/projects')
         );
     }
 
@@ -742,7 +742,7 @@ export class ZeroDBSetupService {
      */
     async getProjectStats(): Promise<ZeroDBProjectStats> {
         return withRetry(() =>
-            apiClient.get<ZeroDBProjectStats>('/v1/public/projects/stats/summary')
+            apiClient.get<ZeroDBProjectStats>('/api/v1/public/projects/stats/summary')
         );
     }
 
@@ -773,7 +773,7 @@ export class ZeroDBSetupService {
         };
 
         return withRetry(() =>
-            apiClient.post<ZeroDBProject>('/v1/public/projects', request)
+            apiClient.post<ZeroDBProject>('/api/v1/public/projects', request)
         );
     }
 
@@ -786,7 +786,7 @@ export class ZeroDBSetupService {
     async listApiKeys(): Promise<ApiKeyListResponse> {
         // API returns array directly, wrap it in expected response format
         const keys = await withRetry(() =>
-            apiClient.get<ApiKey[]>('/v1/public/api-keys/')
+            apiClient.get<ApiKey[]>('/api/v1/public/api-keys/')
         );
         return { api_keys: keys };
     }
@@ -811,7 +811,7 @@ export class ZeroDBSetupService {
         };
 
         return withRetry(() =>
-            apiClient.post<CreateApiKeyResponse>('/v1/public/api-keys/', request)
+            apiClient.post<CreateApiKeyResponse>('/api/v1/public/api-keys/', request)
         );
     }
 
@@ -879,7 +879,7 @@ export class AgentSwarmAIService {
      */
     async createProject(config: CreateAgentSwarmRequest): Promise<AgentSwarmProject> {
         return withRetry(() =>
-            apiClient.post<AgentSwarmProject>('/v1/public/agent-swarms/orchestrate', config)
+            apiClient.post<AgentSwarmProject>('/api/v1/public/agent-swarms/orchestrate', config)
         );
     }
 
@@ -915,7 +915,7 @@ export class AgentSwarmAIService {
         // Use public endpoint for better availability
         return withRetry(
             () => apiClient.post<GenerateDataModelResponse>(
-                `/v1/public/agent-swarms/projects/${projectId}/ai/generate-data-model`,
+                `/api/v1/public/agent-swarms/projects/${projectId}/ai/generate-data-model`,
                 request,
                 { timeout: 60000 } // 60 second timeout for AI operations
             ),
@@ -947,7 +947,7 @@ export class AgentSwarmAIService {
         // Use public endpoint for better availability
         return withRetry(
             () => apiClient.post<GenerateBacklogResponse>(
-                `/v1/public/agent-swarms/projects/${projectId}/ai/generate-backlog`,
+                `/api/v1/public/agent-swarms/projects/${projectId}/ai/generate-backlog`,
                 request,
                 { timeout: 60000 }
             ),
@@ -982,7 +982,7 @@ export class AgentSwarmAIService {
 
         return withRetry(
             () => apiClient.post<GenerateSprintPlanResponse>(
-                `/v1/public/agent-swarms/projects/${projectId}/ai/generate-sprint-plan`,
+                `/api/v1/public/agent-swarms/projects/${projectId}/ai/generate-sprint-plan`,
                 request,
                 { timeout: 60000 }
             ),
@@ -1002,7 +1002,7 @@ export class AgentSwarmAIService {
      */
     async getProjectStatus(projectId: string): Promise<ProjectStatus> {
         return withRetry(() =>
-            apiClient.get<ProjectStatus>(`/v1/public/agent-swarms/projects/${projectId}/status`)
+            apiClient.get(`/api/v1/public/agent-swarms/projects/${projectId}/status`)
         );
     }
 

@@ -1,4 +1,6 @@
+
 'use client';
+import React from "react";
 
 /**
  * Lazy-loaded chart components using next/dynamic

@@ -1,3 +1,5 @@
+import { render, screen } from "@testing-library/react";
+
 import apiClient from '../api-client';
 import notificationService, { NotificationAPIError, NotificationServiceError } from '../notification-service';
 import { env } from '../env';
@@ -6,10 +8,10 @@ import { env } from '../env';
 jest.mock('../api-client', () => ({
   __esModule: true,
   default: {
-    get: jest.fn(),
-    post: jest.fn(),
-    put: jest.fn(),
-    delete: jest.fn(),
+    get: jest.fn() as jest.Mock as jest.Mock,
+    post: jest.fn() as jest.Mock as jest.Mock,
+    put: jest.fn() as jest.Mock as jest.Mock,
+    delete: jest.fn() as jest.Mock as jest.Mock,
   },
 }));
 
@@ -58,7 +60,7 @@ describe('NotificationService', () => {
 
       const result = await notificationService.getNotifications();
 
-      expect(mockApiClient.get).toHaveBeenCalledWith('/v1/notifications');
+      expect(mockApiClient.get).toHaveBeenCalledWith('/api/v1/notifications');
       expect(result).toEqual(mockNotifications.notifications);
     });
 
@@ -103,7 +105,7 @@ describe('NotificationService', () => {
 
       const result = await notificationService.getNotification('1');
 
-      expect(mockApiClient.get).toHaveBeenCalledWith('/v1/notifications/1');
+      expect(mockApiClient.get).toHaveBeenCalledWith('/api/v1/notifications/1');
       expect(result).toEqual(mockNotification);
     });
 
@@ -135,7 +137,7 @@ describe('NotificationService', () => {
 
       const result = await notificationService.markAsRead('1');
 
-      expect(mockApiClient.put).toHaveBeenCalledWith('/v1/notifications/1/read');
+      expect(mockApiClient.put).toHaveBeenCalledWith('/api/v1/notifications/1/read');
       expect(result.read).toBe(true);
       expect(result.readAt).toBeDefined();
     });
@@ -157,7 +159,7 @@ describe('NotificationService', () => {
 
       await notificationService.deleteNotification('1');
 
-      expect(mockApiClient.delete).toHaveBeenCalledWith('/v1/notifications/1');
+      expect(mockApiClient.delete).toHaveBeenCalledWith('/api/v1/notifications/1');
     });
 
     it('throws NotificationAPIError in production on delete errors', async () => {
@@ -204,7 +206,7 @@ describe('NotificationService', () => {
 
       const result = await notificationService.getPreferences();
 
-      expect(mockApiClient.get).toHaveBeenCalledWith('/v1/notifications/preferences');
+      expect(mockApiClient.get).toHaveBeenCalledWith('/api/v1/notifications/preferences');
       expect(result).toEqual(mockPreferences);
     });
 

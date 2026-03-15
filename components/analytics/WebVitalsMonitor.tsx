@@ -1,4 +1,6 @@
+
 'use client';
+import React from "react";
 
 /**
  * Web Vitals Monitor Component

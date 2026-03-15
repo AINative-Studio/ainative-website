@@ -210,7 +210,7 @@ class ModelAggregatorService {
     }
 
     try {
-      const response = await apiClient.get<MultimodalHealthResponse>('/v1/multimodal/health');
+      const response = await apiClient.get<MultimodalHealthResponse>('/api/v1/multimodal/health');
       this.healthCheckCache = response.data;
       this.healthCheckTimestamp = now;
       console.log('[ModelAggregator] Multimodal health check:', response.data);
@@ -227,7 +227,7 @@ class ModelAggregatorService {
    */
   private async fetchAIRegistryModels(): Promise<UnifiedAIModel[]> {
     try {
-      const response = await apiClient.get<AIRegistryResponse>('/v1/public/ai-registry/models');
+      const response = await apiClient.get<AIRegistryResponse>('/api/v1/public/ai-registry/models');
       const registryModels = response.data.models || [];
 
       console.log('[ModelAggregator] Fetched from AI Registry:', registryModels.length, 'models');
@@ -319,7 +319,7 @@ class ModelAggregatorService {
    */
   private async fetchChatModels(): Promise<UnifiedAIModel[]> {
     try {
-      const response = await apiClient.get<ChatModelsResponse>('/v1/models');
+      const response = await apiClient.get<ChatModelsResponse>('/api/v1/models');
       return response.data.data.map(model => this.transformChatModel(model));
     } catch (error) {
       console.error('Failed to fetch chat models:', error);
@@ -381,7 +381,7 @@ class ModelAggregatorService {
         category: 'Coding',
       }),
       examplePrompts: examplePrompts.length > 0 ? examplePrompts : undefined,
-      endpoint: '/v1/chat/completions',
+      endpoint: '/api/v1/chat/completions',
       method: 'POST',
       is_default: false,
       source_type: 'chat',
@@ -409,7 +409,7 @@ class ModelAggregatorService {
       examplePrompts: [
         'Generate embeddings optimized for semantic similarity search. Text should preserve meaning, intent, and context. Use full sentences rather than keywords.',
       ],
-      endpoint: '/v1/embeddings',
+      endpoint: '/api/v1/embeddings',
       method: 'POST',
       is_default: isDefault,
       speed: model.speed,
@@ -442,7 +442,7 @@ class ModelAggregatorService {
           usd: 0.025,
           unit: 'per image',
         },
-        endpoint: '/v1/multimodal/image',
+        endpoint: '/api/v1/multimodal/image',
         method: 'POST',
         is_default: true,
         speed: 'Fast',
@@ -480,7 +480,7 @@ class ModelAggregatorService {
           usd: 0.20,
           unit: 'per 5s video',
         },
-        endpoint: '/v1/multimodal/video/i2v',
+        endpoint: '/api/v1/multimodal/video/i2v',
         method: 'POST',
         is_default: true,
         speed: 'Fast',
@@ -507,7 +507,7 @@ class ModelAggregatorService {
           usd: 0.26,
           unit: 'per 5s video',
         },
-        endpoint: '/v1/multimodal/video/i2v',
+        endpoint: '/api/v1/multimodal/video/i2v',
         method: 'POST',
         speed: 'Medium',
         quality: 'High',
@@ -533,7 +533,7 @@ class ModelAggregatorService {
           usd: 0.40,
           unit: 'per 4s video',
         },
-        endpoint: '/v1/multimodal/video/i2v',
+        endpoint: '/api/v1/multimodal/video/i2v',
         method: 'POST',
         is_premium: true,
         speed: 'Slow',
@@ -561,7 +561,7 @@ class ModelAggregatorService {
           usd: 0.50,
           unit: 'per video',
         },
-        endpoint: '/v1/multimodal/video/t2v',
+        endpoint: '/api/v1/multimodal/video/t2v',
         method: 'POST',
         is_premium: true,
         speed: 'Slow',
@@ -588,7 +588,7 @@ class ModelAggregatorService {
           usd: 0.40,
           unit: 'per video',
         },
-        endpoint: '/v1/multimodal/video/cogvideox',
+        endpoint: '/api/v1/multimodal/video/cogvideox',
         method: 'POST',
         speed: 'Slow',
         quality: 'High',
@@ -618,7 +618,7 @@ class ModelAggregatorService {
         examplePrompts: [
           'Write clean, production-ready code. Follow best practices and industry standards. Include comments only where clarity is required. Optimize for readability and maintainability. Assume this will be reviewed by senior engineers.',
         ],
-        endpoint: '/v1/chat/completions',
+        endpoint: '/api/v1/chat/completions',
         method: 'POST',
         speed: 'Fast',
         quality: 'High',
@@ -831,7 +831,7 @@ class ModelAggregatorService {
         examplePrompts: [
           'Generate embeddings optimized for semantic similarity search. Text should preserve meaning, intent, and context. Use full sentences rather than keywords.',
         ],
-        endpoint: '/v1/embeddings',
+        endpoint: '/api/v1/embeddings',
         method: 'POST',
         is_default: true,
         speed: 'Fast',
@@ -852,7 +852,7 @@ class ModelAggregatorService {
         examplePrompts: [
           'Generate embeddings optimized for semantic similarity search. Text should preserve meaning, intent, and context. Use full sentences rather than keywords.',
         ],
-        endpoint: '/v1/embeddings',
+        endpoint: '/api/v1/embeddings',
         method: 'POST',
         speed: 'Medium',
         source_type: 'embedding',
@@ -872,7 +872,7 @@ class ModelAggregatorService {
         examplePrompts: [
           'Generate embeddings optimized for semantic similarity search. Text should preserve meaning, intent, and context. Use full sentences rather than keywords.',
         ],
-        endpoint: '/v1/embeddings',
+        endpoint: '/api/v1/embeddings',
         method: 'POST',
         speed: 'Slow',
         quality: 'High',

@@ -1,3 +1,5 @@
+import React from "react";
+
 /**
  * GradientText Component Tests
  * Issue #499 - Typography Scale Alignment

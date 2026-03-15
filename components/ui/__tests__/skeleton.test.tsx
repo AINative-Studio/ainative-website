@@ -1,3 +1,7 @@
+import { render, screen } from "@testing-library/react";
+
+import React from "react";
+
 import { render, screen } from '@/test/test-utils';
 import { Skeleton } from '../skeleton';
 

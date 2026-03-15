@@ -1,3 +1,4 @@
+
 /**
  * Ignore Rule Editor Component
  *
@@ -5,6 +6,7 @@
  */
 
 'use client';
+import React from "react";
 
 import { useState, useEffect } from 'react';
 import { IgnoreFileService, IgnoreRule, IgnoreType } from '@/lib/ignore-file-service';

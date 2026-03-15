@@ -1,3 +1,5 @@
+import React from "react";
+
 import { render, screen, waitFor, fireEvent } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import DeveloperToolsClient from '../DeveloperToolsClient';
@@ -5,12 +7,12 @@ import DeveloperToolsClient from '../DeveloperToolsClient';
 // Mock dependencies
 jest.mock('next/navigation', () => ({
   useRouter: () => ({
-    push: jest.fn(),
-    replace: jest.fn(),
-    prefetch: jest.fn(),
+    push: jest.fn() as jest.Mock as jest.Mock,
+    replace: jest.fn() as jest.Mock as jest.Mock,
+    prefetch: jest.fn() as jest.Mock as jest.Mock,
   }),
   useSearchParams: () => ({
-    get: jest.fn(),
+    get: jest.fn() as jest.Mock as jest.Mock,
   }),
   usePathname: () => '/test-path',
 }));
@@ -23,8 +25,8 @@ jest.mock('next-auth/react', () => ({
     },
     status: 'authenticated',
   }),
-  signIn: jest.fn(),
-  signOut: jest.fn(),
+  signIn: jest.fn() as jest.Mock as jest.Mock,
+  signOut: jest.fn() as jest.Mock as jest.Mock,
 }));
 
 // Mock API calls
@@ -32,8 +34,8 @@ global.fetch = jest.fn(() =>
   Promise.resolve({
     ok: true,
     json: () => Promise.resolve({ data: {} }),
-  })) as jest.Mock
-);
+  })
+) as jest.Mock;
 
 describe('DeveloperToolsClient', () => {
   beforeEach(() => {

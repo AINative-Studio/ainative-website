@@ -1,3 +1,5 @@
+import { render, screen } from "@testing-library/react";
+
 /**
  * TDD Tests for Tailwind Configuration
  * These tests validate the comprehensive design system migration

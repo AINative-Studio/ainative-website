@@ -13,10 +13,10 @@ import userEvent from '@testing-library/user-event';
 import '@testing-library/jest-dom';
 
 // Mock Next.js navigation BEFORE importing component
-const mockPush = jest.fn();
-const mockReplace = jest.fn();
-const mockPrefetch = jest.fn();
-const mockBack = jest.fn();
+const mockPush = jest.fn() as jest.Mock as jest.Mock;
+const mockReplace = jest.fn() as jest.Mock as jest.Mock;
+const mockPrefetch = jest.fn() as jest.Mock as jest.Mock;
+const mockBack = jest.fn() as jest.Mock as jest.Mock;
 const mockUsePathname = jest.fn(() => '/dashboard');
 
 jest.mock('next/navigation', () => ({

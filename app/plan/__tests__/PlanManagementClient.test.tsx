@@ -1,3 +1,5 @@
+import React from "react";
+
 /**
  * Plan Management Client Tests
  * Comprehensive tests for subscription management functionality

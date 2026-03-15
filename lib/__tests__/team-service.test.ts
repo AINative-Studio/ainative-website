@@ -1,3 +1,5 @@
+import { render, screen } from "@testing-library/react";
+
 import apiClient from '../api-client';
 import { teamService } from '../team-service';
 
@@ -5,10 +7,10 @@ import { teamService } from '../team-service';
 jest.mock('../api-client', () => ({
   __esModule: true,
   default: {
-    get: jest.fn(),
-    post: jest.fn(),
-    put: jest.fn(),
-    delete: jest.fn(),
+    get: jest.fn() as jest.Mock as jest.Mock,
+    post: jest.fn() as jest.Mock as jest.Mock,
+    put: jest.fn() as jest.Mock as jest.Mock,
+    delete: jest.fn() as jest.Mock as jest.Mock,
   },
 }));
 
@@ -42,7 +44,7 @@ describe('TeamService', () => {
 
       const result = await teamService.createTeam(teamData);
 
-      expect(mockApiClient.post).toHaveBeenCalledWith('/v1/teams', teamData);
+      expect(mockApiClient.post).toHaveBeenCalledWith('/api/v1/teams', teamData);
       expect(result).toEqual(mockResponse);
     });
 
@@ -68,7 +70,7 @@ describe('TeamService', () => {
 
       const result = await teamService.createTeam(teamData);
 
-      expect(mockApiClient.post).toHaveBeenCalledWith('/v1/teams', teamData);
+      expect(mockApiClient.post).toHaveBeenCalledWith('/api/v1/teams', teamData);
       expect(result).toEqual(mockResponse);
     });
 
@@ -116,7 +118,7 @@ describe('TeamService', () => {
 
       const result = await teamService.listTeams();
 
-      expect(mockApiClient.get).toHaveBeenCalledWith('/v1/teams');
+      expect(mockApiClient.get).toHaveBeenCalledWith('/api/v1/teams');
       expect(result).toEqual(mockTeams);
     });
 
@@ -144,7 +146,7 @@ describe('TeamService', () => {
 
       const result = await teamService.listTeams(orgId);
 
-      expect(mockApiClient.get).toHaveBeenCalledWith(`/v1/teams?organization_id=${orgId}`);
+      expect(mockApiClient.get).toHaveBeenCalledWith(`/api/v1/teams?organization_id=${orgId}`);
       expect(result).toEqual(mockTeams);
     });
 
@@ -176,7 +178,7 @@ describe('TeamService', () => {
 
       const result = await teamService.getTeam(teamId);
 
-      expect(mockApiClient.get).toHaveBeenCalledWith(`/v1/teams/${teamId}`);
+      expect(mockApiClient.get).toHaveBeenCalledWith(`/api/v1/teams/${teamId}`);
       expect(result).toEqual(mockTeam);
     });
 
@@ -210,7 +212,7 @@ describe('TeamService', () => {
 
       const result = await teamService.updateTeam(teamId, updateData);
 
-      expect(mockApiClient.put).toHaveBeenCalledWith(`/v1/teams/${teamId}`, updateData);
+      expect(mockApiClient.put).toHaveBeenCalledWith(`/api/v1/teams/${teamId}`, updateData);
       expect(result).toEqual(mockResponse);
     });
 
@@ -233,7 +235,7 @@ describe('TeamService', () => {
 
       const result = await teamService.deleteTeam(teamId);
 
-      expect(mockApiClient.delete).toHaveBeenCalledWith(`/v1/teams/${teamId}`);
+      expect(mockApiClient.delete).toHaveBeenCalledWith(`/api/v1/teams/${teamId}`);
       expect(result).toEqual({ message: 'Team deleted successfully' });
     });
 
@@ -268,7 +270,7 @@ describe('TeamService', () => {
 
       const result = await teamService.addTeamMember(teamId, memberData);
 
-      expect(mockApiClient.post).toHaveBeenCalledWith(`/v1/teams/${teamId}/members`, memberData);
+      expect(mockApiClient.post).toHaveBeenCalledWith(`/api/v1/teams/${teamId}/members`, memberData);
       expect(result).toEqual(mockResponse);
     });
 
@@ -295,7 +297,7 @@ describe('TeamService', () => {
 
       const result = await teamService.addTeamMember(teamId, memberData);
 
-      expect(mockApiClient.post).toHaveBeenCalledWith(`/v1/teams/${teamId}/members`, memberData);
+      expect(mockApiClient.post).toHaveBeenCalledWith(`/api/v1/teams/${teamId}/members`, memberData);
       expect(result).toEqual(mockResponse);
     });
 
@@ -348,7 +350,7 @@ describe('TeamService', () => {
 
       const result = await teamService.listTeamMembers(teamId);
 
-      expect(mockApiClient.get).toHaveBeenCalledWith(`/v1/teams/${teamId}/members`);
+      expect(mockApiClient.get).toHaveBeenCalledWith(`/api/v1/teams/${teamId}/members`);
       expect(result).toEqual(mockMembers);
     });
 
@@ -372,7 +374,7 @@ describe('TeamService', () => {
 
       const result = await teamService.removeTeamMember(teamId, userId);
 
-      expect(mockApiClient.delete).toHaveBeenCalledWith(`/v1/teams/${teamId}/members/${userId}`);
+      expect(mockApiClient.delete).toHaveBeenCalledWith(`/api/v1/teams/${teamId}/members/${userId}`);
       expect(result).toEqual({ message: 'Member removed from team successfully' });
     });
 

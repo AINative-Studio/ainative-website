@@ -1,3 +1,5 @@
+import { render, screen } from "@testing-library/react";
+
 import { render, screen, waitFor } from '@/test/test-utils';
 import { axe, toHaveNoViolations } from 'jest-axe';
 import { Progress } from '../Progress';

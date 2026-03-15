@@ -1,4 +1,6 @@
+
 'use client';
+import React from "react";
 
 import { useState, useSyncExternalStore } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
@@ -96,75 +98,75 @@ const API_ENDPOINTS: APIEndpointCategory[] = [
   {
     name: 'Authentication',
     endpoints: [
-      { method: 'POST', path: '/v1/auth/auth/login', description: 'Login user with email/password', requiresAuth: false },
-      { method: 'POST', path: '/v1/auth/auth/register', description: 'Register new user with email verification', requiresAuth: false },
-      { method: 'POST', path: '/v1/auth/auth/refresh', description: 'Refresh access token', requiresAuth: false },
-      { method: 'GET', path: '/v1/auth/auth/me', description: 'Get current authenticated user', requiresAuth: true },
-      { method: 'POST', path: '/v1/auth/auth/logout', description: 'Logout user by blacklisting token', requiresAuth: true },
+      { method: 'POST', path: '/api/v1/auth/login', description: 'Login user with email/password', requiresAuth: false },
+      { method: 'POST', path: '/api/v1/auth/register', description: 'Register new user with email verification', requiresAuth: false },
+      { method: 'POST', path: '/api/v1/auth/refresh', description: 'Refresh access token', requiresAuth: false },
+      { method: 'GET', path: '/api/v1/auth/me', description: 'Get current authenticated user', requiresAuth: true },
+      { method: 'POST', path: '/api/v1/auth/logout', description: 'Logout user by blacklisting token', requiresAuth: true },
     ],
   },
   {
     name: 'Chat & Conversations',
     endpoints: [
-      { method: 'GET', path: '/v1/chat/health', description: 'Health check for chat service', requiresAuth: false },
-      { method: 'GET', path: '/v1/chat/sessions', description: "Get user's chat sessions", requiresAuth: false },
-      { method: 'POST', path: '/v1/chat/sessions', description: 'Create a new chat session', requiresAuth: false },
-      { method: 'POST', path: '/v1/chat/completions', description: 'Chat completion with agentic tool calling', requiresAuth: false },
-      { method: 'GET', path: '/v1/chat/sessions/{session_id}/messages', description: 'Get messages from a chat session', requiresAuth: false },
+      { method: 'GET', path: '/api/v1/chat/health', description: 'Health check for chat service', requiresAuth: false },
+      { method: 'GET', path: '/api/v1/chat/sessions', description: "Get user's chat sessions", requiresAuth: false },
+      { method: 'POST', path: '/api/v1/chat/sessions', description: 'Create a new chat session', requiresAuth: false },
+      { method: 'POST', path: '/api/v1/chat/completions', description: 'Chat completion with agentic tool calling', requiresAuth: false },
+      { method: 'GET', path: '/api/v1/chat/sessions/{session_id}/messages', description: 'Get messages from a chat session', requiresAuth: false },
     ],
   },
   {
     name: 'Dashboard',
     endpoints: [
-      { method: 'GET', path: '/v1/dashboard', description: 'Get dashboard overview and metrics', requiresAuth: true },
-      { method: 'GET', path: '/v1/dashboard/overview', description: 'Get aggregated platform metrics', requiresAuth: true },
-      { method: 'GET', path: '/v1/dashboard/quick-stats', description: 'Get key metrics for widgets', requiresAuth: true },
-      { method: 'GET', path: '/v1/dashboard/activity', description: 'Get recent activity feed', requiresAuth: true },
+      { method: 'GET', path: '/api/v1/dashboard', description: 'Get dashboard overview and metrics', requiresAuth: true },
+      { method: 'GET', path: '/api/v1/dashboard/overview', description: 'Get aggregated platform metrics', requiresAuth: true },
+      { method: 'GET', path: '/api/v1/dashboard/quick-stats', description: 'Get key metrics for widgets', requiresAuth: true },
+      { method: 'GET', path: '/api/v1/dashboard/activity', description: 'Get recent activity feed', requiresAuth: true },
     ],
   },
   {
     name: 'Gift Campaigns',
     endpoints: [
-      { method: 'POST', path: '/v1/campaigns/redeem', description: 'Redeem gift code for campaign access', requiresAuth: true },
-      { method: 'POST', path: '/v1/campaigns/info', description: 'Get public information about gift code', requiresAuth: false },
-      { method: 'GET', path: '/v1/campaigns/my-campaigns', description: "Get user's active campaigns", requiresAuth: true },
+      { method: 'POST', path: '/api/v1/campaigns/redeem', description: 'Redeem gift code for campaign access', requiresAuth: true },
+      { method: 'POST', path: '/api/v1/campaigns/info', description: 'Get public information about gift code', requiresAuth: false },
+      { method: 'GET', path: '/api/v1/campaigns/my-campaigns', description: "Get user's active campaigns", requiresAuth: true },
     ],
   },
   {
     name: 'Live Streaming - Core',
     endpoints: [
-      { method: 'GET', path: '/v1/streams/test-deployment', description: 'Test endpoint to verify deployment', requiresAuth: false },
-      { method: 'POST', path: '/v1/streams/', description: 'Create livestream with RTMPS credentials', requiresAuth: false },
-      { method: 'GET', path: '/v1/streams/', description: 'Browse and discover livestreams', requiresAuth: false },
-      { method: 'GET', path: '/v1/streams/id/{stream_id}', description: 'Get detailed stream information', requiresAuth: false },
-      { method: 'GET', path: '/v1/streams/trending', description: 'Get trending streams by growth rate', requiresAuth: false },
+      { method: 'GET', path: '/api/v1/streams/test-deployment', description: 'Test endpoint to verify deployment', requiresAuth: false },
+      { method: 'POST', path: '/api/v1/streams/', description: 'Create livestream with RTMPS credentials', requiresAuth: false },
+      { method: 'GET', path: '/api/v1/streams/', description: 'Browse and discover livestreams', requiresAuth: false },
+      { method: 'GET', path: '/api/v1/streams/id/{stream_id}', description: 'Get detailed stream information', requiresAuth: false },
+      { method: 'GET', path: '/api/v1/streams/trending', description: 'Get trending streams by growth rate', requiresAuth: false },
     ],
   },
   {
     name: 'Live Streaming - Categories',
     endpoints: [
-      { method: 'GET', path: '/v1/streams/categories', description: 'List available stream categories', requiresAuth: false },
-      { method: 'GET', path: '/v1/streams/categories/trending', description: 'Get trending categories by viewer count', requiresAuth: false },
-      { method: 'GET', path: '/v1/streams/categories/tree', description: 'Get hierarchical category tree', requiresAuth: false },
-      { method: 'GET', path: '/v1/streams/categories/popular', description: 'Get popular categories ranked by viewers', requiresAuth: false },
+      { method: 'GET', path: '/api/v1/streams/categories', description: 'List available stream categories', requiresAuth: false },
+      { method: 'GET', path: '/api/v1/streams/categories/trending', description: 'Get trending categories by viewer count', requiresAuth: false },
+      { method: 'GET', path: '/api/v1/streams/categories/tree', description: 'Get hierarchical category tree', requiresAuth: false },
+      { method: 'GET', path: '/api/v1/streams/categories/popular', description: 'Get popular categories ranked by viewers', requiresAuth: false },
     ],
   },
   {
     name: 'Live Streaming - Search',
     endpoints: [
-      { method: 'GET', path: '/v1/streams/search', description: 'Search streams by title, description, username', requiresAuth: false },
-      { method: 'GET', path: '/v1/streams/search/suggestions', description: 'Get autocomplete suggestions', requiresAuth: false },
-      { method: 'GET', path: '/v1/streams/search/popular', description: 'Get popular search terms', requiresAuth: false },
-      { method: 'GET', path: '/v1/streams/search/trending', description: 'Get trending search terms', requiresAuth: false },
+      { method: 'GET', path: '/api/v1/streams/search', description: 'Search streams by title, description, username', requiresAuth: false },
+      { method: 'GET', path: '/api/v1/streams/search/suggestions', description: 'Get autocomplete suggestions', requiresAuth: false },
+      { method: 'GET', path: '/api/v1/streams/search/popular', description: 'Get popular search terms', requiresAuth: false },
+      { method: 'GET', path: '/api/v1/streams/search/trending', description: 'Get trending search terms', requiresAuth: false },
     ],
   },
   {
     name: 'VODs',
     endpoints: [
-      { method: 'GET', path: '/v1/streams/vods', description: 'Browse VOD content with filters', requiresAuth: false },
-      { method: 'GET', path: '/v1/streams/vods/search', description: 'Search VOD content by title', requiresAuth: false },
-      { method: 'GET', path: '/v1/streams/vods/{vod_id}', description: 'Get VOD details', requiresAuth: false },
-      { method: 'GET', path: '/v1/streams/vods/{vod_id}/playback', description: 'Get VOD playback URL', requiresAuth: false },
+      { method: 'GET', path: '/api/v1/streams/vods', description: 'Browse VOD content with filters', requiresAuth: false },
+      { method: 'GET', path: '/api/v1/streams/vods/search', description: 'Search VOD content by title', requiresAuth: false },
+      { method: 'GET', path: '/api/v1/streams/vods/{vod_id}', description: 'Get VOD details', requiresAuth: false },
+      { method: 'GET', path: '/api/v1/streams/vods/{vod_id}/playback', description: 'Get VOD playback URL', requiresAuth: false },
     ],
   },
 ];

@@ -1,4 +1,6 @@
+
 'use client';
+import React from "react";
 
 import { motion } from 'framer-motion';
 import { Download, Copy, Check } from 'lucide-react';

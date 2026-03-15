@@ -1,3 +1,5 @@
+import React from "react";
+
 /**
  * Stripe Callback Client Component Tests
  * Comprehensive tests for OAuth callback handling
@@ -11,15 +13,15 @@ import { stripeConnectService } from '@/services/stripeConnectService';
 
 // Mock dependencies
 jest.mock('next/navigation', () => ({
-  useRouter: jest.fn(),
-  useSearchParams: jest.fn(),
+  useRouter: jest.fn() as jest.Mock as jest.Mock,
+  useSearchParams: jest.fn() as jest.Mock as jest.Mock,
 }));
 
 jest.mock('@/services/stripeConnectService', () => ({
   stripeConnectService: {
-    completeOAuthFlow: jest.fn(),
-    handleOAuthError: jest.fn(),
-    validateStateToken: jest.fn(),
+    completeOAuthFlow: jest.fn() as jest.Mock as jest.Mock,
+    handleOAuthError: jest.fn() as jest.Mock as jest.Mock,
+    validateStateToken: jest.fn() as jest.Mock as jest.Mock,
   },
 }));
 
@@ -45,8 +47,8 @@ Object.defineProperty(window, 'localStorage', {
 });
 
 describe('StripeCallbackClient', () => {
-  const mockPush = jest.fn();
-  const mockReplace = jest.fn();
+  const mockPush = jest.fn() as jest.Mock as jest.Mock;
+  const mockReplace = jest.fn() as jest.Mock as jest.Mock;
 
   beforeEach(() => {
     jest.clearAllMocks();

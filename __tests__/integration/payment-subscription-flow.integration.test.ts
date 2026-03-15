@@ -1,3 +1,5 @@
+import { render, screen } from "@testing-library/react";
+
 /**
  * Payment and Subscription Workflow Integration Tests
  * Tests complete payment flows including Stripe checkout, subscription management, and payment methods

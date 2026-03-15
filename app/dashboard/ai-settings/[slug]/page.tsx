@@ -1,3 +1,5 @@
+import React from "react";
+
 import { Metadata } from 'next';
 import ModelDetailClient from './ModelDetailClient';
 import { ModelDetailPageParams, ModelDetailPageSearchParams } from './types';

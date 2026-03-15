@@ -448,7 +448,7 @@ export class QNNApiClient {
    */
   async listRepositories(params?: RepositorySearchParams): Promise<PaginatedResponse<Repository>> {
     try {
-      const response = await this.client.get<PaginatedResponse<Repository>>('/v1/repositories', { params });
+      const response = await this.client.get<PaginatedResponse<Repository>>('/api/v1/repositories', { params });
       return this.extractData(response);
     } catch (error) {
       throw this.handleError(error);
@@ -463,7 +463,7 @@ export class QNNApiClient {
    */
   async searchRepositories(params: RepositorySearchParams): Promise<PaginatedResponse<Repository>> {
     try {
-      const response = await this.client.post<PaginatedResponse<Repository>>('/v1/repositories/search', params);
+      const response = await this.client.post<PaginatedResponse<Repository>>('/api/v1/repositories/search', params);
       return this.extractData(response);
     } catch (error) {
       throw this.handleError(error);
@@ -478,7 +478,7 @@ export class QNNApiClient {
    */
   async getRepository(id: string): Promise<Repository> {
     try {
-      const response = await this.client.get<ApiResponse<Repository>>(`/v1/repositories/${id}`);
+      const response = await this.client.get<ApiResponse<Repository>>(`/api/v1/repositories/${id}`);
       const apiResponse = this.extractData(response);
       return apiResponse.data;
     } catch (error) {
@@ -495,7 +495,7 @@ export class QNNApiClient {
   async getRepositoryAnalysis(id: string): Promise<RepositoryAnalysis> {
     try {
       const response = await this.client.get<ApiResponse<RepositoryAnalysis>>(
-        `/v1/repositories/${id}/analysis`
+        `/api/v1/repositories/${id}/analysis`
       );
       const apiResponse = this.extractData(response);
       return apiResponse.data;
@@ -513,7 +513,7 @@ export class QNNApiClient {
   async analyzeRepository(id: string): Promise<ApiResponse<RepositoryAnalysis>> {
     try {
       const response = await this.client.post<ApiResponse<RepositoryAnalysis>>(
-        `/v1/repositories/${id}/analyze`
+        `/api/v1/repositories/${id}/analyze`
       );
       return this.extractData(response);
     } catch (error) {
@@ -533,7 +533,7 @@ export class QNNApiClient {
    */
   async listModels(filters?: Record<string, unknown>): Promise<Model[]> {
     try {
-      const response = await this.client.get<ApiResponse<Model[]>>('/v1/models', {
+      const response = await this.client.get<ApiResponse<Model[]>>('/api/v1/models', {
         params: filters,
       });
       const apiResponse = this.extractData(response);
@@ -551,7 +551,7 @@ export class QNNApiClient {
    */
   async createModel(data: CreateModelRequest): Promise<Model> {
     try {
-      const response = await this.client.post<ApiResponse<Model>>('/v1/models', data);
+      const response = await this.client.post<ApiResponse<Model>>('/api/v1/models', data);
       const apiResponse = this.extractData(response);
       return apiResponse.data;
     } catch (error) {
@@ -567,7 +567,7 @@ export class QNNApiClient {
    */
   async getModel(id: string): Promise<Model> {
     try {
-      const response = await this.client.get<ApiResponse<Model>>(`/v1/models/${id}`);
+      const response = await this.client.get<ApiResponse<Model>>(`/api/v1/models/${id}`);
       const apiResponse = this.extractData(response);
       return apiResponse.data;
     } catch (error) {
@@ -584,7 +584,7 @@ export class QNNApiClient {
    */
   async updateModel(id: string, data: UpdateModelRequest): Promise<Model> {
     try {
-      const response = await this.client.put<ApiResponse<Model>>(`/v1/models/${id}`, data);
+      const response = await this.client.put<ApiResponse<Model>>(`/api/v1/models/${id}`, data);
       const apiResponse = this.extractData(response);
       return apiResponse.data;
     } catch (error) {
@@ -600,7 +600,7 @@ export class QNNApiClient {
    */
   async deleteModel(id: string): Promise<void> {
     try {
-      await this.client.delete(`/v1/models/${id}`);
+      await this.client.delete(`/api/v1/models/${id}`);
     } catch (error) {
       throw this.handleError(error);
     }
@@ -615,7 +615,7 @@ export class QNNApiClient {
   async getModelMetadata(id: string): Promise<ModelMetadata> {
     try {
       const response = await this.client.get<ApiResponse<ModelMetadata>>(
-        `/v1/models/${id}/metadata`
+        `/api/v1/models/${id}/metadata`
       );
       const apiResponse = this.extractData(response);
       return apiResponse.data;
@@ -637,7 +637,7 @@ export class QNNApiClient {
   async startTraining(config: StartTrainingRequest): Promise<TrainingJob> {
     try {
       const response = await this.client.post<ApiResponse<TrainingJob>>(
-        '/v1/training/start',
+        '/api/v1/training/start',
         config
       );
       const apiResponse = this.extractData(response);
@@ -655,7 +655,7 @@ export class QNNApiClient {
    */
   async getTrainingStatus(id: string): Promise<TrainingStatusType> {
     try {
-      const response = await this.client.get<TrainingStatusResponse>(`/v1/training/${id}/status`);
+      const response = await this.client.get<TrainingStatusResponse>(`/api/v1/training/${id}/status`);
       const data = this.extractData(response);
       return data.status || (data as unknown as TrainingStatusType);
     } catch (error) {
@@ -671,7 +671,7 @@ export class QNNApiClient {
    */
   async getTrainingJob(id: string): Promise<TrainingJob> {
     try {
-      const response = await this.client.get<ApiResponse<TrainingJob>>(`/v1/training/${id}`);
+      const response = await this.client.get<ApiResponse<TrainingJob>>(`/api/v1/training/${id}`);
       const apiResponse = this.extractData(response);
       return apiResponse.data;
     } catch (error) {
@@ -690,7 +690,7 @@ export class QNNApiClient {
   async getTrainingLogs(id: string, offset: number = 0, limit: number = 100): Promise<TrainingLogs> {
     try {
       const response = await this.client.get<ApiResponse<TrainingLogs>>(
-        `/v1/training/${id}/logs`,
+        `/api/v1/training/${id}/logs`,
         {
           params: { offset, limit },
         }
@@ -710,7 +710,7 @@ export class QNNApiClient {
    */
   async stopTraining(id: string): Promise<void> {
     try {
-      await this.client.post(`/v1/training/${id}/stop`);
+      await this.client.post(`/api/v1/training/${id}/stop`);
     } catch (error) {
       throw this.handleError(error);
     }
@@ -731,7 +731,7 @@ export class QNNApiClient {
   ): Promise<PaginatedResponse<TrainingJob>> {
     try {
       const response = await this.client.get<ApiResponse<PaginatedResponse<TrainingJob>>>(
-        '/v1/training/history',
+        '/api/v1/training/history',
         {
           params: { modelId, page, pageSize },
         }
@@ -756,7 +756,7 @@ export class QNNApiClient {
   async getBenchmarkMetrics(modelId?: string): Promise<BenchmarkMetrics[]> {
     try {
       const response = await this.client.get<ApiResponse<BenchmarkMetrics[]>>(
-        '/v1/benchmarking/metrics',
+        '/api/v1/benchmarking/metrics',
         {
           params: { modelId },
         }
@@ -777,7 +777,7 @@ export class QNNApiClient {
   async runBenchmark(config: BenchmarkRequest): Promise<BenchmarkResult> {
     try {
       const response = await this.client.post<ApiResponse<BenchmarkResult>>(
-        '/v1/benchmarking/run',
+        '/api/v1/benchmarking/run',
         config
       );
       const apiResponse = this.extractData(response);
@@ -796,7 +796,7 @@ export class QNNApiClient {
   async getBenchmarkResult(benchmarkId: string): Promise<BenchmarkResult> {
     try {
       const response = await this.client.get<ApiResponse<BenchmarkResult>>(
-        `/v1/benchmarking/results/${benchmarkId}`
+        `/api/v1/benchmarking/results/${benchmarkId}`
       );
       const apiResponse = this.extractData(response);
       return apiResponse.data;
@@ -818,7 +818,7 @@ export class QNNApiClient {
   async getModelEvaluation(modelId: string): Promise<ModelEvaluation> {
     try {
       const response = await this.client.get<ApiResponse<ModelEvaluation>>(
-        `/v1/models/${modelId}/evaluation`
+        `/api/v1/models/${modelId}/evaluation`
       );
       const apiResponse = this.extractData(response);
       return apiResponse.data;
@@ -836,7 +836,7 @@ export class QNNApiClient {
   async getEvaluationMetrics(modelId: string): Promise<EvaluationMetrics> {
     try {
       const response = await this.client.get<ApiResponse<EvaluationMetrics>>(
-        `/v1/models/${modelId}/evaluation/metrics`
+        `/api/v1/models/${modelId}/evaluation/metrics`
       );
       const apiResponse = this.extractData(response);
       return apiResponse.data;
@@ -854,7 +854,7 @@ export class QNNApiClient {
   async evaluateModel(request: EvaluationRequest): Promise<ApiResponse<ModelEvaluation>> {
     try {
       const response = await this.client.post<ApiResponse<ModelEvaluation>>(
-        '/v1/evaluation/run',
+        '/api/v1/evaluation/run',
         request
       );
       return this.extractData(response);
@@ -872,7 +872,7 @@ export class QNNApiClient {
   async compareEvaluations(modelIds: string[]): Promise<ModelEvaluation[]> {
     try {
       const response = await this.client.post<ApiResponse<ModelEvaluation[]>>(
-        '/v1/evaluation/compare',
+        '/api/v1/evaluation/compare',
         { modelIds }
       );
       const apiResponse = this.extractData(response);
@@ -895,7 +895,7 @@ export class QNNApiClient {
   ): Promise<Blob> {
     try {
       const response = await this.client.get<Blob>(
-        `/v1/models/${modelId}/evaluation/export`,
+        `/api/v1/models/${modelId}/evaluation/export`,
         {
           params: { format },
           responseType: 'blob',
@@ -926,7 +926,7 @@ export class QNNApiClient {
   ): Promise<QuantumMetrics[]> {
     try {
       const response = await this.client.get<ApiResponse<QuantumMetrics[]>>(
-        '/v1/monitoring/quantum',
+        '/api/v1/monitoring/quantum',
         {
           params: { modelId, startTime, endTime },
         }
@@ -953,7 +953,7 @@ export class QNNApiClient {
   ): Promise<PerformanceMetrics[]> {
     try {
       const response = await this.client.get<ApiResponse<PerformanceMetrics[]>>(
-        '/v1/monitoring/performance',
+        '/api/v1/monitoring/performance',
         {
           params: { modelId, startTime, endTime },
         }
@@ -982,7 +982,7 @@ export class QNNApiClient {
   ): Promise<CostTracking> {
     try {
       const response = await this.client.get<ApiResponse<CostTracking>>(
-        '/v1/monitoring/costs',
+        '/api/v1/monitoring/costs',
         {
           params: { modelId, period, startDate, endDate },
         }
@@ -1007,7 +1007,7 @@ export class QNNApiClient {
    */
   async signModel(modelId: string, key?: string): Promise<SignatureResponse> {
     try {
-      const response = await this.client.post<SignatureResponse>('/v1/signing/sign', {
+      const response = await this.client.post<SignatureResponse>('/api/v1/signing/sign', {
         model_id: modelId,
         key,
       });
@@ -1026,7 +1026,7 @@ export class QNNApiClient {
    */
   async verifySignature(modelId: string, signature?: string): Promise<VerifySignatureResponse> {
     try {
-      const response = await this.client.post<VerifySignatureResponse>('/v1/signing/verify', {
+      const response = await this.client.post<VerifySignatureResponse>('/api/v1/signing/verify', {
         model_id: modelId,
         signature,
       });
@@ -1045,7 +1045,7 @@ export class QNNApiClient {
    */
   async applySignature(modelId: string, signatureId: string): Promise<ApplySignatureResponse> {
     try {
-      const response = await this.client.post<ApplySignatureResponse>('/v1/signing/apply', {
+      const response = await this.client.post<ApplySignatureResponse>('/api/v1/signing/apply', {
         model_id: modelId,
         signature_id: signatureId,
       });

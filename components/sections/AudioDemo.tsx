@@ -1,4 +1,6 @@
+
 'use client';
+import React from "react";
 
 import { Card } from "@/components/ui/card";
 import { Volume2, Code } from 'lucide-react';

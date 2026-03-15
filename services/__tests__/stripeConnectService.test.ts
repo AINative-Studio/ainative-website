@@ -1,3 +1,5 @@
+import { render, screen } from "@testing-library/react";
+
 /**
  * Stripe Connect Service Tests
  * Comprehensive tests for Stripe Connect OAuth flow and account management

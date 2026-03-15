@@ -1,3 +1,5 @@
+import React from "react";
+
 import { Metadata } from 'next';
 import { DeveloperMarkupSettings } from '@/src/components/examples/DeveloperMarkupSettings';
 

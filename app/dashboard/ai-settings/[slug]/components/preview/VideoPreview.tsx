@@ -1,4 +1,6 @@
+
 'use client';
+import React from "react";
 
 import { useState, useRef } from 'react';
 import { Download, AlertCircle, Play, Pause } from 'lucide-react';

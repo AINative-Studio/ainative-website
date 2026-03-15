@@ -1,3 +1,5 @@
+import { render, screen } from "@testing-library/react";
+
 /**
  * Password Reset Functionality Tests
  * Tests for requestPasswordReset and resetPassword methods
@@ -11,7 +13,7 @@ import { authService } from '../authService';
 describe('AuthService - Password Reset', () => {
   beforeEach(() => {
     jest.clearAllMocks();
-    global.fetch = jest.fn();
+    global.fetch = jest.fn() as jest.Mock as jest.Mock;
   });
 
   afterEach(() => {
@@ -38,7 +40,7 @@ describe('AuthService - Password Reset', () => {
 
         // Then
         expect(global.fetch).toHaveBeenCalledWith(
-          expect.stringContaining('/v1/public/auth/forgot-password'),
+          expect.stringContaining('/api/v1/public/auth/forgot-password'),
           expect.objectContaining({
             method: 'POST',
             headers: {
@@ -157,6 +159,10 @@ describe('AuthService - Password Reset', () => {
         // Then
         expect(result).toBeNull();
       });
+    });
+  });
+
+  describe('requestPasswordReset - Duplicate Tests', () => {
     it('should successfully request password reset with valid email', async () => {
       // Given
       const email = 'user@example.com';
@@ -175,7 +181,7 @@ describe('AuthService - Password Reset', () => {
 
       // Then
       expect(global.fetch).toHaveBeenCalledWith(
-        expect.stringContaining('/v1/public/auth/forgot-password'),
+        expect.stringContaining('/api/v1/public/auth/forgot-password'),
         expect.objectContaining({
           method: 'POST',
           headers: {
@@ -235,7 +241,7 @@ describe('AuthService - Password Reset', () => {
 
         // Then
         expect(global.fetch).toHaveBeenCalledWith(
-          expect.stringContaining('/v1/public/auth/reset-password'),
+          expect.stringContaining('/api/v1/public/auth/reset-password'),
           expect.objectContaining({
             method: 'POST',
             headers: {
@@ -438,6 +444,8 @@ describe('AuthService - Password Reset', () => {
           expect((error as Error).message).not.toContain(newPassword);
         }
       });
+    });
+
     it('should successfully reset password with valid token and new password', async () => {
       // Given
       const token = 'valid-reset-token-123';
@@ -457,7 +465,7 @@ describe('AuthService - Password Reset', () => {
 
       // Then
       expect(global.fetch).toHaveBeenCalledWith(
-        expect.stringContaining('/v1/public/auth/reset-password'),
+        expect.stringContaining('/api/v1/public/auth/reset-password'),
         expect.objectContaining({
           method: 'POST',
           headers: {

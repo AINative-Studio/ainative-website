@@ -1,3 +1,7 @@
+import { render, screen } from "@testing-library/react";
+
+import React from "react";
+
 import { render, screen } from '@/test/test-utils';
 import { AIKitButton } from '../AIKitButton';
 
@@ -120,7 +124,7 @@ describe('AIKitButton', () => {
 
   describe('Interaction', () => {
     it('should handle click events', () => {
-      const handleClick = jest.fn();
+      const handleClick = jest.fn() as jest.Mock as jest.Mock;
       render(<AIKitButton onClick={handleClick}>Click me</AIKitButton>);
       const button = screen.getByRole('button');
       button.click();
@@ -128,7 +132,7 @@ describe('AIKitButton', () => {
     });
 
     it('should not trigger click when disabled', () => {
-      const handleClick = jest.fn();
+      const handleClick = jest.fn() as jest.Mock as jest.Mock;
       render(
         <AIKitButton onClick={handleClick} disabled>
           Disabled

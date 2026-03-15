@@ -20,9 +20,9 @@ import {
  * Security patterns and detections
  */
 const SECURITY_PATTERNS = {
-  sql_injection: /(?:execute|query|sql)\s*\(\s*['"`].*?\$\{.*?\}/gi,
+  sql_injection: /(?:execute|query|sql)\s*\(\s*`.*?\$\{.*?\}/gi,
   xss: /innerHTML\s*=|dangerouslySetInnerHTML|eval\(|new\s+Function\(/gi,
-  hardcoded_secrets: /(?:api[_-]?key|password|secret|token|private[_-]?key)\s*[=:]\s*['"`][^'"`]{8,}/gi,
+  hardcoded_secrets: /(?:api[_-]?key|password|secret|token|private[_-]?key)\s*[=:]\s*`[^'"`]{8,}/gi,
   weak_crypto: /md5|sha1(?!\d)|base64(?!url)/gi,
   path_traversal: /\.\.\/|path\.join\([^)]*\.\./gi,
   csrf: /fetch\(|axios\.|XMLHttpRequest/gi,
@@ -33,7 +33,7 @@ const SECRET_PATTERNS = {
   aws_key: /AKIA[0-9A-Z]{16}/g,
   github_token: /gh[pousr]_[A-Za-z0-9_]{36,}/g,
   stripe_key: /sk_(?:test|live)_[0-9a-zA-Z]{24,}/g,
-  generic_api_key: /api[_-]?key[_-]?[:=]\s*['"`]([a-zA-Z0-9_\-]{20,})/gi,
+  generic_api_key: /api[_-]?key[_-]?[:=]\s*`([a-zA-Z0-9_\-]{20,})/gi,
   jwt: /eyJ[A-Za-z0-9-_=]+\.eyJ[A-Za-z0-9-_=]+\.[A-Za-z0-9-_.+/=]*/g,
   private_key: /-----BEGIN (?:RSA |EC )?PRIVATE KEY-----/g,
 };

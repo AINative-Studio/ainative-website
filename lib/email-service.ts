@@ -131,7 +131,7 @@ class EmailService {
    * Get all email templates
    */
   async getTemplates(): Promise<TemplatesResponse> {
-    const response = await apiClient.get<TemplatesResponse>('/v1/public/emails/templates');
+    const response = await apiClient.get<TemplatesResponse>('/api/v1/public/emails/templates');
     return response.data;
   }
 
@@ -139,7 +139,7 @@ class EmailService {
    * Get a single email template by ID
    */
   async getTemplate(id: number): Promise<EmailTemplate> {
-    const response = await apiClient.get<EmailTemplate>(`/v1/public/emails/templates/${id}`);
+    const response = await apiClient.get(`/api/v1/public/emails/templates/${id}`);
     return response.data;
   }
 
@@ -147,7 +147,7 @@ class EmailService {
    * Create a new email template
    */
   async createTemplate(data: CreateTemplateData): Promise<EmailTemplate> {
-    const response = await apiClient.post<EmailTemplate>('/v1/public/emails/templates', data);
+    const response = await apiClient.post<EmailTemplate>('/api/v1/public/emails/templates', data);
     return response.data;
   }
 
@@ -155,7 +155,7 @@ class EmailService {
    * Update an existing email template
    */
   async updateTemplate(id: number, data: UpdateTemplateData): Promise<EmailTemplate> {
-    const response = await apiClient.put<EmailTemplate>(`/v1/public/emails/templates/${id}`, data);
+    const response = await apiClient.put(`/api/v1/public/emails/templates/${id}`, data);
     return response.data;
   }
 
@@ -163,7 +163,7 @@ class EmailService {
    * Delete an email template
    */
   async deleteTemplate(id: number): Promise<DeleteResponse> {
-    const response = await apiClient.delete<DeleteResponse>(`/v1/public/emails/templates/${id}`);
+    const response = await apiClient.delete(`/api/v1/public/emails/templates/${id}`);
     return response.data;
   }
 
@@ -171,7 +171,7 @@ class EmailService {
    * Get email settings
    */
   async getSettings(): Promise<EmailSettings> {
-    const response = await apiClient.get<EmailSettings>('/v1/public/emails/settings');
+    const response = await apiClient.get<EmailSettings>('/api/v1/public/emails/settings');
     return response.data;
   }
 
@@ -179,7 +179,7 @@ class EmailService {
    * Update email settings
    */
   async updateSettings(data: UpdateSettingsData): Promise<EmailSettings> {
-    const response = await apiClient.put<EmailSettings>('/v1/public/emails/settings', data);
+    const response = await apiClient.put<EmailSettings>('/api/v1/public/emails/settings', data);
     return response.data;
   }
 
@@ -187,7 +187,7 @@ class EmailService {
    * Send an email
    */
   async sendEmail(data: SendEmailData): Promise<SendEmailResponse> {
-    const response = await apiClient.post<SendEmailResponse>('/v1/public/emails/send', data);
+    const response = await apiClient.post<SendEmailResponse>('/api/v1/public/emails/send', data);
     return response.data;
   }
 
@@ -202,7 +202,7 @@ class EmailService {
     });
 
     const response = await apiClient.get<EmailHistoryResponse>(
-      `/v1/public/emails/history?${queryParams.toString()}`
+      `/api/v1/public/emails/history?${queryParams.toString()}`
     );
     return response.data;
   }
@@ -211,7 +211,7 @@ class EmailService {
    * Get email analytics with optional date range
    */
   async getAnalytics(params?: AnalyticsParams): Promise<EmailAnalytics> {
-    let endpoint = '/v1/public/emails/analytics';
+    let endpoint = '/api/v1/public/emails/analytics';
 
     if (params?.startDate || params?.endDate) {
       const queryParams = new URLSearchParams({

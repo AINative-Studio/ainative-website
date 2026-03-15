@@ -1,3 +1,7 @@
+import { render, screen } from "@testing-library/react";
+
+import React from "react";
+
 /**
  * Tests for Model Detail Page - [slug] Route
  *
@@ -20,8 +24,8 @@ jest.mock('next/navigation', () => ({
     throw new Error('NEXT_NOT_FOUND');
   }),
   useRouter: jest.fn(() => ({
-    push: jest.fn(),
-    back: jest.fn(),
+    push: jest.fn() as jest.Mock as jest.Mock,
+    back: jest.fn() as jest.Mock as jest.Mock,
   })),
   usePathname: jest.fn(() => '/dashboard/ai-settings/gpt-4'),
   useSearchParams: jest.fn(() => ({
@@ -51,7 +55,7 @@ describe('Model Detail Page - fetchModelBySlug', () => {
       category: 'Coding',
       capabilities: ['text-generation', 'reasoning', 'code', 'vision'],
       description: "OpenAI's most capable model for complex reasoning and coding tasks",
-      endpoint: '/v1/chat/completions',
+      endpoint: '/api/v1/chat/completions',
       method: 'POST',
       is_default: true,
       max_tokens: 8192,
@@ -65,7 +69,7 @@ describe('Model Detail Page - fetchModelBySlug', () => {
       category: 'Video',
       capabilities: ['image-to-video', 'video-generation'],
       description: 'Wan 2.2 is an open-source AI video generation model',
-      endpoint: '/v1/multimodal/video/i2v',
+      endpoint: '/api/v1/multimodal/video/i2v',
       method: 'POST',
       is_default: true,
       speed: 'Fast',
@@ -85,7 +89,7 @@ describe('Model Detail Page - fetchModelBySlug', () => {
       category: 'Image',
       capabilities: ['image-generation', 'text-to-image'],
       description: 'High-quality image generation with LoRA style transfer support',
-      endpoint: '/v1/multimodal/image',
+      endpoint: '/api/v1/multimodal/image',
       method: 'POST',
       pricing: {
         credits: 50,
@@ -347,7 +351,7 @@ describe('Model Detail Page - Metadata Generation', () => {
     capabilities: ['text-generation', 'reasoning', 'code', 'vision'],
     description: "OpenAI's most capable model for complex reasoning and coding tasks",
     thumbnail_url: 'https://example.com/gpt4-thumb.png',
-    endpoint: '/v1/chat/completions',
+    endpoint: '/api/v1/chat/completions',
     method: 'POST',
     is_default: true,
     max_tokens: 8192,
@@ -416,7 +420,7 @@ describe('Integration - Browse Page to Detail Page', () => {
       category: 'Coding',
       capabilities: ['text-generation'],
       description: 'Test model',
-      endpoint: '/v1/chat/completions',
+      endpoint: '/api/v1/chat/completions',
       method: 'POST',
       created_at: '2024-01-01T00:00:00Z',
     },
