@@ -1,3 +1,5 @@
+import React from "react";
+
 /**
  * GradientText Storybook Stories
  * Issue #499 - Typography Scale Alignment

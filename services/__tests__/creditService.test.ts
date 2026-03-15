@@ -1,3 +1,5 @@
+import { render, screen } from "@testing-library/react";
+
 /**
  * Credit Service Tests
  * Comprehensive tests for credit balance, transactions, and purchases

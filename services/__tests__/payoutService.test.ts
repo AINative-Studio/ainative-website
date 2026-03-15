@@ -1,3 +1,5 @@
+import { render, screen } from "@testing-library/react";
+
 /**
  * Payout Service Tests
  * Comprehensive test suite for payoutService.ts

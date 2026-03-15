@@ -1,3 +1,5 @@
+import React from "react";
+
 /**
  * Comprehensive Examples for useBenchmarks Hook
  *

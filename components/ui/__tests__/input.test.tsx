@@ -1,3 +1,5 @@
+import React from "react";
+
 import { render, screen } from '@/test/test-utils';
 import userEvent from '@testing-library/user-event';
 import { Input } from '../input';
@@ -45,7 +47,7 @@ describe('Input', () => {
   });
 
   it('handles onChange event', async () => {
-    const handleChange = jest.fn() as jest.Mock;
+    const handleChange = jest.fn() as jest.Mock as jest.Mock;
     const user = userEvent.setup();
     render(<Input onChange={handleChange} data-testid="input" />);
 

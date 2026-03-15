@@ -1,3 +1,5 @@
+import { render, screen } from "@testing-library/react";
+
 /**
  * Password Reset Functionality Tests
  * Tests for requestPasswordReset and resetPassword methods
@@ -11,7 +13,7 @@ import { authService } from '../authService';
 describe('AuthService - Password Reset', () => {
   beforeEach(() => {
     jest.clearAllMocks();
-    global.fetch = jest.fn() as jest.Mock;
+    global.fetch = jest.fn() as jest.Mock as jest.Mock;
   });
 
   afterEach(() => {

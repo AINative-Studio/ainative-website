@@ -41,7 +41,7 @@ describe('WebhookService', () => {
         },
       ];
 
-      mockApiClient.get.mockResolvedValue<any>({
+      mockApiClient.get.mockResolvedValue({
         data: { webhooks: mockWebhooks },
         status: 200,
         statusText: 'OK',
@@ -54,7 +54,7 @@ describe('WebhookService', () => {
     });
 
     it('should handle empty webhook list', async () => {
-      mockApiClient.get.mockResolvedValue<any>({
+      mockApiClient.get.mockResolvedValue({
         data: { webhooks: [] },
         status: 200,
         statusText: 'OK',
@@ -88,7 +88,7 @@ describe('WebhookService', () => {
         updated_at: '2024-01-01T00:00:00Z',
       };
 
-      mockApiClient.post.mockResolvedValue<any>({
+      mockApiClient.post.mockResolvedValue({
         data: { webhook: createdWebhook },
         status: 201,
         statusText: 'Created',
@@ -132,7 +132,7 @@ describe('WebhookService', () => {
         updated_at: '2024-01-01T00:00:00Z',
       };
 
-      mockApiClient.get.mockResolvedValue<any>({
+      mockApiClient.get.mockResolvedValue({
         data: { webhook: mockWebhook },
         status: 200,
         statusText: 'OK',
@@ -145,7 +145,7 @@ describe('WebhookService', () => {
     });
 
     it('should handle webhook not found', async () => {
-      mockApiClient.get.mockResolvedValue<any>({
+      mockApiClient.get.mockResolvedValue({
         data: { error: 'Webhook not found' },
         status: 404,
         statusText: 'Not Found',
@@ -171,7 +171,7 @@ describe('WebhookService', () => {
         updated_at: '2024-01-02T00:00:00Z',
       };
 
-      mockApiClient.put.mockResolvedValue<any>({
+      mockApiClient.put.mockResolvedValue({
         data: { webhook: updatedWebhook },
         status: 200,
         statusText: 'OK',
@@ -194,7 +194,7 @@ describe('WebhookService', () => {
 
   describe('deleteWebhook', () => {
     it('should delete webhook successfully', async () => {
-      mockApiClient.delete.mockResolvedValue<any>({
+      mockApiClient.delete.mockResolvedValue({
         data: { message: 'Webhook deleted successfully' },
         status: 200,
         statusText: 'OK',
@@ -206,7 +206,7 @@ describe('WebhookService', () => {
     });
 
     it('should handle deletion of non-existent webhook', async () => {
-      mockApiClient.delete.mockResolvedValue<any>({
+      mockApiClient.delete.mockResolvedValue({
         data: { error: 'Webhook not found' },
         status: 404,
         statusText: 'Not Found',
@@ -225,7 +225,7 @@ describe('WebhookService', () => {
         response_body: 'OK',
       };
 
-      mockApiClient.post.mockResolvedValue<any>({
+      mockApiClient.post.mockResolvedValue({
         data: { test_result: testResult },
         status: 200,
         statusText: 'OK',
@@ -245,7 +245,7 @@ describe('WebhookService', () => {
         error: 'Connection timeout',
       };
 
-      mockApiClient.post.mockResolvedValue<any>({
+      mockApiClient.post.mockResolvedValue({
         data: { test_result: testResult },
         status: 200,
         statusText: 'OK',
@@ -284,7 +284,7 @@ describe('WebhookService', () => {
         },
       ];
 
-      mockApiClient.get.mockResolvedValue<any>({
+      mockApiClient.get.mockResolvedValue({
         data: { deliveries: mockDeliveries },
         status: 200,
         statusText: 'OK',
@@ -297,7 +297,7 @@ describe('WebhookService', () => {
     });
 
     it('should handle empty delivery history', async () => {
-      mockApiClient.get.mockResolvedValue<any>({
+      mockApiClient.get.mockResolvedValue({
         data: { deliveries: [] },
         status: 200,
         statusText: 'OK',
@@ -321,7 +321,7 @@ describe('WebhookService', () => {
         updated_at: '2024-01-02T00:00:00Z',
       };
 
-      mockApiClient.post.mockResolvedValue<any>({
+      mockApiClient.post.mockResolvedValue({
         data: { webhook: updatedWebhook },
         status: 200,
         statusText: 'OK',
@@ -344,7 +344,7 @@ describe('WebhookService', () => {
         updated_at: '2024-01-02T00:00:00Z',
       };
 
-      mockApiClient.post.mockResolvedValue<any>({
+      mockApiClient.post.mockResolvedValue({
         data: { webhook: updatedWebhook },
         status: 200,
         statusText: 'OK',

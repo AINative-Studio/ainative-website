@@ -26,11 +26,11 @@ import { stripeConnectService } from '@/services/stripeConnectService';
 
 // Mock Next.js navigation
 jest.mock('next/navigation', () => ({
-  usePathname: jest.fn() as jest.Mock as jest.Mock,
+  usePathname: jest.fn(),
   useRouter: jest.fn(() => ({
-    push: jest.fn() as jest.Mock as jest.Mock,
-    replace: jest.fn() as jest.Mock as jest.Mock,
-    prefetch: jest.fn() as jest.Mock as jest.Mock,
+    push: jest.fn(),
+    replace: jest.fn(),
+    prefetch: jest.fn(),
   })),
 }));
 
@@ -129,7 +129,7 @@ describe('Developer Dashboard E2E Flow Tests', () => {
       });
 
       const mockClipboard = {
-        writeText: jest.fn() as jest.Mock as jest.Mock.mockResolvedValue(undefined),
+        writeText: jest.fn().mockResolvedValue(undefined),
       };
       Object.defineProperty(navigator, 'clipboard', {
         value: mockClipboard,
@@ -258,12 +258,12 @@ describe('Developer Dashboard E2E Flow Tests', () => {
 
       (earningsService.getEarningsOverview as jest.Mock).mockResolvedValue(mockOverview);
       (earningsService.getTransactions as jest.Mock).mockResolvedValue(allTransactions);
-      (earningsService.getEarningsBreakdown as jest.Mock).mockResolvedValue<any>({
+      (earningsService.getEarningsBreakdown as jest.Mock).mockResolvedValue({
         api: 200000,
         marketplace: 150000,
         referrals: 100000,
       });
-      (earningsService.getPayoutSchedule as jest.Mock).mockResolvedValue<any>({
+      (earningsService.getPayoutSchedule as jest.Mock).mockResolvedValue({
         nextPayoutDate: '2026-02-05',
         minimumPayout: 10000,
         payoutThreshold: 50000,
@@ -378,7 +378,7 @@ describe('Developer Dashboard E2E Flow Tests', () => {
 
       // Step 2: User clicks connect button
       const mockAuthUrl = 'https://connect.stripe.com/oauth/authorize?client_id=ca_test123&state=xyz';
-      (payoutService.createConnectAccountLink as jest.Mock).mockResolvedValue<any>({
+      (payoutService.createConnectAccountLink as jest.Mock).mockResolvedValue({
         url: mockAuthUrl,
       });
 
@@ -409,7 +409,7 @@ describe('Developer Dashboard E2E Flow Tests', () => {
         updated_at: '2026-01-31',
       };
 
-      (stripeConnectService.completeOAuthFlow as jest.Mock).mockResolvedValue<any>({
+      (stripeConnectService.completeOAuthFlow as jest.Mock).mockResolvedValue({
         success: true,
         message: 'Account linked successfully',
         account: mockConnectedAccount,
@@ -476,14 +476,14 @@ describe('Developer Dashboard E2E Flow Tests', () => {
       (payoutService.getPayoutBalance as jest.Mock).mockResolvedValue(mockInitialBalance);
       (payoutService.getPaymentMethods as jest.Mock).mockResolvedValue([mockPaymentMethod]);
       (payoutService.getPayouts as jest.Mock).mockResolvedValue([]);
-      (payoutService.getAutoPayoutSettings as jest.Mock).mockResolvedValue<any>({
+      (payoutService.getAutoPayoutSettings as jest.Mock).mockResolvedValue({
         enabled: false,
         schedule: 'manual',
         threshold: 100000,
         delay_days: 2,
       });
       (payoutService.getTaxForms as jest.Mock).mockResolvedValue([]);
-      (payoutService.getNotificationPreferences as jest.Mock).mockResolvedValue<any>({
+      (payoutService.getNotificationPreferences as jest.Mock).mockResolvedValue({
         email_on_payout_sent: true,
         email_on_payout_paid: true,
         email_on_payout_failed: true,
@@ -526,7 +526,7 @@ describe('Developer Dashboard E2E Flow Tests', () => {
         currency: 'USD',
       };
 
-      (payoutService.requestPayout as jest.Mock).mockResolvedValue<any>({
+      (payoutService.requestPayout as jest.Mock).mockResolvedValue({
         success: true,
         message: 'Payout requested successfully',
       });
@@ -549,7 +549,7 @@ describe('Developer Dashboard E2E Flow Tests', () => {
 
     it('should prevent payout request with zero balance', async () => {
       const user = userEvent.setup();
-      const toastSpy = jest.fn() as jest.Mock as jest.Mock;
+      const toastSpy = jest.fn();
 
       localStorageMock.setItem('access_token', 'test_token');
 
@@ -560,7 +560,7 @@ describe('Developer Dashboard E2E Flow Tests', () => {
         currency: 'USD',
       };
 
-      (payoutService.getStripeConnectStatus as jest.Mock).mockResolvedValue<any>({
+      (payoutService.getStripeConnectStatus as jest.Mock).mockResolvedValue({
         is_connected: true,
         account_id: 'acct_test',
         charges_enabled: true,
@@ -594,14 +594,14 @@ describe('Developer Dashboard E2E Flow Tests', () => {
 
       localStorageMock.setItem('access_token', 'test_token');
 
-      (payoutService.getStripeConnectStatus as jest.Mock).mockResolvedValue<any>({
+      (payoutService.getStripeConnectStatus as jest.Mock).mockResolvedValue({
         is_connected: true,
         account_id: 'acct_test',
         charges_enabled: true,
         payouts_enabled: true,
         details_submitted: true,
       });
-      (payoutService.getPayoutBalance as jest.Mock).mockResolvedValue<any>({
+      (payoutService.getPayoutBalance as jest.Mock).mockResolvedValue({
         available: 50000,
         pending: 0,
         total: 50000,
@@ -609,14 +609,14 @@ describe('Developer Dashboard E2E Flow Tests', () => {
       });
       (payoutService.getPaymentMethods as jest.Mock).mockResolvedValue([]);
       (payoutService.getPayouts as jest.Mock).mockResolvedValue([]);
-      (payoutService.getAutoPayoutSettings as jest.Mock).mockResolvedValue<any>({
+      (payoutService.getAutoPayoutSettings as jest.Mock).mockResolvedValue({
         enabled: false,
         schedule: 'manual',
         threshold: 100000,
         delay_days: 2,
       });
       (payoutService.getTaxForms as jest.Mock).mockResolvedValue([]);
-      (payoutService.getNotificationPreferences as jest.Mock).mockResolvedValue<any>({
+      (payoutService.getNotificationPreferences as jest.Mock).mockResolvedValue({
         email_on_payout_sent: true,
         email_on_payout_paid: true,
         email_on_payout_failed: true,
@@ -657,7 +657,7 @@ describe('Developer Dashboard E2E Flow Tests', () => {
       await user.type(thresholdInput, '500');
 
       // Step 5: Save settings
-      (payoutService.updateAutoPayoutSettings as jest.Mock).mockResolvedValue<any>({
+      (payoutService.updateAutoPayoutSettings as jest.Mock).mockResolvedValue({
         success: true,
         message: 'Settings updated',
       });
@@ -691,13 +691,13 @@ describe('Developer Dashboard E2E Flow Tests', () => {
           pendingPayout: 20000,
         });
 
-      (earningsService.getTransactions as jest.Mock).mockResolvedValue<any>({ items: [], total: 0 });
-      (earningsService.getEarningsBreakdown as jest.Mock).mockResolvedValue<any>({
+      (earningsService.getTransactions as jest.Mock).mockResolvedValue({ items: [], total: 0 });
+      (earningsService.getEarningsBreakdown as jest.Mock).mockResolvedValue({
         api: 100000,
         marketplace: 0,
         referrals: 0,
       });
-      (earningsService.getPayoutSchedule as jest.Mock).mockResolvedValue<any>({
+      (earningsService.getPayoutSchedule as jest.Mock).mockResolvedValue({
         nextPayoutDate: '2026-02-05',
         minimumPayout: 10000,
         payoutThreshold: 50000,
@@ -794,14 +794,14 @@ describe('Developer Dashboard E2E Flow Tests', () => {
 
       localStorageMock.setItem('access_token', 'test_token');
 
-      (payoutService.getStripeConnectStatus as jest.Mock).mockResolvedValue<any>({
+      (payoutService.getStripeConnectStatus as jest.Mock).mockResolvedValue({
         is_connected: true,
         account_id: 'acct_test',
         charges_enabled: true,
         payouts_enabled: true,
         details_submitted: true,
       });
-      (payoutService.getPayoutBalance as jest.Mock).mockResolvedValue<any>({
+      (payoutService.getPayoutBalance as jest.Mock).mockResolvedValue({
         available: 0,
         pending: 0,
         total: 0,
@@ -811,7 +811,7 @@ describe('Developer Dashboard E2E Flow Tests', () => {
       (payoutService.getPayouts as jest.Mock).mockResolvedValue([]);
       (payoutService.getAutoPayoutSettings as jest.Mock).mockResolvedValue(null);
       (payoutService.getTaxForms as jest.Mock).mockResolvedValue([]);
-      (payoutService.getNotificationPreferences as jest.Mock).mockResolvedValue<any>({
+      (payoutService.getNotificationPreferences as jest.Mock).mockResolvedValue({
         email_on_payout_sent: false,
         email_on_payout_paid: false,
         email_on_payout_failed: true,
@@ -847,7 +847,7 @@ describe('Developer Dashboard E2E Flow Tests', () => {
       await user.click(smsPaidSwitch);
 
       // Save preferences
-      (payoutService.updateNotificationPreferences as jest.Mock).mockResolvedValue<any>({
+      (payoutService.updateNotificationPreferences as jest.Mock).mockResolvedValue({
         success: true,
         message: 'Preferences updated',
       });

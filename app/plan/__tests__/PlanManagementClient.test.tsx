@@ -274,7 +274,7 @@ describe('PlanManagementClient', () => {
     });
 
     it('should cancel subscription when confirmed', async () => {
-      const mockCancelSubscription = jest.fn().mockResolvedValue<any>({
+      const mockCancelSubscription = jest.fn().mockResolvedValue({
         success: true,
         message: 'Subscription cancelled',
       });
@@ -456,7 +456,7 @@ describe('PlanManagementClient', () => {
     });
 
     it('should remove payment method when confirmed', async () => {
-      const mockRemovePaymentMethod = jest.fn().mockResolvedValue<any>({
+      const mockRemovePaymentMethod = jest.fn().mockResolvedValue({
         success: true,
         message: 'Payment method removed',
       });
@@ -501,7 +501,7 @@ describe('PlanManagementClient', () => {
     });
 
     it('should set default payment method', async () => {
-      const mockSetDefaultPaymentMethod = jest.fn().mockResolvedValue<any>({
+      const mockSetDefaultPaymentMethod = jest.fn().mockResolvedValue({
         success: true,
         message: 'Default payment method updated',
       });
@@ -625,7 +625,7 @@ describe('PlanManagementClient', () => {
         cancel_at_period_end: true,
       };
 
-      const mockReactivateSubscription = jest.fn().mockResolvedValue<any>({
+      const mockReactivateSubscription = jest.fn().mockResolvedValue({
         success: true,
         message: 'Subscription reactivated',
       });
@@ -695,7 +695,7 @@ describe('PlanManagementClient', () => {
 
   describe('Error Handling', () => {
     it('should display error toast when cancellation fails', async () => {
-      const mockCancelSubscription = jest.fn().mockResolvedValue<any>({
+      const mockCancelSubscription = jest.fn().mockResolvedValue({
         success: false,
         message: 'Cancellation failed',
       });
@@ -725,7 +725,7 @@ describe('PlanManagementClient', () => {
     });
 
     it('should display error toast when plan update fails', async () => {
-      const mockUpdateSubscription = jest.fn().mockResolvedValue<any>({
+      const mockUpdateSubscription = jest.fn().mockResolvedValue({
         success: false,
         message: 'Update failed',
       });

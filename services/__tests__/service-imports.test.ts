@@ -1,3 +1,5 @@
+import { render, screen } from "@testing-library/react";
+
 /**
  * Service Imports Validation Test Suite
  * Ensures all service imports follow camelCase naming convention

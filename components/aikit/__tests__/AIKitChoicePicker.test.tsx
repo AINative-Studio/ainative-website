@@ -1,3 +1,5 @@
+import { render, screen } from "@testing-library/react";
+
 import React from 'react';
 import { render, screen, fireEvent } from '@/test/test-utils';
 import { AIKitChoicePicker } from '../AIKitChoicePicker';
@@ -16,7 +18,7 @@ describe('AIKitChoicePicker', () => {
         <AIKitChoicePicker
           label="Choose an option"
           options={defaultOptions}
-          onChange={jest.fn() as jest.Mock}
+          onChange={jest.fn() as jest.Mock as jest.Mock}
         />
       );
       expect(screen.getByText('Choose an option')).toBeInTheDocument();
@@ -29,7 +31,7 @@ describe('AIKitChoicePicker', () => {
         <AIKitChoicePicker
           label="Test"
           options={defaultOptions}
-          onChange={jest.fn() as jest.Mock}
+          onChange={jest.fn() as jest.Mock as jest.Mock}
         />
       );
       defaultOptions.forEach(option => {
@@ -41,7 +43,7 @@ describe('AIKitChoicePicker', () => {
       render(
         <AIKitChoicePicker
           options={defaultOptions}
-          onChange={jest.fn() as jest.Mock}
+          onChange={jest.fn() as jest.Mock as jest.Mock}
         />
       );
       expect(screen.queryByRole('group')).toBeInTheDocument();
@@ -52,7 +54,7 @@ describe('AIKitChoicePicker', () => {
         <AIKitChoicePicker
           label="Test"
           options={defaultOptions}
-          onChange={jest.fn() as jest.Mock}
+          onChange={jest.fn() as jest.Mock as jest.Mock}
           className="custom-class"
         />
       );
@@ -62,7 +64,7 @@ describe('AIKitChoicePicker', () => {
 
   describe('Single Select Mode', () => {
     it('should select single option on click', () => {
-      const handleChange = jest.fn() as jest.Mock;
+      const handleChange = jest.fn() as jest.Mock as jest.Mock;
       render(
         <AIKitChoicePicker
           label="Single Select"
@@ -79,7 +81,7 @@ describe('AIKitChoicePicker', () => {
     });
 
     it('should replace selection when clicking another option', () => {
-      const handleChange = jest.fn() as jest.Mock;
+      const handleChange = jest.fn() as jest.Mock as jest.Mock;
       render(
         <AIKitChoicePicker
           label="Single Select"
@@ -97,7 +99,7 @@ describe('AIKitChoicePicker', () => {
     });
 
     it('should deselect when clicking selected option', () => {
-      const handleChange = jest.fn() as jest.Mock;
+      const handleChange = jest.fn() as jest.Mock as jest.Mock;
       render(
         <AIKitChoicePicker
           label="Single Select"
@@ -119,7 +121,7 @@ describe('AIKitChoicePicker', () => {
         <AIKitChoicePicker
           label="Single Select"
           options={defaultOptions}
-          onChange={jest.fn() as jest.Mock}
+          onChange={jest.fn() as jest.Mock as jest.Mock}
           mode="single"
           value={['opt1']}
         />
@@ -132,7 +134,7 @@ describe('AIKitChoicePicker', () => {
 
   describe('Multi Select Mode', () => {
     it('should select multiple options', () => {
-      const handleChange = jest.fn() as jest.Mock;
+      const handleChange = jest.fn() as jest.Mock as jest.Mock;
       render(
         <AIKitChoicePicker
           label="Multi Select"
@@ -150,7 +152,7 @@ describe('AIKitChoicePicker', () => {
     });
 
     it('should toggle selection in multi mode', () => {
-      const handleChange = jest.fn() as jest.Mock;
+      const handleChange = jest.fn() as jest.Mock as jest.Mock;
       render(
         <AIKitChoicePicker
           label="Multi Select"
@@ -175,7 +177,7 @@ describe('AIKitChoicePicker', () => {
         <AIKitChoicePicker
           label="Multi Select"
           options={defaultOptions}
-          onChange={jest.fn() as jest.Mock}
+          onChange={jest.fn() as jest.Mock as jest.Mock}
           mode="multi"
           value={['opt1', 'opt3']}
         />
@@ -191,7 +193,7 @@ describe('AIKitChoicePicker', () => {
     });
 
     it('should respect maxSelections limit', () => {
-      const handleChange = jest.fn() as jest.Mock;
+      const handleChange = jest.fn() as jest.Mock as jest.Mock;
       render(
         <AIKitChoicePicker
           label="Multi Select"
@@ -211,7 +213,7 @@ describe('AIKitChoicePicker', () => {
     });
 
     it('should allow deselection even when maxSelections is reached', () => {
-      const handleChange = jest.fn() as jest.Mock;
+      const handleChange = jest.fn() as jest.Mock as jest.Mock;
       render(
         <AIKitChoicePicker
           label="Multi Select"
@@ -235,7 +237,7 @@ describe('AIKitChoicePicker', () => {
         <AIKitChoicePicker
           label="Disabled"
           options={defaultOptions}
-          onChange={jest.fn() as jest.Mock}
+          onChange={jest.fn() as jest.Mock as jest.Mock}
           disabled
         />
       );
@@ -247,7 +249,7 @@ describe('AIKitChoicePicker', () => {
     });
 
     it('should not trigger onChange when disabled', () => {
-      const handleChange = jest.fn() as jest.Mock;
+      const handleChange = jest.fn() as jest.Mock as jest.Mock;
       render(
         <AIKitChoicePicker
           label="Disabled"
@@ -272,7 +274,7 @@ describe('AIKitChoicePicker', () => {
         <AIKitChoicePicker
           label="Partially Disabled"
           options={optionsWithDisabled}
-          onChange={jest.fn() as jest.Mock}
+          onChange={jest.fn() as jest.Mock as jest.Mock}
         />
       );
 
@@ -286,7 +288,7 @@ describe('AIKitChoicePicker', () => {
     });
 
     it('should not select disabled options', () => {
-      const handleChange = jest.fn() as jest.Mock;
+      const handleChange = jest.fn() as jest.Mock as jest.Mock;
       const optionsWithDisabled = [
         { id: '1', label: 'Option 1', value: 'opt1' },
         { id: '2', label: 'Option 2', value: 'opt2', disabled: true },
@@ -312,7 +314,7 @@ describe('AIKitChoicePicker', () => {
         <AIKitChoicePicker
           label="Test"
           options={defaultOptions}
-          onChange={jest.fn() as jest.Mock}
+          onChange={jest.fn() as jest.Mock as jest.Mock}
           showClearAll
           value={['opt1', 'opt2']}
         />
@@ -326,7 +328,7 @@ describe('AIKitChoicePicker', () => {
         <AIKitChoicePicker
           label="Test"
           options={defaultOptions}
-          onChange={jest.fn() as jest.Mock}
+          onChange={jest.fn() as jest.Mock as jest.Mock}
           showClearAll
           value={[]}
         />
@@ -336,7 +338,7 @@ describe('AIKitChoicePicker', () => {
     });
 
     it('should clear all selections when clear all button is clicked', () => {
-      const handleChange = jest.fn() as jest.Mock;
+      const handleChange = jest.fn() as jest.Mock as jest.Mock;
       render(
         <AIKitChoicePicker
           label="Test"
@@ -358,7 +360,7 @@ describe('AIKitChoicePicker', () => {
         <AIKitChoicePicker
           label="Test"
           options={defaultOptions}
-          onChange={jest.fn() as jest.Mock}
+          onChange={jest.fn() as jest.Mock as jest.Mock}
           showClearAll={false}
           value={['opt1']}
         />
@@ -374,7 +376,7 @@ describe('AIKitChoicePicker', () => {
         <AIKitChoicePicker
           label="Test"
           options={defaultOptions}
-          onChange={jest.fn() as jest.Mock}
+          onChange={jest.fn() as jest.Mock as jest.Mock}
         />
       );
 
@@ -384,7 +386,7 @@ describe('AIKitChoicePicker', () => {
     });
 
     it('should select option with Enter key', () => {
-      const handleChange = jest.fn() as jest.Mock;
+      const handleChange = jest.fn() as jest.Mock as jest.Mock;
       render(
         <AIKitChoicePicker
           label="Test"
@@ -401,7 +403,7 @@ describe('AIKitChoicePicker', () => {
     });
 
     it('should select option with Space key', () => {
-      const handleChange = jest.fn() as jest.Mock;
+      const handleChange = jest.fn() as jest.Mock as jest.Mock;
       render(
         <AIKitChoicePicker
           label="Test"
@@ -422,7 +424,7 @@ describe('AIKitChoicePicker', () => {
         <AIKitChoicePicker
           label="Test"
           options={defaultOptions}
-          onChange={jest.fn() as jest.Mock}
+          onChange={jest.fn() as jest.Mock as jest.Mock}
         />
       );
 
@@ -444,7 +446,7 @@ describe('AIKitChoicePicker', () => {
         <AIKitChoicePicker
           label="Test"
           options={defaultOptions}
-          onChange={jest.fn() as jest.Mock}
+          onChange={jest.fn() as jest.Mock as jest.Mock}
         />
       );
 
@@ -462,7 +464,7 @@ describe('AIKitChoicePicker', () => {
         <AIKitChoicePicker
           label="Test"
           options={defaultOptions}
-          onChange={jest.fn() as jest.Mock}
+          onChange={jest.fn() as jest.Mock as jest.Mock}
         />
       );
 
@@ -480,7 +482,7 @@ describe('AIKitChoicePicker', () => {
         <AIKitChoicePicker
           label="Test"
           options={defaultOptions}
-          onChange={jest.fn() as jest.Mock}
+          onChange={jest.fn() as jest.Mock as jest.Mock}
         />
       );
 
@@ -498,7 +500,7 @@ describe('AIKitChoicePicker', () => {
         <AIKitChoicePicker
           label="Test"
           options={defaultOptions}
-          onChange={jest.fn() as jest.Mock}
+          onChange={jest.fn() as jest.Mock as jest.Mock}
         />
       );
 
@@ -518,7 +520,7 @@ describe('AIKitChoicePicker', () => {
         <AIKitChoicePicker
           label="Test"
           options={defaultOptions}
-          onChange={jest.fn() as jest.Mock}
+          onChange={jest.fn() as jest.Mock as jest.Mock}
         />
       );
 
@@ -530,7 +532,7 @@ describe('AIKitChoicePicker', () => {
         <AIKitChoicePicker
           label="Choose options"
           options={defaultOptions}
-          onChange={jest.fn() as jest.Mock}
+          onChange={jest.fn() as jest.Mock as jest.Mock}
         />
       );
 
@@ -543,7 +545,7 @@ describe('AIKitChoicePicker', () => {
         <AIKitChoicePicker
           label="Test"
           options={defaultOptions}
-          onChange={jest.fn() as jest.Mock}
+          onChange={jest.fn() as jest.Mock as jest.Mock}
           value={['opt1']}
         />
       );
@@ -560,7 +562,7 @@ describe('AIKitChoicePicker', () => {
         <AIKitChoicePicker
           label="Test"
           options={defaultOptions}
-          onChange={jest.fn() as jest.Mock}
+          onChange={jest.fn() as jest.Mock as jest.Mock}
         />
       );
 
@@ -574,7 +576,7 @@ describe('AIKitChoicePicker', () => {
         <AIKitChoicePicker
           label="Test"
           options={defaultOptions}
-          onChange={jest.fn() as jest.Mock}
+          onChange={jest.fn() as jest.Mock as jest.Mock}
           value={['opt1']}
         />
       );
@@ -588,7 +590,7 @@ describe('AIKitChoicePicker', () => {
         <AIKitChoicePicker
           label="Test"
           options={defaultOptions}
-          onChange={jest.fn() as jest.Mock}
+          onChange={jest.fn() as jest.Mock as jest.Mock}
           value={['opt1']}
         />
       );
@@ -608,7 +610,7 @@ describe('AIKitChoicePicker', () => {
         <AIKitChoicePicker
           label="Test"
           options={optionsWithDisabled}
-          onChange={jest.fn() as jest.Mock}
+          onChange={jest.fn() as jest.Mock as jest.Mock}
         />
       );
 
@@ -622,7 +624,7 @@ describe('AIKitChoicePicker', () => {
         <AIKitChoicePicker
           label="Choose your preferences"
           options={defaultOptions}
-          onChange={jest.fn() as jest.Mock}
+          onChange={jest.fn() as jest.Mock as jest.Mock}
           showClearAll
           value={['opt1']}
         />
@@ -635,7 +637,7 @@ describe('AIKitChoicePicker', () => {
 
   describe('Controlled vs Uncontrolled', () => {
     it('should work as controlled component', () => {
-      const handleChange = jest.fn() as jest.Mock;
+      const handleChange = jest.fn() as jest.Mock as jest.Mock;
       const { rerender } = render(
         <AIKitChoicePicker
           label="Controlled"
@@ -664,7 +666,7 @@ describe('AIKitChoicePicker', () => {
     });
 
     it('should work as uncontrolled component', () => {
-      const handleChange = jest.fn() as jest.Mock;
+      const handleChange = jest.fn() as jest.Mock as jest.Mock;
       render(
         <AIKitChoicePicker
           label="Uncontrolled"
@@ -688,7 +690,7 @@ describe('AIKitChoicePicker', () => {
         <AIKitChoicePicker
           label="Empty"
           options={[]}
-          onChange={jest.fn() as jest.Mock}
+          onChange={jest.fn() as jest.Mock as jest.Mock}
         />
       );
 
@@ -712,7 +714,7 @@ describe('AIKitChoicePicker', () => {
 
   describe('Performance', () => {
     it('should not re-render unnecessarily', () => {
-      const handleChange = jest.fn() as jest.Mock;
+      const handleChange = jest.fn() as jest.Mock as jest.Mock;
       const { rerender } = render(
         <AIKitChoicePicker
           label="Test"
@@ -743,7 +745,7 @@ describe('AIKitChoicePicker', () => {
         <AIKitChoicePicker
           label="Test"
           options={defaultOptions}
-          onChange={jest.fn() as jest.Mock}
+          onChange={jest.fn() as jest.Mock as jest.Mock}
         />
       );
 
@@ -757,7 +759,7 @@ describe('AIKitChoicePicker', () => {
         <AIKitChoicePicker
           label="Test"
           options={defaultOptions}
-          onChange={jest.fn() as jest.Mock}
+          onChange={jest.fn() as jest.Mock as jest.Mock}
           value={['opt1']}
         />
       );
@@ -774,7 +776,7 @@ describe('AIKitChoicePicker', () => {
         <AIKitChoicePicker
           label="Test"
           options={defaultOptions}
-          onChange={jest.fn() as jest.Mock}
+          onChange={jest.fn() as jest.Mock as jest.Mock}
         />
       );
 

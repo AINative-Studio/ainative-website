@@ -33,7 +33,7 @@ describe('CreditService', () => {
         usage_percentage: 25
       };
 
-      (apiClient.get as jest.Mock).mockResolvedValue<any>({
+      (apiClient.get as jest.Mock).mockResolvedValue({
         data: mockBalance,
         status: 200,
         statusText: 'OK',
@@ -48,7 +48,7 @@ describe('CreditService', () => {
     });
 
     it('should throw error when no data received', async () => {
-      (apiClient.get as jest.Mock).mockResolvedValue<any>({
+      (apiClient.get as jest.Mock).mockResolvedValue({
         data: null,
         status: 200,
         statusText: 'OK',
@@ -68,7 +68,7 @@ describe('CreditService', () => {
         remaining_credits: 3750
       };
 
-      (apiClient.get as jest.Mock).mockResolvedValue<any>({
+      (apiClient.get as jest.Mock).mockResolvedValue({
         data: invalidBalance,
         status: 200,
         statusText: 'OK',
@@ -101,7 +101,7 @@ describe('CreditService', () => {
         usage_percentage: 25
       };
 
-      (apiClient.get as jest.Mock).mockResolvedValue<any>({
+      (apiClient.get as jest.Mock).mockResolvedValue({
         data: invalidBalance,
         status: 200,
         statusText: 'OK',
@@ -127,7 +127,7 @@ describe('CreditService', () => {
         usage_percentage: 50
       };
 
-      (apiClient.get as jest.Mock).mockResolvedValue<any>({
+      (apiClient.get as jest.Mock).mockResolvedValue({
         data: mockBalance,
         status: 200,
         statusText: 'OK',
@@ -141,7 +141,7 @@ describe('CreditService', () => {
     });
 
     it('should throw error when getCreditBalance returns null', async () => {
-      (apiClient.get as jest.Mock).mockResolvedValue<any>({
+      (apiClient.get as jest.Mock).mockResolvedValue({
         data: null,
         status: 200,
         statusText: 'OK',
@@ -184,7 +184,7 @@ describe('CreditService', () => {
         }
       };
 
-      (apiClient.get as jest.Mock).mockResolvedValue<any>({
+      (apiClient.get as jest.Mock).mockResolvedValue({
         data: mockResponse,
         status: 200,
         statusText: 'OK',
@@ -220,7 +220,7 @@ describe('CreditService', () => {
         }
       };
 
-      (apiClient.get as jest.Mock).mockResolvedValue<any>({
+      (apiClient.get as jest.Mock).mockResolvedValue({
         data: mockResponse,
         status: 200,
         statusText: 'OK',
@@ -273,7 +273,7 @@ describe('CreditService', () => {
         }
       };
 
-      (apiClient.get as jest.Mock).mockResolvedValue<any>({
+      (apiClient.get as jest.Mock).mockResolvedValue({
         data: mockResponse,
         status: 200,
         statusText: 'OK',
@@ -303,7 +303,7 @@ describe('CreditService', () => {
         }
       };
 
-      (apiClient.post as jest.Mock).mockResolvedValue<any>({
+      (apiClient.post as jest.Mock).mockResolvedValue({
         data: mockResponse,
         status: 200,
         statusText: 'OK',

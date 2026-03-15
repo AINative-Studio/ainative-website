@@ -83,7 +83,7 @@ const mockLogs = [
 describe('LogViewer Component - Issue #1098', () => {
   beforeEach(() => {
     jest.clearAllMocks();
-    (global.fetch as jest.Mock).mockResolvedValue<any>({
+    (global.fetch as jest.Mock).mockResolvedValue({
       ok: true,
       json: async () => ({ logs: mockLogs })
     });

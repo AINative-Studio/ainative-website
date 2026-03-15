@@ -1,3 +1,5 @@
+import React from "react";
+
 /**
  * Invoice Status Badge Component
  * Displays a styled badge based on invoice status

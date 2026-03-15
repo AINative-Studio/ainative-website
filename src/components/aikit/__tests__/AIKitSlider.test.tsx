@@ -73,7 +73,7 @@ describe('AIKitSlider', () => {
 
   describe('Value Changes', () => {
     it('should call onChange when value changes', async () => {
-      const handleChange = jest.fn() as jest.Mock;
+      const handleChange = jest.fn() as jest.Mock as jest.Mock;
       const { container } = render(
         <AIKitSlider
           value={50}
@@ -155,7 +155,7 @@ describe('AIKitSlider', () => {
 
   describe('Keyboard Navigation', () => {
     it('should support arrow key navigation', async () => {
-      const handleChange = jest.fn() as jest.Mock;
+      const handleChange = jest.fn() as jest.Mock as jest.Mock;
       render(
         <AIKitSlider
           value={50}
@@ -179,7 +179,7 @@ describe('AIKitSlider', () => {
     });
 
     it('should support Home key to jump to minimum', async () => {
-      const handleChange = jest.fn() as jest.Mock;
+      const handleChange = jest.fn() as jest.Mock as jest.Mock;
       render(
         <AIKitSlider
           value={50}
@@ -200,7 +200,7 @@ describe('AIKitSlider', () => {
     });
 
     it('should support End key to jump to maximum', async () => {
-      const handleChange = jest.fn() as jest.Mock;
+      const handleChange = jest.fn() as jest.Mock as jest.Mock;
       render(
         <AIKitSlider
           value={50}
@@ -250,7 +250,7 @@ describe('AIKitSlider', () => {
     });
 
     it('should not trigger onChange when disabled', async () => {
-      const handleChange = jest.fn() as jest.Mock;
+      const handleChange = jest.fn() as jest.Mock as jest.Mock;
       const { container } = render(
         <AIKitSlider
           value={50}
@@ -317,7 +317,7 @@ describe('AIKitSlider', () => {
     });
 
     it('should handle touch events on mobile', () => {
-      const handleChange = jest.fn() as jest.Mock;
+      const handleChange = jest.fn() as jest.Mock as jest.Mock;
       const { container } = render(
         <AIKitSlider
           value={50}
@@ -648,7 +648,7 @@ describe('AIKitSlider', () => {
 
   describe('Performance', () => {
     it('should not re-render unnecessarily', () => {
-      const handleChange = jest.fn() as jest.Mock;
+      const handleChange = jest.fn() as jest.Mock as jest.Mock;
       const { rerender } = render(
         <AIKitSlider
           value={50}

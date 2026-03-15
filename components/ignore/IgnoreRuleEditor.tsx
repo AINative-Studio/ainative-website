@@ -1,3 +1,5 @@
+import React from "react";
+
 /**
  * Ignore Rule Editor Component
  *

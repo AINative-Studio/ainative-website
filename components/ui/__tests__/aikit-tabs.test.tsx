@@ -1,3 +1,5 @@
+import React from "react";
+
 /**
  * AIKit Tabs Component - TDD Test Suite
  *
@@ -138,7 +140,7 @@ describe('AIKit Tabs Component - TDD Suite', () => {
 
     it('should handle controlled tabs', async () => {
       // Given: Controlled tabs
-      const onValueChange = jest.fn() as jest.Mock;
+      const onValueChange = jest.fn() as jest.Mock as jest.Mock;
       const user = userEvent.setup();
 
       const { rerender } = render(

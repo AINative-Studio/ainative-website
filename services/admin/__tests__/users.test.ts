@@ -1,3 +1,5 @@
+import { render, screen } from "@testing-library/react";
+
 /**
  * Admin User Service Tests
  * Tests for user management operations

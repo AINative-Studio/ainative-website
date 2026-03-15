@@ -1,3 +1,5 @@
+import { render, screen } from "@testing-library/react";
+
 import QNNApiClient, {
   QNNError,
   QNNAuthenticationError,
@@ -5,7 +7,7 @@ import QNNApiClient, {
   QNNNetworkError,
   QNNTimeoutError,
   QNNRateLimitError,
-} from '../QNNApiClient';
+} from '../qnnApiClient';
 import axios from 'axios';
 
 // Mock axios
@@ -43,17 +45,17 @@ describe('QNNApiClient', () => {
 
     // Setup axios create mock
     mockAxiosInstance = {
-      get: jest.fn() as jest.Mock,
-      post: jest.fn() as jest.Mock,
-      put: jest.fn() as jest.Mock,
-      delete: jest.fn() as jest.Mock,
-      request: jest.fn() as jest.Mock,
+      get: jest.fn() as jest.Mock as jest.Mock,
+      post: jest.fn() as jest.Mock as jest.Mock,
+      put: jest.fn() as jest.Mock as jest.Mock,
+      delete: jest.fn() as jest.Mock as jest.Mock,
+      request: jest.fn() as jest.Mock as jest.Mock,
       interceptors: {
         request: {
-          use: jest.fn() as jest.Mock,
+          use: jest.fn() as jest.Mock as jest.Mock,
         },
         response: {
-          use: jest.fn() as jest.Mock,
+          use: jest.fn() as jest.Mock as jest.Mock,
         },
       },
     };

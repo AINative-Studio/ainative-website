@@ -1,3 +1,5 @@
+import { render, screen } from "@testing-library/react";
+
 /**
  * Billing Service Tests
  * Comprehensive tests for billing, invoices, and payment management

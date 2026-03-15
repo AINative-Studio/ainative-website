@@ -217,7 +217,7 @@ describe('Developer Earnings Client', () => {
 
   it('should handle pagination', async () => {
     const user = userEvent.setup();
-    (earningsService.getTransactions as jest.Mock).mockResolvedValue<any>({
+    (earningsService.getTransactions as jest.Mock).mockResolvedValue({
       ...mockData.transactions,
       total: 25,
     });

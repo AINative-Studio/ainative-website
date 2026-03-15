@@ -1,3 +1,5 @@
+import { render, screen } from "@testing-library/react";
+
 /**
  * Usage Service Tests
  * Comprehensive tests for usage metrics, limits, and real-time tracking

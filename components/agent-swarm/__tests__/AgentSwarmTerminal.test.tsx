@@ -1,3 +1,5 @@
+import React from "react";
+
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import AgentSwarmTerminal from '../AgentSwarmTerminal';
@@ -53,19 +55,19 @@ global.WebSocket = MockWebSocket as any;
 
 // Mock localStorage
 const localStorageMock = {
-  getItem: jest.fn() as jest.Mock,
-  setItem: jest.fn() as jest.Mock,
-  removeItem: jest.fn() as jest.Mock,
-  clear: jest.fn() as jest.Mock,
+  getItem: jest.fn() as jest.Mock as jest.Mock,
+  setItem: jest.fn() as jest.Mock as jest.Mock,
+  removeItem: jest.fn() as jest.Mock as jest.Mock,
+  clear: jest.fn() as jest.Mock as jest.Mock,
 };
 global.localStorage = localStorageMock as any;
 
 // Mock URL methods
 global.URL.createObjectURL = jest.fn(() => 'blob:mock-url');
-global.URL.revokeObjectURL = jest.fn() as jest.Mock;
+global.URL.revokeObjectURL = jest.fn() as jest.Mock as jest.Mock;
 
 // Mock scrollIntoView
-Element.prototype.scrollIntoView = jest.fn() as jest.Mock;
+Element.prototype.scrollIntoView = jest.fn() as jest.Mock as jest.Mock;
 
 describe('AgentSwarmTerminal', () => {
   const mockProjectId = 'test-project-123';

@@ -1,3 +1,5 @@
+import React from "react";
+
 // src/components/checkout/StripePaymentForm.tsx
 
 'use client';

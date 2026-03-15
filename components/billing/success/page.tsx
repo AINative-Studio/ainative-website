@@ -1,3 +1,5 @@
+import React from "react";
+
 // src/app/billing/success/page.tsx
 'use client';
 

@@ -39,7 +39,7 @@ describe('ToolExecutionService', () => {
         parameters: { city: 'San Francisco' },
       };
 
-      const mockExecutor = jest.fn() as jest.Mock as jest.Mock.mockResolvedValue<any>({
+      const mockExecutor = jest.fn().mockResolvedValue({
         temperature: 72,
         conditions: 'sunny',
       });
@@ -66,7 +66,7 @@ describe('ToolExecutionService', () => {
         parameters: {},
       };
 
-      const mockExecutor = jest.fn() as jest.Mock as jest.Mock.mockImplementation(() => {
+      const mockExecutor = jest.fn().mockImplementation(() => {
         return new Promise(resolve => setTimeout(() => resolve({ done: true }), 100));
       });
 
@@ -86,7 +86,7 @@ describe('ToolExecutionService', () => {
         parameters: {},
       };
 
-      const mockExecutor = jest.fn() as jest.Mock as jest.Mock.mockRejectedValue(new Error('Database connection failed'));
+      const mockExecutor = jest.fn().mockRejectedValue(new Error('Database connection failed'));
 
       // When: The tool is executed
       const result = await service.executeTool(toolCall, mockExecutor);
@@ -109,7 +109,7 @@ describe('ToolExecutionService', () => {
       };
 
       // Simulate a tool that returns nothing (silent failure)
-      const mockExecutor = jest.fn() as jest.Mock as jest.Mock.mockResolvedValue(undefined);
+      const mockExecutor = jest.fn().mockResolvedValue(undefined);
 
       const result = await service.executeTool(toolCall, mockExecutor);
 
@@ -126,7 +126,7 @@ describe('ToolExecutionService', () => {
         parameters: {},
       };
 
-      const mockExecutor = jest.fn() as jest.Mock as jest.Mock.mockRejectedValue(
+      const mockExecutor = jest.fn().mockRejectedValue(
         new ToolExecutionError('Unauthorized', 'AUTHENTICATION_ERROR', false)
       );
 
@@ -145,7 +145,7 @@ describe('ToolExecutionService', () => {
         parameters: {},
       };
 
-      const mockExecutor = jest.fn() as jest.Mock as jest.Mock.mockImplementation(() => {
+      const mockExecutor = jest.fn().mockImplementation(() => {
         return new Promise(resolve => setTimeout(resolve, 10000)); // 10 seconds
       });
 
@@ -175,7 +175,7 @@ describe('ToolExecutionService', () => {
         parameters: {},
       };
 
-      const mockExecutor = jest.fn() as jest.Mock as jest.Mock.mockImplementation(() => {
+      const mockExecutor = jest.fn().mockImplementation(() => {
         return new Promise(resolve => setTimeout(resolve, 500)); // 500ms (exceeds 100ms timeout)
       });
 
@@ -195,7 +195,7 @@ describe('ToolExecutionService', () => {
       };
 
       let attempts = 0;
-      const mockExecutor = jest.fn() as jest.Mock as jest.Mock.mockImplementation(() => {
+      const mockExecutor = jest.fn().mockImplementation(() => {
         attempts++;
         if (attempts < 3) {
           return Promise.reject(new Error('Temporary failure'));
@@ -222,7 +222,7 @@ describe('ToolExecutionService', () => {
         parameters: {},
       };
 
-      const mockExecutor = jest.fn() as jest.Mock as jest.Mock.mockRejectedValue(
+      const mockExecutor = jest.fn().mockRejectedValue(
         new ToolExecutionError('Invalid input', 'VALIDATION_ERROR', false)
       );
 
@@ -245,7 +245,7 @@ describe('ToolExecutionService', () => {
       };
 
       const timestamps: number[] = [];
-      const mockExecutor = jest.fn() as jest.Mock as jest.Mock.mockImplementation(() => {
+      const mockExecutor = jest.fn().mockImplementation(() => {
         timestamps.push(Date.now());
         return Promise.reject(new Error('Retry me'));
       });
@@ -276,7 +276,7 @@ describe('ToolExecutionService', () => {
         parameters: { operation: 'add', a: 2, b: 3 },
       };
 
-      const mockExecutor = jest.fn() as jest.Mock as jest.Mock.mockResolvedValue<any>({ result: 5 });
+      const mockExecutor = jest.fn().mockResolvedValue({ result: 5 });
 
       const result = await service.executeTool(toolCall, mockExecutor);
 
@@ -293,7 +293,7 @@ describe('ToolExecutionService', () => {
         { id: 'call-14', name: 'tool_c', parameters: {} },
       ];
 
-      const mockExecutor = jest.fn() as jest.Mock as jest.Mock.mockResolvedValue<any>({ data: 'test' });
+      const mockExecutor = jest.fn().mockResolvedValue({ data: 'test' });
 
       // When: Executing all tools
       const results = await service.executeToolBatch(toolCalls, mockExecutor);
@@ -366,7 +366,7 @@ describe('ToolExecutionService', () => {
         parameters: {},
       };
 
-      const mockExecutor = jest.fn() as jest.Mock as jest.Mock.mockRejectedValue(new Error('Service unavailable'));
+      const mockExecutor = jest.fn().mockRejectedValue(new Error('Service unavailable'));
 
       // Fail 5 times to trip circuit breaker
       for (let i = 0; i < 5; i++) {
@@ -388,7 +388,7 @@ describe('ToolExecutionService', () => {
         parameters: {},
       };
 
-      const mockExecutor = jest.fn() as jest.Mock as jest.Mock.mockRejectedValue(new Error('Temporary failure'));
+      const mockExecutor = jest.fn().mockRejectedValue(new Error('Temporary failure'));
 
       // Trip the circuit
       for (let i = 0; i < 5; i++) {
@@ -402,7 +402,7 @@ describe('ToolExecutionService', () => {
       service.resetCircuitBreaker(toolCall.name);
 
       // Should allow execution again
-      mockExecutor.mockResolvedValue<any>({ recovered: true });
+      mockExecutor.mockResolvedValue({ recovered: true });
       const result = await service.executeTool(toolCall, mockExecutor);
 
       expect(result.status).toBe('success');
@@ -422,8 +422,8 @@ describe('ToolExecutionService', () => {
         parameters: {},
       };
 
-      const mockExecutorA = jest.fn() as jest.Mock as jest.Mock.mockRejectedValue(new Error('Service A down'));
-      const mockExecutorB = jest.fn() as jest.Mock as jest.Mock.mockResolvedValue<any>({ ok: true });
+      const mockExecutorA = jest.fn().mockRejectedValue(new Error('Service A down'));
+      const mockExecutorB = jest.fn().mockResolvedValue({ ok: true });
 
       // Trip circuit for service A only
       for (let i = 0; i < 5; i++) {
@@ -450,7 +450,7 @@ describe('ToolExecutionService', () => {
         parameters: { data: 'test' },
       };
 
-      const mockExecutor = jest.fn() as jest.Mock as jest.Mock.mockResolvedValue<any>({ result: 'ok' });
+      const mockExecutor = jest.fn().mockResolvedValue({ result: 'ok' });
 
       await service.executeTool(toolCall, mockExecutor);
 
@@ -470,7 +470,7 @@ describe('ToolExecutionService', () => {
       };
 
       // Add small delay to ensure measurable execution time
-      const mockExecutor = jest.fn() as jest.Mock as jest.Mock.mockImplementation(() => {
+      const mockExecutor = jest.fn().mockImplementation(() => {
         return new Promise(resolve => setTimeout(() => resolve({ data: 'ok' }), 10));
       });
 
@@ -492,7 +492,7 @@ describe('ToolExecutionService', () => {
       };
 
       let callCount = 0;
-      const mockExecutor = jest.fn() as jest.Mock as jest.Mock.mockImplementation(() => {
+      const mockExecutor = jest.fn().mockImplementation(() => {
         callCount++;
         if (callCount <= 2) {
           return Promise.reject(new Error('Fail'));
@@ -524,7 +524,7 @@ describe('ToolExecutionService', () => {
         parameters: { city: 'Unknown' },
       };
 
-      const mockExecutor = jest.fn() as jest.Mock as jest.Mock.mockRejectedValue(new Error('City not found'));
+      const mockExecutor = jest.fn().mockRejectedValue(new Error('City not found'));
 
       const fallbackValue = { temperature: null, conditions: 'unavailable' };
       const options: ToolExecutionOptions = {
@@ -545,7 +545,7 @@ describe('ToolExecutionService', () => {
         { id: 'call-29', name: 'tool_c', parameters: {} },
       ];
 
-      const mockExecutor = jest.fn() as jest.Mock as jest.Mock.mockImplementation((call: ToolCall) => {
+      const mockExecutor = jest.fn().mockImplementation((call: ToolCall) => {
         if (call.id === 'call-28') {
           return Promise.reject(new Error('Tool B failed'));
         }
@@ -569,7 +569,7 @@ describe('ToolExecutionService', () => {
         parameters: {},
       };
 
-      const mockExecutor = jest.fn() as jest.Mock as jest.Mock.mockRejectedValue(
+      const mockExecutor = jest.fn().mockRejectedValue(
         new Error('ECONNREFUSED: Connection refused')
       );
 
@@ -607,7 +607,7 @@ describe('ToolExecutionService', () => {
           parameters: {},
         };
 
-        const mockExecutor = jest.fn() as jest.Mock as jest.Mock.mockRejectedValue(testCase.error);
+        const mockExecutor = jest.fn().mockRejectedValue(testCase.error);
         const result = await service.executeTool(toolCall, mockExecutor);
 
         expect(result.error?.code).toBe(testCase.expectedCode);

@@ -1,3 +1,5 @@
+import { render, screen } from "@testing-library/react";
+
 /**
  * Admin Monitoring Service Tests
  * Tests for system monitoring and observability

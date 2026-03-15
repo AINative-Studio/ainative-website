@@ -170,7 +170,7 @@ describe('AIKit Dashboard Integration - TDD Suite', () => {
     it('should copy install command to clipboard', async () => {
       const user = userEvent.setup();
       const mockClipboard = {
-        writeText: jest.fn() as jest.Mock as jest.Mock,
+        writeText: jest.fn(),
       };
       Object.assign(navigator, { clipboard: mockClipboard });
 
@@ -186,7 +186,7 @@ describe('AIKit Dashboard Integration - TDD Suite', () => {
     it('should show check icon after copying', async () => {
       const user = userEvent.setup();
       Object.assign(navigator, {
-        clipboard: { writeText: jest.fn() as jest.Mock as jest.Mock },
+        clipboard: { writeText: jest.fn() },
       });
 
       render(<AIKitClient />);
@@ -371,7 +371,7 @@ describe('AIKit Dashboard Integration - TDD Suite', () => {
       jest.useFakeTimers();
       const user = userEvent.setup();
       Object.assign(navigator, {
-        clipboard: { writeText: jest.fn() as jest.Mock as jest.Mock },
+        clipboard: { writeText: jest.fn() },
       });
 
       render(<AIKitClient />);
@@ -401,7 +401,7 @@ describe('AIKit Dashboard Integration - TDD Suite', () => {
       // Mock clipboard to fail
       Object.assign(navigator, {
         clipboard: {
-          writeText: jest.fn() as jest.Mock as jest.Mock.mockRejectedValue(new Error('Clipboard failed')),
+          writeText: jest.fn().mockRejectedValue(new Error('Clipboard failed')),
         },
       });
 
