@@ -7,7 +7,7 @@
  * @module benchmarkService
  */
 
-import { qnnApiClient } from './QNNApiClient';
+import { qnnApiClient } from './qnnApiClient';
 import {
   BenchmarkMetrics,
   BenchmarkRequest,

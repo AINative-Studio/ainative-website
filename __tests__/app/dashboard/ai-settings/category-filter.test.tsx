@@ -1,3 +1,7 @@
+import { render, screen } from "@testing-library/react";
+
+import React from "react";
+
 /**
  * Tests for category filtering in AI Settings
  * Verifies that audio models show up when "Audio" filter is selected

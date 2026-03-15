@@ -1,3 +1,5 @@
+import { render, screen } from "@testing-library/react";
+
 /**
  * Frontend Simulation Test
  * Simulates exactly what happens in the AISettingsClient component

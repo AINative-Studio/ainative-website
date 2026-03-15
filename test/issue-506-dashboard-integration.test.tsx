@@ -30,11 +30,11 @@ import { stripeConnectService } from '@/services/stripeConnectService';
 
 // Mock Next.js navigation
 jest.mock('next/navigation', () => ({
-  usePathname: jest.fn() as jest.Mock,
+  usePathname: jest.fn() as jest.Mock as jest.Mock,
   useRouter: jest.fn(() => ({
-    push: jest.fn() as jest.Mock,
-    replace: jest.fn() as jest.Mock,
-    prefetch: jest.fn() as jest.Mock,
+    push: jest.fn() as jest.Mock as jest.Mock,
+    replace: jest.fn() as jest.Mock as jest.Mock,
+    prefetch: jest.fn() as jest.Mock as jest.Mock,
   })),
 }));
 
@@ -140,7 +140,7 @@ describe('Developer Dashboard Integration Tests', () => {
 
     it('should support mobile navigation with close handler', async () => {
       const user = userEvent.setup();
-      const onClose = jest.fn() as jest.Mock;
+      const onClose = jest.fn() as jest.Mock as jest.Mock;
 
       render(<Sidebar isMobile onClose={onClose} />);
 
@@ -284,7 +284,7 @@ describe('Developer Dashboard Integration Tests', () => {
     it('should copy API key to clipboard', async () => {
       const user = userEvent.setup();
       const mockClipboard = {
-        writeText: jest.fn() as jest.Mock.mockResolvedValue(undefined),
+        writeText: jest.fn() as jest.Mock as jest.Mock.mockResolvedValue(undefined),
       };
       Object.defineProperty(navigator, 'clipboard', {
         value: mockClipboard,
@@ -617,14 +617,14 @@ describe('Developer Dashboard Integration Tests', () => {
       (payoutService.getPayoutBalance as jest.Mock).mockResolvedValue(mockBalance);
       (payoutService.getPaymentMethods as jest.Mock).mockResolvedValue(mockPaymentMethods);
       (payoutService.getPayouts as jest.Mock).mockResolvedValue([]);
-      (payoutService.getAutoPayoutSettings as jest.Mock).mockResolvedValue({
+      (payoutService.getAutoPayoutSettings as jest.Mock).mockResolvedValue<any>({
         enabled: true,
         schedule: 'weekly',
         threshold: 100000,
         delay_days: 2,
       });
       (payoutService.getTaxForms as jest.Mock).mockResolvedValue([]);
-      (payoutService.getNotificationPreferences as jest.Mock).mockResolvedValue({
+      (payoutService.getNotificationPreferences as jest.Mock).mockResolvedValue<any>({
         email_on_payout_sent: true,
         email_on_payout_paid: true,
         email_on_payout_failed: true,
@@ -677,7 +677,7 @@ describe('Developer Dashboard Integration Tests', () => {
 
     it('should handle payout request', async () => {
       const user = userEvent.setup();
-      (payoutService.requestPayout as jest.Mock).mockResolvedValue({
+      (payoutService.requestPayout as jest.Mock).mockResolvedValue<any>({
         success: true,
         message: 'Payout requested successfully',
       });
@@ -698,7 +698,7 @@ describe('Developer Dashboard Integration Tests', () => {
 
     it('should handle auto-payout settings update', async () => {
       const user = userEvent.setup();
-      (payoutService.updateAutoPayoutSettings as jest.Mock).mockResolvedValue({
+      (payoutService.updateAutoPayoutSettings as jest.Mock).mockResolvedValue<any>({
         success: true,
         message: 'Settings updated',
       });
@@ -744,10 +744,10 @@ describe('Developer Dashboard Integration Tests', () => {
       const user = userEvent.setup();
       localStorageMock.clear(); // Not connected yet
 
-      (payoutService.getStripeConnectStatus as jest.Mock).mockResolvedValue({
+      (payoutService.getStripeConnectStatus as jest.Mock).mockResolvedValue<any>({
         is_connected: false,
       });
-      (payoutService.getPayoutBalance as jest.Mock).mockResolvedValue({
+      (payoutService.getPayoutBalance as jest.Mock).mockResolvedValue<any>({
         available: 0,
         pending: 0,
         total: 0,
@@ -784,7 +784,7 @@ describe('Developer Dashboard Integration Tests', () => {
         updated_at: '2026-01-31',
       };
 
-      (stripeConnectService.completeOAuthFlow as jest.Mock).mockResolvedValue({
+      (stripeConnectService.completeOAuthFlow as jest.Mock).mockResolvedValue<any>({
         success: true,
         message: 'Account linked successfully',
         account: mockAccount,
@@ -926,18 +926,18 @@ describe('Developer Dashboard Integration Tests', () => {
       };
 
       (earningsService.getTransactions as jest.Mock).mockResolvedValue(mockTransactions);
-      (earningsService.getEarningsOverview as jest.Mock).mockResolvedValue({
+      (earningsService.getEarningsOverview as jest.Mock).mockResolvedValue<any>({
         totalEarnings: 25000,
         thisMonth: 25000,
         lastMonth: 0,
         pendingPayout: 0,
       });
-      (earningsService.getEarningsBreakdown as jest.Mock).mockResolvedValue({
+      (earningsService.getEarningsBreakdown as jest.Mock).mockResolvedValue<any>({
         api: 25000,
         marketplace: 0,
         referrals: 0,
       });
-      (earningsService.getPayoutSchedule as jest.Mock).mockResolvedValue({
+      (earningsService.getPayoutSchedule as jest.Mock).mockResolvedValue<any>({
         nextPayoutDate: '2026-02-05',
         minimumPayout: 10000,
         payoutThreshold: 50000,
@@ -951,19 +951,19 @@ describe('Developer Dashboard Integration Tests', () => {
     });
 
     it('should have status indicators with proper roles', async () => {
-      (earningsService.getEarningsOverview as jest.Mock).mockResolvedValue({
+      (earningsService.getEarningsOverview as jest.Mock).mockResolvedValue<any>({
         totalEarnings: 25000,
         thisMonth: 25000,
         lastMonth: 0,
         pendingPayout: 0,
       });
-      (earningsService.getTransactions as jest.Mock).mockResolvedValue({ items: [], total: 0 });
-      (earningsService.getEarningsBreakdown as jest.Mock).mockResolvedValue({
+      (earningsService.getTransactions as jest.Mock).mockResolvedValue<any>({ items: [], total: 0 });
+      (earningsService.getEarningsBreakdown as jest.Mock).mockResolvedValue<any>({
         api: 0,
         marketplace: 0,
         referrals: 0,
       });
-      (earningsService.getPayoutSchedule as jest.Mock).mockResolvedValue({
+      (earningsService.getPayoutSchedule as jest.Mock).mockResolvedValue<any>({
         nextPayoutDate: '2026-02-05',
         minimumPayout: 10000,
         payoutThreshold: 50000,

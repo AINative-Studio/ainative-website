@@ -1,3 +1,5 @@
+import { render, screen } from "@testing-library/react";
+
 /**
  * Tests for Model Aggregator Service - API Integration
  * Refs #566 - Test AI Registry API integration
@@ -10,7 +12,7 @@ import apiClient from '@/lib/api-client';
 jest.mock('@/lib/api-client', () => ({
   __esModule: true,
   default: {
-    get: jest.fn() as jest.Mock,
+    get: jest.fn() as jest.Mock as jest.Mock,
   },
 }));
 

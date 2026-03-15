@@ -1,3 +1,5 @@
+import { render, screen } from "@testing-library/react";
+
 /**
  * Tests for NextAuth Prisma Database Adapter Integration
  *
@@ -26,20 +28,20 @@ describe('NextAuth Prisma Adapter Configuration', () => {
   // Mock PrismaAdapter
   jest.mock('@next-auth/prisma-adapter', () => ({
     PrismaAdapter: jest.fn(() => ({
-      createUser: jest.fn() as jest.Mock,
-      getUser: jest.fn() as jest.Mock,
-      getUserByEmail: jest.fn() as jest.Mock,
-      getUserByAccount: jest.fn() as jest.Mock,
-      updateUser: jest.fn() as jest.Mock,
-      deleteUser: jest.fn() as jest.Mock,
-      linkAccount: jest.fn() as jest.Mock,
-      unlinkAccount: jest.fn() as jest.Mock,
-      createSession: jest.fn() as jest.Mock,
-      getSessionAndUser: jest.fn() as jest.Mock,
-      updateSession: jest.fn() as jest.Mock,
-      deleteSession: jest.fn() as jest.Mock,
-      createVerificationToken: jest.fn() as jest.Mock,
-      useVerificationToken: jest.fn() as jest.Mock,
+      createUser: jest.fn() as jest.Mock as jest.Mock,
+      getUser: jest.fn() as jest.Mock as jest.Mock,
+      getUserByEmail: jest.fn() as jest.Mock as jest.Mock,
+      getUserByAccount: jest.fn() as jest.Mock as jest.Mock,
+      updateUser: jest.fn() as jest.Mock as jest.Mock,
+      deleteUser: jest.fn() as jest.Mock as jest.Mock,
+      linkAccount: jest.fn() as jest.Mock as jest.Mock,
+      unlinkAccount: jest.fn() as jest.Mock as jest.Mock,
+      createSession: jest.fn() as jest.Mock as jest.Mock,
+      getSessionAndUser: jest.fn() as jest.Mock as jest.Mock,
+      updateSession: jest.fn() as jest.Mock as jest.Mock,
+      deleteSession: jest.fn() as jest.Mock as jest.Mock,
+      createVerificationToken: jest.fn() as jest.Mock as jest.Mock,
+      useVerificationToken: jest.fn() as jest.Mock as jest.Mock,
     })),
   }));
 

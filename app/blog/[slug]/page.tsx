@@ -1,3 +1,5 @@
+import React from "react";
+
 import { Metadata } from 'next';
 import BlogDetailClient from './BlogDetailClient';
 import { ArticleSchema, BreadcrumbSchema } from '@/components/seo/StructuredData';

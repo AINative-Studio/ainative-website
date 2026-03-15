@@ -1,3 +1,5 @@
+import { render, screen } from "@testing-library/react";
+
 /**
  * @jest-environment node
  */
@@ -9,8 +11,8 @@ import { ModelAggregatorService } from '../model-aggregator';
 jest.mock('../api-client', () => ({
   __esModule: true,
   default: {
-    get: jest.fn() as jest.Mock,
-    post: jest.fn() as jest.Mock,
+    get: jest.fn() as jest.Mock as jest.Mock,
+    post: jest.fn() as jest.Mock as jest.Mock,
   },
 }));
 

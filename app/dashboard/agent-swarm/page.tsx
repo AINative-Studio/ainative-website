@@ -1,3 +1,5 @@
+import React from "react";
+
 /**
  * Agent Swarm Dashboard - Server Component
  * Multi-step wizard for creating and launching agent swarm projects

@@ -1,3 +1,5 @@
+import { render, screen } from "@testing-library/react";
+
 /**
  * Credit System Integration Tests
  * Tests complete credit workflows including balance checking, purchases, usage tracking, and auto-refill

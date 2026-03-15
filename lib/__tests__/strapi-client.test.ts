@@ -1,3 +1,5 @@
+import { render, screen } from "@testing-library/react";
+
 /**
  * Strapi Client Tests (TDD)
  * Test-first implementation for Strapi CMS API client
@@ -76,7 +78,7 @@ describe('StrapiClient', () => {
 
     it('should fetch blog posts with default parameters', async () => {
       const mockAxiosInstance = {
-        get: jest.fn() as jest.Mock.mockResolvedValue({ data: mockBlogPosts }),
+        get: jest.fn().mockResolvedValue({ data: mockBlogPosts }),
       } as unknown as AxiosInstance;
 
       mockedAxios.create.mockReturnValue(mockAxiosInstance);
@@ -96,7 +98,7 @@ describe('StrapiClient', () => {
 
     it('should accept custom parameters', async () => {
       const mockAxiosInstance = {
-        get: jest.fn() as jest.Mock.mockResolvedValue({ data: mockBlogPosts }),
+        get: jest.fn().mockResolvedValue({ data: mockBlogPosts }),
       } as unknown as AxiosInstance;
 
       mockedAxios.create.mockReturnValue(mockAxiosInstance);
@@ -118,7 +120,7 @@ describe('StrapiClient', () => {
 
     it('should handle errors gracefully', async () => {
       const mockAxiosInstance = {
-        get: jest.fn() as jest.Mock.mockRejectedValue(new Error('Network error')),
+        get: jest.fn().mockRejectedValue(new Error('Network error')),
       } as unknown as AxiosInstance;
 
       mockedAxios.create.mockReturnValue(mockAxiosInstance);
@@ -140,7 +142,7 @@ describe('StrapiClient', () => {
 
     it('should fetch a single blog post by slug', async () => {
       const mockAxiosInstance = {
-        get: jest.fn() as jest.Mock.mockResolvedValue({ data: { data: [mockBlogPost] } }),
+        get: jest.fn() as jest.Mock as jest.Mock.mockResolvedValue<any>({ data: { data: [mockBlogPost] } }),
       } as unknown as AxiosInstance;
 
       mockedAxios.create.mockReturnValue(mockAxiosInstance);
@@ -160,7 +162,7 @@ describe('StrapiClient', () => {
 
     it('should return null if blog post not found', async () => {
       const mockAxiosInstance = {
-        get: jest.fn() as jest.Mock.mockResolvedValue({ data: { data: [] } }),
+        get: jest.fn() as jest.Mock as jest.Mock.mockResolvedValue<any>({ data: { data: [] } }),
       } as unknown as AxiosInstance;
 
       mockedAxios.create.mockReturnValue(mockAxiosInstance);
@@ -195,7 +197,7 @@ describe('StrapiClient', () => {
 
     it('should fetch videos with featured first sorting', async () => {
       const mockAxiosInstance = {
-        get: jest.fn() as jest.Mock.mockResolvedValue({ data: mockVideos }),
+        get: jest.fn() as jest.Mock as jest.Mock.mockResolvedValue<any>({ data: mockVideos }),
       } as unknown as AxiosInstance;
 
       mockedAxios.create.mockReturnValue(mockAxiosInstance);
@@ -215,7 +217,7 @@ describe('StrapiClient', () => {
 
     it('should support category filtering', async () => {
       const mockAxiosInstance = {
-        get: jest.fn() as jest.Mock.mockResolvedValue({ data: mockVideos }),
+        get: jest.fn() as jest.Mock as jest.Mock.mockResolvedValue<any>({ data: mockVideos }),
       } as unknown as AxiosInstance;
 
       mockedAxios.create.mockReturnValue(mockAxiosInstance);
@@ -245,7 +247,7 @@ describe('StrapiClient', () => {
 
     it('should fetch a single video by slug', async () => {
       const mockAxiosInstance = {
-        get: jest.fn() as jest.Mock.mockResolvedValue({ data: { data: [mockVideo] } }),
+        get: jest.fn() as jest.Mock as jest.Mock.mockResolvedValue<any>({ data: { data: [mockVideo] } }),
       } as unknown as AxiosInstance;
 
       mockedAxios.create.mockReturnValue(mockAxiosInstance);
@@ -267,7 +269,7 @@ describe('StrapiClient', () => {
   describe('updateVideoViews()', () => {
     it('should increment video view count', async () => {
       const mockAxiosInstance = {
-        put: jest.fn() as jest.Mock.mockResolvedValue({ data: { data: { id: 1, views: 101 } } }),
+        put: jest.fn() as jest.Mock as jest.Mock.mockResolvedValue<any>({ data: { data: { id: 1, views: 101 } } }),
       } as unknown as AxiosInstance;
 
       mockedAxios.create.mockReturnValue(mockAxiosInstance);
@@ -285,7 +287,7 @@ describe('StrapiClient', () => {
   describe('updateVideoLikes()', () => {
     it('should update video like count', async () => {
       const mockAxiosInstance = {
-        put: jest.fn() as jest.Mock.mockResolvedValue({ data: { data: { id: 1, likes: 51 } } }),
+        put: jest.fn() as jest.Mock as jest.Mock.mockResolvedValue<any>({ data: { data: { id: 1, likes: 51 } } }),
       } as unknown as AxiosInstance;
 
       mockedAxios.create.mockReturnValue(mockAxiosInstance);
@@ -314,7 +316,7 @@ describe('StrapiClient', () => {
       };
 
       const mockAxiosInstance = {
-        get: jest.fn() as jest.Mock.mockResolvedValue({ data: mockTutorials }),
+        get: jest.fn() as jest.Mock as jest.Mock.mockResolvedValue<any>({ data: mockTutorials }),
       } as unknown as AxiosInstance;
 
       mockedAxios.create.mockReturnValue(mockAxiosInstance);
@@ -345,7 +347,7 @@ describe('StrapiClient', () => {
       };
 
       const mockAxiosInstance = {
-        get: jest.fn() as jest.Mock.mockResolvedValue({ data: mockWebinars }),
+        get: jest.fn() as jest.Mock as jest.Mock.mockResolvedValue<any>({ data: mockWebinars }),
       } as unknown as AxiosInstance;
 
       mockedAxios.create.mockReturnValue(mockAxiosInstance);
@@ -416,7 +418,7 @@ describe('StrapiClient', () => {
     it('should log errors and re-throw them', async () => {
       const consoleErrorSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
       const mockAxiosInstance = {
-        get: jest.fn() as jest.Mock.mockRejectedValue(new Error('API Error')),
+        get: jest.fn() as jest.Mock as jest.Mock.mockRejectedValue(new Error('API Error')),
       } as unknown as AxiosInstance;
 
       mockedAxios.create.mockReturnValue(mockAxiosInstance);
@@ -434,7 +436,7 @@ describe('StrapiClient', () => {
 
     it('should handle network timeouts', async () => {
       const mockAxiosInstance = {
-        get: jest.fn() as jest.Mock.mockRejectedValue({ code: 'ECONNABORTED', message: 'timeout' }),
+        get: jest.fn() as jest.Mock as jest.Mock.mockRejectedValue({ code: 'ECONNABORTED', message: 'timeout' }),
       } as unknown as AxiosInstance;
 
       mockedAxios.create.mockReturnValue(mockAxiosInstance);

@@ -1,3 +1,5 @@
+import React from "react";
+
 import { AdminRouteGuard } from '@/components/guards/AdminRouteGuard';
 import UsersClient from './UsersClient';
 

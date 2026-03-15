@@ -139,11 +139,11 @@ describe('Issue #495: Animation Variants', () => {
         matches: query === '(prefers-reduced-motion: reduce)',
         media: query,
         onchange: null,
-        addListener: jest.fn() as jest.Mock,
-        removeListener: jest.fn() as jest.Mock,
-        addEventListener: jest.fn() as jest.Mock,
-        removeEventListener: jest.fn() as jest.Mock,
-        dispatchEvent: jest.fn() as jest.Mock,
+        addListener: jest.fn() as jest.Mock as jest.Mock,
+        removeListener: jest.fn() as jest.Mock as jest.Mock,
+        addEventListener: jest.fn() as jest.Mock as jest.Mock,
+        removeEventListener: jest.fn() as jest.Mock as jest.Mock,
+        dispatchEvent: jest.fn() as jest.Mock as jest.Mock,
       });
 
       window.matchMedia = mockMatchMedia as unknown as typeof window.matchMedia;

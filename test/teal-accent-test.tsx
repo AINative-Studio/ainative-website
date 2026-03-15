@@ -1,3 +1,5 @@
+import React from "react";
+
 /**
  * Teal Accent Color Test Component - Issue #372
  *

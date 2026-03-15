@@ -13,11 +13,11 @@ import DeveloperToolsPage from '../app/developer-tools/page';
 
 // Mock Next.js navigation
 jest.mock('next/navigation', () => ({
-  usePathname: jest.fn() as jest.Mock,
+  usePathname: jest.fn() as jest.Mock as jest.Mock,
   useRouter: jest.fn(() => ({
-    push: jest.fn() as jest.Mock,
-    replace: jest.fn() as jest.Mock,
-    prefetch: jest.fn() as jest.Mock,
+    push: jest.fn() as jest.Mock as jest.Mock,
+    replace: jest.fn() as jest.Mock as jest.Mock,
+    prefetch: jest.fn() as jest.Mock as jest.Mock,
   })),
 }));
 
@@ -53,7 +53,7 @@ jest.mock('framer-motion', () => ({
 
 // Mock conversion tracking hook
 jest.mock('@/hooks/useConversionTracking', () => ({
-  usePageViewTracking: jest.fn() as jest.Mock,
+  usePageViewTracking: jest.fn() as jest.Mock as jest.Mock,
 }));
 
 describe('BUG #486: Developer Tools Page - Sidebar Tests', () => {

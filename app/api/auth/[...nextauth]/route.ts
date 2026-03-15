@@ -1,3 +1,5 @@
+import { NextResponse } from "next/server";
+
 import NextAuth from 'next-auth';
 import { authOptions } from '@/lib/auth/options';
 import { withRateLimit } from '@/middleware/rateLimit';

@@ -16,9 +16,9 @@ jest.mock('@/services/earningsService');
 // Mock Next.js navigation
 jest.mock('next/navigation', () => ({
   useRouter: () => ({
-    push: jest.fn() as jest.Mock,
-    replace: jest.fn() as jest.Mock,
-    refresh: jest.fn() as jest.Mock,
+    push: jest.fn() as jest.Mock as jest.Mock,
+    replace: jest.fn() as jest.Mock as jest.Mock,
+    refresh: jest.fn() as jest.Mock as jest.Mock,
   }),
   usePathname: () => '/developer/earnings',
 }));
@@ -217,7 +217,7 @@ describe('Developer Earnings Client', () => {
 
   it('should handle pagination', async () => {
     const user = userEvent.setup();
-    (earningsService.getTransactions as jest.Mock).mockResolvedValue({
+    (earningsService.getTransactions as jest.Mock).mockResolvedValue<any>({
       ...mockData.transactions,
       total: 25,
     });

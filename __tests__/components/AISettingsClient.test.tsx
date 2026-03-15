@@ -15,9 +15,9 @@ import '@testing-library/jest-dom';
 
 jest.mock('@/lib/ai-registry-service', () => ({
   aiRegistryService: {
-    listModels: jest.fn() as jest.Mock,
-    registerModel: jest.fn() as jest.Mock,
-    switchDefaultModel: jest.fn() as jest.Mock,
+    listModels: jest.fn() as jest.Mock as jest.Mock,
+    registerModel: jest.fn() as jest.Mock as jest.Mock,
+    switchDefaultModel: jest.fn() as jest.Mock as jest.Mock,
   },
 }));
 

@@ -1,3 +1,5 @@
+import React from "react";
+
 /**
  * Stripe Callback Client Component Tests
  * Comprehensive tests for OAuth callback handling
@@ -11,15 +13,15 @@ import { stripeConnectService } from '@/services/stripeConnectService';
 
 // Mock dependencies
 jest.mock('next/navigation', () => ({
-  useRouter: jest.fn() as jest.Mock,
-  useSearchParams: jest.fn() as jest.Mock,
+  useRouter: jest.fn() as jest.Mock as jest.Mock,
+  useSearchParams: jest.fn() as jest.Mock as jest.Mock,
 }));
 
 jest.mock('@/services/stripeConnectService', () => ({
   stripeConnectService: {
-    completeOAuthFlow: jest.fn() as jest.Mock,
-    handleOAuthError: jest.fn() as jest.Mock,
-    validateStateToken: jest.fn() as jest.Mock,
+    completeOAuthFlow: jest.fn() as jest.Mock as jest.Mock,
+    handleOAuthError: jest.fn() as jest.Mock as jest.Mock,
+    validateStateToken: jest.fn() as jest.Mock as jest.Mock,
   },
 }));
 
@@ -45,13 +47,13 @@ Object.defineProperty(window, 'localStorage', {
 });
 
 describe('StripeCallbackClient', () => {
-  const mockPush = jest.fn() as jest.Mock;
-  const mockReplace = jest.fn() as jest.Mock;
+  const mockPush = jest.fn() as jest.Mock as jest.Mock;
+  const mockReplace = jest.fn() as jest.Mock as jest.Mock;
 
   beforeEach(() => {
     jest.clearAllMocks();
     mockLocalStorage.clear();
-    (useRouter as jest.Mock).mockReturnValue({
+    (useRouter as jest.Mock).mockReturnValue<any>({
       push: mockPush,
       replace: mockReplace,
     });
@@ -68,7 +70,7 @@ describe('StripeCallbackClient', () => {
       mockLocalStorage.setItem('stripe_oauth_state', 'state-token-123');
 
       (stripeConnectService.validateStateToken as jest.Mock).mockReturnValue(true);
-      (stripeConnectService.completeOAuthFlow as jest.Mock).mockResolvedValue({
+      (stripeConnectService.completeOAuthFlow as jest.Mock).mockResolvedValue<any>({
         success: true,
         message: 'Account linked successfully',
         redirect_url: '/developer/payouts',
@@ -122,7 +124,7 @@ describe('StripeCallbackClient', () => {
       mockLocalStorage.setItem('stripe_oauth_state', 'state-token-123');
 
       (stripeConnectService.validateStateToken as jest.Mock).mockReturnValue(true);
-      (stripeConnectService.completeOAuthFlow as jest.Mock).mockResolvedValue({
+      (stripeConnectService.completeOAuthFlow as jest.Mock).mockResolvedValue<any>({
         success: true,
         message: 'Account linked successfully',
       });
@@ -146,7 +148,7 @@ describe('StripeCallbackClient', () => {
       });
 
       (useSearchParams as jest.Mock).mockReturnValue(mockSearchParams);
-      (stripeConnectService.handleOAuthError as jest.Mock).mockReturnValue({
+      (stripeConnectService.handleOAuthError as jest.Mock).mockReturnValue<any>({
         success: false,
         message: 'You denied access to your Stripe account',
       });
@@ -171,7 +173,7 @@ describe('StripeCallbackClient', () => {
       });
 
       (useSearchParams as jest.Mock).mockReturnValue(mockSearchParams);
-      (stripeConnectService.handleOAuthError as jest.Mock).mockReturnValue({
+      (stripeConnectService.handleOAuthError as jest.Mock).mockReturnValue<any>({
         success: false,
         message: 'Stripe server error. Please try again later',
       });
@@ -294,7 +296,7 @@ describe('StripeCallbackClient', () => {
       mockLocalStorage.setItem('stripe_oauth_state', 'state-token-123');
 
       (stripeConnectService.validateStateToken as jest.Mock).mockReturnValue(true);
-      (stripeConnectService.completeOAuthFlow as jest.Mock).mockResolvedValue({
+      (stripeConnectService.completeOAuthFlow as jest.Mock).mockResolvedValue<any>({
         success: false,
         message: 'Invalid authorization code',
       });
@@ -363,7 +365,7 @@ describe('StripeCallbackClient', () => {
       mockLocalStorage.setItem('stripe_oauth_state', 'state-token-123');
 
       (stripeConnectService.validateStateToken as jest.Mock).mockReturnValue(true);
-      (stripeConnectService.completeOAuthFlow as jest.Mock).mockResolvedValue({
+      (stripeConnectService.completeOAuthFlow as jest.Mock).mockResolvedValue<any>({
         success: true,
         message: 'Success',
       });
@@ -383,7 +385,7 @@ describe('StripeCallbackClient', () => {
       });
 
       (useSearchParams as jest.Mock).mockReturnValue(mockSearchParams);
-      (stripeConnectService.handleOAuthError as jest.Mock).mockReturnValue({
+      (stripeConnectService.handleOAuthError as jest.Mock).mockReturnValue<any>({
         success: false,
         message: 'Server error',
       });
@@ -401,7 +403,7 @@ describe('StripeCallbackClient', () => {
       });
 
       (useSearchParams as jest.Mock).mockReturnValue(mockSearchParams);
-      (stripeConnectService.handleOAuthError as jest.Mock).mockReturnValue({
+      (stripeConnectService.handleOAuthError as jest.Mock).mockReturnValue<any>({
         success: false,
         message: 'Access denied',
       });
@@ -430,7 +432,7 @@ describe('StripeCallbackClient', () => {
       mockLocalStorage.setItem('stripe_oauth_state', 'state-token-123');
 
       (stripeConnectService.validateStateToken as jest.Mock).mockReturnValue(true);
-      (stripeConnectService.completeOAuthFlow as jest.Mock).mockResolvedValue({
+      (stripeConnectService.completeOAuthFlow as jest.Mock).mockResolvedValue<any>({
         success: true,
         message: 'Success',
       });
@@ -450,7 +452,7 @@ describe('StripeCallbackClient', () => {
       (useSearchParams as jest.Mock).mockReturnValue(mockSearchParams);
       mockLocalStorage.setItem('stripe_oauth_state', 'state-token-123');
 
-      (stripeConnectService.handleOAuthError as jest.Mock).mockReturnValue({
+      (stripeConnectService.handleOAuthError as jest.Mock).mockReturnValue<any>({
         success: false,
         message: 'Access denied',
       });

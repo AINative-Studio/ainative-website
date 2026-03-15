@@ -1,3 +1,5 @@
+import { render, screen } from "@testing-library/react";
+
 /**
  * Tests for API Client Authentication and Token Refresh
  *
@@ -16,7 +18,7 @@
 import { describe, it, expect, jest, beforeEach, afterEach } from '@jest/globals';
 
 // Mock fetch globally
-const mockFetch = jest.fn() as jest.Mock as jest.MockedFunction<typeof fetch>;
+const mockFetch = jest.fn() as jest.Mock as jest.Mock as jest.MockedFunction<typeof fetch>;
 global.fetch = mockFetch;
 
 describe('ApiClient Authentication and Token Refresh', () => {

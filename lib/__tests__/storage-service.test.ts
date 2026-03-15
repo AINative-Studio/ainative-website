@@ -1,3 +1,5 @@
+import { render, screen } from "@testing-library/react";
+
 /**
  * Unit tests for Storage Service
  * Tests all storage API methods with proper mocking
@@ -83,7 +85,7 @@ describe('StorageService', () => {
         total: 1,
       };
 
-      mockedApiClient.get.mockResolvedValue({
+      mockedApiClient.get.mockResolvedValue<any>({
         data: mockBuckets,
         status: 200,
         statusText: 'OK',
@@ -122,7 +124,7 @@ describe('StorageService', () => {
         has_more: false,
       };
 
-      mockedApiClient.get.mockResolvedValue({
+      mockedApiClient.get.mockResolvedValue<any>({
         data: mockFiles,
         status: 200,
         statusText: 'OK',
@@ -145,7 +147,7 @@ describe('StorageService', () => {
         has_more: false,
       };
 
-      mockedApiClient.get.mockResolvedValue({
+      mockedApiClient.get.mockResolvedValue<any>({
         data: mockFiles,
         status: 200,
         statusText: 'OK',
@@ -166,7 +168,7 @@ describe('StorageService', () => {
         created_at: '2024-01-01T00:00:00Z',
       };
 
-      mockedApiClient.post.mockResolvedValue({
+      mockedApiClient.post.mockResolvedValue<any>({
         data: mockResponse,
         status: 201,
         statusText: 'Created',
@@ -197,7 +199,7 @@ describe('StorageService', () => {
         created_at: '2024-01-01T00:00:00Z',
       };
 
-      mockedApiClient.post.mockResolvedValue({
+      mockedApiClient.post.mockResolvedValue<any>({
         data: mockResponse,
         status: 201,
         statusText: 'Created',
@@ -226,7 +228,7 @@ describe('StorageService', () => {
         ],
       };
 
-      mockedApiClient.get.mockResolvedValue({
+      mockedApiClient.get.mockResolvedValue<any>({
         data: mockStats,
         status: 200,
         statusText: 'OK',
@@ -247,7 +249,7 @@ describe('StorageService', () => {
         updated_at: '2024-01-02T00:00:00Z',
       };
 
-      mockedApiClient.post.mockResolvedValue({
+      mockedApiClient.post.mockResolvedValue<any>({
         data: mockResponse,
         status: 200,
         statusText: 'OK',
@@ -276,7 +278,7 @@ describe('StorageService', () => {
         updated_at: '2024-01-01T00:00:00Z',
       };
 
-      mockedApiClient.get.mockResolvedValue({
+      mockedApiClient.get.mockResolvedValue<any>({
         data: mockFile,
         status: 200,
         statusText: 'OK',
@@ -296,7 +298,7 @@ describe('StorageService', () => {
         file_id: 'file-1',
       };
 
-      mockedApiClient.delete.mockResolvedValue({
+      mockedApiClient.delete.mockResolvedValue<any>({
         data: mockResponse,
         status: 200,
         statusText: 'OK',
@@ -321,7 +323,7 @@ describe('StorageService', () => {
         has_more: false,
       };
 
-      mockedApiClient.get.mockResolvedValue({
+      mockedApiClient.get.mockResolvedValue<any>({
         data: mockFiles,
         status: 200,
         statusText: 'OK',
@@ -345,7 +347,7 @@ describe('StorageService', () => {
         created_at: '2024-01-01T00:00:00Z',
       };
 
-      mockedApiClient.post.mockResolvedValue({
+      mockedApiClient.post.mockResolvedValue<any>({
         data: mockResponse,
         status: 201,
         statusText: 'Created',
@@ -375,7 +377,7 @@ describe('StorageService', () => {
         by_content_type: [],
       };
 
-      mockedApiClient.get.mockResolvedValue({
+      mockedApiClient.get.mockResolvedValue<any>({
         data: mockStats,
         status: 200,
         statusText: 'OK',
@@ -400,7 +402,7 @@ describe('StorageService', () => {
         updated_at: '2024-01-01T00:00:00Z',
       };
 
-      mockedApiClient.get.mockResolvedValue({
+      mockedApiClient.get.mockResolvedValue<any>({
         data: mockFile,
         status: 200,
         statusText: 'OK',
@@ -420,7 +422,7 @@ describe('StorageService', () => {
         file_id: 'db-file-1',
       };
 
-      mockedApiClient.delete.mockResolvedValue({
+      mockedApiClient.delete.mockResolvedValue<any>({
         data: mockResponse,
         status: 200,
         statusText: 'OK',
@@ -441,7 +443,7 @@ describe('StorageService', () => {
         file_id: 'db-file-1',
       };
 
-      mockedApiClient.post.mockResolvedValue({
+      mockedApiClient.post.mockResolvedValue<any>({
         data: mockResponse,
         status: 200,
         statusText: 'OK',
@@ -465,7 +467,7 @@ describe('StorageService', () => {
         file_id: 'db-file-1',
       };
 
-      mockedApiClient.post.mockResolvedValue({
+      mockedApiClient.post.mockResolvedValue<any>({
         data: mockResponse,
         status: 200,
         statusText: 'OK',
@@ -491,7 +493,7 @@ describe('StorageService', () => {
         created_at: '2024-01-01T00:00:00Z',
       };
 
-      mockedApiClient.post.mockResolvedValue({
+      mockedApiClient.post.mockResolvedValue<any>({
         data: mockResponse,
         status: 201,
         statusText: 'Created',

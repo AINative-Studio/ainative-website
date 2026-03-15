@@ -1,3 +1,5 @@
+import { render, screen } from "@testing-library/react";
+
 /**
  * Dashboard Service Endpoint Path Tests
  * Issue #619: Verify Kong metrics and health endpoint paths

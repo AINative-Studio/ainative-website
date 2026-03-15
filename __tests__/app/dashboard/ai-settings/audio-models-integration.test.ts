@@ -1,3 +1,5 @@
+import { render, screen } from "@testing-library/react";
+
 /**
  * Integration test for Audio Models in AI Settings
  * Verifies that audio models are correctly returned from aggregateAllModels

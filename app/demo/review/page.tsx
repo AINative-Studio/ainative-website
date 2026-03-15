@@ -1,3 +1,5 @@
+import React from "react";
+
 /**
  * Code Review Demo Page
  * Demonstrates the /review command functionality

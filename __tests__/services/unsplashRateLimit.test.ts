@@ -1,3 +1,5 @@
+import { render, screen } from "@testing-library/react";
+
 /**
  * Unit tests for Unsplash Rate Limiter
  */

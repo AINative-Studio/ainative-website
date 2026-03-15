@@ -1,3 +1,5 @@
+import { render, screen } from "@testing-library/react";
+
 /**
  * Test suite for webhook service
  * Tests all webhook management operations
@@ -39,7 +41,7 @@ describe('WebhookService', () => {
         },
       ];
 
-      mockApiClient.get.mockResolvedValue({
+      mockApiClient.get.mockResolvedValue<any>({
         data: { webhooks: mockWebhooks },
         status: 200,
         statusText: 'OK',
@@ -52,7 +54,7 @@ describe('WebhookService', () => {
     });
 
     it('should handle empty webhook list', async () => {
-      mockApiClient.get.mockResolvedValue({
+      mockApiClient.get.mockResolvedValue<any>({
         data: { webhooks: [] },
         status: 200,
         statusText: 'OK',
@@ -86,7 +88,7 @@ describe('WebhookService', () => {
         updated_at: '2024-01-01T00:00:00Z',
       };
 
-      mockApiClient.post.mockResolvedValue({
+      mockApiClient.post.mockResolvedValue<any>({
         data: { webhook: createdWebhook },
         status: 201,
         statusText: 'Created',
@@ -130,7 +132,7 @@ describe('WebhookService', () => {
         updated_at: '2024-01-01T00:00:00Z',
       };
 
-      mockApiClient.get.mockResolvedValue({
+      mockApiClient.get.mockResolvedValue<any>({
         data: { webhook: mockWebhook },
         status: 200,
         statusText: 'OK',
@@ -143,7 +145,7 @@ describe('WebhookService', () => {
     });
 
     it('should handle webhook not found', async () => {
-      mockApiClient.get.mockResolvedValue({
+      mockApiClient.get.mockResolvedValue<any>({
         data: { error: 'Webhook not found' },
         status: 404,
         statusText: 'Not Found',
@@ -169,7 +171,7 @@ describe('WebhookService', () => {
         updated_at: '2024-01-02T00:00:00Z',
       };
 
-      mockApiClient.put.mockResolvedValue({
+      mockApiClient.put.mockResolvedValue<any>({
         data: { webhook: updatedWebhook },
         status: 200,
         statusText: 'OK',
@@ -192,7 +194,7 @@ describe('WebhookService', () => {
 
   describe('deleteWebhook', () => {
     it('should delete webhook successfully', async () => {
-      mockApiClient.delete.mockResolvedValue({
+      mockApiClient.delete.mockResolvedValue<any>({
         data: { message: 'Webhook deleted successfully' },
         status: 200,
         statusText: 'OK',
@@ -204,7 +206,7 @@ describe('WebhookService', () => {
     });
 
     it('should handle deletion of non-existent webhook', async () => {
-      mockApiClient.delete.mockResolvedValue({
+      mockApiClient.delete.mockResolvedValue<any>({
         data: { error: 'Webhook not found' },
         status: 404,
         statusText: 'Not Found',
@@ -223,7 +225,7 @@ describe('WebhookService', () => {
         response_body: 'OK',
       };
 
-      mockApiClient.post.mockResolvedValue({
+      mockApiClient.post.mockResolvedValue<any>({
         data: { test_result: testResult },
         status: 200,
         statusText: 'OK',
@@ -243,7 +245,7 @@ describe('WebhookService', () => {
         error: 'Connection timeout',
       };
 
-      mockApiClient.post.mockResolvedValue({
+      mockApiClient.post.mockResolvedValue<any>({
         data: { test_result: testResult },
         status: 200,
         statusText: 'OK',
@@ -282,7 +284,7 @@ describe('WebhookService', () => {
         },
       ];
 
-      mockApiClient.get.mockResolvedValue({
+      mockApiClient.get.mockResolvedValue<any>({
         data: { deliveries: mockDeliveries },
         status: 200,
         statusText: 'OK',
@@ -295,7 +297,7 @@ describe('WebhookService', () => {
     });
 
     it('should handle empty delivery history', async () => {
-      mockApiClient.get.mockResolvedValue({
+      mockApiClient.get.mockResolvedValue<any>({
         data: { deliveries: [] },
         status: 200,
         statusText: 'OK',
@@ -319,7 +321,7 @@ describe('WebhookService', () => {
         updated_at: '2024-01-02T00:00:00Z',
       };
 
-      mockApiClient.post.mockResolvedValue({
+      mockApiClient.post.mockResolvedValue<any>({
         data: { webhook: updatedWebhook },
         status: 200,
         statusText: 'OK',
@@ -342,7 +344,7 @@ describe('WebhookService', () => {
         updated_at: '2024-01-02T00:00:00Z',
       };
 
-      mockApiClient.post.mockResolvedValue({
+      mockApiClient.post.mockResolvedValue<any>({
         data: { webhook: updatedWebhook },
         status: 200,
         statusText: 'OK',

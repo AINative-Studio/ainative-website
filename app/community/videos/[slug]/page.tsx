@@ -1,3 +1,5 @@
+import React from "react";
+
 import { Metadata } from 'next';
 import VideoDetailClient from './VideoDetailClient';
 import { VideoSchema, BreadcrumbSchema } from '@/components/seo/StructuredData';

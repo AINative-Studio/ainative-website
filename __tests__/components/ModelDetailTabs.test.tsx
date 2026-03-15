@@ -88,7 +88,7 @@ describe('ModelPlayground', () => {
         created_at: '2024-01-01T00:00:00Z',
     };
 
-    const mockOnRun = jest.fn() as jest.Mock;
+    const mockOnRun = jest.fn() as jest.Mock as jest.Mock;
 
     beforeEach(() => {
         mockOnRun.mockClear();
@@ -315,7 +315,7 @@ describe('ModelAPI', () => {
         // Mock clipboard API
         Object.assign(navigator, {
             clipboard: {
-                writeText: jest.fn() as jest.Mock,
+                writeText: jest.fn() as jest.Mock as jest.Mock,
             },
         });
 
@@ -508,7 +508,7 @@ describe('ModelDetailTabs Integration', () => {
             created_at: '2024-01-01T00:00:00Z',
         };
 
-        const mockOnRun = jest.fn() as jest.Mock;
+        const mockOnRun = jest.fn() as jest.Mock as jest.Mock;
 
         const { container: playgroundContainer } = render(<ModelPlayground model={mockModel} onRun={mockOnRun} />);
         expect(playgroundContainer).toBeTruthy();

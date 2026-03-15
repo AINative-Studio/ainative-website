@@ -1,3 +1,5 @@
+import React from "react";
+
 /**
  * AI Model Playground Page
  * Interactive testing environment for AI models with pre-loaded preview samples

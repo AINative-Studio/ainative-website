@@ -22,19 +22,19 @@ import {
   usePrefetchModel,
   modelKeys,
 } from '@/hooks/useModels';
-import { qnnApiClient } from '@/services/QNNApiClient';
+import { qnnApiClient } from '@/services/qnnApiClient';
 import { Model, CreateModelRequest, UpdateModelRequest, PaginatedResponse } from '@/types/qnn.types';
 
 // Mock the QNN API Client module
-jest.mock('@/services/QNNApiClient', () => ({
-  QNNApiClient: jest.fn() as jest.Mock,
+jest.mock('@/services/qnnApiClient', () => ({
+  QNNApiClient: jest.fn() as jest.Mock as jest.Mock,
   qnnApiClient: {
-    listModels: jest.fn() as jest.Mock,
-    getModel: jest.fn() as jest.Mock,
-    createModel: jest.fn() as jest.Mock,
-    updateModel: jest.fn() as jest.Mock,
-    deleteModel: jest.fn() as jest.Mock,
-    getModelMetadata: jest.fn() as jest.Mock,
+    listModels: jest.fn() as jest.Mock as jest.Mock,
+    getModel: jest.fn() as jest.Mock as jest.Mock,
+    createModel: jest.fn() as jest.Mock as jest.Mock,
+    updateModel: jest.fn() as jest.Mock as jest.Mock,
+    deleteModel: jest.fn() as jest.Mock as jest.Mock,
+    getModelMetadata: jest.fn() as jest.Mock as jest.Mock,
   },
 }));
 

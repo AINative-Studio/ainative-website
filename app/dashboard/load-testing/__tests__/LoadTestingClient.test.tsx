@@ -1,3 +1,5 @@
+import React from "react";
+
 import { render, screen, waitFor, fireEvent } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import LoadTestingClient from '../LoadTestingClient';
@@ -5,12 +7,12 @@ import LoadTestingClient from '../LoadTestingClient';
 // Mock dependencies
 jest.mock('next/navigation', () => ({
   useRouter: () => ({
-    push: jest.fn() as jest.Mock,
-    replace: jest.fn() as jest.Mock,
-    prefetch: jest.fn() as jest.Mock,
+    push: jest.fn() as jest.Mock as jest.Mock,
+    replace: jest.fn() as jest.Mock as jest.Mock,
+    prefetch: jest.fn() as jest.Mock as jest.Mock,
   }),
   useSearchParams: () => ({
-    get: jest.fn() as jest.Mock,
+    get: jest.fn() as jest.Mock as jest.Mock,
   }),
   usePathname: () => '/test-path',
 }));
@@ -23,8 +25,8 @@ jest.mock('next-auth/react', () => ({
     },
     status: 'authenticated',
   }),
-  signIn: jest.fn() as jest.Mock,
-  signOut: jest.fn() as jest.Mock,
+  signIn: jest.fn() as jest.Mock as jest.Mock,
+  signOut: jest.fn() as jest.Mock as jest.Mock,
 }));
 
 // Mock API calls

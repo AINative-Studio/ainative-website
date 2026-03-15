@@ -1,3 +1,5 @@
+import { render, screen } from "@testing-library/react";
+
 /**
  * Tests for Model Aggregator Service
  * @jest-environment node
@@ -249,7 +251,7 @@ describe('ModelAggregatorService', () => {
     });
 
     it('should mark premium models correctly', async () => {
-      mockedApiClient.get.mockResolvedValue({ data: { object: 'list', data: [] } } as any);
+      mockedApiClient.get.mockResolvedValue<any>({ data: { object: 'list', data: [] } } as any);
 
       const models = await modelAggregatorService.aggregateAllModels();
 
@@ -263,7 +265,7 @@ describe('ModelAggregatorService', () => {
 
   describe('Model pricing', () => {
     it('should include pricing for video models', async () => {
-      mockedApiClient.get.mockResolvedValue({ data: { object: 'list', data: [] } } as any);
+      mockedApiClient.get.mockResolvedValue<any>({ data: { object: 'list', data: [] } } as any);
 
       const models = await modelAggregatorService.aggregateAllModels();
       const wan22 = models.find(m => m.id === 'video-wan22-i2v');
@@ -275,7 +277,7 @@ describe('ModelAggregatorService', () => {
     });
 
     it('should include pricing for image models', async () => {
-      mockedApiClient.get.mockResolvedValue({ data: { object: 'list', data: [] } } as any);
+      mockedApiClient.get.mockResolvedValue<any>({ data: { object: 'list', data: [] } } as any);
 
       const models = await modelAggregatorService.aggregateAllModels();
       const qwen = models.find(m => m.id === 'image-qwen-edit');
@@ -289,7 +291,7 @@ describe('ModelAggregatorService', () => {
 
   describe('Model capabilities', () => {
     it('should include NousCoder with correct coding capabilities', async () => {
-      mockedApiClient.get.mockResolvedValue({ data: { object: 'list', data: [] } } as any);
+      mockedApiClient.get.mockResolvedValue<any>({ data: { object: 'list', data: [] } } as any);
 
       const models = await modelAggregatorService.aggregateAllModels();
       const nousCoder = models.find(m => m.id === 'coding-nous-coder');
@@ -306,7 +308,7 @@ describe('ModelAggregatorService', () => {
     });
 
     it('should correctly assign video capabilities', async () => {
-      mockedApiClient.get.mockResolvedValue({ data: { object: 'list', data: [] } } as any);
+      mockedApiClient.get.mockResolvedValue<any>({ data: { object: 'list', data: [] } } as any);
 
       const models = await modelAggregatorService.aggregateAllModels();
       const videoModels = models.filter(m => m.category === 'Video');
@@ -325,7 +327,7 @@ describe('ModelAggregatorService', () => {
     });
 
     it('should correctly assign audio capabilities', async () => {
-      mockedApiClient.get.mockResolvedValue({ data: { object: 'list', data: [] } } as any);
+      mockedApiClient.get.mockResolvedValue<any>({ data: { object: 'list', data: [] } } as any);
 
       const models = await modelAggregatorService.aggregateAllModels();
 
@@ -344,7 +346,7 @@ describe('ModelAggregatorService', () => {
 
   describe('Model metadata', () => {
     it('should include thumbnail URLs where available', async () => {
-      mockedApiClient.get.mockResolvedValue({ data: { object: 'list', data: [] } } as any);
+      mockedApiClient.get.mockResolvedValue<any>({ data: { object: 'list', data: [] } } as any);
 
       const models = await modelAggregatorService.aggregateAllModels();
 
@@ -360,7 +362,7 @@ describe('ModelAggregatorService', () => {
     });
 
     it('should include speed and quality metadata', async () => {
-      mockedApiClient.get.mockResolvedValue({ data: { object: 'list', data: [] } } as any);
+      mockedApiClient.get.mockResolvedValue<any>({ data: { object: 'list', data: [] } } as any);
 
       const models = await modelAggregatorService.aggregateAllModels();
 

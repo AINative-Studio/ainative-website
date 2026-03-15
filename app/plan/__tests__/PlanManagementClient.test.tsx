@@ -1,3 +1,5 @@
+import React from "react";
+
 /**
  * Plan Management Client Tests
  * Comprehensive tests for subscription management functionality
@@ -11,8 +13,8 @@ import { SubscriptionService } from '@/services/subscriptionService';
 import { pricingService } from '@/services/pricingService';
 
 // Mock next/navigation
-const mockBack = jest.fn() as jest.Mock;
-const mockPush = jest.fn() as jest.Mock;
+const mockBack = jest.fn();
+const mockPush = jest.fn();
 jest.mock('next/navigation', () => ({
   useRouter: () => ({
     back: mockBack,
@@ -23,9 +25,9 @@ jest.mock('next/navigation', () => ({
 // Mock sonner toast
 jest.mock('sonner', () => ({
   toast: {
-    success: jest.fn() as jest.Mock,
-    error: jest.fn() as jest.Mock,
-    info: jest.fn() as jest.Mock,
+    success: jest.fn(),
+    error: jest.fn(),
+    info: jest.fn(),
   },
 }));
 
@@ -153,14 +155,14 @@ describe('PlanManagementClient', () => {
 
     // Setup default mocks
     const mockServiceInstance = {
-      getCurrentSubscription: jest.fn() as jest.Mock.mockResolvedValue(mockSubscription),
-      getPaymentMethods: jest.fn() as jest.Mock.mockResolvedValue(mockPaymentMethods),
-      getInvoices: jest.fn() as jest.Mock.mockResolvedValue(mockInvoices),
-      cancelSubscription: jest.fn() as jest.Mock.mockResolvedValue({ success: true, message: 'Cancelled' }),
-      reactivateSubscription: jest.fn() as jest.Mock.mockResolvedValue({ success: true, message: 'Reactivated' }),
-      updateSubscription: jest.fn() as jest.Mock.mockResolvedValue({ success: true, message: 'Updated' }),
-      removePaymentMethod: jest.fn() as jest.Mock.mockResolvedValue({ success: true, message: 'Removed' }),
-      setDefaultPaymentMethod: jest.fn() as jest.Mock.mockResolvedValue({ success: true, message: 'Updated' }),
+      getCurrentSubscription: jest.fn().mockResolvedValue(mockSubscription),
+      getPaymentMethods: jest.fn().mockResolvedValue(mockPaymentMethods),
+      getInvoices: jest.fn().mockResolvedValue(mockInvoices),
+      cancelSubscription: jest.fn().mockResolvedValue({ success: true, message: 'Cancelled' }),
+      reactivateSubscription: jest.fn().mockResolvedValue({ success: true, message: 'Reactivated' }),
+      updateSubscription: jest.fn().mockResolvedValue({ success: true, message: 'Updated' }),
+      removePaymentMethod: jest.fn().mockResolvedValue({ success: true, message: 'Removed' }),
+      setDefaultPaymentMethod: jest.fn().mockResolvedValue({ success: true, message: 'Updated' }),
     };
 
     mockSubscriptionService.mockImplementation(() => mockServiceInstance as any);
@@ -186,9 +188,9 @@ describe('PlanManagementClient', () => {
 
     it('should display error state when data fails to load', async () => {
       mockSubscriptionService.mockImplementation(() => ({
-        getCurrentSubscription: jest.fn() as jest.Mock.mockRejectedValue(new Error('Network error')),
-        getPaymentMethods: jest.fn() as jest.Mock.mockRejectedValue(new Error('Network error')),
-        getInvoices: jest.fn() as jest.Mock.mockRejectedValue(new Error('Network error')),
+        getCurrentSubscription: jest.fn().mockRejectedValue(new Error('Network error')),
+        getPaymentMethods: jest.fn().mockRejectedValue(new Error('Network error')),
+        getInvoices: jest.fn().mockRejectedValue(new Error('Network error')),
       } as any));
 
       render(<PlanManagementClient />);
@@ -200,9 +202,9 @@ describe('PlanManagementClient', () => {
 
     it('should default to free plan when no subscription exists', async () => {
       mockSubscriptionService.mockImplementation(() => ({
-        getCurrentSubscription: jest.fn() as jest.Mock.mockResolvedValue(null),
-        getPaymentMethods: jest.fn() as jest.Mock.mockResolvedValue([]),
-        getInvoices: jest.fn() as jest.Mock.mockResolvedValue([]),
+        getCurrentSubscription: jest.fn().mockResolvedValue(null),
+        getPaymentMethods: jest.fn().mockResolvedValue([]),
+        getInvoices: jest.fn().mockResolvedValue([]),
       } as any));
 
       render(<PlanManagementClient />);
@@ -272,15 +274,15 @@ describe('PlanManagementClient', () => {
     });
 
     it('should cancel subscription when confirmed', async () => {
-      const mockCancelSubscription = jest.fn() as jest.Mock.mockResolvedValue({
+      const mockCancelSubscription = jest.fn().mockResolvedValue<any>({
         success: true,
         message: 'Subscription cancelled',
       });
 
       mockSubscriptionService.mockImplementation(() => ({
-        getCurrentSubscription: jest.fn() as jest.Mock.mockResolvedValue(mockSubscription),
-        getPaymentMethods: jest.fn() as jest.Mock.mockResolvedValue(mockPaymentMethods),
-        getInvoices: jest.fn() as jest.Mock.mockResolvedValue(mockInvoices),
+        getCurrentSubscription: jest.fn().mockResolvedValue(mockSubscription),
+        getPaymentMethods: jest.fn().mockResolvedValue(mockPaymentMethods),
+        getInvoices: jest.fn().mockResolvedValue(mockInvoices),
         cancelSubscription: mockCancelSubscription,
       } as any));
 
@@ -303,12 +305,12 @@ describe('PlanManagementClient', () => {
     });
 
     it('should not cancel when dialog is dismissed', async () => {
-      const mockCancelSubscription = jest.fn() as jest.Mock;
+      const mockCancelSubscription = jest.fn();
 
       mockSubscriptionService.mockImplementation(() => ({
-        getCurrentSubscription: jest.fn() as jest.Mock.mockResolvedValue(mockSubscription),
-        getPaymentMethods: jest.fn() as jest.Mock.mockResolvedValue(mockPaymentMethods),
-        getInvoices: jest.fn() as jest.Mock.mockResolvedValue(mockInvoices),
+        getCurrentSubscription: jest.fn().mockResolvedValue(mockSubscription),
+        getPaymentMethods: jest.fn().mockResolvedValue(mockPaymentMethods),
+        getInvoices: jest.fn().mockResolvedValue(mockInvoices),
         cancelSubscription: mockCancelSubscription,
       } as any));
 
@@ -436,9 +438,9 @@ describe('PlanManagementClient', () => {
 
     it('should show empty state when no payment methods', async () => {
       mockSubscriptionService.mockImplementation(() => ({
-        getCurrentSubscription: jest.fn() as jest.Mock.mockResolvedValue(mockSubscription),
-        getPaymentMethods: jest.fn() as jest.Mock.mockResolvedValue([]),
-        getInvoices: jest.fn() as jest.Mock.mockResolvedValue(mockInvoices),
+        getCurrentSubscription: jest.fn().mockResolvedValue(mockSubscription),
+        getPaymentMethods: jest.fn().mockResolvedValue([]),
+        getInvoices: jest.fn().mockResolvedValue(mockInvoices),
       } as any));
 
       render(<PlanManagementClient />);
@@ -454,7 +456,7 @@ describe('PlanManagementClient', () => {
     });
 
     it('should remove payment method when confirmed', async () => {
-      const mockRemovePaymentMethod = jest.fn() as jest.Mock.mockResolvedValue({
+      const mockRemovePaymentMethod = jest.fn().mockResolvedValue<any>({
         success: true,
         message: 'Payment method removed',
       });
@@ -469,16 +471,16 @@ describe('PlanManagementClient', () => {
       ];
 
       mockSubscriptionService.mockImplementation(() => ({
-        getCurrentSubscription: jest.fn() as jest.Mock.mockResolvedValue(mockSubscription),
-        getPaymentMethods: jest.fn() as jest.Mock
+        getCurrentSubscription: jest.fn().mockResolvedValue(mockSubscription),
+        getPaymentMethods: jest.fn()
           .mockResolvedValueOnce(multiplePaymentMethods)
           .mockResolvedValueOnce(mockPaymentMethods),
-        getInvoices: jest.fn() as jest.Mock.mockResolvedValue(mockInvoices),
+        getInvoices: jest.fn().mockResolvedValue(mockInvoices),
         removePaymentMethod: mockRemovePaymentMethod,
       } as any));
 
       // Mock window.confirm
-      window.confirm = jest.fn() as jest.Mock.mockReturnValue(true);
+      window.confirm = jest.fn().mockReturnValue(true);
 
       render(<PlanManagementClient />);
 
@@ -499,7 +501,7 @@ describe('PlanManagementClient', () => {
     });
 
     it('should set default payment method', async () => {
-      const mockSetDefaultPaymentMethod = jest.fn() as jest.Mock.mockResolvedValue({
+      const mockSetDefaultPaymentMethod = jest.fn().mockResolvedValue<any>({
         success: true,
         message: 'Default payment method updated',
       });
@@ -514,9 +516,9 @@ describe('PlanManagementClient', () => {
       ];
 
       mockSubscriptionService.mockImplementation(() => ({
-        getCurrentSubscription: jest.fn() as jest.Mock.mockResolvedValue(mockSubscription),
-        getPaymentMethods: jest.fn() as jest.Mock.mockResolvedValue(multiplePaymentMethods),
-        getInvoices: jest.fn() as jest.Mock.mockResolvedValue(mockInvoices),
+        getCurrentSubscription: jest.fn().mockResolvedValue(mockSubscription),
+        getPaymentMethods: jest.fn().mockResolvedValue(multiplePaymentMethods),
+        getInvoices: jest.fn().mockResolvedValue(mockInvoices),
         setDefaultPaymentMethod: mockSetDefaultPaymentMethod,
       } as any));
 
@@ -556,9 +558,9 @@ describe('PlanManagementClient', () => {
 
     it('should show empty state when no invoices', async () => {
       mockSubscriptionService.mockImplementation(() => ({
-        getCurrentSubscription: jest.fn() as jest.Mock.mockResolvedValue(mockSubscription),
-        getPaymentMethods: jest.fn() as jest.Mock.mockResolvedValue(mockPaymentMethods),
-        getInvoices: jest.fn() as jest.Mock.mockResolvedValue([]),
+        getCurrentSubscription: jest.fn().mockResolvedValue(mockSubscription),
+        getPaymentMethods: jest.fn().mockResolvedValue(mockPaymentMethods),
+        getInvoices: jest.fn().mockResolvedValue([]),
       } as any));
 
       render(<PlanManagementClient />);
@@ -574,7 +576,7 @@ describe('PlanManagementClient', () => {
     });
 
     it('should open invoice PDF when download clicked', async () => {
-      window.open = jest.fn() as jest.Mock;
+      window.open = jest.fn();
 
       render(<PlanManagementClient />);
 
@@ -603,9 +605,9 @@ describe('PlanManagementClient', () => {
       };
 
       mockSubscriptionService.mockImplementation(() => ({
-        getCurrentSubscription: jest.fn() as jest.Mock.mockResolvedValue(cancelledSubscription),
-        getPaymentMethods: jest.fn() as jest.Mock.mockResolvedValue(mockPaymentMethods),
-        getInvoices: jest.fn() as jest.Mock.mockResolvedValue(mockInvoices),
+        getCurrentSubscription: jest.fn().mockResolvedValue(cancelledSubscription),
+        getPaymentMethods: jest.fn().mockResolvedValue(mockPaymentMethods),
+        getInvoices: jest.fn().mockResolvedValue(mockInvoices),
       } as any));
 
       render(<PlanManagementClient />);
@@ -623,17 +625,17 @@ describe('PlanManagementClient', () => {
         cancel_at_period_end: true,
       };
 
-      const mockReactivateSubscription = jest.fn() as jest.Mock.mockResolvedValue({
+      const mockReactivateSubscription = jest.fn().mockResolvedValue<any>({
         success: true,
         message: 'Subscription reactivated',
       });
 
       mockSubscriptionService.mockImplementation(() => ({
-        getCurrentSubscription: jest.fn() as jest.Mock
+        getCurrentSubscription: jest.fn()
           .mockResolvedValueOnce(cancelledSubscription)
           .mockResolvedValueOnce(mockSubscription),
-        getPaymentMethods: jest.fn() as jest.Mock.mockResolvedValue(mockPaymentMethods),
-        getInvoices: jest.fn() as jest.Mock.mockResolvedValue(mockInvoices),
+        getPaymentMethods: jest.fn().mockResolvedValue(mockPaymentMethods),
+        getInvoices: jest.fn().mockResolvedValue(mockInvoices),
         reactivateSubscription: mockReactivateSubscription,
       } as any));
 
@@ -693,15 +695,15 @@ describe('PlanManagementClient', () => {
 
   describe('Error Handling', () => {
     it('should display error toast when cancellation fails', async () => {
-      const mockCancelSubscription = jest.fn() as jest.Mock.mockResolvedValue({
+      const mockCancelSubscription = jest.fn().mockResolvedValue<any>({
         success: false,
         message: 'Cancellation failed',
       });
 
       mockSubscriptionService.mockImplementation(() => ({
-        getCurrentSubscription: jest.fn() as jest.Mock.mockResolvedValue(mockSubscription),
-        getPaymentMethods: jest.fn() as jest.Mock.mockResolvedValue(mockPaymentMethods),
-        getInvoices: jest.fn() as jest.Mock.mockResolvedValue(mockInvoices),
+        getCurrentSubscription: jest.fn().mockResolvedValue(mockSubscription),
+        getPaymentMethods: jest.fn().mockResolvedValue(mockPaymentMethods),
+        getInvoices: jest.fn().mockResolvedValue(mockInvoices),
         cancelSubscription: mockCancelSubscription,
       } as any));
 
@@ -723,15 +725,15 @@ describe('PlanManagementClient', () => {
     });
 
     it('should display error toast when plan update fails', async () => {
-      const mockUpdateSubscription = jest.fn() as jest.Mock.mockResolvedValue({
+      const mockUpdateSubscription = jest.fn().mockResolvedValue<any>({
         success: false,
         message: 'Update failed',
       });
 
       mockSubscriptionService.mockImplementation(() => ({
-        getCurrentSubscription: jest.fn() as jest.Mock.mockResolvedValue(mockSubscription),
-        getPaymentMethods: jest.fn() as jest.Mock.mockResolvedValue(mockPaymentMethods),
-        getInvoices: jest.fn() as jest.Mock.mockResolvedValue(mockInvoices),
+        getCurrentSubscription: jest.fn().mockResolvedValue(mockSubscription),
+        getPaymentMethods: jest.fn().mockResolvedValue(mockPaymentMethods),
+        getInvoices: jest.fn().mockResolvedValue(mockInvoices),
         updateSubscription: mockUpdateSubscription,
       } as any));
 

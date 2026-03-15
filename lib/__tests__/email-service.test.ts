@@ -1,3 +1,5 @@
+import { render, screen } from "@testing-library/react";
+
 import apiClient from '../api-client';
 import { emailService } from '../email-service';
 
@@ -5,10 +7,10 @@ import { emailService } from '../email-service';
 jest.mock('../api-client', () => ({
   __esModule: true,
   default: {
-    get: jest.fn() as jest.Mock,
-    post: jest.fn() as jest.Mock,
-    put: jest.fn() as jest.Mock,
-    delete: jest.fn() as jest.Mock,
+    get: jest.fn() as jest.Mock as jest.Mock,
+    post: jest.fn() as jest.Mock as jest.Mock,
+    put: jest.fn() as jest.Mock as jest.Mock,
+    delete: jest.fn() as jest.Mock as jest.Mock,
   },
 }));
 

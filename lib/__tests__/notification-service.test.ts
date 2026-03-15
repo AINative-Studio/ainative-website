@@ -1,3 +1,5 @@
+import { render, screen } from "@testing-library/react";
+
 import apiClient from '../api-client';
 import notificationService, { NotificationAPIError, NotificationServiceError } from '../notification-service';
 import { env } from '../env';
@@ -6,10 +8,10 @@ import { env } from '../env';
 jest.mock('../api-client', () => ({
   __esModule: true,
   default: {
-    get: jest.fn() as jest.Mock,
-    post: jest.fn() as jest.Mock,
-    put: jest.fn() as jest.Mock,
-    delete: jest.fn() as jest.Mock,
+    get: jest.fn() as jest.Mock as jest.Mock,
+    post: jest.fn() as jest.Mock as jest.Mock,
+    put: jest.fn() as jest.Mock as jest.Mock,
+    delete: jest.fn() as jest.Mock as jest.Mock,
   },
 }));
 

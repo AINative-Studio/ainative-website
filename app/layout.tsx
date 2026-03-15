@@ -1,3 +1,5 @@
+import React from "react";
+
 import type { Metadata } from "next";
 import { Geist, Geist_Mono, Poppins, Montserrat, Outfit } from "next/font/google";
 import { QueryProvider } from "@/components/providers/QueryProvider";

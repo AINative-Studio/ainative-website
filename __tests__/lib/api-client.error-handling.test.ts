@@ -1,3 +1,5 @@
+import { render, screen } from "@testing-library/react";
+
 /**
  * Tests for API Client Error Handling
  *
@@ -16,7 +18,7 @@
 
 describe('ApiClient Error Handling - Issue #578', () => {
   // Mock fetch before importing apiClient
-  const mockFetch = jest.fn() as jest.Mock;
+  const mockFetch = jest.fn() as jest.Mock as jest.Mock;
   global.fetch = mockFetch as any;
 
   // Import after mocking

@@ -26,13 +26,13 @@ import {
 } from '@/types/qnn.types';
 
 // Mock QNNApiClient module
-jest.mock('@/services/QNNApiClient', () => ({
+jest.mock('@/services/qnnApiClient', () => ({
   qnnApiClient: {
-    listRepositories: jest.fn() as jest.Mock,
-    searchRepositories: jest.fn() as jest.Mock,
-    getRepository: jest.fn() as jest.Mock,
-    getRepositoryAnalysis: jest.fn() as jest.Mock,
-    analyzeRepository: jest.fn() as jest.Mock,
+    listRepositories: jest.fn() as jest.Mock as jest.Mock,
+    searchRepositories: jest.fn() as jest.Mock as jest.Mock,
+    getRepository: jest.fn() as jest.Mock as jest.Mock,
+    getRepositoryAnalysis: jest.fn() as jest.Mock as jest.Mock,
+    analyzeRepository: jest.fn() as jest.Mock as jest.Mock,
   },
 }));
 

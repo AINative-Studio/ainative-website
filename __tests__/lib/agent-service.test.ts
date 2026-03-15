@@ -1,3 +1,5 @@
+import { render, screen } from "@testing-library/react";
+
 /**
  * Agent Service Tests
  * Tests for the agent service API client methods
@@ -49,7 +51,7 @@ describe('Agent Service', () => {
           },
         ];
 
-        mockedApiClient.get.mockResolvedValue({
+        mockedApiClient.get.mockResolvedValue<any>({
           data: { agents: mockAgents },
           status: 200,
           statusText: 'OK',
@@ -67,7 +69,7 @@ describe('Agent Service', () => {
       });
 
       it('should handle empty agents list', async () => {
-        mockedApiClient.get.mockResolvedValue({
+        mockedApiClient.get.mockResolvedValue<any>({
           data: { agents: [] },
           status: 200,
           statusText: 'OK',
@@ -110,7 +112,7 @@ describe('Agent Service', () => {
           runCount: 0,
         };
 
-        mockedApiClient.post.mockResolvedValue({
+        mockedApiClient.post.mockResolvedValue<any>({
           data: mockAgent,
           status: 201,
           statusText: 'Created',
@@ -142,7 +144,7 @@ describe('Agent Service', () => {
           runCount: 0,
         };
 
-        mockedApiClient.get.mockResolvedValue({
+        mockedApiClient.get.mockResolvedValue<any>({
           data: mockAgent,
           status: 200,
           statusText: 'OK',
@@ -178,7 +180,7 @@ describe('Agent Service', () => {
           runCount: 0,
         };
 
-        mockedApiClient.put.mockResolvedValue({
+        mockedApiClient.put.mockResolvedValue<any>({
           data: mockAgent,
           status: 200,
           statusText: 'OK',
@@ -198,7 +200,7 @@ describe('Agent Service', () => {
 
     describe('deleteAgent', () => {
       it('should delete agent at correct endpoint', async () => {
-        mockedApiClient.delete.mockResolvedValue({
+        mockedApiClient.delete.mockResolvedValue<any>({
           data: { success: true },
           status: 200,
           statusText: 'OK',
@@ -236,7 +238,7 @@ describe('Agent Service', () => {
           },
         ];
 
-        mockedApiClient.get.mockResolvedValue({
+        mockedApiClient.get.mockResolvedValue<any>({
           data: { templates: mockTemplates },
           status: 200,
           statusText: 'OK',
@@ -274,7 +276,7 @@ describe('Agent Service', () => {
           createdAt: '2025-01-01T00:00:00Z',
         };
 
-        mockedApiClient.post.mockResolvedValue({
+        mockedApiClient.post.mockResolvedValue<any>({
           data: mockTask,
           status: 201,
           statusText: 'Created',
@@ -303,7 +305,7 @@ describe('Agent Service', () => {
           startedAt: '2025-01-01T00:00:01Z',
         };
 
-        mockedApiClient.post.mockResolvedValue({
+        mockedApiClient.post.mockResolvedValue<any>({
           data: mockTask,
           status: 200,
           statusText: 'OK',
@@ -334,7 +336,7 @@ describe('Agent Service', () => {
           duration: 4000,
         };
 
-        mockedApiClient.get.mockResolvedValue({
+        mockedApiClient.get.mockResolvedValue<any>({
           data: mockTask,
           status: 200,
           statusText: 'OK',
@@ -368,7 +370,7 @@ describe('Agent Service', () => {
           },
         ];
 
-        mockedApiClient.get.mockResolvedValue({
+        mockedApiClient.get.mockResolvedValue<any>({
           data: { tasks: mockTasks },
           status: 200,
           statusText: 'OK',
@@ -394,7 +396,7 @@ describe('Agent Service', () => {
           },
         ];
 
-        mockedApiClient.get.mockResolvedValue({
+        mockedApiClient.get.mockResolvedValue<any>({
           data: { tasks: mockTasks },
           status: 200,
           statusText: 'OK',
@@ -413,7 +415,7 @@ describe('Agent Service', () => {
 
     describe('cancelTask', () => {
       it('should cancel task at correct endpoint', async () => {
-        mockedApiClient.post.mockResolvedValue({
+        mockedApiClient.post.mockResolvedValue<any>({
           data: { success: true },
           status: 200,
           statusText: 'OK',
@@ -449,7 +451,7 @@ describe('Agent Service', () => {
           },
         ];
 
-        mockedApiClient.get.mockResolvedValue({
+        mockedApiClient.get.mockResolvedValue<any>({
           data: { logs: mockLogs },
           status: 200,
           statusText: 'OK',
@@ -535,7 +537,7 @@ describe('Agent Service', () => {
           },
         ];
 
-        mockedApiClient.get.mockResolvedValue({
+        mockedApiClient.get.mockResolvedValue<any>({
           data: { tasks: mockTasks },
           status: 200,
           statusText: 'OK',
@@ -564,7 +566,7 @@ describe('Agent Service', () => {
           },
         ];
 
-        mockedApiClient.get.mockResolvedValue({
+        mockedApiClient.get.mockResolvedValue<any>({
           data: { logs: mockLogs },
           status: 200,
           statusText: 'OK',
@@ -637,7 +639,7 @@ describe('Agent Service', () => {
       });
 
       it('should return empty array when no tasks exist', async () => {
-        mockedApiClient.get.mockResolvedValue({
+        mockedApiClient.get.mockResolvedValue<any>({
           data: { tasks: [] },
           status: 200,
           statusText: 'OK',
@@ -653,7 +655,7 @@ describe('Agent Service', () => {
 
     describe('cancelRun', () => {
       it('should cancel task using legacy method', async () => {
-        mockedApiClient.post.mockResolvedValue({
+        mockedApiClient.post.mockResolvedValue<any>({
           data: { success: true },
           status: 200,
           statusText: 'OK',

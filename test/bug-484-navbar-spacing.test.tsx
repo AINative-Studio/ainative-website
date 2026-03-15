@@ -18,16 +18,16 @@ import HomeClient from '@/app/HomeClient';
 // Mock next-auth
 jest.mock('next-auth/react', () => ({
   useSession: () => ({ data: null, status: 'unauthenticated' }),
-  signOut: jest.fn() as jest.Mock,
+  signOut: jest.fn() as jest.Mock as jest.Mock,
 }));
 
 // Mock next/navigation
 jest.mock('next/navigation', () => ({
   usePathname: () => '/',
   useRouter: () => ({
-    push: jest.fn() as jest.Mock,
-    replace: jest.fn() as jest.Mock,
-    prefetch: jest.fn() as jest.Mock,
+    push: jest.fn() as jest.Mock as jest.Mock,
+    replace: jest.fn() as jest.Mock as jest.Mock,
+    prefetch: jest.fn() as jest.Mock as jest.Mock,
   }),
 }));
 

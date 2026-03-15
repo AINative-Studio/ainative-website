@@ -1,3 +1,5 @@
+import { render, screen } from "@testing-library/react";
+
 import { cn } from '../utils';
 
 describe('cn utility function', () => {
