@@ -11,6 +11,7 @@ import { Separator } from '@/components/ui/separator';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Skeleton } from '@/components/ui/skeleton';
 import { getBlogPost } from '@/src/lib/strapi';
+import { strapiClient } from '@/lib/strapi-client';
 import { getUnsplashImageUrl } from '@/lib/unsplash';
 import {
   Calendar,
@@ -179,6 +180,12 @@ export default function BlogDetailClient({ slug }: BlogDetailClientProps) {
 
     fetchPost();
   }, [slug]);
+
+  // Track view count once per page load
+  useEffect(() => {
+    if (!slug || !post) return;
+    strapiClient.trackBlogView(slug);
+  }, [slug, post]);
 
   const handleShare = (platform: string) => {
     if (!post) return;
