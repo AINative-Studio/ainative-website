@@ -1,4 +1,6 @@
+
 'use client';
+import React from "react";
 
 import { useState } from 'react';
 import { Upload, Link as LinkIcon, X, Image as ImageIcon } from 'lucide-react';

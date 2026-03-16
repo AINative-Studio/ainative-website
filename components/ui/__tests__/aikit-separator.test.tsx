@@ -1,3 +1,7 @@
+import { render, screen } from "@testing-library/react";
+
+import React from "react";
+
 /**
  * AIKit Separator/Divider Component - TDD Test Suite
  * Coverage Target: 100%

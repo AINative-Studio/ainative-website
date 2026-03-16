@@ -1,3 +1,5 @@
+import React from "react";
+
 /**
  * Test Suite: Gradient Usage in Dashboard Components (Issue #496)
  *

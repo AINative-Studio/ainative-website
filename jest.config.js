@@ -11,6 +11,17 @@ const customJestConfig = {
   setupFiles: ['<rootDir>/jest.polyfills.js'],
   setupFilesAfterEnv: ['<rootDir>/jest.setup.js'],
   testEnvironment: 'jest-environment-jsdom',
+  testEnvironmentOptions: {
+    customExportConditions: [''],
+    url: 'http://localhost',
+  },
+
+  // Module path ignore patterns
+  modulePathIgnorePatterns: [
+    '<rootDir>/.next/',
+    '<rootDir>/dist/',
+    '<rootDir>/build/',
+  ],
 
   // Module name mapping for better module resolution
   moduleNameMapper: {

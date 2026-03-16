@@ -1,3 +1,5 @@
+import { render, screen } from "@testing-library/react";
+
 /**
  * Agent Service Tests
  * Tests for the agent service API client methods
@@ -54,14 +56,14 @@ describe('Agent Service', () => {
           status: 200,
           statusText: 'OK',
           headers: {},
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+           
           config: {} as any,
         });
 
         const result = await agentService.getAgents();
 
         expect(mockedApiClient.get).toHaveBeenCalledWith(
-          '/v1/public/agent-orchestration/agents'
+          '/api/v1/public/agent-orchestration/agents'
         );
         expect(result).toEqual(mockAgents);
       });
@@ -72,7 +74,7 @@ describe('Agent Service', () => {
           status: 200,
           statusText: 'OK',
           headers: {},
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+           
           config: {} as any,
         });
 
@@ -121,7 +123,7 @@ describe('Agent Service', () => {
         const result = await agentService.createAgent(request);
 
         expect(mockedApiClient.post).toHaveBeenCalledWith(
-          '/v1/public/agent-orchestration/agents',
+          '/api/v1/public/agent-orchestration/agents',
           request
         );
         expect(result).toEqual(mockAgent);
@@ -153,7 +155,7 @@ describe('Agent Service', () => {
         const result = await agentService.getAgent('agent-1');
 
         expect(mockedApiClient.get).toHaveBeenCalledWith(
-          '/v1/public/agent-orchestration/agents/agent-1'
+          '/api/v1/public/agent-orchestration/agents/agent-1'
         );
         expect(result).toEqual(mockAgent);
       });
@@ -189,7 +191,7 @@ describe('Agent Service', () => {
         const result = await agentService.updateAgent('agent-1', request);
 
         expect(mockedApiClient.put).toHaveBeenCalledWith(
-          '/v1/public/agent-orchestration/agents/agent-1',
+          '/api/v1/public/agent-orchestration/agents/agent-1',
           request
         );
         expect(result).toEqual(mockAgent);
@@ -209,7 +211,7 @@ describe('Agent Service', () => {
         const result = await agentService.deleteAgent('agent-1');
 
         expect(mockedApiClient.delete).toHaveBeenCalledWith(
-          '/v1/public/agent-orchestration/agents/agent-1'
+          '/api/v1/public/agent-orchestration/agents/agent-1'
         );
         expect(result).toEqual({ success: true });
       });
@@ -247,7 +249,7 @@ describe('Agent Service', () => {
         const result = await agentService.getTemplates();
 
         expect(mockedApiClient.get).toHaveBeenCalledWith(
-          '/v1/public/agent-orchestration/templates'
+          '/api/v1/public/agent-orchestration/templates'
         );
         expect(result).toEqual(mockTemplates);
       });
@@ -285,7 +287,7 @@ describe('Agent Service', () => {
         const result = await agentService.createTask(request);
 
         expect(mockedApiClient.post).toHaveBeenCalledWith(
-          '/v1/public/agent-tasks/',
+          '/api/v1/public/agent-tasks/',
           request
         );
         expect(result).toEqual(mockTask);
@@ -314,7 +316,7 @@ describe('Agent Service', () => {
         const result = await agentService.executeTask('task-1');
 
         expect(mockedApiClient.post).toHaveBeenCalledWith(
-          '/v1/public/agent-tasks/task-1/execute'
+          '/api/v1/public/agent-tasks/task-1/execute'
         );
         expect(result).toEqual(mockTask);
       });
@@ -345,7 +347,7 @@ describe('Agent Service', () => {
         const result = await agentService.getTask('task-1');
 
         expect(mockedApiClient.get).toHaveBeenCalledWith(
-          '/v1/public/agent-tasks/task-1'
+          '/api/v1/public/agent-tasks/task-1'
         );
         expect(result).toEqual(mockTask);
       });
@@ -379,7 +381,7 @@ describe('Agent Service', () => {
         const result = await agentService.getTasks();
 
         expect(mockedApiClient.get).toHaveBeenCalledWith(
-          '/v1/public/agent-tasks/'
+          '/api/v1/public/agent-tasks/'
         );
         expect(result).toEqual(mockTasks);
       });
@@ -405,7 +407,7 @@ describe('Agent Service', () => {
         const result = await agentService.getTasks('agent-1');
 
         expect(mockedApiClient.get).toHaveBeenCalledWith(
-          '/v1/public/agent-tasks/?agent_id=agent-1'
+          '/api/v1/public/agent-tasks/?agent_id=agent-1'
         );
         expect(result).toEqual(mockTasks);
       });
@@ -424,7 +426,7 @@ describe('Agent Service', () => {
         const result = await agentService.cancelTask('task-1');
 
         expect(mockedApiClient.post).toHaveBeenCalledWith(
-          '/v1/public/agent-tasks/task-1/cancel'
+          '/api/v1/public/agent-tasks/task-1/cancel'
         );
         expect(result).toEqual({ success: true });
       });
@@ -460,7 +462,7 @@ describe('Agent Service', () => {
         const result = await agentService.getTaskLogs('task-1');
 
         expect(mockedApiClient.get).toHaveBeenCalledWith(
-          '/v1/public/agent-tasks/task-1/logs'
+          '/api/v1/public/agent-tasks/task-1/logs'
         );
         expect(result).toEqual(mockLogs);
       });
@@ -510,7 +512,7 @@ describe('Agent Service', () => {
         const result = await agentService.runAgent('agent-1', request);
 
         expect(mockedApiClient.post).toHaveBeenCalledWith(
-          '/v1/public/agent-tasks/',
+          '/api/v1/public/agent-tasks/',
           {
             agentId: 'agent-1',
             input: request.input,
@@ -518,7 +520,7 @@ describe('Agent Service', () => {
           }
         );
         expect(mockedApiClient.post).toHaveBeenCalledWith(
-          '/v1/public/agent-tasks/task-1/execute'
+          '/api/v1/public/agent-tasks/task-1/execute'
         );
         expect(result).toEqual(mockExecutedTask);
       });
@@ -546,7 +548,7 @@ describe('Agent Service', () => {
         const result = await agentService.getAgentRuns('agent-1');
 
         expect(mockedApiClient.get).toHaveBeenCalledWith(
-          '/v1/public/agent-tasks/?agent_id=agent-1'
+          '/api/v1/public/agent-tasks/?agent_id=agent-1'
         );
         expect(result).toEqual(mockTasks);
       });
@@ -575,7 +577,7 @@ describe('Agent Service', () => {
         const result = await agentService.getAgentLogs('agent-1', 'task-1');
 
         expect(mockedApiClient.get).toHaveBeenCalledWith(
-          '/v1/public/agent-tasks/task-1/logs'
+          '/api/v1/public/agent-tasks/task-1/logs'
         );
         expect(result).toHaveLength(1);
         expect(result[0]).toHaveProperty('agentId', 'agent-1');
@@ -627,10 +629,10 @@ describe('Agent Service', () => {
         const result = await agentService.getAgentLogs('agent-1');
 
         expect(mockedApiClient.get).toHaveBeenCalledWith(
-          '/v1/public/agent-tasks/?agent_id=agent-1'
+          '/api/v1/public/agent-tasks/?agent_id=agent-1'
         );
         expect(mockedApiClient.get).toHaveBeenCalledWith(
-          '/v1/public/agent-tasks/task-2/logs'
+          '/api/v1/public/agent-tasks/task-2/logs'
         );
         expect(result).toHaveLength(1);
         expect(result[0]).toHaveProperty('runId', 'task-2');
@@ -664,7 +666,7 @@ describe('Agent Service', () => {
         const result = await agentService.cancelRun('agent-1', 'task-1');
 
         expect(mockedApiClient.post).toHaveBeenCalledWith(
-          '/v1/public/agent-tasks/task-1/cancel'
+          '/api/v1/public/agent-tasks/task-1/cancel'
         );
         expect(result).toEqual({ success: true });
       });

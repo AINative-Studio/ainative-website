@@ -1,3 +1,5 @@
+import { render, screen } from "@testing-library/react";
+
 import apiClient from '../api-client';
 import { organizationService } from '../organization-service';
 
@@ -5,10 +7,10 @@ import { organizationService } from '../organization-service';
 jest.mock('../api-client', () => ({
   __esModule: true,
   default: {
-    get: jest.fn(),
-    post: jest.fn(),
-    put: jest.fn(),
-    delete: jest.fn(),
+    get: jest.fn() as jest.Mock as jest.Mock,
+    post: jest.fn() as jest.Mock as jest.Mock,
+    put: jest.fn() as jest.Mock as jest.Mock,
+    delete: jest.fn() as jest.Mock as jest.Mock,
   },
 }));
 
@@ -42,7 +44,7 @@ describe('OrganizationService', () => {
 
       const result = await organizationService.createOrganization(orgData);
 
-      expect(mockApiClient.post).toHaveBeenCalledWith('/v1/public/organizations', orgData);
+      expect(mockApiClient.post).toHaveBeenCalledWith('/api/v1/public/organizations', orgData);
       expect(result).toEqual(mockResponse);
     });
 
@@ -91,7 +93,7 @@ describe('OrganizationService', () => {
 
       const result = await organizationService.listOrganizations();
 
-      expect(mockApiClient.get).toHaveBeenCalledWith('/v1/public/organizations');
+      expect(mockApiClient.get).toHaveBeenCalledWith('/api/v1/public/organizations');
       expect(result).toEqual(mockOrgs);
     });
 
@@ -124,7 +126,7 @@ describe('OrganizationService', () => {
 
       const result = await organizationService.getOrganization(orgId);
 
-      expect(mockApiClient.get).toHaveBeenCalledWith(`/v1/public/organizations/${orgId}`);
+      expect(mockApiClient.get).toHaveBeenCalledWith(`/api/v1/public/organizations/${orgId}`);
       expect(result).toEqual(mockOrg);
     });
 
@@ -158,7 +160,7 @@ describe('OrganizationService', () => {
 
       const result = await organizationService.updateOrganization(orgId, updateData);
 
-      expect(mockApiClient.put).toHaveBeenCalledWith(`/v1/public/organizations/${orgId}`, updateData);
+      expect(mockApiClient.put).toHaveBeenCalledWith(`/api/v1/public/organizations/${orgId}`, updateData);
       expect(result).toEqual(mockResponse);
     });
 
@@ -181,7 +183,7 @@ describe('OrganizationService', () => {
 
       const result = await organizationService.deleteOrganization(orgId);
 
-      expect(mockApiClient.delete).toHaveBeenCalledWith(`/v1/public/organizations/${orgId}`);
+      expect(mockApiClient.delete).toHaveBeenCalledWith(`/api/v1/public/organizations/${orgId}`);
       expect(result).toEqual({ message: 'Organization deleted successfully' });
     });
 
@@ -216,7 +218,7 @@ describe('OrganizationService', () => {
 
       const result = await organizationService.addMember(orgId, memberData);
 
-      expect(mockApiClient.post).toHaveBeenCalledWith(`/v1/public/organizations/${orgId}/members`, memberData);
+      expect(mockApiClient.post).toHaveBeenCalledWith(`/api/v1/public/organizations/${orgId}/members`, memberData);
       expect(result).toEqual(mockResponse);
     });
 
@@ -243,7 +245,7 @@ describe('OrganizationService', () => {
 
       const result = await organizationService.addMember(orgId, memberData);
 
-      expect(mockApiClient.post).toHaveBeenCalledWith(`/v1/public/organizations/${orgId}/members`, memberData);
+      expect(mockApiClient.post).toHaveBeenCalledWith(`/api/v1/public/organizations/${orgId}/members`, memberData);
       expect(result).toEqual(mockResponse);
     });
 
@@ -296,7 +298,7 @@ describe('OrganizationService', () => {
 
       const result = await organizationService.listMembers(orgId);
 
-      expect(mockApiClient.get).toHaveBeenCalledWith(`/v1/public/organizations/${orgId}/members`);
+      expect(mockApiClient.get).toHaveBeenCalledWith(`/api/v1/public/organizations/${orgId}/members`);
       expect(result).toEqual(mockMembers);
     });
 
@@ -320,7 +322,7 @@ describe('OrganizationService', () => {
 
       const result = await organizationService.removeMember(orgId, userId);
 
-      expect(mockApiClient.delete).toHaveBeenCalledWith(`/v1/public/organizations/${orgId}/members/${userId}`);
+      expect(mockApiClient.delete).toHaveBeenCalledWith(`/api/v1/public/organizations/${orgId}/members/${userId}`);
       expect(result).toEqual({ message: 'Member removed successfully' });
     });
 

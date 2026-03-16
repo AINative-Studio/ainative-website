@@ -1,3 +1,5 @@
+import { render, screen } from "@testing-library/react";
+
 /**
  * Test Suite for Issue #494: Design System Shadow Consistency
  *

@@ -345,7 +345,7 @@ export class SubscriptionService {
     for (let attempt = 1; attempt <= maxRetries; attempt++) {
       try {
         const response = await apiClient.get<ApiResponse<{ invoices: SubscriptionInvoice[] }>>(
-          `/v1/public/billing/invoices?limit=${limit}`
+          `/api/v1/public/billing/invoices?limit=${limit}`
         );
 
         // Handle non-200 responses gracefully
@@ -396,7 +396,7 @@ export class SubscriptionService {
   async getPaymentMethods(): Promise<PaymentMethod[]> {
     try {
       const response = await apiClient.get<ApiResponse<{ payment_methods: PaymentMethod[] }>>(
-        '/v1/public/billing/payment-methods'
+        '/api/v1/public/billing/payment-methods'
       );
 
       // Handle non-200 responses gracefully
@@ -431,7 +431,7 @@ export class SubscriptionService {
   async addPaymentMethod(paymentMethodId: string): Promise<OperationResult> {
     try {
       const response = await apiClient.post<ApiResponse<{ payment_method: PaymentMethod }>>(
-        '/v1/public/billing/payment-methods',
+        '/api/v1/public/billing/payment-methods',
         { payment_method_id: paymentMethodId }
       );
 
@@ -459,7 +459,7 @@ export class SubscriptionService {
   async removePaymentMethod(paymentMethodId: string): Promise<OperationResult> {
     try {
       const response = await apiClient.delete<ApiResponse<{ success: boolean }>>(
-        `/v1/public/billing/payment-methods/${paymentMethodId}`
+        `/api/v1/public/billing/payment-methods/${paymentMethodId}`
       );
 
       if (!response.data.success) {
@@ -486,7 +486,7 @@ export class SubscriptionService {
   async setDefaultPaymentMethod(paymentMethodId: string): Promise<OperationResult> {
     try {
       const response = await apiClient.post<ApiResponse<{ success: boolean }>>(
-        '/v1/public/billing/default-payment-method',
+        '/api/v1/public/billing/default-payment-method',
         { payment_method_id: paymentMethodId }
       );
 

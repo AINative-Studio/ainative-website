@@ -1,3 +1,5 @@
+import React from "react";
+
 /**
  * Quantum Signature Management Component
  *

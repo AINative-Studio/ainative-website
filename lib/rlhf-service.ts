@@ -97,7 +97,7 @@ export interface ExportParams {
  * Handles all API communication for feedback collection
  */
 export class RLHFService {
-  private readonly baseUrl = '/v1/public/rlhf';
+  private readonly baseUrl = '/api/v1/public/rlhf';
 
   /**
    * Submit thumbs up/down feedback

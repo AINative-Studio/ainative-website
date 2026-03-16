@@ -1,3 +1,5 @@
+import { render, screen } from "@testing-library/react";
+
 import apiClient from '../api-client';
 import mcpService from '../mcp-service';
 
@@ -5,10 +7,10 @@ import mcpService from '../mcp-service';
 jest.mock('../api-client', () => ({
   __esModule: true,
   default: {
-    get: jest.fn(),
-    post: jest.fn(),
-    put: jest.fn(),
-    delete: jest.fn(),
+    get: jest.fn() as jest.Mock as jest.Mock,
+    post: jest.fn() as jest.Mock as jest.Mock,
+    put: jest.fn() as jest.Mock as jest.Mock,
+    delete: jest.fn() as jest.Mock as jest.Mock,
   },
 }));
 
@@ -43,7 +45,7 @@ describe('MCPService', () => {
 
       const result = await mcpService.getCatalog();
 
-      expect(mockApiClient.get).toHaveBeenCalledWith('/v1/public/mcp/catalog');
+      expect(mockApiClient.get).toHaveBeenCalledWith('/api/v1/public/mcp/catalog');
       expect(result).toEqual(mockServers.servers);
     });
 
@@ -88,7 +90,7 @@ describe('MCPService', () => {
 
       const result = await mcpService.deploy(deployRequest);
 
-      expect(mockApiClient.post).toHaveBeenCalledWith('/v1/public/mcp/deploy', deployRequest);
+      expect(mockApiClient.post).toHaveBeenCalledWith('/api/v1/public/mcp/deploy', deployRequest);
       expect(result).toEqual(mockInstance);
     });
 
@@ -121,7 +123,7 @@ describe('MCPService', () => {
 
       const result = await mcpService.getServer('instance-1');
 
-      expect(mockApiClient.get).toHaveBeenCalledWith('/v1/public/mcp/instance-1');
+      expect(mockApiClient.get).toHaveBeenCalledWith('/api/v1/public/mcp/instance-1');
       expect(result).toEqual(mockInstance);
     });
 
@@ -142,7 +144,7 @@ describe('MCPService', () => {
 
       await mcpService.deleteServer('instance-1');
 
-      expect(mockApiClient.delete).toHaveBeenCalledWith('/v1/public/mcp/instance-1');
+      expect(mockApiClient.delete).toHaveBeenCalledWith('/api/v1/public/mcp/instance-1');
     });
 
     it('handles errors when deleting server', async () => {
@@ -174,7 +176,7 @@ describe('MCPService', () => {
 
       const result = await mcpService.getServerStatus('instance-1');
 
-      expect(mockApiClient.get).toHaveBeenCalledWith('/v1/public/mcp/instance-1/status');
+      expect(mockApiClient.get).toHaveBeenCalledWith('/api/v1/public/mcp/instance-1/status');
       expect(result).toEqual(mockStatus);
     });
   });
@@ -199,7 +201,7 @@ describe('MCPService', () => {
 
       const result = await mcpService.getServerLogs('instance-1');
 
-      expect(mockApiClient.get).toHaveBeenCalledWith('/v1/public/mcp/instance-1/logs?');
+      expect(mockApiClient.get).toHaveBeenCalledWith('/api/v1/public/mcp/instance-1/logs?');
       expect(result).toEqual(mockLogs.logs);
     });
 
@@ -222,7 +224,7 @@ describe('MCPService', () => {
 
       const result = await mcpService.getServerLogs('instance-1', { limit: 50, level: 'error' });
 
-      expect(mockApiClient.get).toHaveBeenCalledWith('/v1/public/mcp/instance-1/logs?limit=50&level=error');
+      expect(mockApiClient.get).toHaveBeenCalledWith('/api/v1/public/mcp/instance-1/logs?limit=50&level=error');
       expect(result).toEqual(mockLogs.logs);
     });
 
@@ -249,7 +251,7 @@ describe('MCPService', () => {
 
       const result = await mcpService.restartServer('instance-1');
 
-      expect(mockApiClient.post).toHaveBeenCalledWith('/v1/public/mcp/instance-1/restart');
+      expect(mockApiClient.post).toHaveBeenCalledWith('/api/v1/public/mcp/instance-1/restart');
       expect(result.status).toBe('restarting');
     });
   });
@@ -278,7 +280,7 @@ describe('MCPService', () => {
 
       const result = await mcpService.getInstances();
 
-      expect(mockApiClient.get).toHaveBeenCalledWith('/v1/public/mcp/instances');
+      expect(mockApiClient.get).toHaveBeenCalledWith('/api/v1/public/mcp/instances');
       expect(result).toEqual(mockInstances.instances);
     });
 
@@ -315,7 +317,7 @@ describe('MCPService', () => {
 
       const result = await mcpService.getUsageMetrics('instance-1');
 
-      expect(mockApiClient.get).toHaveBeenCalledWith('/v1/public/mcp/instance-1/usage');
+      expect(mockApiClient.get).toHaveBeenCalledWith('/api/v1/public/mcp/instance-1/usage');
       expect(result).toEqual(mockMetrics);
     });
 
@@ -338,7 +340,7 @@ describe('MCPService', () => {
 
       const result = await mcpService.getUsageMetrics('instance-1', '7d');
 
-      expect(mockApiClient.get).toHaveBeenCalledWith('/v1/public/mcp/instance-1/usage?period=7d');
+      expect(mockApiClient.get).toHaveBeenCalledWith('/api/v1/public/mcp/instance-1/usage?period=7d');
       expect(result).toEqual(mockMetrics);
     });
   });
@@ -366,7 +368,7 @@ describe('MCPService', () => {
 
       const result = await mcpService.getBillingInfo('instance-1');
 
-      expect(mockApiClient.get).toHaveBeenCalledWith('/v1/public/mcp/instance-1/billing');
+      expect(mockApiClient.get).toHaveBeenCalledWith('/api/v1/public/mcp/instance-1/billing');
       expect(result).toEqual(mockBilling);
     });
   });
@@ -392,7 +394,7 @@ describe('MCPService', () => {
 
       const result = await mcpService.getCostBreakdown();
 
-      expect(mockApiClient.get).toHaveBeenCalledWith('/v1/public/mcp/costs');
+      expect(mockApiClient.get).toHaveBeenCalledWith('/api/v1/public/mcp/costs');
       expect(result).toEqual(mockCosts);
     });
   });
@@ -413,7 +415,7 @@ describe('MCPService', () => {
 
       const result = await mcpService.scaleCapacity(scaleRequest);
 
-      expect(mockApiClient.post).toHaveBeenCalledWith('/v1/public/mcp/capacity', scaleRequest);
+      expect(mockApiClient.post).toHaveBeenCalledWith('/api/v1/public/mcp/capacity', scaleRequest);
       expect(result.success).toBe(true);
     });
   });
@@ -447,7 +449,7 @@ describe('MCPService', () => {
 
       const result = await mcpService.getPerformanceMetrics('instance-1');
 
-      expect(mockApiClient.get).toHaveBeenCalledWith('/v1/public/mcp/instance-1/performance');
+      expect(mockApiClient.get).toHaveBeenCalledWith('/api/v1/public/mcp/instance-1/performance');
       expect(result).toEqual(mockMetrics);
     });
 
@@ -466,7 +468,7 @@ describe('MCPService', () => {
 
       const result = await mcpService.getPerformanceMetrics('instance-1', '24h');
 
-      expect(mockApiClient.get).toHaveBeenCalledWith('/v1/public/mcp/instance-1/performance?timeRange=24h');
+      expect(mockApiClient.get).toHaveBeenCalledWith('/api/v1/public/mcp/instance-1/performance?timeRange=24h');
       expect(result).toEqual(mockMetrics);
     });
   });

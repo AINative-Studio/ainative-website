@@ -1,3 +1,5 @@
+import { render, screen } from "@testing-library/react";
+
 import apiClient from '../api-client';
 import { emailService } from '../email-service';
 
@@ -5,10 +7,10 @@ import { emailService } from '../email-service';
 jest.mock('../api-client', () => ({
   __esModule: true,
   default: {
-    get: jest.fn(),
-    post: jest.fn(),
-    put: jest.fn(),
-    delete: jest.fn(),
+    get: jest.fn() as jest.Mock as jest.Mock,
+    post: jest.fn() as jest.Mock as jest.Mock,
+    put: jest.fn() as jest.Mock as jest.Mock,
+    delete: jest.fn() as jest.Mock as jest.Mock,
   },
 }));
 
@@ -51,7 +53,7 @@ describe('EmailService', () => {
 
       const result = await emailService.getTemplates();
 
-      expect(mockApiClient.get).toHaveBeenCalledWith('/v1/email/templates');
+      expect(mockApiClient.get).toHaveBeenCalledWith('/api/v1/email/templates');
       expect(result).toEqual(mockTemplates);
     });
 
@@ -85,7 +87,7 @@ describe('EmailService', () => {
 
       const result = await emailService.createTemplate(templateData);
 
-      expect(mockApiClient.post).toHaveBeenCalledWith('/v1/email/templates', templateData);
+      expect(mockApiClient.post).toHaveBeenCalledWith('/api/v1/email/templates', templateData);
       expect(result).toEqual(mockResponse);
     });
 
@@ -126,7 +128,7 @@ describe('EmailService', () => {
 
       const result = await emailService.updateTemplate(templateId, updateData);
 
-      expect(mockApiClient.put).toHaveBeenCalledWith(`/v1/email/templates/${templateId}`, updateData);
+      expect(mockApiClient.put).toHaveBeenCalledWith(`/api/v1/email/templates/${templateId}`, updateData);
       expect(result).toEqual(mockResponse);
     });
 
@@ -151,7 +153,7 @@ describe('EmailService', () => {
 
       const result = await emailService.deleteTemplate(templateId);
 
-      expect(mockApiClient.delete).toHaveBeenCalledWith(`/v1/email/templates/${templateId}`);
+      expect(mockApiClient.delete).toHaveBeenCalledWith(`/api/v1/email/templates/${templateId}`);
       expect(result).toEqual({ success: true, message: 'Template deleted' });
     });
 
@@ -181,7 +183,7 @@ describe('EmailService', () => {
 
       const result = await emailService.getSettings();
 
-      expect(mockApiClient.get).toHaveBeenCalledWith('/v1/email/settings');
+      expect(mockApiClient.get).toHaveBeenCalledWith('/api/v1/email/settings');
       expect(result).toEqual(mockSettings);
     });
 
@@ -217,7 +219,7 @@ describe('EmailService', () => {
 
       const result = await emailService.updateSettings(settingsData);
 
-      expect(mockApiClient.put).toHaveBeenCalledWith('/v1/email/settings', settingsData);
+      expect(mockApiClient.put).toHaveBeenCalledWith('/api/v1/email/settings', settingsData);
       expect(result).toEqual(mockResponse);
     });
 
@@ -254,7 +256,7 @@ describe('EmailService', () => {
 
       const result = await emailService.sendEmail(emailData);
 
-      expect(mockApiClient.post).toHaveBeenCalledWith('/v1/email/send', emailData);
+      expect(mockApiClient.post).toHaveBeenCalledWith('/api/v1/email/send', emailData);
       expect(result).toEqual(mockResponse);
     });
 
@@ -300,7 +302,7 @@ describe('EmailService', () => {
 
       const result = await emailService.getHistory({ page: 1, pageSize: 50 });
 
-      expect(mockApiClient.get).toHaveBeenCalledWith('/v1/email/history?page=1&pageSize=50');
+      expect(mockApiClient.get).toHaveBeenCalledWith('/api/v1/email/history?page=1&pageSize=50');
       expect(result).toEqual(mockHistory);
     });
 
@@ -330,7 +332,7 @@ describe('EmailService', () => {
       const result = await emailService.getHistory({ page: 1, pageSize: 50, status: 'failed' });
 
       expect(mockApiClient.get).toHaveBeenCalledWith(
-        '/v1/email/history?page=1&pageSize=50&status=failed'
+        '/api/v1/email/history?page=1&pageSize=50&status=failed'
       );
       expect(result).toEqual(mockFilteredHistory);
     });
@@ -362,7 +364,7 @@ describe('EmailService', () => {
 
       const result = await emailService.getAnalytics();
 
-      expect(mockApiClient.get).toHaveBeenCalledWith('/v1/email/analytics');
+      expect(mockApiClient.get).toHaveBeenCalledWith('/api/v1/email/analytics');
       expect(result).toEqual(mockAnalytics);
     });
 
@@ -392,7 +394,7 @@ describe('EmailService', () => {
       const result = await emailService.getAnalytics({ startDate, endDate });
 
       expect(mockApiClient.get).toHaveBeenCalledWith(
-        `/v1/email/analytics?startDate=${startDate}&endDate=${endDate}`
+        `/api/v1/email/analytics?startDate=${startDate}&endDate=${endDate}`
       );
       expect(result).toEqual(mockAnalytics);
     });

@@ -120,7 +120,7 @@ const mcpService = {
    * GET /v1/public/mcp/catalog
    */
   async getCatalog(): Promise<MCPServer[]> {
-    const response = await apiClient.get<{ servers: MCPServer[] }>('/v1/public/mcp/catalog');
+    const response = await apiClient.get<{ servers: MCPServer[] }>('/api/v1/public/mcp/catalog');
     return response.data.servers || [];
   },
 
@@ -129,7 +129,7 @@ const mcpService = {
    * POST /v1/public/mcp/deploy
    */
   async deploy(request: DeployMCPRequest): Promise<MCPInstance> {
-    const response = await apiClient.post<MCPInstance>('/v1/public/mcp/deploy', request);
+    const response = await apiClient.post<MCPInstance>('/api/v1/public/mcp/deploy', request);
     return response.data;
   },
 
@@ -138,7 +138,7 @@ const mcpService = {
    * GET /v1/public/mcp/{id}
    */
   async getServer(id: string): Promise<MCPInstance> {
-    const response = await apiClient.get<MCPInstance>(`/v1/public/mcp/${id}`);
+    const response = await apiClient.get(`/api/v1/public/mcp/${id}`);
     return response.data;
   },
 
@@ -147,7 +147,7 @@ const mcpService = {
    * DELETE /v1/public/mcp/{id}
    */
   async deleteServer(id: string): Promise<void> {
-    await apiClient.delete(`/v1/public/mcp/${id}`);
+    await apiClient.delete(`/api/v1/public/mcp/${id}`);
   },
 
   /**
@@ -155,7 +155,7 @@ const mcpService = {
    * GET /v1/public/mcp/{id}/status
    */
   async getServerStatus(id: string): Promise<MCPServerStatus> {
-    const response = await apiClient.get<MCPServerStatus>(`/v1/public/mcp/${id}/status`);
+    const response = await apiClient.get(`/api/v1/public/mcp/${id}/status`);
     return response.data;
   },
 
@@ -168,7 +168,7 @@ const mcpService = {
     if (options?.limit) params.append('limit', options.limit.toString());
     if (options?.level) params.append('level', options.level);
 
-    const response = await apiClient.get<{ logs: MCPServerLog[] }>(`/v1/public/mcp/${id}/logs?${params}`);
+    const response = await apiClient.get(`/api/v1/public/mcp/${id}/logs?${params}`);
     return response.data.logs || [];
   },
 
@@ -177,7 +177,7 @@ const mcpService = {
    * POST /v1/public/mcp/instances/{id}/start
    */
   async startServer(id: string): Promise<{ status: string }> {
-    const response = await apiClient.post<{ status: string }>(`/v1/public/mcp/instances/${id}/start`);
+    const response = await apiClient.post(`/api/v1/public/mcp/instances/${id}/start`);
     return response.data;
   },
 
@@ -186,7 +186,7 @@ const mcpService = {
    * POST /v1/public/mcp/instances/{id}/stop
    */
   async stopServer(id: string): Promise<{ status: string }> {
-    const response = await apiClient.post<{ status: string }>(`/v1/public/mcp/instances/${id}/stop`);
+    const response = await apiClient.post(`/api/v1/public/mcp/instances/${id}/stop`);
     return response.data;
   },
 
@@ -195,7 +195,7 @@ const mcpService = {
    * GET /v1/public/mcp/instances
    */
   async getInstances(): Promise<MCPInstance[]> {
-    const response = await apiClient.get<{ instances: MCPInstance[] }>('/v1/public/mcp/instances');
+    const response = await apiClient.get<{ instances: MCPInstance[] }>('/api/v1/public/mcp/instances');
     return response.data.instances || [];
   },
 
@@ -205,7 +205,7 @@ const mcpService = {
    */
   async getInstanceUsage(id: string, period?: string): Promise<MCPUsageMetrics> {
     const params = period ? `?period=${period}` : '';
-    const response = await apiClient.get<MCPUsageMetrics>(`/v1/public/mcp/instances/${id}/usage${params}`);
+    const response = await apiClient.get(`/api/v1/public/mcp/instances/${id}/usage${params}`);
     return response.data;
   },
 
@@ -234,7 +234,7 @@ const mcpService = {
         cost: number;
         usage: number;
       }>;
-    }>('/v1/public/mcp/billing/summary');
+    }>('/api/v1/public/mcp/billing/summary');
     return response.data;
   },
 
@@ -252,7 +252,7 @@ const mcpService = {
    * GET /v1/public/mcp/{id}/billing
    */
   async getBillingInfo(id: string): Promise<MCPBillingInfo> {
-    const response = await apiClient.get<MCPBillingInfo>(`/v1/public/mcp/${id}/billing`);
+    const response = await apiClient.get(`/api/v1/public/mcp/${id}/billing`);
     return response.data;
   },
 
@@ -261,7 +261,7 @@ const mcpService = {
    * GET /v1/public/mcp/costs
    */
   async getCostBreakdown(): Promise<MCPCostBreakdown> {
-    const response = await apiClient.get<MCPCostBreakdown>('/v1/public/mcp/costs');
+    const response = await apiClient.get<MCPCostBreakdown>('/api/v1/public/mcp/costs');
     return response.data;
   },
 
@@ -270,7 +270,7 @@ const mcpService = {
    * POST /v1/public/mcp/capacity
    */
   async scaleCapacity(request: CapacityRequest): Promise<{ success: boolean; message: string }> {
-    const response = await apiClient.post<{ success: boolean; message: string }>('/v1/public/mcp/capacity', request);
+    const response = await apiClient.post<{ success: boolean; message: string }>('/api/v1/public/mcp/capacity', request);
     return response.data;
   },
 
@@ -280,7 +280,7 @@ const mcpService = {
    */
   async getPerformanceMetrics(id: string, timeRange?: string): Promise<MCPPerformanceMetrics> {
     const params = timeRange ? `?timeRange=${timeRange}` : '';
-    const response = await apiClient.get<MCPPerformanceMetrics>(`/v1/public/mcp/${id}/performance${params}`);
+    const response = await apiClient.get(`/api/v1/public/mcp/${id}/performance${params}`);
     return response.data;
   },
 };

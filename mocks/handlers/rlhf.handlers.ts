@@ -7,7 +7,7 @@ import { RLHFFactory } from '../factories';
 const BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || 'https://api.ainative.studio';
 
 export const rlhfHandlers = [
-  http.post(`${BASE_URL}/v1/public/:projectId/database/rlhf/interactions`, async ({ params, request }) => {
+  http.post(`${BASE_URL}/api/v1/public/:projectId/database/rlhf/interactions`, async ({ params, request }) => {
     const body = await request.json();
     return HttpResponse.json({
       id: 'feedback_' + Date.now(),
@@ -15,7 +15,7 @@ export const rlhfHandlers = [
     });
   }),
 
-  http.get(`${BASE_URL}/v1/public/:projectId/database/rlhf/stats`, ({ request }) => {
+  http.get(`${BASE_URL}/api/v1/public/:projectId/database/rlhf/stats`, ({ request }) => {
     return HttpResponse.json({
       total: 100,
       positive: 80,
@@ -24,7 +24,7 @@ export const rlhfHandlers = [
     });
   }),
 
-  http.get(`${BASE_URL}/v1/public/:projectId/database/rlhf/workflow/:workflowId`, () => {
+  http.get(`${BASE_URL}/api/v1/public/:projectId/database/rlhf/workflow/:workflowId`, () => {
     return HttpResponse.json({
       feedback: [RLHFFactory.createFeedback(), RLHFFactory.createPositiveFeedback()],
     });

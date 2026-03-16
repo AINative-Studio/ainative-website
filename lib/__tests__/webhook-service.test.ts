@@ -1,3 +1,5 @@
+import { render, screen } from "@testing-library/react";
+
 /**
  * Test suite for webhook service
  * Tests all webhook management operations
@@ -47,7 +49,7 @@ describe('WebhookService', () => {
 
       const result = await webhookService.listWebhooks();
 
-      expect(mockApiClient.get).toHaveBeenCalledWith('/v1/public/webhooks');
+      expect(mockApiClient.get).toHaveBeenCalledWith('/api/v1/public/webhooks');
       expect(result).toEqual(mockWebhooks);
     });
 
@@ -94,7 +96,7 @@ describe('WebhookService', () => {
 
       const result = await webhookService.createWebhook(newWebhook);
 
-      expect(mockApiClient.post).toHaveBeenCalledWith('/v1/public/webhooks', newWebhook);
+      expect(mockApiClient.post).toHaveBeenCalledWith('/api/v1/public/webhooks', newWebhook);
       expect(result).toEqual(createdWebhook);
     });
 
@@ -138,7 +140,7 @@ describe('WebhookService', () => {
 
       const result = await webhookService.getWebhook('123');
 
-      expect(mockApiClient.get).toHaveBeenCalledWith('/v1/public/webhooks/123');
+      expect(mockApiClient.get).toHaveBeenCalledWith('/api/v1/public/webhooks/123');
       expect(result).toEqual(mockWebhook);
     });
 
@@ -177,7 +179,7 @@ describe('WebhookService', () => {
 
       const result = await webhookService.updateWebhook('123', updateData);
 
-      expect(mockApiClient.put).toHaveBeenCalledWith('/v1/public/webhooks/123', updateData);
+      expect(mockApiClient.put).toHaveBeenCalledWith('/api/v1/public/webhooks/123', updateData);
       expect(result).toEqual(updatedWebhook);
     });
 
@@ -200,7 +202,7 @@ describe('WebhookService', () => {
 
       await webhookService.deleteWebhook('123');
 
-      expect(mockApiClient.delete).toHaveBeenCalledWith('/v1/public/webhooks/123');
+      expect(mockApiClient.delete).toHaveBeenCalledWith('/api/v1/public/webhooks/123');
     });
 
     it('should handle deletion of non-existent webhook', async () => {
@@ -231,7 +233,7 @@ describe('WebhookService', () => {
 
       const result = await webhookService.testWebhook('123');
 
-      expect(mockApiClient.post).toHaveBeenCalledWith('/v1/public/webhooks/123/test');
+      expect(mockApiClient.post).toHaveBeenCalledWith('/api/v1/public/webhooks/123/test');
       expect(result).toEqual(testResult);
     });
 
@@ -290,7 +292,7 @@ describe('WebhookService', () => {
 
       const result = await webhookService.getWebhookDeliveries('123');
 
-      expect(mockApiClient.get).toHaveBeenCalledWith('/v1/public/webhooks/123/deliveries');
+      expect(mockApiClient.get).toHaveBeenCalledWith('/api/v1/public/webhooks/123/deliveries');
       expect(result).toEqual(mockDeliveries);
     });
 
@@ -327,7 +329,7 @@ describe('WebhookService', () => {
 
       const result = await webhookService.toggleWebhook('123', true);
 
-      expect(mockApiClient.post).toHaveBeenCalledWith('/v1/public/webhooks/123/toggle', { active: true });
+      expect(mockApiClient.post).toHaveBeenCalledWith('/api/v1/public/webhooks/123/toggle', { active: true });
       expect(result.active).toBe(true);
     });
 

@@ -91,7 +91,7 @@ export interface ProjectMetrics {
  * Handles all API communication for agent swarm projects
  */
 export class AgentSwarmService {
-  private readonly baseUrl = '/v1/public/agent-swarms';
+  private readonly baseUrl = '/api/v1/public/agent-swarms';
 
   /**
    * Health check for agent swarms module

@@ -73,7 +73,7 @@ export class UserService {
    */
   async getUserProfile(): Promise<UserProfile> {
     try {
-      const response = await apiClient.get<ApiResponse<UserProfile>>('/v1/public/auth/me');
+      const response = await apiClient.get<ApiResponse<UserProfile>>('/api/v1/public/auth/me');
 
       if (!response.data.success && response.data.data) {
         // Handle case where backend doesn't use success wrapper
@@ -99,7 +99,7 @@ export class UserService {
   async updateUserProfile(profileData: Partial<UserProfile>): Promise<OperationResult> {
     try {
       const response = await apiClient.put<ApiResponse<{ message: string }>>(
-        '/v1/public/profile',
+        '/api/v1/public/profile',
         profileData
       );
 
@@ -124,7 +124,7 @@ export class UserService {
   async getUserPreferences(): Promise<UserPreferences> {
     try {
       const response = await apiClient.get<ApiResponse<UserPreferences>>(
-        '/v1/public/profile/preferences'
+        '/api/v1/public/profile/preferences'
       );
 
       if (!response.data.success && response.data.data) {
@@ -149,7 +149,7 @@ export class UserService {
   async updateUserPreferences(preferences: Partial<UserPreferences>): Promise<OperationResult> {
     try {
       const response = await apiClient.put<ApiResponse<{ message: string }>>(
-        '/v1/public/profile/preferences',
+        '/api/v1/public/profile/preferences',
         preferences
       );
 
@@ -174,7 +174,7 @@ export class UserService {
   async getProfilePicture(): Promise<ProfilePictureResponse> {
     try {
       const response = await apiClient.get<ApiResponse<ProfilePictureResponse>>(
-        '/v1/public/profile/picture'
+        '/api/v1/public/profile/picture'
       );
 
       if (!response.data.success && response.data.data) {
@@ -244,7 +244,7 @@ export class UserService {
   async deleteAccount(confirmation?: { password?: string; reason?: string }): Promise<OperationResult> {
     try {
       const response = await apiClient.delete<ApiResponse<{ message: string }>>(
-        '/v1/public/profile/delete'
+        '/api/v1/public/profile/delete'
       );
 
       if (!response.data.success) {

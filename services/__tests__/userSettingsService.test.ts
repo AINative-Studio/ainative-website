@@ -1,3 +1,5 @@
+import { render, screen } from "@testing-library/react";
+
 /**
  * User Settings Service Tests
  * Comprehensive tests for user profile and settings management

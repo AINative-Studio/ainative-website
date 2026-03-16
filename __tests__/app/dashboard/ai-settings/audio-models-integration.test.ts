@@ -1,3 +1,5 @@
+import { render, screen } from "@testing-library/react";
+
 /**
  * Integration test for Audio Models in AI Settings
  * Verifies that audio models are correctly returned from aggregateAllModels
@@ -36,7 +38,7 @@ describe('Audio Models Integration Test', () => {
 
     // Mock API responses to return empty arrays (we're testing hardcoded audio models)
     mockedApiClient.get.mockImplementation((url: string) => {
-      if (url === '/v1/models') {
+      if (url === '/api/v1/models') {
         return Promise.resolve({
           data: {
             object: 'list',
@@ -44,7 +46,7 @@ describe('Audio Models Integration Test', () => {
           },
         } as any);
       }
-      if (url === '/v1/public/embeddings/models') {
+      if (url === '/api/v1/public/embeddings/models') {
         return Promise.resolve({
           data: [],
         } as any);

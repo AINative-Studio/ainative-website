@@ -1,3 +1,5 @@
+import { render, screen } from "@testing-library/react";
+
 /**
  * Tests for Model Aggregator Service
  * Refs #ISSUE_NUMBER (will be added after issue creation)
@@ -9,7 +11,7 @@ import { modelAggregatorService } from '../model-aggregator-service';
 jest.mock('../api-client', () => ({
   __esModule: true,
   default: {
-    get: jest.fn(),
+    get: jest.fn() as jest.Mock as jest.Mock,
   },
 }));
 

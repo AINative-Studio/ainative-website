@@ -1,3 +1,5 @@
+import React from "react";
+
 /**
  * Issue #499 - GradientText Size Scale Discrepancy
  * Test Validation Script

@@ -1,3 +1,5 @@
+import { render, screen } from "@testing-library/react";
+
 /**
  * Test Suite: CSS Variable Migration (Issue #501)
  *

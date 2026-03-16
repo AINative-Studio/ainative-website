@@ -1,3 +1,5 @@
+import { render, screen } from "@testing-library/react";
+
 /**
  * Authentication Flow Integration Tests
  * Tests complete authentication workflows including login, registration, token management, and user profile

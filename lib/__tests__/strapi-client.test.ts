@@ -1,3 +1,5 @@
+import { render, screen } from "@testing-library/react";
+
 /**
  * Strapi Client Tests (TDD)
  * Test-first implementation for Strapi CMS API client

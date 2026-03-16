@@ -1,4 +1,6 @@
+
 'use client';
+import React from "react";
 
 /**
  * Data Model Review Component with Chat Interface, Diff Preview, and Export

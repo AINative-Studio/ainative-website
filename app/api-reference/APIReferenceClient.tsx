@@ -1,4 +1,6 @@
+
 'use client';
+import React from "react";
 
 import { useState } from 'react';
 import { motion } from 'framer-motion';
@@ -66,7 +68,7 @@ const endpoints: APIEndpoint[] = [
   {
     id: 'projects-create',
     method: 'POST',
-    path: '/v1/projects',
+    path: '/api/v1/projects',
     summary: 'Create Project',
     description: 'Create a new ZeroDB project with vector storage capabilities',
     category: 'ZeroDB Projects',
@@ -143,7 +145,7 @@ console.log('Created project:', project.id);`,
   {
     id: 'vectors-search',
     method: 'POST',
-    path: '/v1/vectors/search',
+    path: '/api/v1/vectors/search',
     summary: 'Vector Search',
     description: 'Perform semantic similarity search on stored vectors',
     category: 'ZeroDB Vectors',
@@ -202,7 +204,7 @@ for result in results.results:
   {
     id: 'memory-create',
     method: 'POST',
-    path: '/v1/memory',
+    path: '/api/v1/memory',
     summary: 'Create Memory',
     description: 'Store a memory entry with content and metadata',
     category: 'Memory System',
@@ -258,7 +260,7 @@ console.log('Memory created:', memory.id);`,
   {
     id: 'swarm-start',
     method: 'POST',
-    path: '/v1/agent-swarm/swarms',
+    path: '/api/v1/agent-swarm/swarms',
     summary: 'Start Agent Swarm',
     description: 'Initialize a new agent swarm for task execution',
     category: 'Agent Swarm',

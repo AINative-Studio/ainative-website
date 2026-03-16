@@ -1,3 +1,5 @@
+import React from "react";
+
 import { Metadata } from 'next';
 import WebinarDetailClient from './WebinarDetailClient';
 import { VideoSchema, BreadcrumbSchema } from '@/components/seo/StructuredData';

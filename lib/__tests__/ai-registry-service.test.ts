@@ -1,3 +1,5 @@
+import { render, screen } from "@testing-library/react";
+
 /**
  * @jest-environment node
  */
@@ -9,10 +11,10 @@ import { aiRegistryService } from '../ai-registry-service';
 jest.mock('../api-client', () => ({
   __esModule: true,
   default: {
-    get: jest.fn(),
-    post: jest.fn(),
-    put: jest.fn(),
-    delete: jest.fn(),
+    get: jest.fn() as jest.Mock as jest.Mock,
+    post: jest.fn() as jest.Mock as jest.Mock,
+    put: jest.fn() as jest.Mock as jest.Mock,
+    delete: jest.fn() as jest.Mock as jest.Mock,
   },
 }));
 
@@ -59,7 +61,7 @@ describe('AIRegistryService', () => {
 
       const result = await aiRegistryService.listModels();
 
-      expect(mockApiClient.get).toHaveBeenCalledWith('/v1/public/multi-model/models');
+      expect(mockApiClient.get).toHaveBeenCalledWith('/api/v1/public/multi-model/models');
       expect(result).toEqual(mockModels);
     });
 
@@ -97,7 +99,7 @@ describe('AIRegistryService', () => {
 
       const result = await aiRegistryService.registerModel(modelData);
 
-      expect(mockApiClient.post).toHaveBeenCalledWith('/v1/public/multi-model/models', modelData);
+      expect(mockApiClient.post).toHaveBeenCalledWith('/api/v1/public/multi-model/models', modelData);
       expect(result).toEqual(mockResponse);
     });
 
@@ -125,7 +127,7 @@ describe('AIRegistryService', () => {
 
       const result = await aiRegistryService.registerModel(modelData);
 
-      expect(mockApiClient.post).toHaveBeenCalledWith('/v1/public/multi-model/models', modelData);
+      expect(mockApiClient.post).toHaveBeenCalledWith('/api/v1/public/multi-model/models', modelData);
       expect(result).toEqual(mockResponse);
     });
 
@@ -168,7 +170,7 @@ describe('AIRegistryService', () => {
 
       const result = await aiRegistryService.getModelDetails(modelId);
 
-      expect(mockApiClient.get).toHaveBeenCalledWith(`/v1/public/multi-model/models/${modelId}`);
+      expect(mockApiClient.get).toHaveBeenCalledWith(`/api/v1/public/multi-model/models/${modelId}`);
       expect(result).toEqual(mockModel);
     });
 
@@ -197,7 +199,7 @@ describe('AIRegistryService', () => {
 
       const result = await aiRegistryService.switchDefaultModel(modelId);
 
-      expect(mockApiClient.post).toHaveBeenCalledWith(`/v1/public/multi-model/models/${modelId}/switch`, {});
+      expect(mockApiClient.post).toHaveBeenCalledWith(`/api/v1/public/multi-model/models/${modelId}/switch`, {});
       expect(result).toEqual(mockResponse);
     });
 
@@ -232,7 +234,7 @@ describe('AIRegistryService', () => {
 
       const result = await aiRegistryService.getUsageSummary();
 
-      expect(mockApiClient.get).toHaveBeenCalledWith('/v1/public/ai-usage/aggregate');
+      expect(mockApiClient.get).toHaveBeenCalledWith('/api/v1/public/ai-usage/aggregate');
       expect(result).toEqual(mockSummary);
     });
 
@@ -264,7 +266,7 @@ describe('AIRegistryService', () => {
 
       const result = await aiRegistryService.getUsageSummary(params);
 
-      expect(mockApiClient.get).toHaveBeenCalledWith('/v1/public/ai-usage/aggregate?start_date=2025-12-01&end_date=2025-12-21');
+      expect(mockApiClient.get).toHaveBeenCalledWith('/api/v1/public/ai-usage/aggregate?start_date=2025-12-01&end_date=2025-12-21');
       expect(result).toEqual(mockSummary);
     });
 
@@ -309,7 +311,7 @@ describe('AIRegistryService', () => {
 
       const result = await aiRegistryService.getUsageByModel();
 
-      expect(mockApiClient.get).toHaveBeenCalledWith('/v1/public/ai-usage/by-model');
+      expect(mockApiClient.get).toHaveBeenCalledWith('/api/v1/public/ai-usage/by-model');
       expect(result).toEqual(mockUsageByModel);
     });
 
@@ -342,7 +344,7 @@ describe('AIRegistryService', () => {
 
       const result = await aiRegistryService.getUsageByModel(params);
 
-      expect(mockApiClient.get).toHaveBeenCalledWith('/v1/public/ai-usage/by-model?start_date=2025-12-01&end_date=2025-12-21');
+      expect(mockApiClient.get).toHaveBeenCalledWith('/api/v1/public/ai-usage/by-model?start_date=2025-12-01&end_date=2025-12-21');
       expect(result).toEqual(mockUsageByModel);
     });
 
@@ -390,7 +392,7 @@ describe('AIRegistryService', () => {
 
       const result = await aiRegistryService.getDailyUsage();
 
-      expect(mockApiClient.get).toHaveBeenCalledWith('/v1/public/ai-usage/daily');
+      expect(mockApiClient.get).toHaveBeenCalledWith('/api/v1/public/ai-usage/daily');
       expect(result).toEqual(mockDailyUsage);
     });
 
@@ -429,7 +431,7 @@ describe('AIRegistryService', () => {
 
       const result = await aiRegistryService.getDailyUsage(params);
 
-      expect(mockApiClient.get).toHaveBeenCalledWith('/v1/public/ai-usage/daily?start_date=2025-12-01&end_date=2025-12-21');
+      expect(mockApiClient.get).toHaveBeenCalledWith('/api/v1/public/ai-usage/daily?start_date=2025-12-01&end_date=2025-12-21');
       expect(result).toEqual(mockDailyUsage);
     });
 
@@ -458,7 +460,7 @@ describe('AIRegistryService', () => {
 
       const result = await aiRegistryService.exportUsageData({});
 
-      expect(mockApiClient.post).toHaveBeenCalledWith('/v1/public/ai-usage/export', {});
+      expect(mockApiClient.post).toHaveBeenCalledWith('/api/v1/public/ai-usage/export', {});
       expect(result).toEqual(mockExport);
     });
 
@@ -486,7 +488,7 @@ describe('AIRegistryService', () => {
 
       const result = await aiRegistryService.exportUsageData(exportParams);
 
-      expect(mockApiClient.post).toHaveBeenCalledWith('/v1/public/ai-usage/export', exportParams);
+      expect(mockApiClient.post).toHaveBeenCalledWith('/api/v1/public/ai-usage/export', exportParams);
       expect(result).toEqual(mockExport);
     });
 
@@ -531,7 +533,7 @@ describe('AIRegistryService', () => {
 
       const result = await aiRegistryService.loadContext(contextQuery);
 
-      expect(mockApiClient.post).toHaveBeenCalledWith('/v1/public/ai-context/contexts', contextQuery);
+      expect(mockApiClient.post).toHaveBeenCalledWith('/api/v1/public/ai-context/contexts', contextQuery);
       expect(result).toEqual(mockContext);
     });
 
@@ -566,7 +568,7 @@ describe('AIRegistryService', () => {
 
       const result = await aiRegistryService.loadContext(contextQuery);
 
-      expect(mockApiClient.post).toHaveBeenCalledWith('/v1/public/ai-context/contexts', contextQuery);
+      expect(mockApiClient.post).toHaveBeenCalledWith('/api/v1/public/ai-context/contexts', contextQuery);
       expect(result).toEqual(mockContext);
     });
 
@@ -617,7 +619,7 @@ describe('AIRegistryService', () => {
 
       const result = await aiRegistryService.multiModelInference(inferenceRequest);
 
-      expect(mockApiClient.post).toHaveBeenCalledWith('/v1/public/multi-model/inference', inferenceRequest);
+      expect(mockApiClient.post).toHaveBeenCalledWith('/api/v1/public/multi-model/inference', inferenceRequest);
       expect(result).toEqual(mockInferenceResponse);
     });
 
@@ -669,7 +671,7 @@ describe('AIRegistryService', () => {
 
       const result = await aiRegistryService.multiModelInference(inferenceRequest);
 
-      expect(mockApiClient.post).toHaveBeenCalledWith('/v1/public/multi-model/inference', inferenceRequest);
+      expect(mockApiClient.post).toHaveBeenCalledWith('/api/v1/public/multi-model/inference', inferenceRequest);
       expect(result).toEqual(mockInferenceResponse);
     });
 

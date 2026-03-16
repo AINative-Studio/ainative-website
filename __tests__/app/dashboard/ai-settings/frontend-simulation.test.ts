@@ -1,3 +1,5 @@
+import { render, screen } from "@testing-library/react";
+
 /**
  * Frontend Simulation Test
  * Simulates exactly what happens in the AISettingsClient component
@@ -36,12 +38,12 @@ describe('Frontend Simulation - Exact AISettingsClient Logic', () => {
 
     // Mock API to return empty arrays
     mockedApiClient.get.mockImplementation((url: string) => {
-      if (url === '/v1/models') {
+      if (url === '/api/v1/models') {
         return Promise.resolve({
           data: { object: 'list', data: [] },
         } as any);
       }
-      if (url === '/v1/public/embeddings/models') {
+      if (url === '/api/v1/public/embeddings/models') {
         return Promise.resolve({ data: [] } as any);
       }
       return Promise.reject(new Error('Unknown endpoint'));

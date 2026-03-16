@@ -1,4 +1,6 @@
+
 'use client';
+import React from "react";
 
 import { motion } from 'framer-motion';
 import { AlertCircle, RefreshCw, Wifi, WifiOff } from 'lucide-react';

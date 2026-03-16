@@ -88,7 +88,7 @@ export interface ApiResponse<T> {
 }
 
 export class InvoiceService {
-  private readonly baseUrl = '/v1/public/billing/invoices';
+  private readonly baseUrl = '/api/v1/public/billing/invoices';
 
   /**
    * Get list of current user's invoices (Issue #165)

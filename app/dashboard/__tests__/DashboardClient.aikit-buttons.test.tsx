@@ -1,3 +1,5 @@
+import { render, screen } from "@testing-library/react";
+
 import React from 'react';
 import { render, screen, waitFor } from '@/test/test-utils';
 import DashboardClient from '../DashboardClient';
@@ -6,12 +8,12 @@ import { useRouter } from 'next/navigation';
 // Mock dependencies
 jest.mock('next/navigation', () => ({
   useRouter: () => ({
-    push: jest.fn(),
-    replace: jest.fn(),
-    prefetch: jest.fn(),
+    push: jest.fn() as jest.Mock as jest.Mock,
+    replace: jest.fn() as jest.Mock as jest.Mock,
+    prefetch: jest.fn() as jest.Mock as jest.Mock,
   }),
   useSearchParams: () => ({
-    get: jest.fn(),
+    get: jest.fn() as jest.Mock as jest.Mock,
   }),
   usePathname: () => '/dashboard',
 }));
@@ -24,8 +26,8 @@ jest.mock('next-auth/react', () => ({
     },
     status: 'authenticated',
   }),
-  signIn: jest.fn(),
-  signOut: jest.fn(),
+  signIn: jest.fn() as jest.Mock as jest.Mock,
+  signOut: jest.fn() as jest.Mock as jest.Mock,
 }));
 
 // Mock framer-motion to avoid animation issues in tests
@@ -47,9 +49,9 @@ describe('DashboardClient - AIKitButton Migration', () => {
         }
         return null;
       }),
-      setItem: jest.fn(),
-      removeItem: jest.fn(),
-      clear: jest.fn(),
+      setItem: jest.fn() as jest.Mock as jest.Mock,
+      removeItem: jest.fn() as jest.Mock as jest.Mock,
+      clear: jest.fn() as jest.Mock as jest.Mock,
     };
     Object.defineProperty(window, 'localStorage', { value: localStorageMock });
   });
@@ -139,11 +141,11 @@ describe('DashboardClient - AIKitButton Migration', () => {
 
     it('should maintain click handlers after migration', async () => {
       // Given: Component is rendered with router mock
-      const mockPush = jest.fn();
+      const mockPush = jest.fn() as jest.Mock as jest.Mock;
       (useRouter as jest.Mock) = jest.fn(() => ({
         push: mockPush,
-        replace: jest.fn(),
-        prefetch: jest.fn(),
+        replace: jest.fn() as jest.Mock as jest.Mock,
+        prefetch: jest.fn() as jest.Mock as jest.Mock,
       }));
 
       render(<DashboardClient />);

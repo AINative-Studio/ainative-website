@@ -1,3 +1,5 @@
+import { render, screen } from "@testing-library/react";
+
 /**
  * Earnings Service Tests
  * Comprehensive test suite for earningsService.ts
@@ -35,7 +37,7 @@ describe('EarningsService', () => {
     // Setup DOM mocks for export functionality
     document.body.innerHTML = '';
     global.URL.createObjectURL = jest.fn(() => 'blob:mock-url');
-    global.URL.revokeObjectURL = jest.fn();
+    global.URL.revokeObjectURL = jest.fn() as jest.Mock as jest.Mock;
   });
 
   afterEach(() => {
@@ -354,12 +356,12 @@ describe('EarningsService', () => {
         data: mockBlob,
       });
 
-      const clickSpy = jest.fn();
+      const clickSpy = jest.fn() as jest.Mock as jest.Mock;
       const mockLink = {
         href: '',
         download: '',
         click: clickSpy,
-        remove: jest.fn(),
+        remove: jest.fn() as jest.Mock as jest.Mock,
       } as unknown as HTMLAnchorElement;
 
       const createElementSpy = jest.spyOn(document, 'createElement').mockReturnValue(mockLink);
@@ -388,12 +390,12 @@ describe('EarningsService', () => {
         data: mockBlob,
       });
 
-      const clickSpy = jest.fn();
+      const clickSpy = jest.fn() as jest.Mock as jest.Mock;
       const mockLink = {
         href: '',
         download: '',
         click: clickSpy,
-        remove: jest.fn(),
+        remove: jest.fn() as jest.Mock as jest.Mock,
       } as unknown as HTMLAnchorElement;
 
       jest.spyOn(document, 'createElement').mockReturnValue(mockLink);
@@ -421,8 +423,8 @@ describe('EarningsService', () => {
       const mockLink = {
         href: '',
         download: '',
-        click: jest.fn(),
-        remove: jest.fn(),
+        click: jest.fn() as jest.Mock as jest.Mock,
+        remove: jest.fn() as jest.Mock as jest.Mock,
       } as unknown as HTMLAnchorElement;
 
       jest.spyOn(document, 'createElement').mockReturnValue(mockLink);

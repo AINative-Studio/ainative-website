@@ -14,7 +14,7 @@ import type {
 } from '@/types/rlhf';
 
 class RLHFService {
-  private baseUrl = '/v1/public';
+  private baseUrl = '/api/v1/public';
 
   /**
    * Submit feedback for a workflow step or agent output

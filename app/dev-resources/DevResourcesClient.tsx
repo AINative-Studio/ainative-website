@@ -285,32 +285,32 @@ const apiEndpoints = {
     endpoints: [
       {
         method: 'GET',
-        path: '/v1/models',
+        path: '/api/v1/models',
         description: 'List all available models with their capabilities and status'
       },
       {
         method: 'GET',
-        path: '/v1/models/{model_id}',
+        path: '/api/v1/models/{model_id}',
         description: 'Retrieve specific model details and configuration'
       },
       {
         method: 'POST',
-        path: '/v1/chat/completions',
+        path: '/api/v1/chat/completions',
         description: 'Generate chat completions with conversation history support'
       },
       {
         method: 'POST',
-        path: '/v1/completions',
+        path: '/api/v1/completions',
         description: 'Generate text completions for a given prompt'
       },
       {
         method: 'POST',
-        path: '/v1/embeddings',
+        path: '/api/v1/embeddings',
         description: 'Create embeddings for text input'
       },
       {
         method: 'POST',
-        path: '/v1/moderations',
+        path: '/api/v1/moderations',
         description: 'Check if text violates content policy'
       }
     ]
@@ -322,27 +322,27 @@ const apiEndpoints = {
     endpoints: [
       {
         method: 'POST',
-        path: '/v1/files',
+        path: '/api/v1/files',
         description: 'Upload a file for processing or fine-tuning'
       },
       {
         method: 'GET',
-        path: '/v1/files',
+        path: '/api/v1/files',
         description: 'List all files belonging to the user'
       },
       {
         method: 'GET',
-        path: '/v1/files/{file_id}',
+        path: '/api/v1/files/{file_id}',
         description: 'Retrieve a specific file'
       },
       {
         method: 'DELETE',
-        path: '/v1/files/{file_id}',
+        path: '/api/v1/files/{file_id}',
         description: 'Delete a file'
       },
       {
         method: 'GET',
-        path: '/v1/files/{file_id}/content',
+        path: '/api/v1/files/{file_id}/content',
         description: 'Download the content of a specific file'
       }
     ]
@@ -354,27 +354,27 @@ const apiEndpoints = {
     endpoints: [
       {
         method: 'POST',
-        path: '/v1/fine_tuning/jobs',
+        path: '/api/v1/fine_tuning/jobs',
         description: 'Create a fine-tuning job'
       },
       {
         method: 'GET',
-        path: '/v1/fine_tuning/jobs',
+        path: '/api/v1/fine_tuning/jobs',
         description: 'List all fine-tuning jobs'
       },
       {
         method: 'GET',
-        path: '/v1/fine_tuning/jobs/{job_id}',
+        path: '/api/v1/fine_tuning/jobs/{job_id}',
         description: 'Retrieve a specific fine-tuning job'
       },
       {
         method: 'POST',
-        path: '/v1/fine_tuning/jobs/{job_id}/cancel',
+        path: '/api/v1/fine_tuning/jobs/{job_id}/cancel',
         description: 'Cancel a running fine-tuning job'
       },
       {
         method: 'GET',
-        path: '/v1/fine_tuning/jobs/{job_id}/events',
+        path: '/api/v1/fine_tuning/jobs/{job_id}/events',
         description: 'List events for a fine-tuning job'
       }
     ]
@@ -386,47 +386,47 @@ const apiEndpoints = {
     endpoints: [
       {
         method: 'POST',
-        path: '/v1/assistants',
+        path: '/api/v1/assistants',
         description: 'Create an assistant with specific instructions and capabilities'
       },
       {
         method: 'GET',
-        path: '/v1/assistants',
+        path: '/api/v1/assistants',
         description: 'List all assistants'
       },
       {
         method: 'GET',
-        path: '/v1/assistants/{assistant_id}',
+        path: '/api/v1/assistants/{assistant_id}',
         description: 'Retrieve a specific assistant'
       },
       {
         method: 'POST',
-        path: '/v1/assistants/{assistant_id}',
+        path: '/api/v1/assistants/{assistant_id}',
         description: 'Modify an existing assistant'
       },
       {
         method: 'DELETE',
-        path: '/v1/assistants/{assistant_id}',
+        path: '/api/v1/assistants/{assistant_id}',
         description: 'Delete an assistant'
       },
       {
         method: 'POST',
-        path: '/v1/threads',
+        path: '/api/v1/threads',
         description: 'Create a thread for conversation'
       },
       {
         method: 'POST',
-        path: '/v1/threads/{thread_id}/runs',
+        path: '/api/v1/threads/{thread_id}/runs',
         description: 'Create a run in a thread'
       },
       {
         method: 'GET',
-        path: '/v1/threads/{thread_id}/runs/{run_id}',
+        path: '/api/v1/threads/{thread_id}/runs/{run_id}',
         description: 'Retrieve a run'
       },
       {
         method: 'POST',
-        path: '/v1/threads/{thread_id}/runs/{run_id}/submit_tool_outputs',
+        path: '/api/v1/threads/{thread_id}/runs/{run_id}/submit_tool_outputs',
         description: 'Submit tool outputs for a run'
       }
     ]
@@ -438,17 +438,17 @@ const apiEndpoints = {
     endpoints: [
       {
         method: 'POST',
-        path: '/v1/audio/transcriptions',
+        path: '/api/v1/audio/transcriptions',
         description: 'Transcribe audio into the input language'
       },
       {
         method: 'POST',
-        path: '/v1/audio/translations',
+        path: '/api/v1/audio/translations',
         description: 'Translate audio into English'
       },
       {
         method: 'POST',
-        path: '/v1/audio/speech',
+        path: '/api/v1/audio/speech',
         description: 'Generate audio from text input'
       }
     ]
@@ -460,17 +460,17 @@ const apiEndpoints = {
     endpoints: [
       {
         method: 'POST',
-        path: '/v1/images/generations',
+        path: '/api/v1/images/generations',
         description: 'Generate images from text prompts'
       },
       {
         method: 'POST',
-        path: '/v1/images/edits',
+        path: '/api/v1/images/edits',
         description: 'Edit an image based on a prompt'
       },
       {
         method: 'POST',
-        path: '/v1/images/variations',
+        path: '/api/v1/images/variations',
         description: 'Create variations of an image'
       }
     ]

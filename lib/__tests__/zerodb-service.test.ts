@@ -1,3 +1,5 @@
+import { render, screen } from "@testing-library/react";
+
 import apiClient from '../api-client';
 import { zerodbService } from '../zerodb-service';
 
@@ -5,10 +7,10 @@ import { zerodbService } from '../zerodb-service';
 jest.mock('../api-client', () => ({
   __esModule: true,
   default: {
-    get: jest.fn(),
-    post: jest.fn(),
-    put: jest.fn(),
-    delete: jest.fn(),
+    get: jest.fn() as jest.Mock as jest.Mock,
+    post: jest.fn() as jest.Mock as jest.Mock,
+    put: jest.fn() as jest.Mock as jest.Mock,
+    delete: jest.fn() as jest.Mock as jest.Mock,
   },
 }));
 
@@ -50,7 +52,7 @@ describe('ZeroDBService', () => {
 
       const result = await zerodbService.listNamespaces();
 
-      expect(mockApiClient.get).toHaveBeenCalledWith('/v1/public/zerodb/namespaces');
+      expect(mockApiClient.get).toHaveBeenCalledWith('/api/v1/public/zerodb/namespaces');
       expect(result).toEqual(mockNamespaces);
     });
 
@@ -86,7 +88,7 @@ describe('ZeroDBService', () => {
 
       const result = await zerodbService.createNamespace(namespaceData);
 
-      expect(mockApiClient.post).toHaveBeenCalledWith('/v1/public/zerodb/namespaces', namespaceData);
+      expect(mockApiClient.post).toHaveBeenCalledWith('/api/v1/public/zerodb/namespaces', namespaceData);
       expect(result).toEqual(mockResponse);
     });
 
@@ -115,7 +117,7 @@ describe('ZeroDBService', () => {
 
       const result = await zerodbService.deleteNamespace('documents');
 
-      expect(mockApiClient.delete).toHaveBeenCalledWith('/v1/public/zerodb/namespaces/documents');
+      expect(mockApiClient.delete).toHaveBeenCalledWith('/api/v1/public/zerodb/namespaces/documents');
       expect(result).toEqual(mockResponse);
     });
 
@@ -151,7 +153,7 @@ describe('ZeroDBService', () => {
 
       const result = await zerodbService.getStats();
 
-      expect(mockApiClient.get).toHaveBeenCalledWith('/v1/public/zerodb/stats');
+      expect(mockApiClient.get).toHaveBeenCalledWith('/api/v1/public/zerodb/stats');
       expect(result).toEqual(mockStats);
     });
 
@@ -173,7 +175,7 @@ describe('ZeroDBService', () => {
 
       const result = await zerodbService.getStats('default');
 
-      expect(mockApiClient.get).toHaveBeenCalledWith('/v1/public/zerodb/stats?namespace=default');
+      expect(mockApiClient.get).toHaveBeenCalledWith('/api/v1/public/zerodb/stats?namespace=default');
       expect(result).toEqual(mockStats);
     });
 
@@ -219,7 +221,7 @@ describe('ZeroDBService', () => {
 
       const result = await zerodbService.executeQuery(query);
 
-      expect(mockApiClient.post).toHaveBeenCalledWith('/v1/public/zerodb/query', query);
+      expect(mockApiClient.post).toHaveBeenCalledWith('/api/v1/public/zerodb/query', query);
       expect(result).toEqual(mockResults);
     });
 
@@ -253,7 +255,7 @@ describe('ZeroDBService', () => {
 
       const result = await zerodbService.executeQuery(query);
 
-      expect(mockApiClient.post).toHaveBeenCalledWith('/v1/public/zerodb/query', query);
+      expect(mockApiClient.post).toHaveBeenCalledWith('/api/v1/public/zerodb/query', query);
       expect(result).toEqual(mockResults);
     });
 
@@ -302,7 +304,7 @@ describe('ZeroDBService', () => {
 
       const result = await zerodbService.listVectors({ namespace: 'default' });
 
-      expect(mockApiClient.get).toHaveBeenCalledWith('/v1/public/zerodb/vectors?namespace=default');
+      expect(mockApiClient.get).toHaveBeenCalledWith('/api/v1/public/zerodb/vectors?namespace=default');
       expect(result).toEqual(mockVectors);
     });
 
@@ -330,7 +332,7 @@ describe('ZeroDBService', () => {
       const result = await zerodbService.listVectors(params);
 
       expect(mockApiClient.get).toHaveBeenCalledWith(
-        '/v1/public/zerodb/vectors?namespace=default&page=2&page_size=100'
+        '/api/v1/public/zerodb/vectors?namespace=default&page=2&page_size=100'
       );
       expect(result).toEqual(mockVectors);
     });
@@ -367,7 +369,7 @@ describe('ZeroDBService', () => {
 
       const result = await zerodbService.getVector('vec-1', 'default');
 
-      expect(mockApiClient.get).toHaveBeenCalledWith('/v1/public/zerodb/vectors/vec-1?namespace=default');
+      expect(mockApiClient.get).toHaveBeenCalledWith('/api/v1/public/zerodb/vectors/vec-1?namespace=default');
       expect(result).toEqual(mockVector);
     });
 
@@ -393,7 +395,7 @@ describe('ZeroDBService', () => {
 
       const result = await zerodbService.deleteVector('vec-1', 'default');
 
-      expect(mockApiClient.delete).toHaveBeenCalledWith('/v1/public/zerodb/vectors/vec-1?namespace=default');
+      expect(mockApiClient.delete).toHaveBeenCalledWith('/api/v1/public/zerodb/vectors/vec-1?namespace=default');
       expect(result).toEqual(mockResponse);
     });
 
@@ -431,7 +433,7 @@ describe('ZeroDBService', () => {
 
       const result = await zerodbService.importData(importRequest);
 
-      expect(mockApiClient.post).toHaveBeenCalledWith('/v1/public/zerodb/import', importRequest);
+      expect(mockApiClient.post).toHaveBeenCalledWith('/api/v1/public/zerodb/import', importRequest);
       expect(result).toEqual(mockResponse);
     });
 
@@ -457,7 +459,7 @@ describe('ZeroDBService', () => {
 
       const result = await zerodbService.importData(importRequest);
 
-      expect(mockApiClient.post).toHaveBeenCalledWith('/v1/public/zerodb/import', importRequest);
+      expect(mockApiClient.post).toHaveBeenCalledWith('/api/v1/public/zerodb/import', importRequest);
       expect(result).toEqual(mockResponse);
     });
 
@@ -499,7 +501,7 @@ describe('ZeroDBService', () => {
 
       const result = await zerodbService.exportData(exportRequest);
 
-      expect(mockApiClient.post).toHaveBeenCalledWith('/v1/public/zerodb/export', exportRequest);
+      expect(mockApiClient.post).toHaveBeenCalledWith('/api/v1/public/zerodb/export', exportRequest);
       expect(result).toEqual(mockResponse);
     });
 
@@ -530,7 +532,7 @@ describe('ZeroDBService', () => {
 
       const result = await zerodbService.exportData(exportRequest);
 
-      expect(mockApiClient.post).toHaveBeenCalledWith('/v1/public/zerodb/export', exportRequest);
+      expect(mockApiClient.post).toHaveBeenCalledWith('/api/v1/public/zerodb/export', exportRequest);
       expect(result).toEqual(mockResponse);
     });
 
@@ -577,7 +579,7 @@ describe('ZeroDBService', () => {
 
       const result = await zerodbService.createIndex(indexRequest);
 
-      expect(mockApiClient.post).toHaveBeenCalledWith('/v1/public/zerodb/index', indexRequest);
+      expect(mockApiClient.post).toHaveBeenCalledWith('/api/v1/public/zerodb/index', indexRequest);
       expect(result).toEqual(mockResponse);
     });
 
@@ -613,7 +615,7 @@ describe('ZeroDBService', () => {
 
       const result = await zerodbService.getIndexStatus('default');
 
-      expect(mockApiClient.get).toHaveBeenCalledWith('/v1/public/zerodb/index/status?namespace=default');
+      expect(mockApiClient.get).toHaveBeenCalledWith('/api/v1/public/zerodb/index/status?namespace=default');
       expect(result).toEqual(mockStatus);
     });
 

@@ -299,7 +299,7 @@ const config: Config = {
    * - Custom plugin for glassmorphism utilities
    * - Custom plugin for gradient utilities
    */
-  // eslint-disable-next-line @typescript-eslint/no-require-imports
+   
   plugins: [
     require('tailwindcss-animate'),
     // Glassmorphism Utilities Plugin

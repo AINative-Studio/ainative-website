@@ -1,3 +1,5 @@
+import React from "react";
+
 /**
  * ControlPanel Component Tests
  *
@@ -18,11 +20,11 @@ import ControlPanel from '../ControlPanel';
 import type { ControlPanelProps } from '../ControlPanel';
 
 // Mock fetch globally
-global.fetch = jest.fn();
+global.fetch = jest.fn() as jest.Mock as jest.Mock;
 
 describe('ControlPanel', () => {
   const mockProjectId = 'test-project-123';
-  const mockOnStatusChange = jest.fn();
+  const mockOnStatusChange = jest.fn() as jest.Mock as jest.Mock;
 
   beforeEach(() => {
     jest.clearAllMocks();

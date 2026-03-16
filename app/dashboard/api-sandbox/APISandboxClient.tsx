@@ -1,4 +1,6 @@
+
 'use client';
+import React from "react";
 
 import { useState, useEffect } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
@@ -149,7 +151,7 @@ export default function APISandboxClient() {
 
   // Request builder state
   const [httpMethod, setHttpMethod] = useState<string>('POST');
-  const [endpoint, setEndpoint] = useState<string>('/v1/completions');
+  const [endpoint, setEndpoint] = useState<string>('/api/v1/completions');
   const [requestHeaders, setRequestHeaders] = useState<string>('{\n  "Content-Type": "application/json"\n}');
   const [requestBody, setRequestBody] = useState<string>('{\n  "model": "gpt-4",\n  "messages": []\n}');
 
@@ -547,7 +549,7 @@ export default function APISandboxClient() {
                     id="endpoint"
                     value={endpoint}
                     onChange={(e) => setEndpoint(e.target.value)}
-                    placeholder="/v1/completions"
+                    placeholder="/api/v1/completions"
                   />
                 </div>
               </div>

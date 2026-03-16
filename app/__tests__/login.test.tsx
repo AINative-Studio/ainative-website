@@ -1,9 +1,11 @@
+import React from "react";
+
 import { render, screen, waitFor } from '@/test/test-utils';
 import userEvent from '@testing-library/user-event';
 
 // Mock next-auth
 jest.mock('next-auth/react', () => ({
-  signIn: jest.fn(),
+  signIn: jest.fn() as jest.Mock as jest.Mock,
 }));
 
 // Import after mocking

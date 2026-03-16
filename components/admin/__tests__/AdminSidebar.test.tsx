@@ -1,10 +1,12 @@
+import React from "react";
+
 import { render, screen, fireEvent } from '@testing-library/react';
 import { usePathname } from 'next/navigation';
 import AdminSidebar from '../AdminSidebar';
 
 // Mock next/navigation
 jest.mock('next/navigation', () => ({
-  usePathname: jest.fn(),
+  usePathname: jest.fn() as jest.Mock as jest.Mock,
 }));
 
 // Mock localStorage

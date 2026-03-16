@@ -189,7 +189,7 @@ export default function ProgressIndicatorsDemoClient() {
         recoverable: true,
       },
       metadata: {
-        endpoint: 'https://api.ainative.studio/v1/operations',
+        endpoint: 'https://api.ainative.studio/api/v1/operations',
       },
     };
 

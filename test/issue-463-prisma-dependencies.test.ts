@@ -1,3 +1,5 @@
+import { render, screen } from "@testing-library/react";
+
 /**
  * Test: Verify Prisma dependencies are correctly installed
  * Issue: #463 - Missing Prisma dependencies

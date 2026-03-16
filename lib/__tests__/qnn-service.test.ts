@@ -1,3 +1,5 @@
+import { render, screen } from "@testing-library/react";
+
 /**
  * QNN Service Test Suite
  *
@@ -27,7 +29,7 @@ import {
 } from '../qnn-service';
 
 // Mock fetch for API calls
-global.fetch = jest.fn();
+global.fetch = jest.fn() as jest.Mock as jest.Mock;
 
 // Mock sessionStorage for authentication
 const sessionStorageMock = (() => {

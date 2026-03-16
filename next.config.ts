@@ -43,6 +43,8 @@ const nextConfig: NextConfig = {
 
   // Experimental features for better optimization
   experimental: {
+    // Disable React Compiler for now - it's too strict for existing codebase
+    reactCompiler: false,
     optimizePackageImports: [
       'lucide-react',
       '@radix-ui/react-icons',

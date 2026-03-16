@@ -1,3 +1,5 @@
+import React from "react";
+
 /**
  * EvaluationDashboard Usage Examples
  *

@@ -1,3 +1,5 @@
+import React from "react";
+
 /**
  * Issue #488: Dark Mode Color Token Usage Gap
  *

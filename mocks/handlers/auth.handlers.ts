@@ -13,8 +13,8 @@ let currentRefreshToken: string | null = null;
 let currentUser: ReturnType<typeof AuthFactory.createUserProfile> | null = null;
 
 export const authHandlers = [
-  // POST /v1/public/auth/login - Login with email and password
-  http.post(`${BASE_URL}/v1/public/auth/login`, async ({ request }) => {
+  // POST /api/v1/public/auth/login - Login with email and password
+  http.post(`${BASE_URL}/api/v1/public/auth/login`, async ({ request }) => {
     const body = await request.text();
     const params = new URLSearchParams(body);
     const username = params.get('username');
@@ -40,8 +40,8 @@ export const authHandlers = [
     return HttpResponse.json(loginResponse, { status: 200 });
   }),
 
-  // POST /v1/public/auth/register - Register new user
-  http.post(`${BASE_URL}/v1/public/auth/register`, async ({ request }) => {
+  // POST /api/v1/public/auth/register - Register new user
+  http.post(`${BASE_URL}/api/v1/public/auth/register`, async ({ request }) => {
     const body = await request.json();
     const { email, password, full_name } = body as {
       email: string;
@@ -69,8 +69,8 @@ export const authHandlers = [
     return HttpResponse.json(loginResponse, { status: 201 });
   }),
 
-  // GET /v1/auth/me - Get current user profile
-  http.get(`${BASE_URL}/v1/auth/me`, ({ request }) => {
+  // GET /api/v1/auth/me - Get current user profile
+  http.get(`${BASE_URL}/api/v1/auth/me`, ({ request }) => {
     const authHeader = request.headers.get('Authorization');
 
     if (!authHeader || !authHeader.startsWith('Bearer ')) {
@@ -89,8 +89,8 @@ export const authHandlers = [
     });
   }),
 
-  // POST /v1/auth/logout - Logout user
-  http.post(`${BASE_URL}/v1/auth/logout`, () => {
+  // POST /api/v1/auth/logout - Logout user
+  http.post(`${BASE_URL}/api/v1/auth/logout`, () => {
     currentAccessToken = null;
     currentRefreshToken = null;
     currentUser = null;
@@ -98,8 +98,8 @@ export const authHandlers = [
     return HttpResponse.json({ message: 'Logged out successfully' }, { status: 200 });
   }),
 
-  // POST /v1/public/auth/refresh - Refresh access token
-  http.post(`${BASE_URL}/v1/public/auth/refresh`, async ({ request }) => {
+  // POST /api/v1/public/auth/refresh - Refresh access token
+  http.post(`${BASE_URL}/api/v1/public/auth/refresh`, async ({ request }) => {
     const body = await request.json();
     const { refresh_token } = body as { refresh_token: string };
 
@@ -122,8 +122,8 @@ export const authHandlers = [
     return HttpResponse.json(loginResponse, { status: 200 });
   }),
 
-  // GET /v1/public/auth/verify-email - Verify email with token
-  http.get(`${BASE_URL}/v1/public/auth/verify-email`, ({ request }) => {
+  // GET /api/v1/public/auth/verify-email - Verify email with token
+  http.get(`${BASE_URL}/api/v1/public/auth/verify-email`, ({ request }) => {
     const url = new URL(request.url);
     const token = url.searchParams.get('token');
 
@@ -140,8 +140,8 @@ export const authHandlers = [
     );
   }),
 
-  // POST /v1/public/auth/github/callback - GitHub OAuth callback
-  http.post(`${BASE_URL}/v1/public/auth/github/callback`, async ({ request }) => {
+  // POST /api/v1/public/auth/github/callback - GitHub OAuth callback
+  http.post(`${BASE_URL}/api/v1/public/auth/github/callback`, async ({ request }) => {
     const body = await request.json();
     const { code } = body as { code: string; state?: string; redirect_uri?: string };
 

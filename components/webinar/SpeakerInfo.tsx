@@ -1,3 +1,5 @@
+import React from "react";
+
 /**
  * SpeakerInfo Component
  * Display speaker information with bio and social links

@@ -1,3 +1,5 @@
+import { render, screen } from "@testing-library/react";
+
 /**
  * Subscription Service Tests
  * Comprehensive tests for subscription management operations

@@ -1,3 +1,5 @@
+import React from "react";
+
 import type { Metadata } from 'next';
 import FAQClient from './FAQClient';
 import { FAQSchema, BreadcrumbSchema } from '@/components/seo/StructuredData';

@@ -1,3 +1,5 @@
+import React from "react";
+
 // src/components/billing/PaymentHistory.tsx
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';

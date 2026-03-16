@@ -71,7 +71,7 @@ export interface ChatResponse {
 }
 
 class DataModelChatService {
-    private baseUrl = '/v1/public';
+    private baseUrl = '/api/v1/public';
 
     /**
      * Send a chat message about the data model

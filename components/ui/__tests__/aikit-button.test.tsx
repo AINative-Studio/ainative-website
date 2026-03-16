@@ -1,3 +1,5 @@
+import React from "react";
+
 /**
  * AIKit Button Component - TDD Test Suite
  *
@@ -132,7 +134,7 @@ describe('AIKit Button Component - TDD Suite', () => {
 
     it('should prevent interactions when disabled', async () => {
       // Given: Disabled button with click handler
-      const handleClick = jest.fn();
+      const handleClick = jest.fn() as jest.Mock as jest.Mock;
       const user = userEvent.setup();
       render(<Button disabled onClick={handleClick}>Disabled</Button>);
 
@@ -157,7 +159,7 @@ describe('AIKit Button Component - TDD Suite', () => {
   describe('User Interactions', () => {
     it('should handle click events', async () => {
       // Given: Button with click handler
-      const handleClick = jest.fn();
+      const handleClick = jest.fn() as jest.Mock as jest.Mock;
       const user = userEvent.setup();
       render(<Button onClick={handleClick}>Click Me</Button>);
 
@@ -171,7 +173,7 @@ describe('AIKit Button Component - TDD Suite', () => {
 
     it('should handle double click events', async () => {
       // Given: Button with double click handler
-      const handleDoubleClick = jest.fn();
+      const handleDoubleClick = jest.fn() as jest.Mock as jest.Mock;
       const user = userEvent.setup();
       render(<Button onDoubleClick={handleDoubleClick}>Double Click</Button>);
 
@@ -185,8 +187,8 @@ describe('AIKit Button Component - TDD Suite', () => {
 
     it('should handle hover states', async () => {
       // Given: Button with hover handler
-      const handleMouseEnter = jest.fn();
-      const handleMouseLeave = jest.fn();
+      const handleMouseEnter = jest.fn() as jest.Mock as jest.Mock;
+      const handleMouseLeave = jest.fn() as jest.Mock as jest.Mock;
       const user = userEvent.setup();
 
       render(
@@ -214,8 +216,8 @@ describe('AIKit Button Component - TDD Suite', () => {
 
     it('should handle focus and blur events', async () => {
       // Given: Button with focus handlers
-      const handleFocus = jest.fn();
-      const handleBlur = jest.fn();
+      const handleFocus = jest.fn() as jest.Mock as jest.Mock;
+      const handleBlur = jest.fn() as jest.Mock as jest.Mock;
       const user = userEvent.setup();
 
       render(
@@ -241,7 +243,7 @@ describe('AIKit Button Component - TDD Suite', () => {
 
     it('should support keyboard activation (Space key)', async () => {
       // Given: Button with click handler
-      const handleClick = jest.fn();
+      const handleClick = jest.fn() as jest.Mock as jest.Mock;
       const user = userEvent.setup();
       render(<Button onClick={handleClick}>Keyboard</Button>);
 
@@ -256,7 +258,7 @@ describe('AIKit Button Component - TDD Suite', () => {
 
     it('should support keyboard activation (Enter key)', async () => {
       // Given: Button with click handler
-      const handleClick = jest.fn();
+      const handleClick = jest.fn() as jest.Mock as jest.Mock;
       const user = userEvent.setup();
       render(<Button onClick={handleClick}>Keyboard</Button>);
 
@@ -445,7 +447,7 @@ describe('AIKit Button Component - TDD Suite', () => {
 
     it('should handle touch events', async () => {
       // Given: Button with click handler
-      const handleClick = jest.fn();
+      const handleClick = jest.fn() as jest.Mock as jest.Mock;
       render(<Button onClick={handleClick}>Touch Me</Button>);
 
       // When: Simulating touch
@@ -497,7 +499,7 @@ describe('AIKit Button Component - TDD Suite', () => {
 
     it('should handle rapid consecutive clicks', async () => {
       // Given: Button with click handler
-      const handleClick = jest.fn();
+      const handleClick = jest.fn() as jest.Mock as jest.Mock;
       const user = userEvent.setup();
       render(<Button onClick={handleClick}>Rapid Click</Button>);
 
@@ -546,7 +548,7 @@ describe('AIKit Button Component - TDD Suite', () => {
 
     it('should prevent clicks during loading', async () => {
       // Given: Loading button
-      const handleClick = jest.fn();
+      const handleClick = jest.fn() as jest.Mock as jest.Mock;
       const user = userEvent.setup();
       render(
         <Button disabled aria-busy="true" onClick={handleClick}>
@@ -630,8 +632,8 @@ describe('AIKit Button Component - TDD Suite', () => {
 
     it('should merge event handlers correctly', async () => {
       // Given: Button with multiple event handlers
-      const onClick1 = jest.fn();
-      const onClick2 = jest.fn();
+      const onClick1 = jest.fn() as jest.Mock as jest.Mock;
+      const onClick2 = jest.fn() as jest.Mock as jest.Mock;
       const user = userEvent.setup();
 
       const TestComponent = () => {

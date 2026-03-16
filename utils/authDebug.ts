@@ -47,7 +47,7 @@ export function debugAuth() {
   // Test API connection
   console.log("\n3. Testing API Connection...");
 
-  fetch('https://api.ainative.studio/v1/public/api-keys/', {
+  fetch('https://api.ainative.studio/api/v1/public/api-keys/', {
     method: 'GET',
     headers: {
       'Authorization': `Bearer ${accessToken}`,
