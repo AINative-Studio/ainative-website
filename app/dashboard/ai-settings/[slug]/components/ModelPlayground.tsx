@@ -419,6 +419,68 @@ export default function ModelPlayground({ model, slug }: PlaygroundProps) {
     setTimeout(() => setCopied(false), 2000);
   };
 
+  const handleDownload = () => {
+    if (!result) return;
+    const output = result.output;
+    if (!output || typeof output !== 'object') return;
+
+    // Determine file type and base64 data
+    let base64Data = '';
+    let fileName = '';
+    let mimeType = '';
+
+    if ('audio_base64' in output) {
+      base64Data = output.audio_base64 as string;
+      fileName = `${model.slug || 'audio'}_${Date.now()}.mp3`;
+      mimeType = 'audio/mpeg';
+    } else if ('image_base64' in output) {
+      base64Data = output.image_base64 as string;
+      fileName = `${model.slug || 'image'}_${Date.now()}.png`;
+      mimeType = 'image/png';
+    } else if ('video_base64' in output) {
+      base64Data = output.video_base64 as string;
+      fileName = `${model.slug || 'video'}_${Date.now()}.mp4`;
+      mimeType = 'video/mp4';
+    }
+
+    if (base64Data) {
+      try {
+        const byteChars = atob(base64Data);
+        const byteArrays = [];
+        for (let i = 0; i < byteChars.length; i += 512) {
+          const slice = byteChars.slice(i, i + 512);
+          const byteNumbers = new Array(slice.length);
+          for (let j = 0; j < slice.length; j++) {
+            byteNumbers[j] = slice.charCodeAt(j);
+          }
+          byteArrays.push(new Uint8Array(byteNumbers));
+        }
+        const blob = new Blob(byteArrays, { type: mimeType });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = fileName;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+      } catch (e) {
+        console.error('Download failed:', e);
+      }
+    } else {
+      // Fallback: download JSON
+      const blob = new Blob([JSON.stringify(output, null, 2)], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `${model.slug || 'result'}_${Date.now()}.json`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    }
+  };
+
   /**
    * Update form field
    */
@@ -652,13 +714,7 @@ export default function ModelPlayground({ model, slug }: PlaygroundProps) {
           </div>
           {result && (
             <button
-              onClick={() =>
-                handleCopy(
-                  typeof result.output === 'string'
-                    ? result.output
-                    : JSON.stringify(result.output)
-                )
-              }
+              onClick={handleDownload}
               className="text-xs text-gray-400 hover:text-white transition-colors flex items-center gap-1"
             >
               <Download className="w-3.5 h-3.5" />
