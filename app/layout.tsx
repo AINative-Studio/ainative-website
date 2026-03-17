@@ -10,7 +10,6 @@ import GoogleTagManager, { GoogleTagManagerNoscript } from "@/components/analyti
 import GoogleAnalytics from "@/components/analytics/GoogleAnalytics";
 import MetaPixel from "@/components/analytics/MetaPixel";
 import ChatwootWidget from "@/components/support/ChatwootWidget";
-import SpeedInsights from "@/components/analytics/SpeedInsights";
 import WebVitalsMonitor from "@/components/analytics/WebVitalsMonitor";
 import StructuredData from "@/components/seo/StructuredData";
 import "./globals.css";
@@ -267,7 +266,6 @@ export default function RootLayout({
 
           {/* Analytics & Support Widgets */}
           <ChatwootWidget />
-          <SpeedInsights />
           <WebVitalsMonitor />
         </ThemeProvider>
       </body>
