@@ -23,6 +23,7 @@ import {
   AlertCircle
 } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
+import rehypeRaw from 'rehype-raw';
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
 import { vscDarkPlus } from 'react-syntax-highlighter/dist/esm/styles/prism';
 
@@ -309,6 +310,7 @@ export default function BlogDetailClient({ slug }: BlogDetailClientProps) {
 
                 <div className="prose prose-lg prose-invert max-w-none">
                   <ReactMarkdown
+                    rehypePlugins={[rehypeRaw]}
                     components={{
                       code({ className, children, ...props }) {
                         const match = /language-(\w+)/.exec(className || '');
