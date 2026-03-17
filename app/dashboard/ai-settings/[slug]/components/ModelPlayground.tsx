@@ -679,7 +679,7 @@ export default function ModelPlayground({ model, slug }: PlaygroundProps) {
 
         {/* Action Buttons */}
         <div className="flex items-center justify-end gap-3 pt-2">
-          <Button variant="outline" size="sm" onClick={handleReset} className="gap-1.5">
+          <Button variant="outline" size="sm" onClick={handleReset} className="gap-1.5 text-white border-gray-500 hover:border-white">
             <RotateCcw className="w-3.5 h-3.5" />
             Reset
           </Button>
