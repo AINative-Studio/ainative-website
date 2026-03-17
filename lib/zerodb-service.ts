@@ -188,8 +188,13 @@ class ZeroDBService {
    * List all namespaces
    */
   async listNamespaces(): Promise<NamespacesListResponse> {
-    const response = await apiClient.get<NamespacesListResponse>('/api/v1/zerodb/namespaces');
-    return response.data;
+    try {
+      const response = await apiClient.get<NamespacesListResponse>('/api/v1/zerodb/namespaces');
+      return response.data;
+    } catch {
+      // Endpoint may not be available - return empty list gracefully
+      return { namespaces: [], total: 0 };
+    }
   }
 
   /**
@@ -216,11 +221,16 @@ class ZeroDBService {
    * Get database statistics
    */
   async getStats(namespace?: string): Promise<DatabaseStats | NamespaceDetailStats> {
-    const endpoint = namespace
-      ? `/api/v1/zerodb/stats?namespace=${namespace}`
-      : '/api/v1/zerodb/stats';
-    const response = await apiClient.get<DatabaseStats | NamespaceDetailStats>(endpoint);
-    return response.data;
+    try {
+      const endpoint = namespace
+        ? `/api/v1/zerodb/stats?namespace=${namespace}`
+        : '/api/v1/zerodb/stats';
+      const response = await apiClient.get<DatabaseStats | NamespaceDetailStats>(endpoint);
+      return response.data;
+    } catch {
+      // Endpoint may not be available - return empty stats gracefully
+      return { total_vectors: 0, total_namespaces: 0, storage_bytes: 0 } as DatabaseStats;
+    }
   }
 
   // ===== Query Endpoints =====
