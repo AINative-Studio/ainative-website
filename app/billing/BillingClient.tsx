@@ -154,10 +154,11 @@ export default function BillingClient() {
 
         // Fetch real data from backend APIs
         /* eslint-disable @typescript-eslint/no-explicit-any */
-        const [billingRes, subRes, creditsRes] = await Promise.allSettled([
+        const [billingRes, subRes, creditsRes, invoicesRes] = await Promise.allSettled([
           apiClient.get<any>('/api/v1/public/billing/info'),
           apiClient.get<any>('/api/v1/public/subscription'),
           apiClient.get<any>('/api/v1/public/credits/balance'),
+          apiClient.get<any>('/api/v1/invoices/me/invoices'),
         ]);
 
         let usedReal = false;
@@ -218,8 +219,27 @@ export default function BillingClient() {
           }
         }
 
-        // Invoices - skip for now (backend has UUID serialization bug)
-        setInvoices([]);
+        // Invoices - fetch from internal invoice system (not Stripe)
+        if (invoicesRes.status === 'fulfilled') {
+          const d = invoicesRes.value.data;
+          const invoiceList = d?.invoices || d?.data?.invoices || d?.data || [];
+          if (Array.isArray(invoiceList) && invoiceList.length > 0) {
+            setInvoices(invoiceList.map((inv: any) => ({
+              id: String(inv.id || ''),
+              amount: inv.amount_total ?? inv.amount ?? 0,
+              status: inv.status || 'paid',
+              currency: inv.currency || 'USD',
+              created_at: inv.created_at || new Date().toISOString(),
+              email_sent_at: inv.email_sent_at || undefined,
+              customer_email: inv.customer_email || undefined,
+            })));
+            usedReal = true;
+          } else {
+            setInvoices([]);
+          }
+        } else {
+          setInvoices([]);
+        }
 
         // Fall back to demo if nothing loaded
         if (!usedReal) {

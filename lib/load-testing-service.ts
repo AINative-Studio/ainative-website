@@ -132,7 +132,7 @@ const loadTestingService = {
    * Create a new load test
    */
   async createTest(request: CreateTestRequest): Promise<LoadTest> {
-    const response = await apiClient.post<LoadTest>('/api/v1/public/load-testing/create', request);
+    const response = await apiClient.post<LoadTest>('/api/v1/public/load-testing/scenarios', request);
     return response.data;
   },
 
