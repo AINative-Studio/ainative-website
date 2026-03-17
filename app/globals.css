@@ -151,6 +151,20 @@ html.dark input, html.dark textarea, html.dark select {
   border-color: hsl(214 13% 25%);
 }
 
+/* Buttons - ensure text is always visible in dark mode */
+html.dark button,
+html.dark [role="button"],
+html.dark a[class*="btn"],
+html.dark a[class*="button"] {
+  color: #e6edf3 !important;
+}
+html.dark button.bg-brand-primary,
+html.dark button[class*="bg-primary"],
+html.dark button[class*="bg-destructive"],
+html.dark button[class*="bg-[#4B6FED]"] {
+  color: #ffffff !important;
+}
+
 html.dark input::placeholder, html.dark textarea::placeholder {
   color: #6e7681;
 }
