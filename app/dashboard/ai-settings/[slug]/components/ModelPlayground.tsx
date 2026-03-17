@@ -421,30 +421,28 @@ export default function ModelPlayground({ model, slug }: PlaygroundProps) {
 
   const handleDownload = () => {
     if (!result) return;
-    const output = result.output;
-    if (!output || typeof output !== 'object') return;
 
-    // Determine file type and base64 data
-    let base64Data = '';
-    let fileName = '';
-    let mimeType = '';
+    // The result has type-specific fields: url (data URI or URL), type, format
+    const resultAny = result as Record<string, unknown>;
+    const resultUrl = resultAny.url as string | undefined;
+    const resultType = resultAny.type as string;
 
-    if ('audio_base64' in output) {
-      base64Data = output.audio_base64 as string;
-      fileName = `${model.slug || 'audio'}_${Date.now()}.mp3`;
-      mimeType = 'audio/mpeg';
-    } else if ('image_base64' in output) {
-      base64Data = output.image_base64 as string;
-      fileName = `${model.slug || 'image'}_${Date.now()}.png`;
-      mimeType = 'image/png';
-    } else if ('video_base64' in output) {
-      base64Data = output.video_base64 as string;
-      fileName = `${model.slug || 'video'}_${Date.now()}.mp4`;
-      mimeType = 'video/mp4';
-    }
+    // Determine file extension
+    const extMap: Record<string, string> = {
+      audio: resultAny.format as string || 'mp3',
+      image: 'png',
+      video: 'mp4',
+    };
+    const ext = extMap[resultType] || 'json';
+    const fileName = `${model.slug || resultType || 'result'}_${Date.now()}.${ext}`;
 
-    if (base64Data) {
+    // If we have a data URI (data:audio/mp3;base64,...), extract and download
+    if (resultUrl && resultUrl.startsWith('data:')) {
       try {
+        const [header, base64Data] = resultUrl.split(',');
+        const mimeMatch = header.match(/data:([^;]+)/);
+        const mimeType = mimeMatch ? mimeMatch[1] : 'application/octet-stream';
+
         const byteChars = atob(base64Data);
         const byteArrays = [];
         for (let i = 0; i < byteChars.length; i += 512) {
@@ -456,29 +454,43 @@ export default function ModelPlayground({ model, slug }: PlaygroundProps) {
           byteArrays.push(new Uint8Array(byteNumbers));
         }
         const blob = new Blob(byteArrays, { type: mimeType });
-        const url = URL.createObjectURL(blob);
+        const downloadUrl = URL.createObjectURL(blob);
         const a = document.createElement('a');
-        a.href = url;
+        a.href = downloadUrl;
         a.download = fileName;
         document.body.appendChild(a);
         a.click();
         document.body.removeChild(a);
-        URL.revokeObjectURL(url);
+        URL.revokeObjectURL(downloadUrl);
+        return;
       } catch (e) {
-        console.error('Download failed:', e);
+        console.error('Download from data URI failed:', e);
       }
-    } else {
-      // Fallback: download JSON
-      const blob = new Blob([JSON.stringify(output, null, 2)], { type: 'application/json' });
-      const url = URL.createObjectURL(blob);
+    }
+
+    // If we have a regular URL, download directly
+    if (resultUrl && resultUrl.startsWith('http')) {
       const a = document.createElement('a');
-      a.href = url;
-      a.download = `${model.slug || 'result'}_${Date.now()}.json`;
+      a.href = resultUrl;
+      a.download = fileName;
+      a.target = '_blank';
       document.body.appendChild(a);
       a.click();
       document.body.removeChild(a);
-      URL.revokeObjectURL(url);
+      return;
     }
+
+    // Fallback: download JSON of the result
+    const jsonStr = JSON.stringify(result, null, 2);
+    const blob = new Blob([jsonStr], { type: 'application/json' });
+    const downloadUrl = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = downloadUrl;
+    a.download = `${model.slug || 'result'}_${Date.now()}.json`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(downloadUrl);
   };
 
   /**
