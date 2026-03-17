@@ -181,20 +181,21 @@ class ModelAggregatorService {
       models.push(...modelsWithHealth);
     }
 
-    // Always add hardcoded models for categories not covered by API
-    const existingCategories = new Set(models.map(m => m.category));
-    const hardcodedByCategory = {
-      'Coding': this.getCodingModels(),
-      'Image': this.getImageGenerationModels(),
-      'Video': this.getVideoGenerationModels(),
-      'Audio': this.getAudioModels(),
-    };
-    for (const [category, categoryModels] of Object.entries(hardcodedByCategory)) {
-      if (!existingCategories.has(category as UnifiedAIModel['category'])) {
-        console.log(`[ModelAggregator] Adding hardcoded ${category} models:`, categoryModels.length);
-        models.push(...categoryModels);
+    // Always add hardcoded models, skip duplicates by ID
+    const existingIds = new Set(models.map(m => m.id));
+    const allHardcoded = [
+      ...this.getCodingModels(),
+      ...this.getImageGenerationModels(),
+      ...this.getVideoGenerationModels(),
+      ...this.getAudioModels(),
+    ];
+    for (const hm of allHardcoded) {
+      if (!existingIds.has(hm.id)) {
+        models.push(hm);
+        existingIds.add(hm.id);
       }
     }
+    console.log(`[ModelAggregator] Added hardcoded models. Total now: ${models.length}`);
 
     console.log('[ModelAggregator] Total models aggregated:', models.length);
     console.log('[ModelAggregator] Sample of first model:', models[0]);
@@ -682,6 +683,60 @@ class ModelAggregatorService {
         endpoint: '/api/v1/chat/completions',
         method: 'POST',
         speed: 'Fast',
+        quality: 'High',
+        source_type: 'chat',
+      },
+      {
+        id: 'coding-llama4-maverick',
+        slug: 'llama-4-maverick',
+        name: 'Llama 4 Maverick 17B',
+        provider: 'Meta',
+        category: 'Coding',
+        capabilities: ['code', 'code-generation', 'text-generation', 'chat'],
+        description: 'Meta\'s Llama 4 Maverick — 400B parameter MoE model with 17B active parameters. Excellent at code generation, reasoning, and multilingual tasks.',
+        thumbnail_url: getThumbnailUrl({ provider: 'Meta', category: 'Coding' }),
+        examplePrompts: [
+          'Build a production-ready REST API in Python using FastAPI with proper error handling, input validation, and async database operations. Include comprehensive docstrings and type hints.',
+        ],
+        endpoint: '/api/v1/chat/completions',
+        method: 'POST',
+        speed: 'Fast',
+        quality: 'High',
+        source_type: 'chat',
+      },
+      {
+        id: 'coding-gpt4',
+        slug: 'gpt-4',
+        name: 'GPT-4',
+        provider: 'OpenAI',
+        category: 'Coding',
+        capabilities: ['code', 'code-generation', 'text-generation', 'chat', 'reasoning'],
+        description: 'OpenAI\'s GPT-4 — state-of-the-art language model with strong code generation, complex reasoning, and instruction following.',
+        thumbnail_url: getThumbnailUrl({ provider: 'OpenAI', category: 'Coding' }),
+        examplePrompts: [
+          'Design and implement a rate limiter middleware in TypeScript for an Express.js API. Support sliding window algorithm, configurable limits per endpoint, and Redis-backed distributed counting.',
+        ],
+        endpoint: '/api/v1/chat/completions',
+        method: 'POST',
+        speed: 'Medium',
+        quality: 'High',
+        source_type: 'chat',
+      },
+      {
+        id: 'coding-claude-sonnet',
+        slug: 'claude-3-sonnet',
+        name: 'Claude 3.5 Sonnet',
+        provider: 'Anthropic',
+        category: 'Coding',
+        capabilities: ['code', 'code-generation', 'text-generation', 'chat', 'reasoning'],
+        description: 'Anthropic\'s Claude 3.5 Sonnet — excellent at code generation with strong safety and instruction following. Ideal for complex multi-file refactoring.',
+        thumbnail_url: getThumbnailUrl({ provider: 'Anthropic', category: 'Coding' }),
+        examplePrompts: [
+          'Refactor this monolithic React component into smaller, reusable components with proper TypeScript types, custom hooks for state management, and unit tests using React Testing Library.',
+        ],
+        endpoint: '/api/v1/chat/completions',
+        method: 'POST',
+        speed: 'Medium',
         quality: 'High',
         source_type: 'chat',
       },
