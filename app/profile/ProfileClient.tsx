@@ -106,7 +106,7 @@ export default function ProfileClient() {
         animate="visible"
         variants={fadeUp}
       >
-        <h1 className="text-4xl font-bold mb-2">Profile</h1>
+        <h1 className="text-4xl font-bold mb-2 text-foreground">Profile</h1>
         <p className="text-muted-foreground">
           Manage your account information and preferences
         </p>
@@ -232,7 +232,7 @@ export default function ProfileClient() {
                 <div className="flex items-center gap-3">
                   <Key className="h-4 w-4 text-muted-foreground" />
                   <div>
-                    <p className="font-medium">User ID</p>
+                    <p className="font-medium text-foreground">User ID</p>
                     <p className="text-sm text-muted-foreground">{user?.id || 'N/A'}</p>
                   </div>
                 </div>
@@ -244,7 +244,7 @@ export default function ProfileClient() {
                 <div className="flex items-center gap-3">
                   <Calendar className="h-4 w-4 text-muted-foreground" />
                   <div>
-                    <p className="font-medium">Member Since</p>
+                    <p className="font-medium text-foreground">Member Since</p>
                     <p className="text-sm text-muted-foreground">
                       {user?.created_at
                         ? new Date(user.created_at).toLocaleDateString('en-US', {
@@ -269,7 +269,7 @@ export default function ProfileClient() {
                     <AlertCircle className="h-4 w-4 text-yellow-500" />
                   )}
                   <div>
-                    <p className="font-medium">Email Verification</p>
+                    <p className="font-medium text-foreground">Email Verification</p>
                     <p className="text-sm text-muted-foreground">
                       {user?.is_verified ? 'Email verified' : 'Email not verified'}
                     </p>
@@ -302,7 +302,7 @@ export default function ProfileClient() {
           <CardContent>
             <div className="flex items-center justify-between">
               <div>
-                <p className="font-medium">Delete Account</p>
+                <p className="font-medium text-foreground">Delete Account</p>
                 <p className="text-sm text-muted-foreground">
                   Permanently delete your account and all associated data
                 </p>

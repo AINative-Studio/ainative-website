@@ -127,8 +127,8 @@ html.dark body * {
 html.dark h1, html.dark h2, html.dark h3, html.dark h4, html.dark h5, html.dark h6,
 html.dark p, html.dark span, html.dark label, html.dark legend,
 html.dark li, html.dark td, html.dark th, html.dark dt, html.dark dd,
-html.dark a {
-  color: #e6edf3;
+html.dark a, html.dark .font-medium, html.dark .font-semibold, html.dark .font-bold {
+  color: #e6edf3 !important;
 }
 
 /* Muted text stays lighter but still readable */

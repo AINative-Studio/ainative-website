@@ -357,8 +357,8 @@ export default function ZeroDBClient() {
             <Settings className="w-4 h-4" />
             Index Health
           </div>
-          <p className={`text-lg font-medium capitalize ${healthColors[stats.index_health].text}`}>
-            {stats.index_health}
+          <p className={`text-lg font-medium capitalize ${(healthColors[stats.index_health] || healthColors.optimal).text}`}>
+            {stats.index_health || 'optimal'}
           </p>
         </motion.div>
       </div>

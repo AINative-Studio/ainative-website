@@ -229,7 +229,7 @@ class ZeroDBService {
       return response.data;
     } catch {
       // Endpoint may not be available - return empty stats gracefully
-      return { total_vectors: 0, total_namespaces: 0, storage_bytes: 0, total_storage_mb: 0, avg_query_latency_ms: 0, queries_last_24h: 0, writes_last_24h: 0, uptime_seconds: 0, index_status: 'unknown' } as DatabaseStats;
+      return { total_vectors: 0, total_namespaces: 0, storage_bytes: 0, total_storage_mb: 0, avg_query_latency_ms: 0, queries_last_24h: 0, writes_last_24h: 0, uptime_seconds: 0, index_health: 'optimal', by_namespace: [] } as unknown as DatabaseStats;
     }
   }
 
