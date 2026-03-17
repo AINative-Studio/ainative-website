@@ -371,6 +371,9 @@ export default function BlogDetailClient({ slug }: BlogDetailClientProps) {
                       strong({ children, ...props }) {
                         return <strong className="font-semibold text-white" {...props}>{children}</strong>;
                       },
+                      em({ children, ...props }) {
+                        return <em className="italic text-gray-300" {...props}>{children}</em>;
+                      },
                       a({ href, children, ...props }) {
                         return (
                           <a
