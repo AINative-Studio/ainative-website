@@ -123,15 +123,22 @@ export class EarningsService {
    */
   async getEarningsOverview(): Promise<EarningsOverview | null> {
     try {
-      const response = await apiClient.get<ApiResponse<EarningsOverview>>(
-        `${this.basePath}/overview`
-      );
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const response = await apiClient.get<any>(`${this.basePath}/overview`);
 
-      if (!response.data.success || !response.data.data) {
-        throw new Error(response.data.message || 'Failed to fetch earnings overview');
+      const data = response.data;
+      // Handle wrapped response
+      if (data?.success && data?.data) {
+        return data.data;
       }
-
-      return response.data.data;
+      // Normalize backend format (cents) to frontend format (dollars)
+      return {
+        totalEarnings: (data.total_earned_cents || 0) / 100,
+        thisMonth: 0,
+        lastMonth: 0,
+        pendingPayout: (data.unpaid_cents || 0) / 100,
+        currency: 'USD',
+      };
     } catch (error: unknown) {
       const errorMessage =
         error instanceof Error ? error.message : 'Failed to fetch earnings overview';
@@ -157,13 +164,25 @@ export class EarningsService {
 
       const url = `${this.basePath}/transactions${queryParams.toString() ? `?${queryParams.toString()}` : ''}`;
 
-      const response = await apiClient.get<ApiResponse<PaginatedTransactions>>(url);
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const response = await apiClient.get<any>(url);
 
-      if (!response.data.success || !response.data.data) {
-        throw new Error(response.data.message || 'Failed to fetch transactions');
+      const data = response.data;
+      // Handle wrapped response
+      if ('success' in data && data.data) {
+        return data.data;
       }
-
-      return response.data.data;
+      // Handle backend format: { earnings: [], count, limit, offset }
+      if ('earnings' in data) {
+        return {
+          items: data.earnings || [],
+          total: data.count || 0,
+          page: params.page || 1,
+          pageSize: params.pageSize || data.limit || 10,
+        };
+      }
+      // Already in expected format
+      return data as PaginatedTransactions;
     } catch (error: unknown) {
       const errorMessage =
         error instanceof Error ? error.message : 'Failed to fetch transactions';
@@ -177,15 +196,25 @@ export class EarningsService {
    */
   async getEarningsBreakdown(): Promise<EarningsBreakdown | null> {
     try {
-      const response = await apiClient.get<ApiResponse<EarningsBreakdown>>(
-        `${this.basePath}/breakdown`
-      );
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const response = await apiClient.get<any>(`${this.basePath}/breakdown`);
 
-      if (!response.data.success || !response.data.data) {
-        throw new Error(response.data.message || 'Failed to fetch earnings breakdown');
+      const data = response.data;
+      if (data?.success && data?.data) {
+        return data.data;
       }
-
-      return response.data.data;
+      // Normalize backend format - breakdown is an array, map to expected structure
+      const breakdownMap: Record<string, number> = {};
+      if (Array.isArray(data.breakdown)) {
+        data.breakdown.forEach((item: { source?: string; amount_cents?: number }) => {
+          if (item.source) breakdownMap[item.source] = (item.amount_cents || 0) / 100;
+        });
+      }
+      return {
+        api: breakdownMap.api || 0,
+        marketplace: breakdownMap.marketplace || 0,
+        referrals: breakdownMap.referrals || breakdownMap.referral || 0,
+      };
     } catch (error: unknown) {
       const errorMessage =
         error instanceof Error ? error.message : 'Failed to fetch earnings breakdown';
@@ -199,15 +228,20 @@ export class EarningsService {
    */
   async getPayoutSchedule(): Promise<PayoutSchedule | null> {
     try {
-      const response = await apiClient.get<ApiResponse<PayoutSchedule>>(
-        `${this.basePath}/payout-schedule`
-      );
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const response = await apiClient.get<any>(`${this.basePath}/payout-schedule`);
 
-      if (!response.data.success || !response.data.data) {
-        throw new Error(response.data.message || 'Failed to fetch payout schedule');
+      const data = response.data;
+      if (data?.success && data?.data) {
+        return data.data;
       }
-
-      return response.data.data;
+      // Normalize backend format
+      return {
+        nextPayoutDate: data.next_payout_date || '',
+        minimumPayout: (data.threshold || 0) / 100,
+        payoutThreshold: (data.threshold || 0) / 100,
+        currency: 'USD',
+      };
     } catch (error: unknown) {
       const errorMessage =
         error instanceof Error ? error.message : 'Failed to fetch payout schedule';
@@ -233,15 +267,12 @@ export class EarningsService {
       if (params?.startDate) queryParams.append('startDate', params.startDate);
       if (params?.endDate) queryParams.append('endDate', params.endDate);
 
-      const response = await apiClient.get(
-        `${this.basePath}/export?${queryParams.toString()}`,
-        {
-          responseType: 'blob',
-        }
+      const response = await apiClient.get<string>(
+        `${this.basePath}/export?${queryParams.toString()}`
       );
 
       // Create download link
-      const blob = new Blob([response.data], {
+      const blob = new Blob([response.data as unknown as BlobPart], {
         type: format === 'csv' ? 'text/csv' : format === 'pdf' ? 'application/pdf' : 'application/json',
       });
       const url = window.URL.createObjectURL(blob);
@@ -323,7 +354,9 @@ export class EarningsService {
    * @param dateString - ISO date string
    */
   formatDate(dateString: string): string {
+    if (!dateString) return 'Not scheduled';
     const date = new Date(dateString);
+    if (isNaN(date.getTime())) return 'Not scheduled';
     return new Intl.DateTimeFormat('en-US', {
       month: 'short',
       day: 'numeric',

@@ -2,13 +2,15 @@
 'use client';
 import React from "react";
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Check, Zap, CreditCard, Sparkles, Loader2 } from 'lucide-react';
+import apiClient from '@/lib/api-client';
+import { pricingService } from '@/services/pricingService';
+import { getAuthToken } from '@/utils/authCookies';
 
 interface CreditPackage {
   id: string;
@@ -23,83 +25,11 @@ interface CreditPackage {
   features?: string[];
 }
 
-// Mock credit packages for demo
-const mockCreditPackages: CreditPackage[] = [
-  {
-    id: 'starter-pack',
-    name: 'Starter Pack',
-    description: 'Perfect for trying out AI features',
-    credits: 1000,
-    price: 10,
-    currency: 'USD',
-    features: [
-      'Works with all AI models',
-      'Never expires',
-      'Instant activation',
-      'Email support',
-    ],
-  },
-  {
-    id: 'pro-pack',
-    name: 'Pro Pack',
-    description: 'Best value for regular users',
-    credits: 5000,
-    price: 40,
-    currency: 'USD',
-    popular: true,
-    bonus_credits: 500,
-    features: [
-      'Works with all AI models',
-      'Never expires',
-      'Instant activation',
-      '500 bonus credits included',
-      'Priority support',
-    ],
-  },
-  {
-    id: 'business-pack',
-    name: 'Business Pack',
-    description: 'For teams and power users',
-    credits: 15000,
-    price: 100,
-    currency: 'USD',
-    bonus_credits: 2000,
-    features: [
-      'Works with all AI models',
-      'Never expires',
-      'Instant activation',
-      '2,000 bonus credits included',
-      'Dedicated support',
-      'Volume discounts available',
-    ],
-  },
-  {
-    id: 'enterprise-pack',
-    name: 'Enterprise Pack',
-    description: 'Maximum value for high-volume usage',
-    credits: 50000,
-    price: 300,
-    currency: 'USD',
-    bonus_credits: 10000,
-    features: [
-      'Works with all AI models',
-      'Never expires',
-      'Instant activation',
-      '10,000 bonus credits included',
-      '24/7 dedicated support',
-      'Custom integrations',
-      'SLA guarantee',
-    ],
-  },
-];
-
 const containerVariants = {
   hidden: { opacity: 0 },
   visible: {
     opacity: 1,
-    transition: {
-      staggerChildren: 0.1,
-    },
+    transition: { staggerChildren: 0.1 },
   },
 };
 
@@ -109,48 +39,79 @@ const itemVariants = {
 };
 
 export default function CreditRefillsClient() {
-  const [isLoading, setIsLoading] = useState<string | null>(null);
-  const [creditPackages] = useState<CreditPackage[]>(mockCreditPackages);
-  const [showPaymentModal, setShowPaymentModal] = useState(false);
-  const [selectedPackage, setSelectedPackage] = useState<CreditPackage | null>(null);
-  const [paymentLoading, setPaymentLoading] = useState(false);
+  const [checkoutLoading, setCheckoutLoading] = useState<string | null>(null);
+  const [creditPackages, setCreditPackages] = useState<CreditPackage[]>([]);
+  const [currentBalance, setCurrentBalance] = useState<number | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
-  const handlePurchase = (creditPackage: CreditPackage) => {
-    setSelectedPackage(creditPackage);
-    setShowPaymentModal(true);
-  };
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const [packagesRes, balanceRes] = await Promise.allSettled([
+          apiClient.get<any>('/api/v1/public/credits/packages'),
+          apiClient.get<any>('/api/v1/public/credits/balance'),
+        ]);
 
-  const handlePaymentCancel = () => {
-    if (!paymentLoading) {
-      setShowPaymentModal(false);
-      setSelectedPackage(null);
+        if (packagesRes.status === 'fulfilled') {
+          const data = packagesRes.value.data;
+          const packages = data?.data?.packages || data?.packages || [];
+          setCreditPackages(packages);
+        }
+
+        if (balanceRes.status === 'fulfilled') {
+          const data = balanceRes.value.data;
+          const balance = data?.data || data;
+          setCurrentBalance(balance?.remaining_credits ?? balance?.available ?? null);
+        }
+      } catch (err) {
+        console.error('Failed to load credit packages:', err);
+        setError('Failed to load credit packages');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchData();
+  }, []);
+
+  const handlePurchase = async (pkg: CreditPackage) => {
+    setCheckoutLoading(pkg.id);
+    setError(null);
+
+    try {
+      // Use Stripe Checkout via pricing service
+      const { sessionUrl } = await pricingService.createCheckoutSession(pkg.id, {
+        stripePriceId: pkg.stripe_price_id,
+        successUrl: `${window.location.origin}/credit-history?purchase=success`,
+        cancelUrl: `${window.location.origin}/refills`,
+        metadata: {
+          type: 'credit_refill',
+          package_id: pkg.id,
+          credits: String(pkg.credits),
+        },
+      });
+      window.location.href = sessionUrl;
+    } catch (err) {
+      console.error('Checkout error:', err);
+      setError('Failed to create checkout. Please try again.');
+      setCheckoutLoading(null);
     }
-  };
-
-  const handlePayCredits = async (event: React.FormEvent) => {
-    event.preventDefault();
-
-    if (!selectedPackage) {
-      return;
-    }
-
-    setPaymentLoading(true);
-
-    // Simulate payment processing
-    await new Promise((resolve) => setTimeout(resolve, 2000));
-
-    setPaymentLoading(false);
-    setShowPaymentModal(false);
-    setSelectedPackage(null);
-
-    // In production, this would redirect to success page
-    // window.location.href = '/credit-history?purchase=success';
   };
 
   const getPricePerCredit = (credits: number, price: number, bonusCredits: number = 0) => {
     const totalCredits = credits + bonusCredits;
     return (price / totalCredits).toFixed(3);
   };
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center min-h-[400px]">
+        <Loader2 className="h-8 w-8 animate-spin text-[#4B6FED]" />
+      </div>
+    );
+  }
 
   return (
     <motion.div
@@ -170,7 +131,21 @@ export default function CreditRefillsClient() {
             Purchase additional prompt credits to power your AI workflows.
             Credits work across all supported models and never expire.
           </p>
+          {currentBalance !== null && (
+            <div className="mt-4 inline-flex items-center gap-2 bg-[#4B6FED]/10 border border-[#4B6FED]/20 rounded-full px-4 py-2">
+              <Zap className="w-4 h-4 text-[#4B6FED]" />
+              <span className="text-white font-medium">
+                Current Balance: {currentBalance.toLocaleString()} credits
+              </span>
+            </div>
+          )}
         </motion.div>
+
+        {error && (
+          <div className="mb-6 p-4 rounded-lg bg-red-500/10 border border-red-500/20 text-red-400 text-center">
+            {error}
+          </div>
+        )}
 
         {/* Features Banner */}
         <motion.div
@@ -198,7 +173,9 @@ export default function CreditRefillsClient() {
         </motion.div>
 
         {/* Credit Packages */}
-        <div className="grid md:grid-cols-2 gap-6 max-w-4xl mx-auto">
+        <div className={`grid gap-6 max-w-4xl mx-auto ${
+          creditPackages.length <= 2 ? 'md:grid-cols-2' : 'md:grid-cols-2 lg:grid-cols-3'
+        }`}>
           {creditPackages.map((pkg, index) => (
             <motion.div
               key={pkg.id}
@@ -214,7 +191,7 @@ export default function CreditRefillsClient() {
                   <div className="absolute -top-3 left-1/2 transform -translate-x-1/2">
                     <Badge className="bg-[#4B6FED] text-white px-4 py-1">
                       <Sparkles className="w-3 h-3 mr-1" />
-                      Most Popular
+                      Best Value
                     </Badge>
                   </div>
                 )}
@@ -239,7 +216,7 @@ export default function CreditRefillsClient() {
                     <div className="text-2xl font-semibold text-[#4B6FED] mb-1">
                       {pkg.credits.toLocaleString()} Credits
                     </div>
-                    {pkg.bonus_credits && (
+                    {pkg.bonus_credits && pkg.bonus_credits > 0 && (
                       <div className="text-sm text-green-400">
                         + {pkg.bonus_credits.toLocaleString()} bonus credits included!
                       </div>
@@ -248,10 +225,7 @@ export default function CreditRefillsClient() {
 
                   <ul className="space-y-2 mb-6">
                     {pkg.features?.map((feature, i) => (
-                      <li
-                        key={i}
-                        className="flex items-start gap-2 text-sm text-gray-300"
-                      >
+                      <li key={i} className="flex items-start gap-2 text-sm text-gray-300">
                         <Check className="w-4 h-4 text-[#4B6FED] mt-0.5 flex-shrink-0" />
                         <span>{feature}</span>
                       </li>
@@ -265,12 +239,12 @@ export default function CreditRefillsClient() {
                         : 'bg-white/10 text-white hover:bg-white/20'
                     } transition-all duration-200`}
                     onClick={() => handlePurchase(pkg)}
-                    disabled={isLoading === pkg.id}
+                    disabled={checkoutLoading === pkg.id}
                   >
-                    {isLoading === pkg.id ? (
+                    {checkoutLoading === pkg.id ? (
                       <div className="flex items-center gap-2">
-                        <div className="w-4 h-4 border-2 border-white/20 border-t-white rounded-full animate-spin" />
-                        Processing...
+                        <Loader2 className="w-4 h-4 animate-spin" />
+                        Redirecting to Stripe...
                       </div>
                     ) : (
                       <div className="flex items-center gap-2">
@@ -284,6 +258,13 @@ export default function CreditRefillsClient() {
             </motion.div>
           ))}
         </div>
+
+        {creditPackages.length === 0 && !loading && (
+          <div className="text-center text-gray-400 py-12">
+            <CreditCard className="w-12 h-12 mx-auto mb-4 text-gray-600" />
+            <p>No credit packages available at this time.</p>
+          </div>
+        )}
 
         {/* Information Section */}
         <motion.div
@@ -318,85 +299,6 @@ export default function CreditRefillsClient() {
           </div>
         </motion.div>
       </div>
-
-      {/* Payment Modal */}
-      <Dialog open={showPaymentModal} onOpenChange={handlePaymentCancel}>
-        <DialogContent className="sm:max-w-[500px] bg-gray-900 border-gray-800 text-white">
-          <DialogHeader>
-            <DialogTitle className="text-white">Complete Your Purchase</DialogTitle>
-            <DialogDescription className="text-gray-400">
-              {selectedPackage && (
-                <>
-                  You&apos;re purchasing{' '}
-                  <strong>{selectedPackage.credits.toLocaleString()} credits</strong> for{' '}
-                  <strong>${selectedPackage.price}</strong>
-                </>
-              )}
-            </DialogDescription>
-          </DialogHeader>
-
-          <form onSubmit={handlePayCredits} className="space-y-4">
-            <div className="space-y-2">
-              <label className="text-sm text-gray-300">Card Details</label>
-              <div className="p-3 bg-gray-800 border border-gray-700 rounded-md">
-                <p className="text-gray-500 text-sm">
-                  Stripe payment integration will be configured in production.
-                </p>
-              </div>
-            </div>
-
-            <div className="bg-[#1C2128] border border-gray-700 rounded-lg p-4">
-              <div className="flex justify-between items-center mb-2">
-                <span className="text-gray-400">Package</span>
-                <span className="text-white font-medium">{selectedPackage?.name}</span>
-              </div>
-              <div className="flex justify-between items-center mb-2">
-                <span className="text-gray-400">Credits</span>
-                <span className="text-white">
-                  {selectedPackage?.credits.toLocaleString()}
-                  {selectedPackage?.bonus_credits && (
-                    <span className="text-green-400 text-sm ml-1">
-                      (+{selectedPackage.bonus_credits.toLocaleString()} bonus)
-                    </span>
-                  )}
-                </span>
-              </div>
-              <div className="flex justify-between items-center pt-2 border-t border-gray-700">
-                <span className="text-gray-400">Total</span>
-                <span className="text-xl font-bold text-white">
-                  ${selectedPackage?.price}
-                </span>
-              </div>
-            </div>
-
-            <div className="flex gap-3">
-              <Button
-                type="button"
-                variant="outline"
-                onClick={handlePaymentCancel}
-                disabled={paymentLoading}
-                className="flex-1 border-gray-700 text-white hover:bg-gray-800"
-              >
-                Cancel
-              </Button>
-              <Button
-                type="submit"
-                disabled={paymentLoading}
-                className="flex-1 bg-[#4B6FED] hover:bg-[#3A56D3]"
-              >
-                {paymentLoading ? (
-                  <>
-                    <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                    Processing...
-                  </>
-                ) : (
-                  `Pay $${selectedPackage?.price || 0}`
-                )}
-              </Button>
-            </div>
-          </form>
-        </DialogContent>
-      </Dialog>
     </motion.div>
   );
 }

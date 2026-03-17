@@ -179,17 +179,21 @@ class ModelAggregatorService {
         available: this.checkModelAvailability(model, healthStatus),
       }));
       models.push(...modelsWithHealth);
-    } else {
-      console.warn('[ModelAggregator] AI Registry API failed, using hardcoded fallback');
-      // Fallback to hardcoded models if API fails
-      const hardcodedModels = [
-        ...this.getCodingModels(),
-        ...this.getImageGenerationModels(),
-        ...this.getVideoGenerationModels(),
-        ...this.getAudioModels(),
-      ];
-      console.log('[ModelAggregator] Hardcoded fallback models:', hardcodedModels.length);
-      models.push(...hardcodedModels);
+    }
+
+    // Always add hardcoded models for categories not covered by API
+    const existingCategories = new Set(models.map(m => m.category));
+    const hardcodedByCategory = {
+      'Coding': this.getCodingModels(),
+      'Image': this.getImageGenerationModels(),
+      'Video': this.getVideoGenerationModels(),
+      'Audio': this.getAudioModels(),
+    };
+    for (const [category, categoryModels] of Object.entries(hardcodedByCategory)) {
+      if (!existingCategories.has(category as UnifiedAIModel['category'])) {
+        console.log(`[ModelAggregator] Adding hardcoded ${category} models:`, categoryModels.length);
+        models.push(...categoryModels);
+      }
     }
 
     console.log('[ModelAggregator] Total models aggregated:', models.length);
@@ -252,7 +256,7 @@ class ModelAggregatorService {
       embedding: 'Embedding',
     };
 
-    const category = categoryMap[model.category.toLowerCase()] || 'Coding';
+    const category = categoryMap[(model.category || 'coding').toLowerCase()] || 'Coding';
 
     // Determine source_type from category
     const sourceTypeMap: Record<string, UnifiedAIModel['source_type']> = {
@@ -435,7 +439,7 @@ class ModelAggregatorService {
           category: 'Image',
         }),
         examplePrompts: [
-          'Generate a high-resolution image with photorealistic detail. Lighting: realistic and balanced. Textures: sharp, natural, detailed. No distortion or oversaturation. Resolution: 2048x2048.',
+          'A futuristic AI development workspace floating in space, holographic code editors orbiting a glowing quantum processor core, neon blue and violet light trails connecting data streams, ultra-detailed digital art, 8K resolution, cinematic composition with volumetric lighting',
         ],
         pricing: {
           credits: 50,
@@ -445,6 +449,25 @@ class ModelAggregatorService {
         endpoint: '/api/v1/multimodal/image',
         method: 'POST',
         is_default: true,
+        speed: 'Fast',
+        quality: 'High',
+        source_type: 'image',
+      },
+      {
+        id: 'image-minimax-01',
+        slug: 'minimax-image-01',
+        name: 'MiniMax Image-01',
+        provider: 'MiniMax',
+        category: 'Image',
+        capabilities: ['image-generation', 'text-to-image', 'image-to-image'],
+        description: 'MiniMax\'s image generation model supporting text-to-image and image-to-image with custom aspect ratios and high-resolution output.',
+        thumbnail_url: getThumbnailUrl({ provider: 'MiniMax', category: 'Image' }),
+        examplePrompts: [
+          'A photorealistic portrait of a diverse group of developers collaborating around holographic displays in a glass-walled modern office, golden hour light streaming in, shallow depth of field, 8K detail',
+        ],
+        pricing: { credits: 40, usd: 0.02, unit: 'per image' },
+        endpoint: '/api/v1/multimodal/image',
+        method: 'POST',
         speed: 'Fast',
         quality: 'High',
         source_type: 'image',
@@ -473,7 +496,7 @@ class ModelAggregatorService {
           category: 'Video',
         }),
         examplePrompts: [
-          'Create a realistic 5-second video from this image. Motion should be minimal but believable. Maintain original composition and proportions. No stylistic exaggeration.',
+          'Smooth camera push-in on a developer at their desk, dual monitors glowing with code, ambient RGB lighting shifts from blue to purple, coffee steam rising in slow motion, shallow depth of field, cinematic 24fps',
         ],
         pricing: {
           credits: 400,
@@ -554,7 +577,7 @@ class ModelAggregatorService {
           category: 'Video',
         }),
         examplePrompts: [
-          'Create a 5–8 second HD cinematic video. Subject: [MAIN SUBJECT]. Environment: [DETAILED SETTING]. Lighting: professional film lighting. Camera: smooth cinematic movement. Mood: emotionally resonant, realistic. Avoid surreal or abstract visuals.',
+          'A photorealistic aerial drone shot soaring over a neon-lit city at night, reflections on wet streets, autonomous vehicles gliding below, holographic advertisements floating between skyscrapers, 4K cinematic, smooth camera movement',
         ],
         pricing: {
           credits: 1000,
@@ -581,7 +604,7 @@ class ModelAggregatorService {
           category: 'Video',
         }),
         examplePrompts: [
-          'A cinematic shot of a subject in an environment. Camera motion: slow, steady tracking shot. Lighting: realistic, soft, natural. Style: grounded realism, not cartoonish. Motion should feel physically plausible. No sudden cuts.',
+          'Close-up of a humanoid robot hand typing code on a mechanical keyboard, lines of green code reflecting in its polished chrome surface, rack-focus from the hand to a holographic display showing neural network visualizations, warm tungsten backlight, shallow depth of field, 4K cinematic',
         ],
         pricing: {
           credits: 800,
@@ -592,6 +615,44 @@ class ModelAggregatorService {
         method: 'POST',
         speed: 'Slow',
         quality: 'High',
+        source_type: 'video',
+      },
+      {
+        id: 'video-minimax-hailuo',
+        slug: 'minimax-hailuo',
+        name: 'MiniMax Hailuo 2.3',
+        provider: 'MiniMax',
+        category: 'Video',
+        capabilities: ['video-generation', 'text-to-video', 'image-to-video'],
+        description: 'MiniMax\'s flagship video generation model. Creates high-quality 720p 25fps videos from text prompts or images with cinematic motion and realistic physics.',
+        thumbnail_url: getThumbnailUrl({ provider: 'MiniMax', category: 'Video' }),
+        examplePrompts: [
+          'A time-lapse of a futuristic city being built block by block, cranes moving in synchrony, sunset golden hour lighting, aerial drone perspective, 4K quality',
+        ],
+        pricing: { credits: 500, usd: 0.25, unit: 'per video' },
+        endpoint: '/api/v1/multimodal/video/t2v',
+        method: 'POST',
+        speed: 'Medium',
+        quality: 'High',
+        source_type: 'video',
+      },
+      {
+        id: 'video-minimax-hailuo-fast',
+        slug: 'minimax-hailuo-fast',
+        name: 'MiniMax Hailuo 2.3 Fast',
+        provider: 'MiniMax',
+        category: 'Video',
+        capabilities: ['video-generation', 'text-to-video', 'fast-generation'],
+        description: 'Fast variant of MiniMax Hailuo — generates videos in seconds. Ideal for prototyping and real-time applications. 720p quality.',
+        thumbnail_url: getThumbnailUrl({ provider: 'MiniMax', category: 'Video' }),
+        examplePrompts: [
+          'Smooth dolly shot through a neon-lit Tokyo alley at night, rain reflecting lights, pedestrians with umbrellas, cyberpunk atmosphere',
+        ],
+        pricing: { credits: 300, usd: 0.15, unit: 'per video' },
+        endpoint: '/api/v1/multimodal/video/t2v',
+        method: 'POST',
+        speed: 'Fast',
+        quality: 'Medium',
         source_type: 'video',
       },
     ];
@@ -696,14 +757,14 @@ class ModelAggregatorService {
           category: 'Audio',
         }),
         examplePrompts: [
-          'Read the following text as a confident, calm, emotionally intelligent narrator. Use natural pacing, subtle emphasis, and realistic pauses. Avoid sounding robotic or overly dramatic. Tone: warm, articulate, professional. Audience: intelligent but non-technical adults.',
+          'Welcome to AI Native Lab. We are building the future of AI-powered software development. Our platform gives developers access to autonomous coding agents, multimodal AI models, and a complete data infrastructure called ZeroDB. From text-to-speech and image generation to full-stack code deployment — AI Native Lab is where builders ship faster with AI.',
         ],
         pricing: {
           credits: 14,
           usd: 0.015,
           unit: 'per 1000 characters',
         },
-        endpoint: '/api/v1/audio/speech',
+        endpoint: '/api/v1/multimodal/tts',
         method: 'POST',
         speed: 'Fast',
         source_type: 'audio',
@@ -721,7 +782,7 @@ class ModelAggregatorService {
           category: 'Audio',
         }),
         examplePrompts: [
-          'Generate natural-sounding speech in multiple languages. Use realistic prosody and intonation. Maintain consistent voice quality across languages.',
+          'AI Native Lab is redefining how software gets built. Our autonomous agents write, test, and deploy production code while developers focus on what matters — building great products. With ZeroDB powering the data layer and multimodal AI handling everything from voice to video, the future of development is here.',
         ],
         pricing: {
           credits: 6,
@@ -746,7 +807,7 @@ class ModelAggregatorService {
           category: 'Audio',
         }),
         examplePrompts: [
-          'Generate speech optimized for real-time applications. Prioritize low latency and natural voice quality. Maintain clarity and expressiveness.',
+          'Ship faster with AI Native Lab. Our platform connects you to the most powerful AI models on the planet — all through a single API. Text to speech, image generation, video creation, and autonomous coding agents. Start building today.',
         ],
         pricing: {
           credits: 5,
@@ -771,7 +832,7 @@ class ModelAggregatorService {
           category: 'Audio',
         }),
         examplePrompts: [
-          'Generate professional-quality speech with customizable voice profiles. Use natural intonation and clear articulation. Support for various speaking styles.',
+          'Introducing Cody — your AI-powered full-stack engineer. Cody writes production-ready code using test-driven development, handles pull requests, and deploys to production autonomously. Built by AI Native Lab for developers who want to ship 10x faster.',
         ],
         pricing: {
           credits: 14,
@@ -796,7 +857,7 @@ class ModelAggregatorService {
           category: 'Audio',
         }),
         examplePrompts: [
-          'Create original music compositions with genre and mood control. Generate coherent musical structure with proper instrumentation and arrangement.',
+          'Create an inspiring, upbeat electronic track with ambient synth pads, a driving four-on-the-floor beat, and a soaring melodic hook. Genre: future bass meets lo-fi. Mood: optimistic and forward-looking. Perfect for a tech product launch video. Duration: 30 seconds.',
         ],
         pricing: {
           credits: 20,

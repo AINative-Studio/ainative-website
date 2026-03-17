@@ -115,6 +115,47 @@ a {
 }
 
 /* ============================================
+   Dark Mode Global Text Readability Fix
+   Ensures all text is visible on dark backgrounds
+   ============================================ */
+/* Force all text readable in dark mode - highest specificity */
+html.dark body,
+html.dark body * {
+  --tw-text-opacity: 1;
+}
+
+html.dark h1, html.dark h2, html.dark h3, html.dark h4, html.dark h5, html.dark h6,
+html.dark p, html.dark span, html.dark label, html.dark legend,
+html.dark li, html.dark td, html.dark th, html.dark dt, html.dark dd,
+html.dark a {
+  color: #e6edf3;
+}
+
+/* Muted text stays lighter but still readable */
+html.dark .text-muted-foreground,
+html.dark .text-gray-400,
+html.dark .text-gray-500 {
+  color: #8b949e !important;
+}
+
+/* White text overrides */
+html.dark .text-white,
+html.dark [class*="dark:text-white"],
+html.dark .text-foreground {
+  color: #f0f6fc !important;
+}
+
+html.dark input, html.dark textarea, html.dark select {
+  color: #f0f6fc;
+  background-color: hsl(215 19% 11%);
+  border-color: hsl(214 13% 25%);
+}
+
+html.dark input::placeholder, html.dark textarea::placeholder {
+  color: #6e7681;
+}
+
+/* ============================================
    Custom Animations
    ============================================ */
 

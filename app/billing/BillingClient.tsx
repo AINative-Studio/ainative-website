@@ -12,6 +12,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { CreditCard, FileText, Receipt, Plus, Mail, Loader2, Check } from 'lucide-react';
 import { useIsAdmin } from '@/components/guards/AdminRouteGuard';
+import apiClient from '@/lib/api-client';
 
 // Types
 type PaymentMethod = {
@@ -142,7 +143,7 @@ export default function BillingClient() {
         ) : null;
 
         if (!token) {
-          // Use demo data
+          // Use demo data when not logged in
           setBillingInfo(mockBillingInfo);
           setSubscription(mockSubscription);
           setCreditBalance(mockCreditBalance);
@@ -151,13 +152,85 @@ export default function BillingClient() {
           return;
         }
 
-        // In a real implementation, fetch from API here
-        // For now, use demo data
-        setBillingInfo(mockBillingInfo);
-        setSubscription(mockSubscription);
-        setCreditBalance(mockCreditBalance);
-        setInvoices(mockInvoices);
-        setIsDemo(true);
+        // Fetch real data from backend APIs
+        /* eslint-disable @typescript-eslint/no-explicit-any */
+        const [billingRes, subRes, creditsRes] = await Promise.allSettled([
+          apiClient.get<any>('/api/v1/public/billing/info'),
+          apiClient.get<any>('/api/v1/public/subscription'),
+          apiClient.get<any>('/api/v1/public/credits/balance'),
+        ]);
+
+        let usedReal = false;
+
+        // Billing info
+        if (billingRes.status === 'fulfilled') {
+          const d = billingRes.value.data;
+          const info = d?.data || d;
+          if (info) {
+            setBillingInfo({
+              payment_methods: info.payment_methods || [],
+              auto_refill: info.auto_refill || undefined,
+            });
+            // Set subscription from billing info if available
+            if (info.subscription?.id) {
+              setSubscription({
+                id: info.subscription.id || 'sub_current',
+                plan_id: info.subscription.plan || 'free',
+                status: info.subscription.status || 'active',
+                current_period_start: info.subscription.current_period_start || new Date().toISOString(),
+                current_period_end: info.subscription.current_period_end || new Date(Date.now() + 30 * 86400000).toISOString(),
+                cancel_at_period_end: false,
+              });
+            }
+            usedReal = true;
+          }
+        }
+
+        // Subscription (if not set from billing info)
+        if (!subscription && subRes.status === 'fulfilled') {
+          const d = subRes.value.data;
+          const sub = d?.data?.subscription || d?.subscription || d?.data;
+          if (sub) {
+            setSubscription({
+              id: sub.id || 'sub_current',
+              plan_id: sub.plan || sub.plan_id || 'free',
+              status: sub.status || 'active',
+              current_period_start: sub.current_period_start || new Date().toISOString(),
+              current_period_end: sub.current_period_end || new Date(Date.now() + 30 * 86400000).toISOString(),
+              cancel_at_period_end: sub.cancel_at_period_end || false,
+            });
+            usedReal = true;
+          }
+        }
+
+        // Credits balance
+        if (creditsRes.status === 'fulfilled') {
+          const d = creditsRes.value.data;
+          const creds = d?.data || d;
+          if (creds) {
+            setCreditBalance({
+              available: creds.remaining_credits ?? creds.available ?? 0,
+              used: creds.used_credits ?? creds.used ?? 0,
+              total: creds.total_credits ?? creds.total ?? 0,
+              currency: creds.currency || 'USD',
+            });
+            usedReal = true;
+          }
+        }
+
+        // Invoices - skip for now (backend has UUID serialization bug)
+        setInvoices([]);
+
+        // Fall back to demo if nothing loaded
+        if (!usedReal) {
+          setBillingInfo(mockBillingInfo);
+          setSubscription(mockSubscription);
+          setCreditBalance(mockCreditBalance);
+          setInvoices(mockInvoices);
+          setIsDemo(true);
+        } else {
+          setIsDemo(false);
+        }
 
       } catch (error) {
         console.error('Failed to fetch billing data:', error);
@@ -175,12 +248,15 @@ export default function BillingClient() {
   }, []);
 
   const formatDate = (dateString: string) => {
+    if (!dateString) return 'N/A';
+    const date = new Date(dateString);
+    if (isNaN(date.getTime())) return 'N/A';
     const options: Intl.DateTimeFormatOptions = {
       year: 'numeric',
       month: 'long',
       day: 'numeric'
     };
-    return new Date(dateString).toLocaleDateString(undefined, options);
+    return date.toLocaleDateString(undefined, options);
   };
 
   const daysUntilBilling = subscription?.current_period_end

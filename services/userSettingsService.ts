@@ -165,13 +165,24 @@ export class UserSettingsService {
    */
   async getUserProfile(): Promise<UserProfile | null> {
     try {
-      const response = await apiClient.get<ApiResponse<UserProfile>>('/api/v1/profiles/me');
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const response = await apiClient.get<any>('/api/v1/profiles/me');
+      const data = response.data;
 
-      if (!response.data.success || !response.data.data) {
-        throw new Error(response.data.message || 'Failed to fetch user profile');
+      // Handle wrapped { success, data } or direct response
+      if (data?.success && data?.data) {
+        return data.data;
       }
-
-      return response.data.data;
+      // Backend returns profile directly
+      if (data?.id || data?.email) {
+        return {
+          name: data.full_name || data.username || '',
+          email: data.email || '',
+          bio: data.bio || '',
+          avatar_url: data.avatar_url || '',
+        } as UserProfile;
+      }
+      return null;
     } catch (error) {
       console.error('Failed to fetch user profile:', error);
       return null;

@@ -511,7 +511,7 @@ export default function EarningsClient() {
             </div>
           </CardHeader>
           <CardContent>
-            {state.transactions.length > 0 ? (
+            {(state.transactions?.length ?? 0) > 0 ? (
               <>
                 {/* Desktop Table */}
                 <div className="hidden md:block overflow-x-auto">
@@ -526,7 +526,7 @@ export default function EarningsClient() {
                       </TableRow>
                     </TableHeader>
                     <TableBody>
-                      {state.transactions.map((transaction) => (
+                      {(state.transactions || []).map((transaction) => (
                         <TableRow key={transaction.id}>
                           <TableCell>
                             {earningsService.formatDate(transaction.date)}
@@ -555,7 +555,7 @@ export default function EarningsClient() {
 
                 {/* Mobile List */}
                 <div className="md:hidden space-y-4" data-testid="mobile-transaction-list">
-                  {state.transactions.map((transaction) => (
+                  {(state.transactions || []).map((transaction) => (
                     <Card key={transaction.id}>
                       <CardContent className="pt-6">
                         <div className="flex justify-between items-start mb-2">

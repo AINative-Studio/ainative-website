@@ -120,8 +120,12 @@ const mcpService = {
    * GET /v1/public/mcp/catalog
    */
   async getCatalog(): Promise<MCPServer[]> {
-    const response = await apiClient.get<{ servers: MCPServer[] }>('/api/v1/public/mcp/catalog');
-    return response.data.servers || [];
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const response = await apiClient.get<any>('/api/v1/public/mcp/catalog');
+    const data = response.data;
+    // Handle both raw array and wrapped { servers: [...] } formats
+    if (Array.isArray(data)) return data;
+    return data?.servers || [];
   },
 
   /**

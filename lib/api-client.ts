@@ -206,10 +206,15 @@ class ApiClient {
 
       const data = await response.json();
 
-      // Handle 401 unauthorized with automatic token refresh
+      // Handle 401 unauthorized - only attempt refresh if we had a token
       if (response.status === 401) {
-        console.warn('🔒 [ApiClient] Received 401 Unauthorized for:', endpoint);
-        return this.handle401Error<T>(endpoint, config);
+        const hadToken = !!this.getToken();
+        console.warn('🔒 [ApiClient] Received 401 Unauthorized for:', endpoint, hadToken ? '(had token)' : '(no token)');
+        // Only attempt refresh/redirect if we actually had a token (real session expiry)
+        // Don't nuke auth for endpoints that just require different permissions
+        if (hadToken && !config._isRetry) {
+          return this.handle401Error<T>(endpoint, config);
+        }
       }
 
       // Throw error for non-OK responses

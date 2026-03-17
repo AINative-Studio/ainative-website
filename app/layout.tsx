@@ -246,7 +246,7 @@ export default function RootLayout({
         <StructuredData />
       </head>
       <body
-        className={`${poppins.variable} ${geistSans.variable} ${geistMono.variable} ${montserrat.variable} ${outfit.variable} font-sans antialiased bg-background text-foreground`}
+        className={`${poppins.variable} ${geistSans.variable} ${geistMono.variable} ${montserrat.variable} ${outfit.variable} font-sans antialiased bg-background text-foreground dark:text-gray-100`}
       >
         {/* GTM noscript fallback */}
         <GoogleTagManagerNoscript />

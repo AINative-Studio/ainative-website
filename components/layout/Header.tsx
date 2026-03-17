@@ -2,11 +2,11 @@
 'use client';
 import React from "react";
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useSession, signOut } from 'next-auth/react';
-import { clearAuthData } from '@/utils/authCookies';
+import { clearAuthData, isAuthenticated as checkBackendAuth } from '@/utils/authCookies';
 import { ButtonCustom } from '@/components/ui/button-custom';
 import { Menu, X } from 'lucide-react';
 import { cn } from '@/lib/utils';
@@ -35,9 +35,15 @@ export default function Header() {
     pathname.startsWith('/refills') ||
     pathname.startsWith('/developer-settings');
 
-  // Check both status AND session data to handle navigation edge cases
+  // Check both NextAuth session AND backend JWT token
   const hasSession = session && 'user' in session && !!session.user;
-  const isLoggedIn = status === 'authenticated' || hasSession;
+  const [hasBackendToken, setHasBackendToken] = useState(false);
+
+  useEffect(() => {
+    setHasBackendToken(checkBackendAuth());
+  }, [pathname]);
+
+  const isLoggedIn = status === 'authenticated' || hasSession || hasBackendToken;
   const isLoading = status === 'loading';
   const avatar = session?.user?.image;
 

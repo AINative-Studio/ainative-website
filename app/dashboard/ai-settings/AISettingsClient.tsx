@@ -22,7 +22,7 @@ const CATEGORIES: ModelCategory[] = ['All', 'Image', 'Video', 'Audio', 'Coding',
 const CATEGORY_MAP: Record<string, string[]> = {
     Image: ['image-generation', 'vision'],
     Video: ['video-generation', 'text-to-video', 'image-to-video'],
-    Audio: ['audio', 'speech', 'transcription', 'translation', 'audio-generation', 'text-to-speech'],
+    Audio: ['audio', 'speech', 'transcription', 'translation', 'audio-generation', 'text-to-speech', 'music-generation', 'ai-composition'],
     Coding: ['code', 'text-generation', 'code-generation'],
     Embedding: ['embedding', 'semantic-search'],
 };
@@ -86,10 +86,14 @@ function matchesCategory(model: UnifiedAIModel, category: ModelCategory): boolea
         return true;
     }
 
+    // Also check model.category directly (fallback for models without capabilities)
+    if (model.category === category) {
+        return true;
+    }
+
     // Check if model has any of the target capabilities
     const matches = model.capabilities.some(cap => {
         if (typeof cap !== 'string') {
-            console.warn('[matchesCategory] Invalid capability type:', cap);
             return false;
         }
         return targetCaps.some(target =>

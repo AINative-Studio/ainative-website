@@ -89,12 +89,12 @@ function ServerCard({ server, onDeploy }: { server: MCPServer; onDeploy: (server
           </div>
           <p className="text-sm text-gray-400 mb-4 line-clamp-2">{server.description}</p>
           <div className="flex flex-wrap gap-1.5 mb-4">
-            {server.features.slice(0, 3).map((feature, i) => (
+            {(server.features || []).slice(0, 3).map((feature, i) => (
               <span key={i} className="text-xs px-2 py-0.5 rounded bg-gray-800 text-gray-300">
                 {feature}
               </span>
             ))}
-            {server.features.length > 3 && (
+            {(server.features?.length || 0) > 3 && (
               <span className="text-xs px-2 py-0.5 rounded bg-gray-800 text-gray-400">
                 +{server.features.length - 3} more
               </span>
@@ -102,12 +102,15 @@ function ServerCard({ server, onDeploy }: { server: MCPServer; onDeploy: (server
           </div>
           <div className="flex items-center justify-between pt-4 border-t border-border">
             <span className="text-sm">
-              {server.pricing.type === 'free' ? (
+              {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
+              {server.pricing?.type === 'free' || (!server.pricing && !(server as any).credits_per_hour) ? (
                 <span className="text-green-400">Free</span>
-              ) : server.pricing.type === 'paid' ? (
+              ) : server.pricing?.basePrice ? (
                 <span className="text-white">${server.pricing.basePrice}/mo</span>
+              ) : (server as any).credits_per_hour ? (
+                <span className="text-white">{(server as any).credits_per_hour} credits/hr</span>
               ) : (
-                <span className="text-white">${server.pricing.perRequestPrice}/req</span>
+                <span className="text-gray-400">Contact</span>
               )}
             </span>
             <Button

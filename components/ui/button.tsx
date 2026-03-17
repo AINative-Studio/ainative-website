@@ -15,12 +15,12 @@ const buttonVariants = cva(
           "bg-destructive text-destructive-foreground shadow-sm hover:bg-destructive/90",
         // Outline: Adapts border and text colors for light/dark mode
         outline:
-          "border-2 border-input hover:border-brand-primary/40 bg-transparent hover:bg-accent text-foreground dark:border-dark-2 dark:hover:bg-dark-3 dark:text-white",
+          "border-2 border-input hover:border-brand-primary/40 bg-transparent hover:bg-accent text-foreground dark:border-gray-500 dark:bg-dark-3 dark:hover:border-brand-primary dark:hover:bg-brand-primary/20 dark:text-white",
         // Secondary: Uses semantic color tokens
         secondary:
           "bg-secondary text-secondary-foreground shadow-sm hover:bg-secondary/80 dark:bg-vite-secondary dark:text-white dark:hover:bg-vite-secondary/80",
         // Ghost: Subtle hover with semantic tokens
-        ghost: "hover:bg-accent hover:text-accent-foreground dark:hover:bg-dark-3 dark:hover:text-white",
+        ghost: "hover:bg-accent hover:text-accent-foreground dark:text-gray-200 dark:hover:bg-dark-3 dark:hover:text-white",
         // Link: Uses primary color for text
         link: "text-primary underline-offset-4 hover:underline dark:text-brand-primary",
       },
