@@ -445,7 +445,7 @@ export default function BillingClient() {
               ) : (
                 <div className="p-4 bg-gray-900/50 rounded-lg text-center">
                   <p className="text-gray-400 text-sm">No payment methods found</p>
-                  <Button variant="outline" size="sm" className="mt-2">
+                  <Button variant="outline" size="sm" className="mt-2 text-white">
                     Add Payment Method
                   </Button>
                 </div>
