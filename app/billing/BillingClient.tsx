@@ -158,7 +158,7 @@ export default function BillingClient() {
           apiClient.get<any>('/api/v1/public/billing/info'),
           apiClient.get<any>('/api/v1/public/subscription'),
           apiClient.get<any>('/api/v1/public/credits/balance'),
-          apiClient.get<any>('/api/v1/invoices/me/invoices'),
+          apiClient.get<any>('/api/v1/public/billing/invoices'),
         ]);
 
         let usedReal = false;

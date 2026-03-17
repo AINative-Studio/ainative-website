@@ -299,7 +299,7 @@ function LogsPanel({ logs, onClose }: { logs: MCPServerLog[]; onClose: () => voi
 export default function MCPHostingClient() {
   const queryClient = useQueryClient();
   const [mounted, setMounted] = useState(false);
-  const [activeTab, setActiveTab] = useState<'instances' | 'catalog'>('instances');
+  const [activeTab, setActiveTab] = useState<'instances' | 'catalog'>('catalog');
   const [selectedLogs, setSelectedLogs] = useState<string | null>(null);
 
   useEffect(() => {
