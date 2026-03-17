@@ -488,13 +488,17 @@ export function transformToPlaygroundResult(
       };
 
     case 'Coding':
-      const codeOutput = (apiResponse.code || apiResponse.output) as string;
+      // Handle OpenAI chat completions format: { choices: [{ message: { content: "..." } }] }
+      const choices = apiResponse.choices as Array<{ message?: { content?: string } }> | undefined;
+      const chatContent = choices?.[0]?.message?.content;
+      const codeOutput = (chatContent || apiResponse.code || apiResponse.output) as string;
       return {
         ...base,
         type: 'code',
         output: codeOutput,
         language: (apiResponse.language as string) || detectLanguage(codeOutput),
         highlighted_html: apiResponse.highlighted_html as string | undefined,
+        tokens_used: (apiResponse.usage as { total_tokens?: number })?.total_tokens || base.tokens_used,
       };
 
     case 'Embedding':

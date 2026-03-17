@@ -39,6 +39,16 @@ const PROVIDER_GRADIENTS: Record<string, string> = {
     mistral: 'from-violet-600 to-purple-800',
     cohere: 'from-cyan-600 to-sky-800',
     stability: 'from-fuchsia-600 to-pink-800',
+    ainative: 'from-indigo-500 to-violet-800',
+    minimax: 'from-rose-500 to-pink-800',
+    qwen: 'from-sky-500 to-blue-800',
+    alibaba: 'from-orange-500 to-red-800',
+    seedance: 'from-lime-500 to-emerald-800',
+    sora: 'from-teal-500 to-cyan-800',
+    cogvideo: 'from-purple-500 to-indigo-800',
+    'nous research': 'from-yellow-500 to-amber-800',
+    baai: 'from-slate-500 to-zinc-800',
+    generic: 'from-gray-500 to-slate-700',
     default: 'from-slate-600 to-gray-800',
 };
 

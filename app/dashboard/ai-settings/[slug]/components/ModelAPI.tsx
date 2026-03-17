@@ -8,28 +8,89 @@ import { Copy, Check, Download, Key } from 'lucide-react';
 import { APIProps, APICodeFormat } from '../types';
 
 /**
+ * Get example request body based on model category and endpoint
+ */
+function getExampleBody(endpoint: string, modelSlug: string, category?: string): string {
+  if (endpoint.includes('/chat/completions')) {
+    return `{
+    "model": "${modelSlug}",
+    "messages": [
+      { "role": "user", "content": "Write a Python function to sort a list" }
+    ],
+    "max_tokens": 2048,
+    "temperature": 0.7
+  }`;
+  }
+  if (endpoint.includes('/audio/tts') || endpoint.includes('/tts')) {
+    return `{
+    "text": "Hello, welcome to AI Native Studio.",
+    "voice": "Wise_Woman",
+    "model_id": "${modelSlug}"
+  }`;
+  }
+  if (endpoint.includes('/audio/music')) {
+    return `{
+    "prompt": "Upbeat electronic music with a driving beat",
+    "model_id": "${modelSlug}",
+    "duration": 30
+  }`;
+  }
+  if (endpoint.includes('/multimodal/image')) {
+    return `{
+    "prompt": "A futuristic cityscape at sunset, photorealistic",
+    "width": 1024,
+    "height": 1024
+  }`;
+  }
+  if (endpoint.includes('/video/i2v')) {
+    return `{
+    "image_url": "https://example.com/image.jpg",
+    "motion_prompt": "Gentle camera zoom with wind blowing through trees",
+    "provider": "wan22"
+  }`;
+  }
+  if (endpoint.includes('/video/t2v')) {
+    return `{
+    "prompt": "A drone aerial shot over a neon city at night",
+    "duration": 5
+  }`;
+  }
+  if (endpoint.includes('/video/cogvideox')) {
+    return `{
+    "prompt": "A robot typing on a keyboard in a futuristic lab",
+    "num_frames": 49,
+    "guidance_scale": 6.0,
+    "num_inference_steps": 50
+  }`;
+  }
+  if (category === 'Embedding') {
+    return `{
+    "input": "The text to embed",
+    "model": "${modelSlug}"
+  }`;
+  }
+  return `{
+    "prompt": "Your prompt here",
+    "max_tokens": 2048,
+    "temperature": 0.7
+  }`;
+}
+
+/**
  * Generate curl command for model
  */
 function generateCurlCommand(
   endpoint: string,
   method: string,
   modelSlug: string,
-  modelName: string
+  modelName: string,
+  category?: string
 ): string {
-  // TODO: Generate actual curl command based on model parameters
-  // This should include:
-  // - Correct endpoint URL
-  // - Required headers (Authorization, Content-Type)
-  // - Example request body with model-specific parameters
-
+  const body = getExampleBody(endpoint, modelSlug, category);
   return `curl -X ${method} https://api.ainative.studio${endpoint} \\
   -H 'Content-Type: application/json' \\
   -H 'Authorization: Bearer YOUR_API_KEY' \\
-  -d '{
-    "prompt": "Your prompt here",
-    "max_tokens": 2048,
-    "temperature": 0.7
-  }'`;
+  -d '${body}'`;
 }
 
 /**
@@ -39,20 +100,16 @@ function generatePostRunFormat(
   endpoint: string,
   method: string,
   modelSlug: string,
-  modelName: string
+  modelName: string,
+  category?: string
 ): string {
-  // TODO: Generate actual POST format based on model parameters
-
+  const body = getExampleBody(endpoint, modelSlug, category);
   return `${method} ${endpoint}
 Host: api.ainative.studio
 Content-Type: application/json
 Authorization: Bearer YOUR_API_KEY
 
-{
-  "prompt": "Your prompt here",
-  "max_tokens": 2048,
-  "temperature": 0.7
-}`;
+${body}`;
 }
 
 /**
@@ -83,19 +140,28 @@ export default function ModelAPI({ model, slug, defaultFormat = 'curl' }: APIPro
     setTimeout(() => setCopied(false), 2000);
   };
 
+  // Determine correct endpoint based on model category
+  const effectiveEndpoint = model.endpoint || (
+    model.category === 'Coding' ? '/api/v1/chat/completions' :
+    model.category === 'Embedding' ? '/api/v1/embeddings' :
+    `/api/v1/models/${slug}`
+  );
+
   // Generate code snippets
   const curlSnippet = generateCurlCommand(
-    model.endpoint || `/api/v1/models/${slug}`,
+    effectiveEndpoint,
     model.method || 'POST',
     slug,
-    model.name
+    model.name,
+    model.category
   );
 
   const postRunSnippet = generatePostRunFormat(
-    model.endpoint || `/api/v1/models/${slug}`,
+    effectiveEndpoint,
     model.method || 'POST',
     slug,
-    model.name
+    model.name,
+    model.category
   );
 
   // Get current code snippet
@@ -185,7 +251,7 @@ export default function ModelAPI({ model, slug, defaultFormat = 'curl' }: APIPro
       <div className="bg-white/[0.02] border border-white/10 rounded-lg p-4 space-y-3">
         <h3 className="text-sm font-medium text-white">API Endpoint</h3>
         <code className="block text-xs text-gray-400 font-mono bg-white/5 px-3 py-2 rounded">
-          {model.endpoint || `/api/v1/models/${slug}`}
+          {effectiveEndpoint}
         </code>
 
         <h3 className="text-sm font-medium text-white mt-4">Authentication</h3>

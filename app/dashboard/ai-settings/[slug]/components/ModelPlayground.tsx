@@ -127,7 +127,7 @@ export default function ModelPlayground({ model, slug }: PlaygroundProps) {
     slug: model.slug,
     category: model.category,
     endpoint: model.endpoint,
-    shouldShowImageSelector: model.category === 'Video' && model.endpoint.includes('i2v'),
+    shouldShowImageSelector: model.category === 'Video' && model.endpoint?.includes('i2v'),
   });
 
   // Form state
@@ -159,8 +159,8 @@ export default function ModelPlayground({ model, slug }: PlaygroundProps) {
   useEffect(() => {
     // Exclude Whisper models - they process input audio, not generate media
     const isWhisperModel =
-      model.endpoint.includes('/audio/transcriptions') ||
-      model.endpoint.includes('/audio/translations');
+      model.endpoint?.includes('/audio/transcriptions') ||
+      model.endpoint?.includes('/audio/translations');
 
     if (isWhisperModel) return;
 
@@ -196,10 +196,12 @@ export default function ModelPlayground({ model, slug }: PlaygroundProps) {
   const runInference = useMutation({
     mutationFn: async (input: PlaygroundFormState) => {
       console.log('Running inference with:', input);
-      console.log('Model endpoint:', model.endpoint, 'Method:', model.method);
+      // Fallback endpoint for models without one (coding/embedding models from AI registry)
+      const endpoint = model.endpoint || '/api/v1/chat/completions';
+      console.log('Model endpoint:', endpoint, 'Method:', model.method);
 
       // Whisper audio transcription/translation models expect FormData with file upload
-      if (model.category === 'Audio' && (model.endpoint.includes('/audio/transcriptions') || model.endpoint.includes('/audio/translations'))) {
+      if (model.category === 'Audio' && (model.endpoint?.includes('/audio/transcriptions') || model.endpoint?.includes('/audio/translations'))) {
         if (!audioFile) {
           throw new Error('Audio file is required for Whisper transcription/translation');
         }
@@ -217,7 +219,7 @@ export default function ModelPlayground({ model, slug }: PlaygroundProps) {
         formData.append('response_format', 'json');
 
         // For transcription, add language if specified
-        if (model.endpoint.includes('/audio/transcriptions') && input.prompt) {
+        if (model.endpoint?.includes('/audio/transcriptions') && input.prompt) {
           // Language would be extracted from prompt or a separate field
           // For now, we'll let the API auto-detect
         }
@@ -225,7 +227,7 @@ export default function ModelPlayground({ model, slug }: PlaygroundProps) {
         console.log('📤 Uploading audio file:', audioFile.name, 'Size:', audioFile.size, 'bytes');
 
         // Don't set Content-Type header - let the browser set it with the correct boundary
-        const response = await apiClient.post(model.endpoint, formData, {
+        const response = await apiClient.post(endpoint, formData, {
           timeout: 120000, // 120s for audio processing
         });
         return response.data;
@@ -234,8 +236,18 @@ export default function ModelPlayground({ model, slug }: PlaygroundProps) {
       // Transform request payload based on model category
       let requestPayload: Record<string, unknown> = { ...input };
 
+      // Coding/Embedding models use chat completions format
+      const isChatModel = !model.endpoint || endpoint.includes('/chat/completions');
+      if (isChatModel) {
+        requestPayload = {
+          model: model.slug || model.id,
+          messages: [{ role: 'user', content: input.prompt || '' }],
+          max_tokens: input.max_tokens || 2048,
+          temperature: input.temperature ?? 0.7,
+        };
+      }
       // Audio TTS models expect { text, voice, model_id } instead of { prompt }
-      if (model.category === 'Audio' && model.endpoint.includes('/tts')) {
+      else if (model.category === 'Audio' && model.endpoint?.includes('/tts')) {
         requestPayload = {
           text: input.prompt || '',
           model_id: model.slug, // Required for backend to identify the audio model
@@ -243,7 +255,7 @@ export default function ModelPlayground({ model, slug }: PlaygroundProps) {
         };
       }
       // Video I2V models expect { image_url, motion_prompt, provider } instead of { prompt }
-      else if (model.category === 'Video' && model.endpoint.includes('i2v')) {
+      else if (model.category === 'Video' && model.endpoint?.includes('i2v')) {
         // Validate required fields for I2V
         if (!input.image_url?.trim() || !input.prompt?.trim()) {
           throw new Error('Both source image and motion prompt are required for I2V models');
@@ -274,10 +286,10 @@ export default function ModelPlayground({ model, slug }: PlaygroundProps) {
 
       // Call the appropriate API method based on model.method
       if (model.method === 'POST') {
-        const response = await apiClient.post(model.endpoint, requestPayload, { timeout });
+        const response = await apiClient.post(endpoint, requestPayload, { timeout });
         return response.data;
       } else {
-        const response = await apiClient.get(model.endpoint, { timeout });
+        const response = await apiClient.get(endpoint, { timeout });
         return response.data;
       }
     },
@@ -372,13 +384,13 @@ export default function ModelPlayground({ model, slug }: PlaygroundProps) {
    */
   const handleRun = () => {
     // For Whisper audio models, require audio file
-    if (model.category === 'Audio' && (model.endpoint.includes('/audio/transcriptions') || model.endpoint.includes('/audio/translations'))) {
+    if (model.category === 'Audio' && (model.endpoint?.includes('/audio/transcriptions') || model.endpoint?.includes('/audio/translations'))) {
       if (!audioFile) {
         return;
       }
     }
     // For I2V models, require both image_url and prompt (motion_prompt)
-    else if (model.category === 'Video' && model.endpoint.includes('i2v')) {
+    else if (model.category === 'Video' && model.endpoint?.includes('i2v')) {
       if (!formState.image_url?.trim() || !formState.prompt?.trim()) {
         return;
       }
@@ -523,7 +535,7 @@ export default function ModelPlayground({ model, slug }: PlaygroundProps) {
         </div>
 
         {/* Image Selection (for I2V video models) */}
-        {model.category === 'Video' && model.endpoint.includes('i2v') && (
+        {model.category === 'Video' && model.endpoint?.includes('i2v') && (
           <div className="space-y-3">
             <label className="text-sm font-medium text-gray-300">Source Image</label>
             <ImageSelector
@@ -540,10 +552,10 @@ export default function ModelPlayground({ model, slug }: PlaygroundProps) {
         )}
 
         {/* Audio File Upload (for Whisper transcription/translation models) */}
-        {model.category === 'Audio' && (model.endpoint.includes('/audio/transcriptions') || model.endpoint.includes('/audio/translations')) && (
+        {model.category === 'Audio' && (model.endpoint?.includes('/audio/transcriptions') || model.endpoint?.includes('/audio/translations')) && (
           <div className="space-y-3">
             <label className="text-sm font-medium text-gray-300">
-              {model.endpoint.includes('/audio/transcriptions') ? 'Audio/Video File to Transcribe' : 'Audio File to Translate to English'}
+              {model.endpoint?.includes('/audio/transcriptions') ? 'Audio/Video File to Transcribe' : 'Audio File to Translate to English'}
             </label>
             <AudioFileUpload
               onFileSelect={(file) => setAudioFile(file)}
@@ -555,13 +567,13 @@ export default function ModelPlayground({ model, slug }: PlaygroundProps) {
         {/* Prompt Input */}
         <div className="space-y-2">
           <label className="text-sm font-medium text-gray-300">
-            {model.category === 'Video' && model.endpoint.includes('i2v') ? 'Motion Prompt' : 'Prompt'}
+            {model.category === 'Video' && model.endpoint?.includes('i2v') ? 'Motion Prompt' : 'Prompt'}
           </label>
           <textarea
             value={formState.prompt}
             onChange={(e) => updateField('prompt', e.target.value)}
             placeholder={
-              model.category === 'Video' && model.endpoint.includes('i2v')
+              model.category === 'Video' && model.endpoint?.includes('i2v')
                 ? 'Describe the motion you want to see (e.g., "The person waves and smiles at the camera")...'
                 : 'Enter your prompt here...'
             }
@@ -700,9 +712,9 @@ export default function ModelPlayground({ model, slug }: PlaygroundProps) {
             onClick={handleRun}
             disabled={
               status === 'running' ||
-              (model.category === 'Audio' && (model.endpoint.includes('/audio/transcriptions') || model.endpoint.includes('/audio/translations'))
+              (model.category === 'Audio' && (model.endpoint?.includes('/audio/transcriptions') || model.endpoint?.includes('/audio/translations'))
                 ? !audioFile
-                : model.category === 'Video' && model.endpoint.includes('i2v')
+                : model.category === 'Video' && model.endpoint?.includes('i2v')
                 ? !formState.image_url?.trim() || !formState.prompt?.trim()
                 : !formState.prompt?.trim())
             }
