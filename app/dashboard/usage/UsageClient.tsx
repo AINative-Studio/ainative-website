@@ -217,7 +217,7 @@ export default function UsageClient() {
       >
         <div className="flex items-center justify-between mb-6">
           <div>
-            <h1 className="text-4xl font-bold mb-2">Usage Overview</h1>
+            <h1 className="text-4xl font-bold mb-2 text-white">Usage Overview</h1>
             <p className="text-muted-foreground">
               Monitor your account usage, credits, and billing
             </p>
@@ -227,12 +227,12 @@ export default function UsageClient() {
               variant="outline"
               onClick={handleRefresh}
               disabled={isRefreshing}
-              className="gap-2"
+              className="gap-2 text-white border-gray-600"
             >
               <RefreshCcw className={`h-4 w-4 ${isRefreshing ? 'animate-spin' : ''}`} />
               Refresh
             </Button>
-            <Button variant="outline" className="gap-2">
+            <Button variant="outline" className="gap-2 text-white border-gray-600">
               <Download className="h-4 w-4" />
               Export Report
             </Button>
@@ -263,7 +263,7 @@ export default function UsageClient() {
                   <Zap className="h-4 w-4 text-[#4B6FED]" />
                 </CardHeader>
                 <CardContent>
-                  <div className="text-2xl font-bold">
+                  <div className="text-2xl font-bold text-white">
                     {usageData.credits.used.toLocaleString()} / {usageData.credits.total.toLocaleString()}
                   </div>
                   <Progress value={creditsPercentage} className="mt-3 h-2" />
@@ -283,7 +283,7 @@ export default function UsageClient() {
                   <BarChart2 className="h-4 w-4 text-[#4B6FED]" />
                 </CardHeader>
                 <CardContent>
-                  <div className="text-2xl font-bold">
+                  <div className="text-2xl font-bold text-white">
                     {usageData.apiCalls.thisMonth.toLocaleString()}
                   </div>
                   {usageData.apiCalls.lastMonth > 0 && (
@@ -306,7 +306,7 @@ export default function UsageClient() {
                   <BarChart2 className="h-4 w-4 text-[#4B6FED]" />
                 </CardHeader>
                 <CardContent>
-                  <div className="text-2xl font-bold">
+                  <div className="text-2xl font-bold text-white">
                     {usageData.storage.used} GB / {usageData.storage.total} GB
                   </div>
                   <Progress value={storagePercentage} className="mt-3 h-2" />
@@ -324,7 +324,7 @@ export default function UsageClient() {
                   <CreditCard className="h-4 w-4 text-[#4B6FED]" />
                 </CardHeader>
                 <CardContent>
-                  <div className="text-2xl font-bold">
+                  <div className="text-2xl font-bold text-white">
                     ${usageData.billing.monthlySpend.toFixed(2)}
                   </div>
                   <div className="flex items-center gap-2 mt-2">
@@ -357,18 +357,18 @@ export default function UsageClient() {
                 <div className="space-y-6">
                   <div className="flex items-center justify-between">
                     <div>
-                      <p className="font-medium">Base Plan Credits</p>
+                      <p className="font-medium text-white">Base Plan Credits</p>
                       <p className="text-sm text-muted-foreground">Monthly allocation from your plan</p>
                     </div>
                     <div className="text-right">
-                      <p className="font-bold">{usageData.credits.total.toLocaleString()}</p>
+                      <p className="font-bold text-white">{usageData.credits.total.toLocaleString()}</p>
                       <p className="text-sm text-muted-foreground">credits/month</p>
                     </div>
                   </div>
 
                   <div className="flex items-center justify-between">
                     <div>
-                      <p className="font-medium">Used This Period</p>
+                      <p className="font-medium text-white">Used This Period</p>
                       <p className="text-sm text-muted-foreground">Credits consumed since billing cycle start</p>
                     </div>
                     <div className="text-right">
@@ -379,7 +379,7 @@ export default function UsageClient() {
 
                   <div className="flex items-center justify-between">
                     <div>
-                      <p className="font-medium">Remaining</p>
+                      <p className="font-medium text-white">Remaining</p>
                       <p className="text-sm text-muted-foreground">Credits available until refresh</p>
                     </div>
                     <div className="text-right">
@@ -432,7 +432,7 @@ export default function UsageClient() {
                     <TrendingUp className="h-6 w-6 text-[#4B6FED]" />
                   </div>
                   <div>
-                    <h3 className="font-semibold text-lg">Need more resources?</h3>
+                    <h3 className="font-semibold text-lg text-white">Need more resources?</h3>
                     <p className="text-gray-400 text-sm">
                       Upgrade your plan or purchase additional credits
                     </p>
