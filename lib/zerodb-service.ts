@@ -188,7 +188,7 @@ class ZeroDBService {
    * List all namespaces
    */
   async listNamespaces(): Promise<NamespacesListResponse> {
-    const response = await apiClient.get<NamespacesListResponse>('/api/v1/public/zerodb/namespaces');
+    const response = await apiClient.get<NamespacesListResponse>('/api/v1/zerodb/namespaces');
     return response.data;
   }
 
@@ -196,7 +196,7 @@ class ZeroDBService {
    * Create a new namespace
    */
   async createNamespace(data: CreateNamespaceData): Promise<Namespace> {
-    const response = await apiClient.post<Namespace>('/api/v1/public/zerodb/namespaces', data);
+    const response = await apiClient.post<Namespace>('/api/v1/zerodb/namespaces', data);
     return response.data;
   }
 
@@ -205,7 +205,7 @@ class ZeroDBService {
    */
   async deleteNamespace(name: string): Promise<DeleteNamespaceResponse> {
     const response = await apiClient.delete<DeleteNamespaceResponse>(
-      `/api/v1/public/zerodb/namespaces/${name}`
+      `/api/v1/zerodb/namespaces/${name}`
     );
     return response.data;
   }
@@ -217,8 +217,8 @@ class ZeroDBService {
    */
   async getStats(namespace?: string): Promise<DatabaseStats | NamespaceDetailStats> {
     const endpoint = namespace
-      ? `/api/v1/public/zerodb/stats?namespace=${namespace}`
-      : '/api/v1/public/zerodb/stats';
+      ? `/api/v1/zerodb/stats?namespace=${namespace}`
+      : '/api/v1/zerodb/stats';
     const response = await apiClient.get<DatabaseStats | NamespaceDetailStats>(endpoint);
     return response.data;
   }

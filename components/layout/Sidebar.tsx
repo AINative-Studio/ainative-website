@@ -175,22 +175,24 @@ export default function Sidebar({ isMobile = false, onClose }: SidebarProps) {
 
             {/* Footer */}
             <div className="pt-4 border-t border-white/10 space-y-1">
-                <Link
-                    href="/feedback"
+                <a
+                    href="mailto:support@ainative.studio"
                     className="flex items-center gap-3 px-4 py-2 text-sm text-gray-400 hover:text-white hover:bg-white/5 rounded-lg transition-all"
                     onClick={isMobile ? onClose : undefined}
                 >
                     <MessageSquare className="w-4 h-4 shrink-0" />
                     <span>Feedback</span>
-                </Link>
-                <Link
-                    href="/help"
+                </a>
+                <a
+                    href="https://docs.ainative.studio"
+                    target="_blank"
+                    rel="noopener noreferrer"
                     className="flex items-center gap-3 px-4 py-2 text-sm text-gray-400 hover:text-white hover:bg-white/5 rounded-lg transition-all"
                     onClick={isMobile ? onClose : undefined}
                 >
                     <HelpCircle className="w-4 h-4 shrink-0" />
                     <span>Help & resources</span>
-                </Link>
+                </a>
             </div>
         </div>
     );
