@@ -127,8 +127,11 @@ html.dark body * {
 html.dark h1, html.dark h2, html.dark h3, html.dark h4, html.dark h5, html.dark h6,
 html.dark p, html.dark span, html.dark label, html.dark legend,
 html.dark li, html.dark td, html.dark th, html.dark dt, html.dark dd,
-html.dark a, html.dark .font-medium, html.dark .font-semibold, html.dark .font-bold {
-  color: #e6edf3 !important;
+html.dark a,
+html.dark .font-medium, html.dark .font-semibold, html.dark .font-bold,
+html.dark .text-2xl, html.dark .text-xl, html.dark .text-lg, html.dark .text-4xl,
+html.dark .text-sm:not([class*="text-muted"]):not([class*="text-gray"]):not([class*="text-red"]):not([class*="text-green"]):not([class*="text-yellow"]):not([class*="text-blue"]) {
+  color: #e6edf3;
 }
 
 /* Muted text stays lighter but still readable */
