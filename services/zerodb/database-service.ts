@@ -96,7 +96,7 @@ export interface DatabaseStats {
 const getDefaultProjectId = async (): Promise<string | null> => {
   try {
     // First, try to get existing projects
-    const response = await apiClient.get('/api/v1/public/zerodb/projects');
+    const response = await apiClient.get('/api/v1/zerodb/projects');
     const projects = response.data as any[];
 
     if (projects && projects.length > 0) {
@@ -108,7 +108,7 @@ const getDefaultProjectId = async (): Promise<string | null> => {
     }
 
     // No projects found, create a default one
-    const createResponse = await apiClient.post('/api/v1/public/zerodb/projects', {
+    const createResponse = await apiClient.post('/api/v1/zerodb/projects', {
       name: 'Default ZeroDB Project',
       description: 'Auto-created project for ZeroDB PostgreSQL services',
       tier: 'free',
@@ -124,7 +124,7 @@ const getDefaultProjectId = async (): Promise<string | null> => {
 };
 
 export class DatabaseService {
-  private static readonly BASE_PATH = '/api/v1/public/zerodb';
+  private static readonly BASE_PATH = '/api/v1/zerodb';
   private static readonly PROJECTS_BASE_PATH = '/api/v1/projects';
 
   // PostgreSQL Management
@@ -222,7 +222,7 @@ export class DatabaseService {
   // Project Management
   static async getProjects(): Promise<Project[]> {
     try {
-      const response = await apiClient.get('/api/v1/public/zerodb/projects');
+      const response = await apiClient.get('/api/v1/zerodb/projects');
       return response.data as Project[];
     } catch (error: any) {
       if (shouldLogError(error)) {
@@ -234,7 +234,7 @@ export class DatabaseService {
 
   static async createProject(name: string, description?: string): Promise<Project> {
     try {
-      const response = await apiClient.post('/api/v1/public/zerodb/projects', {
+      const response = await apiClient.post('/api/v1/zerodb/projects', {
         name,
         description: description || `Auto-created project: ${name}`,
         tier: 'free',

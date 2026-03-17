@@ -148,7 +148,7 @@ export const EnhancedZeroDBPage: React.FC<EnhancedZeroDBPageProps> = ({ classNam
   // Data loading functions
   const loadCollections = async () => {
     try {
-      const response = await apiClient.get<ApiSuccessResponse<Collection[]>>('/api/v1/public/zerodb/collections');
+      const response = await apiClient.get<ApiSuccessResponse<Collection[]>>('/api/v1/zerodb/collections');
       if (response.data.success) {
         setCollections(response.data.data || []);
       }
@@ -173,7 +173,7 @@ export const EnhancedZeroDBPage: React.FC<EnhancedZeroDBPageProps> = ({ classNam
 
   const loadVectorCollections = async () => {
     try {
-      const response = await apiClient.get<ApiSuccessResponse<VectorCollection[]>>('/api/v1/public/zerodb/vectors/collections');
+      const response = await apiClient.get<ApiSuccessResponse<VectorCollection[]>>('/api/v1/zerodb/vectors/collections');
       if (response.data.success) {
         setVectorCollections(response.data.data || []);
       }
@@ -186,7 +186,7 @@ export const EnhancedZeroDBPage: React.FC<EnhancedZeroDBPageProps> = ({ classNam
 
   const loadRedpandaTopics = async () => {
     try {
-      const response = await apiClient.get<ApiSuccessResponse<RedpandaTopic[]>>('/api/v1/public/zerodb/streaming/topics');
+      const response = await apiClient.get<ApiSuccessResponse<RedpandaTopic[]>>('/api/v1/zerodb/streaming/topics');
       if (response.data.success) {
         setRedpandaTopics(response.data.data || []);
       }
@@ -199,7 +199,7 @@ export const EnhancedZeroDBPage: React.FC<EnhancedZeroDBPageProps> = ({ classNam
 
   const loadStorageBuckets = async () => {
     try {
-      const response = await apiClient.get<ApiSuccessResponse<StorageBucket[]>>('/api/v1/public/zerodb/storage/buckets');
+      const response = await apiClient.get<ApiSuccessResponse<StorageBucket[]>>('/api/v1/zerodb/storage/buckets');
       if (response.data.success) {
         setStorageBuckets(response.data.data || []);
       }
@@ -212,7 +212,7 @@ export const EnhancedZeroDBPage: React.FC<EnhancedZeroDBPageProps> = ({ classNam
 
   const loadMCPConnections = async () => {
     try {
-      const response = await apiClient.get<ApiSuccessResponse<MCPConnection[]>>('/api/v1/public/zerodb/mcp/connections');
+      const response = await apiClient.get<ApiSuccessResponse<MCPConnection[]>>('/api/v1/zerodb/mcp/connections');
       if (response.data.success) {
         setMcpConnections(response.data.data || []);
       }
@@ -225,7 +225,7 @@ export const EnhancedZeroDBPage: React.FC<EnhancedZeroDBPageProps> = ({ classNam
 
   const loadRLHFDatasets = async () => {
     try {
-      const response = await apiClient.get<ApiSuccessResponse<RLHFDataset[]>>('/api/v1/public/zerodb/rlhf/datasets');
+      const response = await apiClient.get<ApiSuccessResponse<RLHFDataset[]>>('/api/v1/zerodb/rlhf/datasets');
       if (response.data.success) {
         setRlhfDatasets(response.data.data || []);
       }
@@ -238,7 +238,7 @@ export const EnhancedZeroDBPage: React.FC<EnhancedZeroDBPageProps> = ({ classNam
 
   const loadMetrics = async () => {
     try {
-      const response = await apiClient.get<ApiSuccessResponse<AnalyticsUsageData>>('/api/v1/public/zerodb/analytics/usage');
+      const response = await apiClient.get<ApiSuccessResponse<AnalyticsUsageData>>('/api/v1/zerodb/analytics/usage');
       if (response.data.success) {
         const data = response.data.data;
         

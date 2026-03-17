@@ -77,7 +77,7 @@ export interface PresignedUrlResponse {
 }
 
 export class StorageService {
-  private static readonly BASE_PATH = '/api/v1/public/zerodb/storage';
+  private static readonly BASE_PATH = '/api/v1/zerodb/storage';
 
   // Bucket Management
   static async getBuckets(): Promise<StorageBucket[]> {

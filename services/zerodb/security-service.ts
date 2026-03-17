@@ -104,10 +104,10 @@ export interface AccessPolicyCreateRequest {
 }
 
 export class SecurityService {
-  private static readonly API_KEYS_PATH = '/api/v1/public/zerodb/api-keys';
-  private static readonly ACCESS_PATH = '/api/v1/public/zerodb/access';
-  private static readonly AUDIT_PATH = '/api/v1/public/zerodb/audit';
-  private static readonly SECURITY_PATH = '/api/v1/public/zerodb/security';
+  private static readonly API_KEYS_PATH = '/api/v1/zerodb/api-keys';
+  private static readonly ACCESS_PATH = '/api/v1/zerodb/access';
+  private static readonly AUDIT_PATH = '/api/v1/zerodb/audit';
+  private static readonly SECURITY_PATH = '/api/v1/zerodb/security';
 
   // API Key Management
   static async getAPIKeys(): Promise<APIKey[]> {

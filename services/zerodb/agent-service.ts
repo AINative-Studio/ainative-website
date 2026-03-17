@@ -100,8 +100,8 @@ export interface AgentExecutionRequest {
 }
 
 export class AgentService {
-  private static readonly BASE_PATH = '/api/v1/public/zerodb/agents';
-  private static readonly MEMORY_PATH = '/api/v1/public/zerodb/memory';
+  private static readonly BASE_PATH = '/api/v1/zerodb/agents';
+  private static readonly MEMORY_PATH = '/api/v1/zerodb/memory';
 
   // Agent Management
   static async getAgents(): Promise<Agent[]> {

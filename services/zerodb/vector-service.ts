@@ -104,8 +104,8 @@ export interface TrainingJobCreateRequest {
 }
 
 export class VectorService {
-  private static readonly BASE_PATH = '/api/v1/public/zerodb/vectors';
-  private static readonly ZEROML_PATH = '/api/v1/public/zerodb/zeroml';
+  private static readonly BASE_PATH = '/api/v1/zerodb/vectors';
+  private static readonly ZEROML_PATH = '/api/v1/zerodb/zeroml';
 
   // Vector Collections Management
   static async getCollections(): Promise<VectorCollection[]> {

@@ -82,7 +82,7 @@ export const semanticSearchService = {
 
     try {
       // Build URL with query parameters
-      const fullEndpoint = `/api/v1/public/zerodb/search/suggestions?q=${encodeURIComponent(query.trim())}&limit=${limit}`;
+      const fullEndpoint = `/api/v1/zerodb/search/suggestions?q=${encodeURIComponent(query.trim())}&limit=${limit}`;
 
       const response = await apiClient.get<SearchSuggestionsResponse>(fullEndpoint);
 
@@ -107,7 +107,7 @@ export const semanticSearchService = {
   async searchContent(request: SearchContentRequest): Promise<VectorSearchResponse> {
     try {
       const response = await apiClient.post<VectorSearchResponse>(
-        '/api/v1/public/zerodb/vectors/search/text',
+        '/api/v1/zerodb/vectors/search/text',
         {
           collection_name: request.collection_name,
           query_text: request.query_text,
@@ -142,7 +142,7 @@ export const semanticSearchService = {
   ): Promise<VectorSearchResponse> {
     try {
       const response = await apiClient.post<VectorSearchResponse>(
-        '/api/v1/public/zerodb/vectors/search/related',
+        '/api/v1/zerodb/vectors/search/related',
         {
           collection_name: collectionName,
           content_id: contentId,
@@ -173,7 +173,7 @@ export const semanticSearchService = {
   ): Promise<EmbeddingsResponse> {
     try {
       const response = await apiClient.post<EmbeddingsResponse>(
-        `/api/v1/public/zerodb/zeroml/models/${modelId}/embed`,
+        `/api/v1/zerodb/zeroml/models/${modelId}/embed`,
         { texts }
       );
 
@@ -194,7 +194,7 @@ export const semanticSearchService = {
   async indexContent(request: IndexContentRequest): Promise<IndexContentResponse> {
     try {
       const response = await apiClient.post<IndexContentResponse>(
-        '/api/v1/public/zerodb/vectors/index',
+        '/api/v1/zerodb/vectors/index',
         {
           collection_name: request.collection_name,
           items: request.items,

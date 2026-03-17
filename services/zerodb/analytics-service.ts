@@ -115,7 +115,7 @@ export interface SystemMetrics {
 }
 
 export class AnalyticsService {
-  private static readonly BASE_PATH = '/api/v1/public/zerodb';
+  private static readonly BASE_PATH = '/api/v1/zerodb';
   private static readonly MONITORING_PATH = '/api/v1/monitoring';
   private static readonly BILLING_PATH = '/api/v1/billing';
   private static readonly METRICS_PATH = '/api/v1/monitoring/metrics';
