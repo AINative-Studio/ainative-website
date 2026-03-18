@@ -1,9 +1,7 @@
 import React from "react";
 
 import { Metadata } from 'next';
-import dynamic from 'next/dynamic';
-
-const NotificationsClient = dynamic(() => import('./NotificationsClient'), { ssr: false });
+import NotificationsClient from './NotificationsClient';
 
 export const metadata: Metadata = {
   title: 'Notifications | AI Native Studio',
