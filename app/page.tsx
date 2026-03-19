@@ -8,7 +8,7 @@ export const revalidate = 600; // 10 minutes
 
 export const metadata: Metadata = {
   title: 'AI Native Studio - The Best AI Code Editor | Cursor & Windsurf Alternative',
-  description: 'The AI-native IDE with multi-agent development, quantum acceleration, and memory-powered coding. Free forever. Build 10x faster with intelligent code completion, codebase understanding, and agentic workflows.',
+  description: 'The AI-native IDE with multi-agent development, quantum acceleration, and memory-powered coding. Free forever. Build 10x faster with AI.',
   keywords: [
     // Primary competitive keywords
     'AI code editor',
@@ -17,6 +17,12 @@ export const metadata: Metadata = {
     'windsurf alternative',
     'github copilot alternative',
     'codeium alternative',
+    // Agent & Enterprise keywords
+    'ADE agent deployment expert',
+    'OpenClaw strategy',
+    'agentic AI platform',
+    'enterprise AI agents',
+    'NemoClaw',
     // Action keywords
     'AI coding assistant',
     'AI pair programming',
