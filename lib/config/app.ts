@@ -19,6 +19,7 @@ export const appConfig = {
     linkedin: process.env.NEXT_PUBLIC_LINKEDIN_URL || 'https://www.linkedin.com/company/cody-agent/posts/?feedView=all',
     github: process.env.NEXT_PUBLIC_GITHUB_URL || 'https://github.com/AINative-Studio',
     zerodb: process.env.NEXT_PUBLIC_ZERODB_URL || 'https://zerodb.ainative.studio',
+    agency: process.env.NEXT_PUBLIC_AGENCY_URL || 'https://agency.ainative.studio',
     discord: process.env.NEXT_PUBLIC_DISCORD_URL || 'https://discord.gg/paipalooza'
   },
 
