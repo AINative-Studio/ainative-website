@@ -134,6 +134,18 @@ export const metadata: Metadata = {
     'AI agent swarm',
     'multi-agent development',
 
+    // OpenClaw / Agentic Strategy (GTC 2026)
+    'OpenClaw strategy',
+    'agentic AI strategy',
+    'enterprise AI agents',
+    'every company needs OpenClaw',
+    'AI agent platform',
+    'MCP server hosting',
+    'agentic system strategy',
+    'NemoClaw',
+    'AI-native startup',
+    'AI venture studio',
+
     // Action keywords
     'build apps with AI',
     'AI website builder',
