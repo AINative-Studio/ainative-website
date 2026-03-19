@@ -173,7 +173,7 @@ export default function AboutClient() {
           <h2 className="text-3xl font-bold mb-6">Our Story</h2>
           <div className="space-y-6 text-gray-300">
             <p>
-              Founded in 2023, AINative was born out of the frustration with the
+              Founded in September 2025, AINative was born out of the frustration with the
               complexity of deploying and managing AI models in production. Our
               team of AI researchers, engineers, and product builders came
               together with a shared vision: to make AI development as simple as

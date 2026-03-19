@@ -60,7 +60,7 @@ const jsonLd = {
   url: 'https://www.ainative.studio',
   logo: 'https://www.ainative.studio/logo.png',
   description: 'AI-powered development platform with memory-powered agents and quantum-accelerated IDE experience',
-  foundingDate: '2023',
+  foundingDate: '2025-09',
   sameAs: [
     'https://github.com/AINative-Studio',
     'https://twitter.com/ainativestudio',

@@ -15,7 +15,7 @@ export const appConfig = {
 
   links: {
     calendly: process.env.NEXT_PUBLIC_CALENDLY_URL || 'https://calendly.com/seedlingstudio/',
-    blog: process.env.NEXT_PUBLIC_BLOG_URL || 'https://blog.ainative.studio',
+    blog: process.env.NEXT_PUBLIC_BLOG_URL || 'https://www.ainative.studio/blog',
     linkedin: process.env.NEXT_PUBLIC_LINKEDIN_URL || 'https://www.linkedin.com/company/cody-agent/posts/?feedView=all',
     github: process.env.NEXT_PUBLIC_GITHUB_URL || 'https://github.com/AINative-Studio',
     zerodb: process.env.NEXT_PUBLIC_ZERODB_URL || 'https://zerodb.ainative.studio',
