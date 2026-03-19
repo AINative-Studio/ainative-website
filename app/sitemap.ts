@@ -2,7 +2,7 @@ import { MetadataRoute } from 'next';
 
 const BASE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://www.ainative.studio';
 
-export default function sitemap(): MetadataRoute.Sitemap {
+export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const currentDate = new Date().toISOString();
 
   // Static public pages
@@ -177,5 +177,41 @@ export default function sitemap(): MetadataRoute.Sitemap {
     },
   ];
 
-  return staticPages;
+  // Dynamic blog posts from Strapi
+  let blogPosts: MetadataRoute.Sitemap = [];
+  try {
+    const STRAPI_URL = process.env.NEXT_PUBLIC_STRAPI_URL || 'https://ainative-community-production.up.railway.app';
+    const res = await fetch(
+      `${STRAPI_URL}/api/blog-posts?sort=published_date:desc&pagination[pageSize]=200&fields[0]=slug&fields[1]=updatedAt&fields[2]=published_date`,
+      { next: { revalidate: 3600 } }
+    );
+    if (res.ok) {
+      const data = await res.json();
+      const posts = data?.data || [];
+      blogPosts = posts.map((post: { slug: string; updatedAt?: string; published_date?: string }) => ({
+        url: `${BASE_URL}/blog/${post.slug}`,
+        lastModified: post.updatedAt || post.published_date || currentDate,
+        changeFrequency: 'weekly' as const,
+        priority: 0.7,
+      }));
+    }
+  } catch (e) {
+    console.warn('Could not fetch blog posts for sitemap:', e);
+  }
+
+  // New SEO pages
+  const seoPages: MetadataRoute.Sitemap = [
+    { url: `${BASE_URL}/compare`, lastModified: currentDate, changeFrequency: 'monthly', priority: 0.7 },
+    { url: `${BASE_URL}/compare/ai-native-vs-cursor`, lastModified: currentDate, changeFrequency: 'monthly', priority: 0.8 },
+    { url: `${BASE_URL}/compare/zerodb-vs-pinecone`, lastModified: currentDate, changeFrequency: 'monthly', priority: 0.8 },
+    { url: `${BASE_URL}/compare/ai-native-vs-copilot`, lastModified: currentDate, changeFrequency: 'monthly', priority: 0.8 },
+    { url: `${BASE_URL}/use-cases`, lastModified: currentDate, changeFrequency: 'monthly', priority: 0.7 },
+    { url: `${BASE_URL}/use-cases/semantic-search`, lastModified: currentDate, changeFrequency: 'monthly', priority: 0.7 },
+    { url: `${BASE_URL}/use-cases/rag-applications`, lastModified: currentDate, changeFrequency: 'monthly', priority: 0.7 },
+    { url: `${BASE_URL}/use-cases/agent-orchestration`, lastModified: currentDate, changeFrequency: 'monthly', priority: 0.7 },
+    { url: `${BASE_URL}/use-cases/vector-database`, lastModified: currentDate, changeFrequency: 'monthly', priority: 0.7 },
+    { url: `${BASE_URL}/products/mcp`, lastModified: currentDate, changeFrequency: 'weekly', priority: 0.8 },
+  ];
+
+  return [...staticPages, ...blogPosts, ...seoPages];
 }

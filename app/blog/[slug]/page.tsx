@@ -17,19 +17,50 @@ export const revalidate = 300; // 5 minutes
 // Add cache tags for on-demand revalidation
 export const tags = getCacheTags('blog');
 
+async function fetchPostBySlug(slug: string) {
+  const STRAPI_URL = process.env.NEXT_PUBLIC_STRAPI_URL || 'https://ainative-community-production.up.railway.app';
+  try {
+    const res = await fetch(
+      `${STRAPI_URL}/api/blog-posts?filters[slug][$eq]=${slug}&populate=*`,
+      { next: { revalidate: 300 } }
+    );
+    if (!res.ok) return null;
+    const data = await res.json();
+    return data?.data?.[0] || null;
+  } catch {
+    return null;
+  }
+}
+
 export async function generateMetadata({ params }: BlogDetailPageProps): Promise<Metadata> {
   const resolvedParams = await params;
   const { slug } = resolvedParams;
+  const post = await fetchPostBySlug(slug);
 
-  // For now, use generic metadata. In production, fetch the blog post for dynamic metadata
+  const title = post?.title || slug.replace(/-/g, ' ').replace(/\b\w/g, (l: string) => l.toUpperCase());
+  const description = post?.excerpt
+    ? post.excerpt.slice(0, 155)
+    : post?.content
+      ? post.content.replace(/[#*_\[\]]/g, '').slice(0, 155)
+      : `Read ${title} on the AINative Blog`;
+
+  const ogImage = post?.featured_image?.url
+    || post?.featured_image?.formats?.large?.url
+    || '/og-blog.png';
+
   return {
-    title: `${slug.replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase())} | AINative Blog`,
-    description: 'Read this article on the AINative Blog',
+    title: `${title} | AINative Blog`,
+    description,
     openGraph: {
-      title: slug.replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase()),
-      description: 'Read this article on the AINative Blog',
+      title,
+      description,
       type: 'article',
+      url: `https://www.ainative.studio/blog/${slug}`,
+      images: [{ url: ogImage }],
+      ...(post?.published_date && { publishedTime: post.published_date }),
+      ...(post?.updatedAt && { modifiedTime: post.updatedAt }),
     },
+    alternates: { canonical: `https://www.ainative.studio/blog/${slug}` },
   };
 }
 
