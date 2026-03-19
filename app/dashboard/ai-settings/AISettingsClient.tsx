@@ -30,30 +30,56 @@ const CATEGORY_MAP: Record<string, string[]> = {
 // Sort options
 type SortOption = 'newest' | 'oldest' | 'name';
 
-// Provider-based gradient thumbnails
-const PROVIDER_GRADIENTS: Record<string, string> = {
-    openai: 'from-emerald-600 to-teal-800',
-    anthropic: 'from-amber-600 to-orange-800',
-    meta: 'from-blue-600 to-indigo-800',
-    google: 'from-red-500 to-rose-800',
-    mistral: 'from-violet-600 to-purple-800',
-    cohere: 'from-cyan-600 to-sky-800',
-    stability: 'from-fuchsia-600 to-pink-800',
-    ainative: 'from-indigo-500 to-violet-800',
-    minimax: 'from-rose-500 to-pink-800',
-    qwen: 'from-sky-500 to-blue-800',
-    alibaba: 'from-orange-500 to-red-800',
-    seedance: 'from-lime-500 to-emerald-800',
-    sora: 'from-teal-500 to-cyan-800',
-    cogvideo: 'from-purple-500 to-indigo-800',
-    'nous research': 'from-yellow-500 to-amber-800',
-    baai: 'from-slate-500 to-zinc-800',
-    generic: 'from-gray-500 to-slate-700',
+// Category-based gradient thumbnails — color-coded by model type for visual scanning
+const CATEGORY_GRADIENTS: Record<string, string> = {
+    audio: 'from-violet-500 to-purple-900',
+    video: 'from-rose-500 to-red-900',
+    image: 'from-amber-500 to-orange-900',
+    coding: 'from-emerald-500 to-green-900',
+    code: 'from-emerald-500 to-green-900',
+    chat: 'from-sky-500 to-blue-900',
+    embedding: 'from-teal-500 to-cyan-900',
+    'text-gen': 'from-indigo-500 to-violet-900',
     default: 'from-slate-600 to-gray-800',
 };
 
+// Provider label colors for the small badge
+const PROVIDER_BADGE_COLORS: Record<string, string> = {
+    openai: 'bg-emerald-900/60 text-emerald-300',
+    anthropic: 'bg-amber-900/60 text-amber-300',
+    google: 'bg-red-900/60 text-red-300',
+    cohere: 'bg-cyan-900/60 text-cyan-300',
+    mistral: 'bg-violet-900/60 text-violet-300',
+    meta: 'bg-blue-900/60 text-blue-300',
+    ainative: 'bg-indigo-900/60 text-indigo-300',
+    default: 'bg-gray-800/60 text-gray-300',
+};
+
+function getCategoryGradient(model: UnifiedAIModel): string {
+    // Determine category from model capabilities or category field
+    const category = model.category?.toLowerCase() || '';
+    if (category && CATEGORY_GRADIENTS[category]) return CATEGORY_GRADIENTS[category];
+
+    // Infer from capabilities
+    const caps = (model.capabilities || []).map(c => c.toLowerCase()).join(' ');
+    if (caps.includes('audio') || caps.includes('tts') || caps.includes('speech') || caps.includes('music')) return CATEGORY_GRADIENTS.audio;
+    if (caps.includes('video') || caps.includes('i2v') || caps.includes('t2v')) return CATEGORY_GRADIENTS.video;
+    if (caps.includes('image')) return CATEGORY_GRADIENTS.image;
+    if (caps.includes('code') || caps.includes('coding')) return CATEGORY_GRADIENTS.coding;
+    if (caps.includes('embedding')) return CATEGORY_GRADIENTS.embedding;
+    if (caps.includes('chat') || caps.includes('completion')) return CATEGORY_GRADIENTS.chat;
+    if (caps.includes('text')) return CATEGORY_GRADIENTS['text-gen'];
+
+    return CATEGORY_GRADIENTS.default;
+}
+
+function getProviderBadgeColor(provider: string): string {
+    return PROVIDER_BADGE_COLORS[provider.toLowerCase()] || PROVIDER_BADGE_COLORS.default;
+}
+
+// Keep backward compat
 function getProviderGradient(provider: string): string {
-    return PROVIDER_GRADIENTS[provider.toLowerCase()] || PROVIDER_GRADIENTS.default;
+    return CATEGORY_GRADIENTS.default;
 }
 
 function getProviderInitials(provider: string): string {
@@ -427,11 +453,11 @@ export default function AISettingsClient() {
                             onClick={() => router.push(`/dashboard/ai-settings/${model.slug}`)}
                         >
                             {/* Thumbnail */}
-                            <div className={`relative h-36 ${model.thumbnail_url ? 'bg-cover bg-center' : `bg-gradient-to-br ${getProviderGradient(model.provider)}`} flex items-center justify-center overflow-hidden`}
+                            <div className={`relative h-36 ${model.thumbnail_url ? 'bg-cover bg-center' : `bg-gradient-to-br ${getCategoryGradient(model)}`} flex items-center justify-center overflow-hidden`}
                                 style={model.thumbnail_url ? { backgroundImage: `url(${model.thumbnail_url})` } : undefined}
                             >
                                 {!model.thumbnail_url && (
-                                    <span className="text-3xl font-bold text-white/30 select-none">
+                                    <span className="text-3xl font-bold text-white/20 select-none tracking-wider">
                                         {getProviderInitials(model.provider)}
                                     </span>
                                 )}
@@ -455,7 +481,7 @@ export default function AISettingsClient() {
                                         {model.name}
                                     </h3>
                                     {model.provider && (
-                                        <span className="text-xs px-2 py-0.5 rounded-md bg-white/5 text-gray-400 shrink-0">
+                                        <span className={`text-xs px-2 py-0.5 rounded-md shrink-0 ${getProviderBadgeColor(model.provider)}`}>
                                             {model.provider}
                                         </span>
                                     )}
