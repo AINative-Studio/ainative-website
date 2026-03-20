@@ -30,6 +30,17 @@ export const metadata: Metadata = {
     'real-time vector search',
     'hybrid search database',
     'multi-tenant vector DB',
+    // Market demand keywords (from Upwork analysis)
+    'vector database architecture',
+    'RAG implementation',
+    'retrieval augmented generation',
+    'AI data pipeline database',
+    'MLOps data storage',
+    'knowledge management AI',
+    'document processing AI',
+    'AI SaaS data layer',
+    'NoSQL vector database',
+    'serverless vector database',
   ],
   openGraph: {
     title: 'ZeroDB - AI-Native Vector Database | AINative Studio',
