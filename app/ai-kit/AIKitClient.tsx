@@ -397,10 +397,6 @@ export default function AIKitClient() {
                 <span>50K+ Downloads</span>
               </div>
               <div className="flex items-center">
-                <Star className="w-4 h-4 mr-2 text-yellow-400" fill="currentColor" />
-                <span>1.2K+ Stars</span>
-              </div>
-              <div className="flex items-center">
                 <Github className="w-4 h-4 mr-2 text-gray-400" />
                 <span>Open Source</span>
               </div>

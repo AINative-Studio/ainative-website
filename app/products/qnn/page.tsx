@@ -4,9 +4,14 @@ import type { Metadata } from 'next';
 import QNNClient from './QNNClient';
 
 export const metadata: Metadata = {
-  title: 'Quantum Neural Networks (QNN) - Quantum-Enhanced AI Coding',
-  description: 'Experience quantum-accelerated code intelligence. Our Quantum Neural Networks deliver 10x faster embeddings, enhanced code understanding, and next-gen AI inference for development.',
+  title: 'Quantum Neural Networks (QNN) - AINative Labs Moonshot',
+  description: 'An AINative Labs moonshot: Quantum Neural Networks for next-gen AI inference. Experimental quantum-accelerated embeddings, code intelligence, and hybrid quantum-classical AI research.',
   keywords: [
+    // AINative Labs positioning
+    'AINative Labs',
+    'moonshot project',
+    'AI research lab',
+    'experimental AI',
     // Quantum AI keywords
     'quantum neural networks',
     'quantum machine learning',
@@ -28,8 +33,8 @@ export const metadata: Metadata = {
     'quantum-ready development',
   ],
   openGraph: {
-    title: 'Quantum Neural Networks (QNN) | AI Native Studio',
-    description: 'Empower your AI with quantum-enhanced capabilities for unmatched speed and precision.',
+    title: 'Quantum Neural Networks (QNN) - AINative Labs Moonshot',
+    description: 'An AINative Labs moonshot: experimental quantum-accelerated AI for next-gen code intelligence and inference.',
     type: 'website',
     url: 'https://www.ainative.studio/products/qnn',
     images: [

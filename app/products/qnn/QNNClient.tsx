@@ -33,14 +33,18 @@ export default function QNNClient() {
         <div className="max-w-6xl mx-auto">
           {/* Hero Section */}
           <div className="text-center mb-16">
-            <div className="inline-flex p-4 rounded-full bg-[#4B6FED]/10 mb-6">
-              <Atom className="h-8 w-8 text-[#4B6FED] animate-spin-slow" />
+            <div className="inline-flex items-center gap-2 px-4 py-2 bg-amber-500/10 border border-amber-500/30 rounded-full mb-6">
+              <Atom className="h-4 w-4 text-amber-400" />
+              <span className="text-sm font-medium text-amber-400">AINative Labs Moonshot</span>
             </div>
             <h1 className="text-4xl md:text-5xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-[#4B6FED] to-[#8A63F4] mb-6">
-              Quantum Neural Networks — Unlock Next-Level AI Performance
+              Quantum Neural Networks
             </h1>
-            <p className="text-xl text-gray-400 mb-8 max-w-3xl mx-auto">
-              Empower your AI with quantum-enhanced capabilities for unmatched speed and precision
+            <p className="text-xl text-gray-400 mb-4 max-w-3xl mx-auto">
+              An experimental moonshot from AINative Labs — exploring quantum-accelerated AI inference for next-generation code intelligence and development.
+            </p>
+            <p className="text-sm text-amber-400/70 mb-8">
+              Research preview — this is one of our long-term bets on the future of AI infrastructure.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Link href="/pricing">

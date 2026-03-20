@@ -128,7 +128,7 @@ const fallbackPlans: PricingPlan[] = [
       'Everything in Teams',
       'RBAC & role management',
       'Hybrid deployments',
-      'Access to QNN APIs',
+      'ZeroDB vector storage',
       'Custom training',
       'Volume pricing',
       'Dedicated support',
