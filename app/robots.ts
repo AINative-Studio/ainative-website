@@ -21,6 +21,16 @@ export default function robots(): MetadataRoute.Robots {
           '/design-system/',
         ],
       },
+      {
+        userAgent: ['GPTBot', 'anthropic-ai', 'Claude-Web', 'CCBot', 'Google-Extended'],
+        allow: '/',
+        disallow: [
+          '/dashboard/',
+          '/account/',
+          '/billing/',
+          '/api/',
+        ],
+      },
     ],
     sitemap: `${BASE_URL}/sitemap.xml`,
   };

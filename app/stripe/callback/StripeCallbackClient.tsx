@@ -159,7 +159,7 @@ export default function StripeCallbackClient() {
   }, [searchParams, router]);
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50 px-4 py-12">
+    <div className="min-h-screen flex items-center justify-center bg-[#0D1117] px-4 py-12">
       <Card className="max-w-md w-full">
         <CardHeader>
           <CardTitle className="text-center">
@@ -171,8 +171,8 @@ export default function StripeCallbackClient() {
         <CardContent className="space-y-4">
           {result.state === 'processing' && (
             <div className="text-center space-y-4">
-              <Loader2 className="h-12 w-12 animate-spin text-blue-600 mx-auto" />
-              <p className="text-sm text-gray-600">{result.message}</p>
+              <Loader2 className="h-12 w-12 animate-spin text-[#4B6FED] mx-auto" />
+              <p className="text-sm text-gray-400">{result.message}</p>
               <p className="text-xs text-gray-500">
                 Please wait while we verify your Stripe account...
               </p>
@@ -180,10 +180,10 @@ export default function StripeCallbackClient() {
           )}
 
           {result.state === 'success' && (
-            <Alert className="border-green-200 bg-green-50">
+            <Alert className="border-green-500/20 bg-green-500/10">
               <CheckCircle2 className="h-4 w-4 text-green-600" />
-              <AlertTitle className="text-green-800">Success!</AlertTitle>
-              <AlertDescription className="text-green-700">
+              <AlertTitle className="text-green-400">Success!</AlertTitle>
+              <AlertDescription className="text-green-300">
                 {result.message}
                 <br />
                 <span className="text-xs">Redirecting you now...</span>
@@ -193,10 +193,10 @@ export default function StripeCallbackClient() {
 
           {result.state === 'error' && (
             <>
-              <Alert className="border-red-200 bg-red-50">
+              <Alert className="border-red-500/20 bg-red-500/10">
                 <XCircle className="h-4 w-4 text-red-600" />
-                <AlertTitle className="text-red-800">Connection Failed</AlertTitle>
-                <AlertDescription className="text-red-700">
+                <AlertTitle className="text-red-400">Connection Failed</AlertTitle>
+                <AlertDescription className="text-red-300">
                   {result.message}
                 </AlertDescription>
               </Alert>
@@ -219,7 +219,7 @@ export default function StripeCallbackClient() {
 
               <div className="text-xs text-gray-500 text-center">
                 If you continue experiencing issues, please{' '}
-                <Link href="/support" className="text-blue-600 hover:underline">
+                <Link href="/support" className="text-[#4B6FED] hover:underline">
                   contact support
                 </Link>
                 .

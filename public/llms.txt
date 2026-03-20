@@ -1,0 +1,37 @@
+# AINative Studio
+
+> AI-native development platform with multi-agent orchestration, ZeroDB vector database, MCP server hosting, and AI Kit SDK packages.
+
+## Products
+
+- ZeroDB: Serverless vector database for AI applications. Store embeddings, semantic search, NoSQL tables, event streams, file storage.
+- Agent Swarm: Multi-agent AI development teams. Autonomous agents handle architecture, coding, testing, deployment.
+- MCP Server Hosting: Deploy and manage Model Context Protocol servers with auto-scaling.
+- AI Kit: 32 production-ready NPM packages for building AI applications (React, Vue, Svelte, Next.js).
+- AINative Code CLI: AI-native development CLI built in Go with ZeroDB integration.
+
+## APIs
+
+- REST API: https://api.ainative.studio
+- API Documentation: https://docs.ainative.studio
+- OpenAPI Spec: https://api.ainative.studio/docs
+
+## SDKs
+
+- TypeScript: npm install @ainative/sdk
+- Python: pip install ainative
+- Go: go get github.com/AINative-Studio/zerodb-go-sdk
+
+## Links
+
+- Website: https://www.ainative.studio
+- Documentation: https://docs.ainative.studio
+- GitHub: https://github.com/AINative-Studio
+- NPM: https://www.npmjs.com/~ainative-studio
+- Agency/Consulting: https://agency.ainative.studio
+- Pricing: https://www.ainative.studio/pricing
+- Contact: https://www.ainative.studio/contact
+
+## Company
+
+AINative Studio is an AI venture studio based in Santa Cruz, California. Founded September 2025 by Toby Morning.

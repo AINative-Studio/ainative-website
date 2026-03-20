@@ -369,13 +369,13 @@ export default function DeveloperToolsClient() {
                     </div>
                   </div>
                   <div className="flex gap-2">
-                    <Button asChild size="sm" variant="outline" className="text-white border-white hover:bg-white hover:text-black">
+                    <Button asChild size="sm" variant="outline" className="text-white border-white hover:bg-[#4B6FED] hover:text-white">
                       <a href="https://api.ainative.studio/docs-enhanced#/" target="_blank" rel="noopener noreferrer">
                         <ExternalLink className="h-4 w-4 mr-2" />
                         View Docs
                       </a>
                     </Button>
-                    <Button asChild size="sm" variant="outline" className="text-white border-white hover:bg-white hover:text-black">
+                    <Button asChild size="sm" variant="outline" className="text-white border-white hover:bg-[#4B6FED] hover:text-white">
                       <a href="/api/v1/codegen/python" target="_blank" rel="noopener noreferrer">
                         <Download className="h-4 w-4 mr-2" />
                         Python Examples
@@ -395,13 +395,13 @@ export default function DeveloperToolsClient() {
                     </div>
                   </div>
                   <div className="flex gap-2">
-                    <Button asChild size="sm" variant="outline" className="text-white border-white hover:bg-white hover:text-black">
+                    <Button asChild size="sm" variant="outline" className="text-white border-white hover:bg-[#4B6FED] hover:text-white">
                       <a href="/api/v1/postman-collection-comprehensive" download>
                         <Download className="h-4 w-4 mr-2" />
                         Download Collection
                       </a>
                     </Button>
-                    <Button asChild size="sm" variant="outline" className="text-white border-white hover:bg-white hover:text-black">
+                    <Button asChild size="sm" variant="outline" className="text-white border-white hover:bg-[#4B6FED] hover:text-white">
                       <a href="/api/v1/postman-environment" download>
                         <Download className="h-4 w-4 mr-2" />
                         Environment
@@ -433,7 +433,7 @@ export default function DeveloperToolsClient() {
                     <div className="space-y-2">
                       <Badge variant="secondary" className="text-xs">100% Test Coverage</Badge>
                       <div className="flex gap-1">
-                        <Button size="sm" variant="outline" asChild className="text-white border-white hover:bg-white hover:text-black">
+                        <Button size="sm" variant="outline" asChild className="text-white border-white hover:bg-[#4B6FED] hover:text-white">
                           <a href="https://github.com/AINative-Studio/python-sdk" target="_blank">
                             <Github className="h-4 w-4 mr-1" />
                             GitHub
@@ -462,7 +462,7 @@ export default function DeveloperToolsClient() {
                     <div className="space-y-2">
                       <Badge variant="secondary" className="text-xs">87% Test Coverage</Badge>
                       <div className="flex gap-1">
-                        <Button size="sm" variant="outline" asChild className="text-white border-white hover:bg-white hover:text-black">
+                        <Button size="sm" variant="outline" asChild className="text-white border-white hover:bg-[#4B6FED] hover:text-white">
                           <a href="https://github.com/AINative-Studio/TypeScript-SDK" target="_blank">
                             <Github className="h-4 w-4 mr-1" />
                             GitHub
@@ -491,7 +491,7 @@ export default function DeveloperToolsClient() {
                     <div className="space-y-2">
                       <Badge variant="secondary" className="text-xs">Production Ready</Badge>
                       <div className="flex gap-1">
-                        <Button size="sm" variant="outline" asChild className="text-white border-white hover:bg-white hover:text-black">
+                        <Button size="sm" variant="outline" asChild className="text-white border-white hover:bg-[#4B6FED] hover:text-white">
                           <a href="https://github.com/AINative-Studio/Go-SDK" target="_blank">
                             <Github className="h-4 w-4 mr-1" />
                             GitHub
@@ -581,25 +581,25 @@ export default function DeveloperToolsClient() {
             <div className="p-4 bg-muted/50 rounded-lg">
               <h4 className="font-semibold mb-3 text-white">Quick Access</h4>
               <div className="flex flex-wrap gap-2">
-                <Button asChild size="sm" variant="outline" className="text-white border-white hover:bg-white hover:text-black">
+                <Button asChild size="sm" variant="outline" className="text-white border-white hover:bg-[#4B6FED] hover:text-white">
                   <a href="https://api.ainative.studio/docs-enhanced#/" target="_blank">
                     <BookOpen className="h-4 w-4 mr-2" />
                     API Documentation
                   </a>
                 </Button>
-                <Button asChild size="sm" variant="outline" className="text-white border-white hover:bg-white hover:text-black">
+                <Button asChild size="sm" variant="outline" className="text-white border-white hover:bg-[#4B6FED] hover:text-white">
                   <Link href="/dashboard/api-sandbox">
                     <Box className="h-4 w-4 mr-2" />
                     API Sandbox
                   </Link>
                 </Button>
-                <Button asChild size="sm" variant="outline" className="text-white border-white hover:bg-white hover:text-black">
+                <Button asChild size="sm" variant="outline" className="text-white border-white hover:bg-[#4B6FED] hover:text-white">
                   <Link href="/dashboard/load-testing">
                     <Zap className="h-4 w-4 mr-2" />
                     Load Testing
                   </Link>
                 </Button>
-                <Button asChild size="sm" variant="outline" className="text-white border-white hover:bg-white hover:text-black">
+                <Button asChild size="sm" variant="outline" className="text-white border-white hover:bg-[#4B6FED] hover:text-white">
                   <a href="https://github.com/AINative-Studio" target="_blank" rel="noopener noreferrer">
                     <Github className="h-4 w-4 mr-2" />
                     GitHub Organization

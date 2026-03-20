@@ -49,6 +49,24 @@ export const metadata: Metadata = {
   },
 };
 
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'SoftwareApplication',
+  name: 'AINative Studio IDE',
+  applicationCategory: 'DeveloperApplication',
+  operatingSystem: 'Windows, macOS, Linux',
+  offers: { '@type': 'Offer', price: '0', priceCurrency: 'USD' },
+  url: 'https://www.ainative.studio/download',
+};
+
 export default function DownloadPage() {
-  return <DownloadClient />;
+  return (
+    <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
+      <DownloadClient />
+    </>
+  );
 }

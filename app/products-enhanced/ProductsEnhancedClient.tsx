@@ -486,7 +486,7 @@ export default function ProductsEnhancedClient() {
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Button
                 asChild
-                className="bg-white text-[#0D1117] hover:bg-gray-100 text-lg px-8 py-6 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1"
+                className="bg-gradient-to-r from-[#4B6FED] to-[#8A63F5] text-white hover:opacity-90 text-lg px-8 py-6 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1"
               >
                 <Link href="/signup">
                   Get Started Free

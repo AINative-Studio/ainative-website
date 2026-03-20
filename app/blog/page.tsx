@@ -6,6 +6,17 @@ import BlogListingClient from './BlogListingClient';
 export const metadata: Metadata = {
   title: 'Blog | AINative Studio',
   description: 'Insights, tutorials, and updates from the AINative team. Learn about AI development, best practices, and the latest in AI-native tooling.',
+  keywords: [
+    'AI development blog',
+    'agentic AI articles',
+    'machine learning tutorials',
+    'AI engineering insights',
+    'AINative Studio blog',
+    'AI best practices',
+    'AI-native tooling',
+    'quantum computing AI',
+    'AI product updates',
+  ],
   openGraph: {
     title: 'AINative Blog',
     description: 'Insights, tutorials, and updates from the AINative team',

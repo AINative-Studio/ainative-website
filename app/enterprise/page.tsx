@@ -90,6 +90,25 @@ export const metadata: Metadata = {
   },
 };
 
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'Service',
+  name: 'AINative Enterprise OpenClaw Consulting',
+  provider: { '@type': 'Organization', name: 'AINative Studio', url: 'https://www.ainative.studio' },
+  description: 'Enterprise agentic AI consulting — OpenClaw strategy implementation, forward deployed AI engineers, and production AI systems.',
+  url: 'https://www.ainative.studio/enterprise',
+  areaServed: 'Worldwide',
+  serviceType: 'AI Consulting',
+};
+
 export default function EnterprisePage() {
-  return <EnterpriseClient />;
+  return (
+    <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
+      <EnterpriseClient />
+    </>
+  );
 }

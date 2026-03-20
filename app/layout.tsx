@@ -236,6 +236,9 @@ export const metadata: Metadata = {
     'geo.placename': 'United States',
     'geo.position': '37.7749;-122.4194',
     'ICBM': '37.7749, -122.4194',
+    // AI content declarations
+    'ai-content-declaration': 'human-authored with AI assistance',
+    'ai-training': 'allowed',
   },
 };
 

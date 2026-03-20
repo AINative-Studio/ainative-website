@@ -1,0 +1,16 @@
+{
+  "schema_version": "v1",
+  "name_for_human": "AINative Studio",
+  "name_for_model": "ainative_studio",
+  "description_for_human": "AI-native development platform with ZeroDB vector database, Agent Swarm, MCP server hosting, and AI Kit SDK.",
+  "description_for_model": "AINative Studio provides: ZeroDB (serverless vector database with embeddings, semantic search, NoSQL tables), Agent Swarm (multi-agent AI development teams), MCP Server Hosting (Model Context Protocol servers), AI Kit (32 NPM packages for AI apps). API at api.ainative.studio, docs at docs.ainative.studio.",
+  "auth": { "type": "none" },
+  "api": {
+    "type": "openapi",
+    "url": "https://api.ainative.studio/docs",
+    "is_user_authenticated": false
+  },
+  "logo_url": "https://www.ainative.studio/ainative-icon.svg",
+  "contact_email": "toby@ainative.studio",
+  "legal_info_url": "https://www.ainative.studio/terms"
+}
