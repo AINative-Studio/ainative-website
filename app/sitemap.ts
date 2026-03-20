@@ -199,6 +199,28 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     console.warn('Could not fetch blog posts for sitemap:', e);
   }
 
+  // Dynamic showcases from Strapi
+  let showcasePages: MetadataRoute.Sitemap = [];
+  try {
+    const STRAPI_URL = process.env.NEXT_PUBLIC_STRAPI_URL || 'https://ainative-community-production.up.railway.app';
+    const res = await fetch(
+      `${STRAPI_URL}/api/showcases?pagination[pageSize]=100&fields[0]=slug&fields[1]=updatedAt`,
+      { next: { revalidate: 3600 } }
+    );
+    if (res.ok) {
+      const data = await res.json();
+      const items = data?.data || [];
+      showcasePages = items.map((item: { slug: string; updatedAt?: string }) => ({
+        url: `${BASE_URL}/showcases/${item.slug}`,
+        lastModified: item.updatedAt || currentDate,
+        changeFrequency: 'weekly' as const,
+        priority: 0.6,
+      }));
+    }
+  } catch (e) {
+    console.warn('Could not fetch showcases for sitemap:', e);
+  }
+
   // New SEO pages
   const seoPages: MetadataRoute.Sitemap = [
     { url: `${BASE_URL}/compare`, lastModified: currentDate, changeFrequency: 'monthly', priority: 0.7 },
@@ -215,5 +237,5 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { url: `${BASE_URL}/dev-resources`, lastModified: currentDate, changeFrequency: 'monthly', priority: 0.5 },
   ];
 
-  return [...staticPages, ...blogPosts, ...seoPages];
+  return [...staticPages, ...blogPosts, ...showcasePages, ...seoPages];
 }
