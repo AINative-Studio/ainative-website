@@ -191,10 +191,28 @@ export default function ZeroDBClient() {
               </span>
             </h1>
 
-            <p className="text-xl md:text-2xl text-gray-300 max-w-3xl mx-auto mb-10">
+            <p className="text-xl md:text-2xl text-gray-300 max-w-3xl mx-auto mb-8">
               The vector database built for AI. Store embeddings, power semantic
               search, and build intelligent applications at scale.
             </p>
+
+            {/* Quick install */}
+            <div className="flex flex-col sm:flex-row gap-3 justify-center items-center mb-10">
+              <div className="bg-[#0A0D14] border border-white/10 rounded-lg px-5 py-3 font-mono text-sm text-gray-200 flex items-center gap-3">
+                <Terminal className="h-4 w-4 text-[#4B6FED] flex-shrink-0" />
+                <code>npm i ainative-zerodb-memory-mcp</code>
+                <button
+                  onClick={() => {
+                    navigator.clipboard.writeText('npm i ainative-zerodb-memory-mcp');
+                    setCopied(true);
+                    setTimeout(() => setCopied(false), 2000);
+                  }}
+                  className="text-gray-500 hover:text-white transition-colors ml-2"
+                >
+                  {copied ? <Check className="h-4 w-4 text-green-400" /> : <Copy className="h-4 w-4" />}
+                </button>
+              </div>
+            </div>
 
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Button
