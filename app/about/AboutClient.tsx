@@ -4,8 +4,35 @@ import React from "react";
 
 import { motion, Variants } from 'framer-motion';
 import Link from 'next/link';
-import { Rocket, Shield, Users, Code, Lightbulb, Cloud, Cpu, Layers } from 'lucide-react';
+import Image from 'next/image';
+import { Rocket, Shield, Users, Code, Lightbulb, Cloud, Cpu, Layers, Bot } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+
+// Team data
+const leadership = [
+  { name: 'Toby Morning', role: 'Founder & CEO', photo: '/team/toby-morning.jpg' },
+  { name: 'Karsten Wade', role: 'Developer Relations, Head Vibe Coder', photo: '' },
+];
+
+const engineering = [
+  { name: 'Cody Jackson', role: 'CTO', photo: '/team/cody-jackson.png' },
+  { name: 'Peter Roan', role: 'Engineering', photo: '/team/peter-roan.png' },
+  { name: 'Forrest Kinkade', role: 'DevOps', photo: '/team/forrest-kinkade.png' },
+  { name: 'Pixel Rose', role: 'Design, UI & Frontend', photo: '/team/pixel-rose.png' },
+  { name: 'Sage Ward', role: 'Strategy', photo: '/team/sage-ward.png' },
+  { name: 'Keystone Hale', role: 'Product Manager', photo: '/team/keystone-hale.png' },
+];
+
+const growthTeam = [
+  { name: 'Helios Mercer', role: 'Chief Orchestrator', photo: '/team/helios-mercer.jpg' },
+  { name: 'Aurora Vale', role: 'Chief of Staff', photo: '/team/aurora-vale.jpg' },
+  { name: 'Atlas Redwood', role: 'SEO & Discoverability', photo: '/team/atlas-redwood.jpg' },
+  { name: 'Lyra Chen-Sato', role: 'Content & Brand Voice', photo: '/team/lyra-chen-sato.jpg' },
+  { name: 'Sage Okafor', role: 'Analytics & Insights', photo: '/team/sage-okafor.jpg' },
+  { name: 'Vega Martinez', role: 'Sales & Conversion', photo: '/team/vega-martinez.jpg' },
+  { name: 'Nova Sinclair', role: 'Growth & Funnel Optimization', photo: '/team/nova-sinclair.jpg' },
+  { name: 'Luma Harrington', role: 'Events & Community', photo: '/team/luma-harrington.jpg' },
+];
 
 // Animation variants
 const fadeIn: Variants = {
@@ -234,6 +261,67 @@ export default function AboutClient() {
                     </p>
                   ))}
                 </div>
+              </motion.div>
+            ))}
+          </div>
+        </div>
+
+        {/* Team Section */}
+        <div className="mb-20">
+          <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={fadeIn} className="text-center mb-12">
+            <h2 className="text-3xl font-bold mb-4">Our Team</h2>
+            <p className="text-xl text-gray-300">The people building the future of AI-native development</p>
+          </motion.div>
+
+          {/* Leadership */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-2xl mx-auto mb-16">
+            {leadership.map((member, i) => (
+              <motion.div key={member.name} initial="hidden" whileInView="visible" viewport={{ once: true }} variants={fadeIn} custom={i} className="text-center">
+                <div className="bg-[#161B22] rounded-xl p-6 border border-[#2D333B]">
+                  {member.photo ? (
+                    <div className="w-24 h-24 rounded-full overflow-hidden mx-auto mb-4 border-2 border-[#4B6FED]/30">
+                      <Image src={member.photo} alt={member.name} width={96} height={96} className="w-full h-full object-cover" />
+                    </div>
+                  ) : (
+                    <div className="w-24 h-24 rounded-full bg-[#4B6FED]/10 text-[#4B6FED] flex items-center justify-center font-bold text-xl mx-auto mb-4">
+                      {member.name.split(' ').map(n => n[0]).join('')}
+                    </div>
+                  )}
+                  <h3 className="text-lg font-bold text-white">{member.name}</h3>
+                  <p className="text-[#4B6FED] text-sm">{member.role}</p>
+                </div>
+              </motion.div>
+            ))}
+          </div>
+
+          {/* Engineering */}
+          <h3 className="text-xl font-bold mb-6 text-center text-gray-300">Engineering</h3>
+          <div className="grid grid-cols-3 md:grid-cols-6 gap-4 max-w-4xl mx-auto mb-16">
+            {engineering.map((member, i) => (
+              <motion.div key={member.name} initial="hidden" whileInView="visible" viewport={{ once: true }} variants={fadeIn} custom={i} className="text-center">
+                <div className="w-16 h-16 rounded-full overflow-hidden mx-auto mb-2 border border-[#2D333B] hover:border-[#4B6FED]/50 transition-colors">
+                  <Image src={member.photo} alt={member.name} width={64} height={64} className="w-full h-full object-cover" />
+                </div>
+                <h4 className="text-xs font-semibold text-white">{member.name}</h4>
+                <p className="text-xs text-gray-500">{member.role}</p>
+              </motion.div>
+            ))}
+          </div>
+
+          {/* Growth Team */}
+          <div className="flex items-center justify-center gap-2 mb-2">
+            <Bot className="text-purple-400" size={20} />
+            <h3 className="text-xl font-bold text-gray-300">Growth Team</h3>
+          </div>
+          <p className="text-gray-500 text-center mb-6 text-sm">Autonomous AI agents powering our operations</p>
+          <div className="grid grid-cols-4 md:grid-cols-8 gap-3 max-w-5xl mx-auto mb-16">
+            {growthTeam.map((member, i) => (
+              <motion.div key={member.name} initial="hidden" whileInView="visible" viewport={{ once: true }} variants={fadeIn} custom={i} className="text-center">
+                <div className="w-14 h-14 rounded-full overflow-hidden mx-auto mb-2 border border-purple-500/30 hover:border-purple-400/60 transition-colors">
+                  <Image src={member.photo} alt={member.name} width={56} height={56} className="w-full h-full object-cover" />
+                </div>
+                <h4 className="text-xs font-semibold text-white leading-tight">{member.name}</h4>
+                <p className="text-[10px] text-purple-400 leading-tight">{member.role}</p>
               </motion.div>
             ))}
           </div>
