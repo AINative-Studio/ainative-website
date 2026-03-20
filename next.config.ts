@@ -16,6 +16,9 @@ const nextConfig: NextConfig = {
   // Production optimizations
   poweredByHeader: false,
 
+  // Cache bust: 2026-03-19-agent-photos-design-fixes
+  generateBuildId: async () => `build-2026-03-19-${Date.now()}`,
+
   // Image optimization for external domains
   images: {
     remotePatterns: [
