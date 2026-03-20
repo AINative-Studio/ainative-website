@@ -5,10 +5,6 @@ import React from "react";
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
-import { Card, CardContent, CardHeader } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import { Separator } from '@/components/ui/separator';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import {
@@ -49,10 +45,6 @@ interface ShowcaseData {
 interface ShowcaseDetailClientProps {
   slug: string;
 }
-
-const CardTitle = ({ children, className = '' }: { children: React.ReactNode; className?: string }) => (
-  <h3 className={`text-lg font-semibold ${className}`}>{children}</h3>
-);
 
 export default function ShowcaseDetailClient({ slug }: ShowcaseDetailClientProps) {
   const [showcase, setShowcase] = useState<ShowcaseData | null>(null);
@@ -117,12 +109,12 @@ export default function ShowcaseDetailClient({ slug }: ShowcaseDetailClientProps
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-vite-bg">
+      <div className="min-h-screen bg-[#0D1117]">
         <main className="container mx-auto px-4 py-20 mt-16">
           <Link href="/showcases">
-            <Button variant="ghost" className="mb-6 text-gray-400 hover:text-white hover:bg-[#161B22]">
+            <button className="inline-flex items-center px-3 py-2 mb-6 text-sm text-gray-400 hover:text-white hover:bg-[#161B22] rounded-lg transition-all">
               <ArrowLeft className="h-4 w-4 mr-2" />Back to Showcases
-            </Button>
+            </button>
           </Link>
 
           <Skeleton className="w-full h-96 rounded-xl mb-8 bg-[#21262D]" />
@@ -132,10 +124,10 @@ export default function ShowcaseDetailClient({ slug }: ShowcaseDetailClientProps
               <Skeleton className="h-64 w-full bg-[#21262D]" />
             </div>
             <div className="space-y-6">
-              <Card className="bg-[#161B22] border-[#2D333B]">
-                <CardHeader><Skeleton className="h-5 w-32 bg-[#21262D]" /></CardHeader>
-                <CardContent><Skeleton className="h-16 w-full bg-[#21262D]" /></CardContent>
-              </Card>
+              <div className="bg-[#161B22] border border-white/5 rounded-xl p-5">
+                <Skeleton className="h-5 w-32 bg-[#21262D] mb-4" />
+                <Skeleton className="h-16 w-full bg-[#21262D]" />
+              </div>
             </div>
           </div>
         </main>
@@ -145,38 +137,37 @@ export default function ShowcaseDetailClient({ slug }: ShowcaseDetailClientProps
 
   if (error || !showcase) {
     return (
-      <div className="min-h-screen bg-vite-bg">
+      <div className="min-h-screen bg-[#0D1117]">
         <main className="container mx-auto px-4 py-20 mt-16">
           <Link href="/showcases">
-            <Button variant="ghost" className="mb-6 text-gray-400 hover:text-white hover:bg-[#161B22]">
+            <button className="inline-flex items-center px-3 py-2 mb-6 text-sm text-gray-400 hover:text-white hover:bg-[#161B22] rounded-lg transition-all">
               <ArrowLeft className="h-4 w-4 mr-2" />Back to Showcases
-            </Button>
+            </button>
           </Link>
 
           <div className="max-w-2xl mx-auto">
-            <div className="bg-red-900/20 border border-red-800 rounded-lg p-8 text-center">
+            <div className="bg-red-900/20 border border-red-800/50 rounded-xl p-8 text-center">
               <AlertCircle className="h-12 w-12 text-red-400 mx-auto mb-4" />
               <h3 className="text-lg font-semibold text-red-300 mb-2">
                 {error === 'Showcase not found' ? 'Showcase Not Found' : 'Error Loading Showcase'}
               </h3>
-              <p className="text-red-400 mb-6">
+              <p className="text-red-400/80 mb-6">
                 {error || 'The showcase you are looking for could not be loaded.'}
               </p>
               <div className="flex gap-3 justify-center">
-                <Button
-                  variant="outline"
+                <button
                   onClick={() => window.history.back()}
-                  className="border-[#2D333B] text-gray-400 hover:bg-[#161B22]"
+                  className="px-4 py-2 text-sm border border-white/5 text-gray-400 hover:text-white hover:bg-[#161B22] rounded-lg transition-all"
                 >
                   Go Back
-                </Button>
+                </button>
                 {error !== 'Showcase not found' && (
-                  <Button
+                  <button
                     onClick={fetchShowcase}
-                    className="bg-red-600 hover:bg-red-700 text-white"
+                    className="px-4 py-2 text-sm bg-red-600 hover:bg-red-700 text-white rounded-lg transition-all"
                   >
                     Try Again
-                  </Button>
+                  </button>
                 )}
               </div>
             </div>
@@ -208,46 +199,53 @@ export default function ShowcaseDetailClient({ slug }: ShowcaseDetailClientProps
   };
 
   return (
-    <div className="min-h-screen bg-vite-bg">
+    <div className="min-h-screen bg-[#0D1117]">
       <main className="container mx-auto px-4 py-20 mt-16">
+
+        {/* Top bar */}
         <div className="flex items-center justify-between mb-6">
           <Link href="/showcases">
-            <Button variant="ghost" className="text-gray-400 hover:text-white hover:bg-[#161B22]">
+            <button className="inline-flex items-center px-3 py-2 text-sm text-gray-400 hover:text-white hover:bg-[#161B22] rounded-lg transition-all">
               <ArrowLeft className="h-4 w-4 mr-2" />
               Back to Showcases
-            </Button>
+            </button>
           </Link>
 
-          <div className="flex items-center gap-2">
-            <Button
-              variant="ghost"
-              size="sm"
-              className={cn('text-gray-400 hover:text-white hover:bg-[#161B22]', isLiked && 'text-red-500')}
+          <div className="flex items-center gap-1">
+            <button
               onClick={handleLike}
+              className={cn(
+                'inline-flex items-center px-3 py-2 text-sm rounded-lg transition-all hover:bg-[#161B22]',
+                isLiked ? 'text-red-400' : 'text-gray-400 hover:text-white'
+              )}
             >
               <Heart className={cn('h-4 w-4 mr-1', isLiked && 'fill-current')} />
               {(showcase?.likes || 0) + (isLiked ? 1 : 0)}
-            </Button>
+            </button>
 
-            <Button
-              variant="ghost"
-              size="sm"
-              className={cn('text-gray-400 hover:text-white hover:bg-[#161B22]', isBookmarked && 'text-[#4B6FED]')}
+            <button
               onClick={handleBookmark}
+              className={cn(
+                'inline-flex items-center px-3 py-2 text-sm rounded-lg transition-all hover:bg-[#161B22]',
+                isBookmarked ? 'text-[#4B6FED]' : 'text-gray-400 hover:text-white'
+              )}
             >
               <Bookmark className={cn('h-4 w-4 mr-1', isBookmarked && 'fill-current')} />
               Save
-            </Button>
+            </button>
 
-            <Button variant="ghost" size="sm" onClick={handleShare} className="text-gray-400 hover:text-white hover:bg-[#161B22]">
+            <button
+              onClick={handleShare}
+              className="inline-flex items-center px-3 py-2 text-sm text-gray-400 hover:text-white hover:bg-[#161B22] rounded-lg transition-all"
+            >
               <Share2 className="h-4 w-4 mr-1" />
               Share
-            </Button>
+            </button>
           </div>
         </div>
 
         {/* Hero Image */}
-        <div className="relative w-full h-96 rounded-xl overflow-hidden mb-8 shadow-2xl">
+        <div className="relative w-full h-96 rounded-xl overflow-hidden mb-8">
           <img
             src={showcase.video_thumbnail || getUnsplashImageUrl(showcase.id, 1200, 600)}
             alt={showcase.title}
@@ -256,18 +254,18 @@ export default function ShowcaseDetailClient({ slug }: ShowcaseDetailClientProps
           />
           <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent" />
           {showcase.featured && (
-            <Badge className="absolute top-4 right-4 bg-yellow-500 text-white z-10">
-              <Sparkles className="h-4 w-4 mr-1" />Featured Project
-            </Badge>
+            <span className="absolute top-4 right-4 inline-flex items-center px-2.5 py-1 text-xs font-medium bg-yellow-500/90 text-black rounded-full z-10">
+              <Sparkles className="h-3.5 w-3.5 mr-1" />Featured Project
+            </span>
           )}
           {showcase.video_url && (
-            <Badge className="absolute top-4 left-4 bg-blue-500 text-white z-10">
-              <Video className="h-4 w-4 mr-1" />Has Video
-            </Badge>
+            <span className="absolute top-4 left-4 inline-flex items-center px-2.5 py-1 text-xs font-medium bg-[#4B6FED]/90 text-white rounded-full z-10">
+              <Video className="h-3.5 w-3.5 mr-1" />Has Video
+            </span>
           )}
           <div className="absolute bottom-0 left-0 right-0 p-8 text-white">
             <h1 className="text-4xl md:text-5xl font-extrabold tracking-tight mb-3">{showcase.title}</h1>
-            <div className="flex items-center gap-4 text-gray-200">
+            <div className="flex items-center gap-4 text-gray-300">
               {showcase.company_name && (
                 <div className="flex items-center">
                   <Building2 className="h-5 w-5 mr-2" />
@@ -285,184 +283,177 @@ export default function ShowcaseDetailClient({ slug }: ShowcaseDetailClientProps
         </div>
 
         <div className="grid lg:grid-cols-3 gap-8">
+          {/* Main content */}
           <div className="lg:col-span-2">
             <motion.article initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }}>
               <Tabs value={activeTab} onValueChange={setActiveTab} className="mb-8">
-                <TabsList className="grid w-full grid-cols-2 bg-[#161B22] border border-[#2D333B]">
-                  <TabsTrigger value="overview" className="data-[state=active]:bg-[#4B6FED] data-[state=active]:text-white text-gray-400">Overview</TabsTrigger>
-                  <TabsTrigger value="tech" className="data-[state=active]:bg-[#4B6FED] data-[state=active]:text-white text-gray-400">Tech Stack</TabsTrigger>
+                <TabsList className="grid w-full grid-cols-2 bg-[#161B22] border border-white/5">
+                  <TabsTrigger
+                    value="overview"
+                    className="data-[state=active]:bg-[#4B6FED] data-[state=active]:text-white text-gray-400"
+                  >
+                    Overview
+                  </TabsTrigger>
+                  <TabsTrigger
+                    value="tech"
+                    className="data-[state=active]:bg-[#4B6FED] data-[state=active]:text-white text-gray-400"
+                  >
+                    Tech Stack
+                  </TabsTrigger>
                 </TabsList>
 
-                <TabsContent value="overview" className="space-y-6 mt-6">
-                  <Card className="bg-[#161B22] border-[#2D333B]">
-                    <CardHeader>
-                      <CardTitle className="text-white">About This Project</CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                      <p className="text-lg leading-relaxed text-gray-400">{showcase.description}</p>
-                    </CardContent>
-                  </Card>
+                <TabsContent value="overview" className="space-y-5 mt-6">
+                  {/* About */}
+                  <div className="bg-[#161B22] border border-white/5 rounded-xl p-6">
+                    <h2 className="text-base font-semibold text-white mb-4">About This Project</h2>
+                    <p className="text-base leading-relaxed text-gray-400">{showcase.description}</p>
+                  </div>
 
+                  {/* Results */}
                   {showcase.results && (
-                    <Card className="bg-[#161B22] border-[#2D333B]">
-                      <CardHeader>
-                        <CardTitle className="text-white">Results & Impact</CardTitle>
-                      </CardHeader>
-                      <CardContent>
-                        <p className="text-lg font-medium text-[#4B6FED]">{showcase.results}</p>
-                      </CardContent>
-                    </Card>
+                    <div className="bg-[#161B22] border border-white/5 rounded-xl p-6">
+                      <h2 className="text-base font-semibold text-white mb-4">Results &amp; Impact</h2>
+                      <p className="text-base font-medium text-[#4B6FED]">{showcase.results}</p>
+                    </div>
                   )}
 
-                  {/* Demo Link */}
+                  {/* Demo */}
                   {showcase.demo_url && (
-                    <Card className="bg-[#161B22] border-[#2D333B]">
-                      <CardHeader>
-                        <CardTitle className="text-white">Live Demo</CardTitle>
-                      </CardHeader>
-                      <CardContent>
-                        <Button asChild className="w-full bg-[#4B6FED] hover:bg-[#3A56D3] text-white">
-                          <a href={showcase.demo_url} target="_blank" rel="noopener noreferrer">
-                            <ExternalLink className="h-4 w-4 mr-2" />
-                            View Live Demo
-                          </a>
-                        </Button>
-                      </CardContent>
-                    </Card>
+                    <div className="bg-[#161B22] border border-white/5 rounded-xl p-6">
+                      <h2 className="text-base font-semibold text-white mb-4">Live Demo</h2>
+                      <a
+                        href={showcase.demo_url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="inline-flex w-full items-center justify-center gap-2 px-4 py-2.5 bg-[#4B6FED] hover:bg-[#3A56D3] text-white text-sm font-medium rounded-lg transition-all"
+                      >
+                        <ExternalLink className="h-4 w-4" />
+                        View Live Demo
+                      </a>
+                    </div>
                   )}
 
-                  {/* GitHub Link */}
+                  {/* GitHub */}
                   {showcase.github_url && (
-                    <Card className="bg-[#161B22] border-[#2D333B]">
-                      <CardHeader>
-                        <CardTitle className="text-white">Source Code</CardTitle>
-                      </CardHeader>
-                      <CardContent>
-                        <Button variant="outline" asChild className="w-full border-[#2D333B] text-gray-400 hover:bg-[#21262D] hover:text-white">
-                          <a href={showcase.github_url} target="_blank" rel="noopener noreferrer">
-                            <Github className="h-4 w-4 mr-2" />
-                            View on GitHub
-                          </a>
-                        </Button>
-                      </CardContent>
-                    </Card>
+                    <div className="bg-[#161B22] border border-white/5 rounded-xl p-6">
+                      <h2 className="text-base font-semibold text-white mb-4">Source Code</h2>
+                      <a
+                        href={showcase.github_url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="inline-flex w-full items-center justify-center gap-2 px-4 py-2.5 border border-white/5 text-gray-400 hover:text-white hover:bg-[#21262D] hover:border-white/10 text-sm rounded-lg transition-all"
+                      >
+                        <Github className="h-4 w-4" />
+                        View on GitHub
+                      </a>
+                    </div>
                   )}
 
                   {/* Video */}
                   {showcase.video_url && (
-                    <Card className="bg-[#161B22] border-[#2D333B]">
-                      <CardHeader>
-                        <CardTitle className="text-white">Demo Video</CardTitle>
-                      </CardHeader>
-                      <CardContent>
-                        <div className="aspect-video rounded-lg overflow-hidden bg-black">
-                          <video
-                            src={showcase.video_url}
-                            controls
-                            className="w-full h-full"
-                            poster={showcase.video_thumbnail}
-                          />
-                        </div>
-                      </CardContent>
-                    </Card>
+                    <div className="bg-[#161B22] border border-white/5 rounded-xl p-6">
+                      <h2 className="text-base font-semibold text-white mb-4">Demo Video</h2>
+                      <div className="aspect-video rounded-lg overflow-hidden bg-[#0A0D14] border border-white/10">
+                        <video
+                          src={showcase.video_url}
+                          controls
+                          className="w-full h-full"
+                          poster={showcase.video_thumbnail}
+                        />
+                      </div>
+                    </div>
                   )}
                 </TabsContent>
 
-                <TabsContent value="tech" className="space-y-6 mt-6">
-                  <Card className="bg-[#161B22] border-[#2D333B]">
-                    <CardHeader>
-                      <CardTitle className="text-white">Technologies Used</CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                      <div className="flex flex-wrap gap-2">
-                        {showcase.tech_stack.map((tech, i) => (
-                          <Badge key={i} variant="secondary" className="text-sm py-1 px-3 bg-[#4B6FED]/10 text-[#8AB4FF] border-[#4B6FED]/30">
-                            {tech}
-                          </Badge>
-                        ))}
-                      </div>
-                    </CardContent>
-                  </Card>
+                <TabsContent value="tech" className="space-y-5 mt-6">
+                  {/* Tech stack */}
+                  <div className="bg-[#161B22] border border-white/5 rounded-xl p-6">
+                    <h2 className="text-base font-semibold text-white mb-4">Technologies Used</h2>
+                    <div className="flex flex-wrap gap-2">
+                      {showcase.tech_stack.map((tech, i) => (
+                        <span
+                          key={i}
+                          className="inline-flex items-center px-3 py-1 text-sm bg-[#4B6FED]/10 text-[#8AB4FF] border border-[#4B6FED]/30 rounded-full"
+                        >
+                          {tech}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
 
-                  <Card className="bg-[#161B22] border-[#2D333B]">
-                    <CardHeader>
-                      <CardTitle className="text-white">Architecture & Implementation</CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                      <p className="text-gray-400">
-                        This project leverages a modern tech stack combining {showcase.tech_stack.slice(0, 3).join(', ')}
-                        {showcase.tech_stack.length > 3 && ` and ${showcase.tech_stack.length - 3} more technologies`}
-                        {' '}to deliver a robust and scalable solution.
-                      </p>
-                    </CardContent>
-                  </Card>
+                  {/* Architecture */}
+                  <div className="bg-[#161B22] border border-white/5 rounded-xl p-6">
+                    <h2 className="text-base font-semibold text-white mb-4">Architecture &amp; Implementation</h2>
+                    <p className="text-gray-400">
+                      This project leverages a modern tech stack combining {showcase.tech_stack.slice(0, 3).join(', ')}
+                      {showcase.tech_stack.length > 3 && ` and ${showcase.tech_stack.length - 3} more technologies`}
+                      {' '}to deliver a robust and scalable solution.
+                    </p>
+                  </div>
                 </TabsContent>
               </Tabs>
             </motion.article>
           </div>
 
-          <div className="space-y-6">
+          {/* Sidebar */}
+          <div className="space-y-5">
             {(showcase.company_name || showcase.developer_name) && (
-              <Card className="bg-[#161B22] border-[#2D333B]">
-                <CardHeader>
-                  <CardTitle className="text-base text-white">Company</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  {showcase.company_name && (
-                    <div className="flex items-center gap-2">
-                      <Building2 className="h-5 w-5 text-[#4B6FED]" />
-                      <span className="font-medium text-white">{showcase.company_name}</span>
-                    </div>
-                  )}
-                  {showcase.developer_name && (
-                    <div className="flex items-center gap-2 mt-3">
-                      <User className="h-5 w-5 text-[#4B6FED]" />
-                      <span className="text-sm text-gray-400">{showcase.developer_name}</span>
-                    </div>
-                  )}
-                </CardContent>
-              </Card>
+              <div className="bg-[#161B22] border border-white/5 rounded-xl p-5">
+                <h3 className="text-sm font-semibold text-white mb-4">Company</h3>
+                {showcase.company_name && (
+                  <div className="flex items-center gap-2">
+                    <Building2 className="h-5 w-5 text-[#4B6FED] shrink-0" />
+                    <span className="font-medium text-white">{showcase.company_name}</span>
+                  </div>
+                )}
+                {showcase.developer_name && (
+                  <div className="flex items-center gap-2 mt-3">
+                    <User className="h-5 w-5 text-[#4B6FED] shrink-0" />
+                    <span className="text-sm text-gray-400">{showcase.developer_name}</span>
+                  </div>
+                )}
+              </div>
             )}
 
             {showcase.featured && (
-              <Card className="border-yellow-500/50 bg-yellow-900/10">
-                <CardHeader>
-                  <CardTitle className="text-base flex items-center gap-2 text-white">
-                    <Sparkles className="h-4 w-4 text-yellow-500" />
-                    Featured Project
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <p className="text-sm text-gray-400">
-                    This project has been highlighted by the AINative team for its exceptional implementation and results.
-                  </p>
-                </CardContent>
-              </Card>
+              <div className="bg-yellow-900/10 border border-yellow-500/30 rounded-xl p-5">
+                <h3 className="text-sm font-semibold text-white mb-2 flex items-center gap-2">
+                  <Sparkles className="h-4 w-4 text-yellow-500" />
+                  Featured Project
+                </h3>
+                <p className="text-sm text-gray-400">
+                  This project has been highlighted by the AINative team for its exceptional implementation and results.
+                </p>
+              </div>
             )}
 
-            <Card className="bg-[#161B22] border-[#2D333B]">
-              <CardHeader>
-                <CardTitle className="text-base text-white">Quick Links</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-2">
+            <div className="bg-[#161B22] border border-white/5 rounded-xl p-5">
+              <h3 className="text-sm font-semibold text-white mb-4">Quick Links</h3>
+              <div className="space-y-2">
                 {showcase.demo_url && (
-                  <Button variant="outline" asChild className="w-full justify-start border-[#2D333B] text-gray-400 hover:bg-[#21262D] hover:text-white">
-                    <a href={showcase.demo_url} target="_blank" rel="noopener noreferrer">
-                      <ExternalLink className="h-4 w-4 mr-2" />
-                      Live Demo
-                    </a>
-                  </Button>
+                  <a
+                    href={showcase.demo_url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex w-full items-center gap-2 px-3 py-2.5 text-sm border border-white/5 text-gray-400 hover:text-white hover:bg-[#21262D] hover:border-white/10 rounded-lg transition-all"
+                  >
+                    <ExternalLink className="h-4 w-4 shrink-0" />
+                    Live Demo
+                  </a>
                 )}
                 {showcase.github_url && (
-                  <Button variant="outline" asChild className="w-full justify-start border-[#2D333B] text-gray-400 hover:bg-[#21262D] hover:text-white">
-                    <a href={showcase.github_url} target="_blank" rel="noopener noreferrer">
-                      <Github className="h-4 w-4 mr-2" />
-                      Source Code
-                    </a>
-                  </Button>
+                  <a
+                    href={showcase.github_url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex w-full items-center gap-2 px-3 py-2.5 text-sm border border-white/5 text-gray-400 hover:text-white hover:bg-[#21262D] hover:border-white/10 rounded-lg transition-all"
+                  >
+                    <Github className="h-4 w-4 shrink-0" />
+                    Source Code
+                  </a>
                 )}
-              </CardContent>
-            </Card>
+              </div>
+            </div>
           </div>
         </div>
       </main>
