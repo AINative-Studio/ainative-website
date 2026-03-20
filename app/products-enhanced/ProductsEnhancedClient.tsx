@@ -287,7 +287,7 @@ export default function ProductsEnhancedClient() {
                     <CardDescription className="text-gray-400">{desc}</CardDescription>
                     <div className="mt-auto pt-4">
                       <Button variant="ghost" className="group-hover:text-[#4B6FED] p-0 h-auto" asChild>
-                        <Link href="/features">
+                        <Link href="/products">
                           Learn more
                           <ArrowRight className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform" />
                         </Link>

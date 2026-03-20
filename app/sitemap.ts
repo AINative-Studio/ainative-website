@@ -211,6 +211,8 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { url: `${BASE_URL}/use-cases/agent-orchestration`, lastModified: currentDate, changeFrequency: 'monthly', priority: 0.7 },
     { url: `${BASE_URL}/use-cases/vector-database`, lastModified: currentDate, changeFrequency: 'monthly', priority: 0.7 },
     { url: `${BASE_URL}/products/mcp`, lastModified: currentDate, changeFrequency: 'weekly', priority: 0.8 },
+    { url: `${BASE_URL}/design-system-showcase`, lastModified: currentDate, changeFrequency: 'monthly', priority: 0.5 },
+    { url: `${BASE_URL}/dev-resources`, lastModified: currentDate, changeFrequency: 'monthly', priority: 0.5 },
   ];
 
   return [...staticPages, ...blogPosts, ...seoPages];

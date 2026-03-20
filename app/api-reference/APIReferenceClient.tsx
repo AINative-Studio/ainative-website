@@ -335,13 +335,13 @@ const categories = [
 
 const getMethodColor = (method: string) => {
   const colors: Record<string, string> = {
-    GET: 'text-green-400 bg-green-400/20',
-    POST: 'text-blue-400 bg-blue-400/20',
-    PUT: 'text-yellow-400 bg-yellow-400/20',
-    DELETE: 'text-red-400 bg-red-400/20',
-    PATCH: 'text-purple-400 bg-purple-400/20',
+    GET: 'text-green-400 bg-green-400/10 border border-green-400/20',
+    POST: 'text-[#4B6FED] bg-[#4B6FED]/10 border border-[#4B6FED]/20',
+    PUT: 'text-yellow-400 bg-yellow-400/10 border border-yellow-400/20',
+    DELETE: 'text-red-400 bg-red-400/10 border border-red-400/20',
+    PATCH: 'text-purple-400 bg-purple-400/10 border border-purple-400/20',
   };
-  return colors[method] || 'text-gray-400 bg-gray-400/20';
+  return colors[method] || 'text-gray-400 bg-gray-400/10 border border-gray-400/20';
 };
 
 export default function APIReferenceClient() {
@@ -370,29 +370,40 @@ export default function APIReferenceClient() {
   });
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900">
+    <div className="min-h-screen bg-[#0D1117]">
       {/* Hero Section */}
-      <section className="relative pt-20 pb-16 px-4">
-        <div className="max-w-7xl mx-auto text-center">
+      <section className="relative pt-24 pb-16 px-4 overflow-hidden">
+        {/* Background glow effects */}
+        <div className="absolute inset-0 bg-gradient-to-br from-[#4B6FED]/5 via-transparent to-[#8A63F5]/5 pointer-events-none" />
+        <div className="absolute top-1/3 left-1/4 w-96 h-96 bg-[#4B6FED]/10 rounded-full filter blur-3xl pointer-events-none" />
+        <div className="absolute top-1/4 right-1/4 w-64 h-64 bg-[#8A63F5]/10 rounded-full filter blur-3xl pointer-events-none" />
+
+        <div className="max-w-7xl mx-auto text-center relative z-10">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5 }}
           >
-            <h1 className="text-5xl md:text-6xl font-bold bg-gradient-to-r from-cyan-400 to-purple-500 bg-clip-text text-transparent mb-6">
-              API Reference
+            {/* Badge */}
+            <div className="inline-flex items-center gap-2 px-4 py-2 bg-[#4B6FED]/10 border border-[#4B6FED]/30 rounded-full mb-6">
+              <Code className="h-4 w-4 text-[#4B6FED]" />
+              <span className="text-sm text-[#4B6FED] font-medium">REST API Documentation</span>
+            </div>
+
+            <h1 className="text-5xl md:text-6xl font-bold text-white mb-6">
+              API{' '}
+              <span className="bg-gradient-to-r from-[#4B6FED] to-[#8A63F5] bg-clip-text text-transparent">
+                Reference
+              </span>
             </h1>
-            <p className="text-xl text-gray-300 max-w-3xl mx-auto mb-8">
+            <p className="text-xl text-gray-400 max-w-3xl mx-auto mb-8">
               Complete API documentation with interactive examples and comprehensive guides
             </p>
-            <div className="flex flex-wrap justify-center gap-4 text-sm text-gray-400">
-              <span>Complete documentation</span>
-              <span>-</span>
-              <span>Interactive examples</span>
-              <span>-</span>
-              <span>Real-time testing</span>
-              <span>-</span>
-              <span>Authentication guides</span>
+            <div className="flex flex-wrap justify-center gap-3 text-sm text-gray-500">
+              <span className="px-3 py-1 bg-[#161B22] border border-white/5 rounded-full">Complete documentation</span>
+              <span className="px-3 py-1 bg-[#161B22] border border-white/5 rounded-full">Interactive examples</span>
+              <span className="px-3 py-1 bg-[#161B22] border border-white/5 rounded-full">Real-time testing</span>
+              <span className="px-3 py-1 bg-[#161B22] border border-white/5 rounded-full">Authentication guides</span>
             </div>
           </motion.div>
         </div>
@@ -401,18 +412,18 @@ export default function APIReferenceClient() {
       {/* Search and Filters */}
       <section className="px-4 pb-8">
         <div className="max-w-7xl mx-auto">
-          <div className="bg-gray-800/50 backdrop-blur-sm rounded-lg p-6 border border-gray-700">
+          <div className="bg-[#161B22] border border-white/5 rounded-xl p-6">
             <div className="flex flex-col md:flex-row gap-4">
               {/* Search Bar */}
               <div className="flex-1">
                 <div className="relative">
-                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500 w-5 h-5" />
                   <input
                     type="text"
                     placeholder="Search endpoints, methods, descriptions..."
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
-                    className="w-full pl-10 pr-4 py-3 bg-gray-900/50 border border-gray-700 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-cyan-500"
+                    className="w-full pl-10 pr-4 py-3 bg-[#0D1117] border border-white/5 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-[#4B6FED]/50 transition-colors"
                   />
                 </div>
               </div>
@@ -421,19 +432,47 @@ export default function APIReferenceClient() {
               <select
                 value={selectedCategory}
                 onChange={(e) => setSelectedCategory(e.target.value)}
-                className="px-4 py-3 bg-gray-900/50 border border-gray-700 rounded-lg text-white focus:outline-none focus:border-cyan-500"
+                className="px-4 py-3 bg-[#0D1117] border border-white/5 rounded-lg text-white focus:outline-none focus:border-[#4B6FED]/50 transition-colors appearance-none cursor-pointer"
               >
                 {categories.map((cat) => (
-                  <option key={cat.id} value={cat.id}>
+                  <option key={cat.id} value={cat.id} className="bg-[#0D1117] text-white">
                     {cat.label}
                   </option>
                 ))}
               </select>
             </div>
 
-            <div className="mt-4 text-sm text-gray-400">
-              Found {filteredEndpoints.length} endpoints
+            <div className="mt-4 text-sm text-gray-500">
+              Found{' '}
+              <span className="text-[#4B6FED] font-medium">{filteredEndpoints.length}</span>{' '}
+              endpoints
             </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Category Tabs */}
+      <section className="px-4 pb-6">
+        <div className="max-w-7xl mx-auto">
+          <div className="flex flex-wrap gap-2">
+            {categories.map((cat) => {
+              const Icon = cat.icon;
+              const isActive = selectedCategory === cat.id;
+              return (
+                <button
+                  key={cat.id}
+                  onClick={() => setSelectedCategory(cat.id)}
+                  className={`inline-flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 border ${
+                    isActive
+                      ? 'bg-[#4B6FED]/10 border-[#4B6FED]/40 text-[#4B6FED]'
+                      : 'bg-[#161B22] border-white/5 text-gray-400 hover:border-[#4B6FED]/30 hover:text-white'
+                  }`}
+                >
+                  <Icon className="w-4 h-4" />
+                  {cat.label}
+                </button>
+              );
+            })}
           </div>
         </div>
       </section>
@@ -441,44 +480,48 @@ export default function APIReferenceClient() {
       {/* API Endpoints */}
       <section className="px-4 pb-16">
         <div className="max-w-7xl mx-auto">
-          <div className="space-y-4">
+          <div className="space-y-3">
             {filteredEndpoints.map((endpoint, index) => (
               <motion.div
                 key={endpoint.id}
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.3, delay: index * 0.05 }}
-                className="bg-gray-800/50 backdrop-blur-sm rounded-lg border border-gray-700 overflow-hidden"
+                className={`bg-[#161B22] rounded-xl border overflow-hidden transition-all duration-200 ${
+                  expandedEndpoint === endpoint.id
+                    ? 'border-[#4B6FED]/30'
+                    : 'border-white/5 hover:border-[#4B6FED]/30'
+                }`}
               >
                 {/* Endpoint Header */}
                 <button
                   onClick={() =>
                     setExpandedEndpoint(expandedEndpoint === endpoint.id ? '' : endpoint.id)
                   }
-                  className="w-full p-6 text-left hover:bg-gray-700/30 transition-colors"
+                  className="w-full p-5 text-left hover:bg-white/[0.02] transition-colors"
                 >
                   <div className="flex items-center justify-between">
-                    <div className="flex items-center space-x-4 flex-wrap gap-2">
+                    <div className="flex items-center gap-3 flex-wrap">
                       <span
-                        className={`px-3 py-1 rounded-full text-xs font-bold ${getMethodColor(endpoint.method)}`}
+                        className={`px-2.5 py-1 rounded text-xs font-bold font-mono ${getMethodColor(endpoint.method)}`}
                       >
                         {endpoint.method}
                       </span>
-                      <code className="text-cyan-400 font-mono">{endpoint.path}</code>
-                      <span className="text-white font-medium">{endpoint.summary}</span>
+                      <code className="text-[#4B6FED] font-mono text-sm">{endpoint.path}</code>
+                      <span className="text-white font-medium text-sm">{endpoint.summary}</span>
                     </div>
-                    <div className="flex items-center space-x-2">
-                      <span className="text-xs text-gray-400 hidden md:inline">
+                    <div className="flex items-center gap-3 shrink-0 ml-2">
+                      <span className="text-xs text-gray-500 hidden md:inline px-2 py-1 bg-[#0D1117] border border-white/5 rounded">
                         {endpoint.category}
                       </span>
                       {expandedEndpoint === endpoint.id ? (
-                        <ChevronDown className="w-5 h-5 text-gray-400" />
+                        <ChevronDown className="w-4 h-4 text-gray-500" />
                       ) : (
-                        <ChevronRight className="w-5 h-5 text-gray-400" />
+                        <ChevronRight className="w-4 h-4 text-gray-500" />
                       )}
                     </div>
                   </div>
-                  <p className="text-gray-300 text-sm mt-2">{endpoint.description}</p>
+                  <p className="text-gray-400 text-sm mt-2 leading-relaxed">{endpoint.description}</p>
                 </button>
 
                 {/* Expanded Content */}
@@ -487,30 +530,35 @@ export default function APIReferenceClient() {
                     initial={{ opacity: 0, height: 0 }}
                     animate={{ opacity: 1, height: 'auto' }}
                     exit={{ opacity: 0, height: 0 }}
-                    className="border-t border-gray-700"
+                    className="border-t border-white/5"
                   >
-                    <div className="p-6 space-y-6">
+                    <div className="p-5 space-y-6">
                       {/* Parameters */}
                       {endpoint.parameters && endpoint.parameters.length > 0 && (
                         <div>
-                          <h4 className="text-white font-semibold mb-3 flex items-center">
-                            <FileText className="w-4 h-4 mr-2" />
+                          <h4 className="text-white font-semibold mb-3 flex items-center gap-2 text-sm">
+                            <FileText className="w-4 h-4 text-[#4B6FED]" />
                             Parameters
                           </h4>
                           <div className="space-y-2">
                             {endpoint.parameters.map((param) => (
-                              <div key={param.name} className="bg-gray-900/30 p-3 rounded">
-                                <div className="flex items-center space-x-2 mb-1">
-                                  <code className="text-cyan-400">{param.name}</code>
-                                  <span className="text-xs text-gray-500">({param.in})</span>
+                              <div
+                                key={param.name}
+                                className="bg-[#0D1117] border border-white/5 p-3 rounded-lg"
+                              >
+                                <div className="flex items-center gap-2 mb-1 flex-wrap">
+                                  <code className="text-[#4B6FED] font-mono text-sm">{param.name}</code>
+                                  <span className="text-xs text-gray-500 bg-[#161B22] border border-white/5 px-1.5 py-0.5 rounded">
+                                    {param.in}
+                                  </span>
                                   {param.required && (
-                                    <span className="text-xs bg-red-500/20 text-red-400 px-1 rounded">
+                                    <span className="text-xs bg-red-500/10 text-red-400 border border-red-500/20 px-1.5 py-0.5 rounded">
                                       required
                                     </span>
                                   )}
-                                  <span className="text-xs text-gray-400">{param.type}</span>
+                                  <span className="text-xs text-gray-500">{param.type}</span>
                                 </div>
-                                <p className="text-gray-300 text-sm">{param.description}</p>
+                                <p className="text-gray-400 text-sm">{param.description}</p>
                               </div>
                             ))}
                           </div>
@@ -520,16 +568,16 @@ export default function APIReferenceClient() {
                       {/* Request Body */}
                       {endpoint.requestBody && (
                         <div>
-                          <h4 className="text-white font-semibold mb-3 flex items-center">
-                            <Code className="w-4 h-4 mr-2" />
+                          <h4 className="text-white font-semibold mb-3 flex items-center gap-2 text-sm">
+                            <Code className="w-4 h-4 text-[#4B6FED]" />
                             Request Body
                           </h4>
-                          <div className="bg-gray-900/30 rounded p-4">
-                            <div className="flex items-center justify-between mb-2">
-                              <span className="text-sm text-gray-400">
+                          <div className="bg-[#0A0D14] border border-white/10 rounded-lg overflow-hidden">
+                            <div className="flex items-center justify-between px-4 py-2.5 border-b border-white/5 bg-[#161B22]">
+                              <span className="text-sm text-gray-400 font-mono">
                                 {endpoint.requestBody.contentType}
                                 {endpoint.requestBody.required && (
-                                  <span className="text-red-400 ml-2">(required)</span>
+                                  <span className="text-red-400 ml-2 text-xs">(required)</span>
                                 )}
                               </span>
                               <button
@@ -539,48 +587,53 @@ export default function APIReferenceClient() {
                                     `${endpoint.id}-request`
                                   )
                                 }
-                                className="flex items-center space-x-1 text-cyan-400 hover:text-cyan-300 text-sm"
+                                className="flex items-center gap-1.5 text-gray-400 hover:text-[#4B6FED] text-sm transition-colors"
                               >
                                 {copiedCode === `${endpoint.id}-request` ? (
-                                  <Check className="w-4 h-4" />
+                                  <Check className="w-3.5 h-3.5 text-green-400" />
                                 ) : (
-                                  <Copy className="w-4 h-4" />
+                                  <Copy className="w-3.5 h-3.5" />
                                 )}
-                                <span>
+                                <span className="text-xs">
                                   {copiedCode === `${endpoint.id}-request` ? 'Copied!' : 'Copy'}
                                 </span>
                               </button>
                             </div>
-                            <pre className="text-sm text-gray-300 overflow-x-auto">
-                              <code>{JSON.stringify(endpoint.requestBody.example, null, 2)}</code>
-                            </pre>
+                            <div className="p-4">
+                              <pre className="text-sm text-gray-300 overflow-x-auto font-mono leading-relaxed">
+                                <code>{JSON.stringify(endpoint.requestBody.example, null, 2)}</code>
+                              </pre>
+                            </div>
                           </div>
                         </div>
                       )}
 
                       {/* Responses */}
                       <div>
-                        <h4 className="text-white font-semibold mb-3 flex items-center">
-                          <Terminal className="w-4 h-4 mr-2" />
+                        <h4 className="text-white font-semibold mb-3 flex items-center gap-2 text-sm">
+                          <Terminal className="w-4 h-4 text-[#4B6FED]" />
                           Responses
                         </h4>
                         <div className="space-y-3">
                           {endpoint.responses.map((response) => (
-                            <div key={response.status} className="bg-gray-900/30 rounded p-4">
-                              <div className="flex items-center justify-between mb-2">
-                                <div className="flex items-center space-x-2">
+                            <div
+                              key={response.status}
+                              className="bg-[#0A0D14] border border-white/10 rounded-lg overflow-hidden"
+                            >
+                              <div className="flex items-center justify-between px-4 py-2.5 border-b border-white/5 bg-[#161B22]">
+                                <div className="flex items-center gap-2">
                                   <span
-                                    className={`px-2 py-1 rounded text-xs font-bold ${
+                                    className={`px-2 py-0.5 rounded text-xs font-bold font-mono ${
                                       response.status < 300
-                                        ? 'bg-green-500/20 text-green-400'
+                                        ? 'bg-green-500/10 text-green-400 border border-green-500/20'
                                         : response.status < 400
-                                          ? 'bg-yellow-500/20 text-yellow-400'
-                                          : 'bg-red-500/20 text-red-400'
+                                          ? 'bg-yellow-500/10 text-yellow-400 border border-yellow-500/20'
+                                          : 'bg-red-500/10 text-red-400 border border-red-500/20'
                                     }`}
                                   >
                                     {response.status}
                                   </span>
-                                  <span className="text-gray-300 text-sm">
+                                  <span className="text-gray-400 text-sm">
                                     {response.description}
                                   </span>
                                 </div>
@@ -592,14 +645,14 @@ export default function APIReferenceClient() {
                                         `${endpoint.id}-response-${response.status}`
                                       )
                                     }
-                                    className="flex items-center space-x-1 text-cyan-400 hover:text-cyan-300 text-sm"
+                                    className="flex items-center gap-1.5 text-gray-400 hover:text-[#4B6FED] text-sm transition-colors"
                                   >
                                     {copiedCode === `${endpoint.id}-response-${response.status}` ? (
-                                      <Check className="w-4 h-4" />
+                                      <Check className="w-3.5 h-3.5 text-green-400" />
                                     ) : (
-                                      <Copy className="w-4 h-4" />
+                                      <Copy className="w-3.5 h-3.5" />
                                     )}
-                                    <span>
+                                    <span className="text-xs">
                                       {copiedCode === `${endpoint.id}-response-${response.status}`
                                         ? 'Copied!'
                                         : 'Copy'}
@@ -608,9 +661,11 @@ export default function APIReferenceClient() {
                                 )}
                               </div>
                               {response.example && (
-                                <pre className="text-sm text-gray-300 overflow-x-auto mt-2">
-                                  <code>{JSON.stringify(response.example, null, 2)}</code>
-                                </pre>
+                                <div className="p-4">
+                                  <pre className="text-sm text-gray-300 overflow-x-auto font-mono leading-relaxed">
+                                    <code>{JSON.stringify(response.example, null, 2)}</code>
+                                  </pre>
+                                </div>
                               )}
                             </div>
                           ))}
@@ -619,20 +674,25 @@ export default function APIReferenceClient() {
 
                       {/* Code Examples */}
                       <div>
-                        <h4 className="text-white font-semibold mb-3 flex items-center">
-                          <Code className="w-4 h-4 mr-2" />
+                        <h4 className="text-white font-semibold mb-3 flex items-center gap-2 text-sm">
+                          <Code className="w-4 h-4 text-[#4B6FED]" />
                           Code Examples
                         </h4>
                         <div className="space-y-4">
                           {endpoint.examples.map((example) => (
                             <div
                               key={`${example.language}-${example.title}`}
-                              className="bg-gray-900/30 rounded"
+                              className="bg-[#0A0D14] border border-white/10 rounded-lg overflow-hidden"
                             >
-                              <div className="flex items-center justify-between px-4 py-2 border-b border-gray-700">
-                                <span className="text-sm text-gray-400">
-                                  {example.title} ({example.language})
-                                </span>
+                              <div className="flex items-center justify-between px-4 py-2.5 border-b border-white/5 bg-[#161B22]">
+                                <div className="flex items-center gap-2">
+                                  <span className="text-xs font-medium text-gray-400">
+                                    {example.title}
+                                  </span>
+                                  <span className="text-xs text-gray-600 bg-[#0D1117] border border-white/5 px-1.5 py-0.5 rounded font-mono">
+                                    {example.language}
+                                  </span>
+                                </div>
                                 <button
                                   onClick={() =>
                                     copyToClipboard(
@@ -640,14 +700,14 @@ export default function APIReferenceClient() {
                                       `${endpoint.id}-example-${example.language}`
                                     )
                                   }
-                                  className="flex items-center space-x-1 text-cyan-400 hover:text-cyan-300 text-sm"
+                                  className="flex items-center gap-1.5 text-gray-400 hover:text-[#4B6FED] text-sm transition-colors"
                                 >
                                   {copiedCode === `${endpoint.id}-example-${example.language}` ? (
-                                    <Check className="w-4 h-4" />
+                                    <Check className="w-3.5 h-3.5 text-green-400" />
                                   ) : (
-                                    <Copy className="w-4 h-4" />
+                                    <Copy className="w-3.5 h-3.5" />
                                   )}
-                                  <span>
+                                  <span className="text-xs">
                                     {copiedCode === `${endpoint.id}-example-${example.language}`
                                       ? 'Copied!'
                                       : 'Copy'}
@@ -655,7 +715,7 @@ export default function APIReferenceClient() {
                                 </button>
                               </div>
                               <div className="p-4">
-                                <pre className="text-sm text-gray-300 overflow-x-auto">
+                                <pre className="text-sm text-gray-300 overflow-x-auto font-mono leading-relaxed">
                                   <code>{example.code}</code>
                                 </pre>
                               </div>
@@ -671,48 +731,57 @@ export default function APIReferenceClient() {
           </div>
 
           {filteredEndpoints.length === 0 && (
-            <div className="text-center py-12">
-              <p className="text-gray-400">No endpoints found matching your criteria.</p>
+            <div className="text-center py-20">
+              <div className="w-16 h-16 bg-[#161B22] border border-white/5 rounded-2xl flex items-center justify-center mx-auto mb-4">
+                <Search className="w-8 h-8 text-gray-600" />
+              </div>
+              <p className="text-gray-400 text-lg font-medium mb-1">No endpoints found</p>
+              <p className="text-gray-600 text-sm">Try adjusting your search or filter criteria.</p>
             </div>
           )}
         </div>
       </section>
 
-      {/* Quick Links */}
-      <section className="px-4 pb-20">
+      {/* CTA Section */}
+      <section className="px-4 pb-24">
         <div className="max-w-4xl mx-auto">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5 }}
-            className="bg-gradient-to-r from-cyan-500/20 to-purple-500/20 rounded-2xl p-8 md:p-12 border border-gray-700 text-center"
+            className="bg-gradient-to-r from-[#4B6FED]/10 to-[#8A63F5]/10 rounded-2xl p-8 md:p-12 border border-[#4B6FED]/20 text-center relative overflow-hidden"
           >
-            <h2 className="text-3xl font-bold text-white mb-4">Need More Help?</h2>
-            <p className="text-lg text-gray-300 mb-8">
-              Explore our comprehensive guides and examples to get the most out of the AINative API
-            </p>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Link
-                href="/getting-started"
-                className="px-8 py-4 bg-gradient-to-r from-cyan-500 to-purple-600 text-white rounded-lg hover:shadow-lg transform hover:scale-105 transition-all duration-200 font-semibold"
-              >
-                Getting Started Guide
-              </Link>
-              <Link
-                href="/examples"
-                className="px-8 py-4 bg-gray-800 text-white rounded-lg hover:bg-gray-700 transition-colors font-semibold border border-gray-700"
-              >
-                View Examples
-              </Link>
-              <Link
-                href="https://discord.gg/paipalooza"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="px-8 py-4 bg-gray-800 text-white rounded-lg hover:bg-gray-700 transition-colors font-semibold border border-gray-700 flex items-center justify-center space-x-2"
-              >
-                <ExternalLink className="w-4 h-4" />
-                <span>Join Community</span>
-              </Link>
+            {/* Subtle glow */}
+            <div className="absolute inset-0 bg-gradient-to-br from-[#4B6FED]/5 via-transparent to-[#8A63F5]/5 pointer-events-none" />
+
+            <div className="relative z-10">
+              <h2 className="text-3xl font-bold text-white mb-4">Need More Help?</h2>
+              <p className="text-lg text-gray-400 mb-8">
+                Explore our comprehensive guides and examples to get the most out of the AINative API
+              </p>
+              <div className="flex flex-col sm:flex-row gap-4 justify-center">
+                <Link
+                  href="/getting-started"
+                  className="px-8 py-3.5 bg-[#4B6FED] hover:bg-[#3A56D3] text-white rounded-lg transition-all duration-200 font-semibold text-sm"
+                >
+                  Getting Started Guide
+                </Link>
+                <Link
+                  href="/examples"
+                  className="px-8 py-3.5 bg-[#161B22] text-white rounded-lg hover:border-[#4B6FED]/30 transition-all duration-200 font-semibold border border-white/5 text-sm"
+                >
+                  View Examples
+                </Link>
+                <Link
+                  href="https://discord.gg/paipalooza"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="px-8 py-3.5 bg-[#161B22] text-white rounded-lg hover:border-[#4B6FED]/30 transition-all duration-200 font-semibold border border-white/5 flex items-center justify-center gap-2 text-sm"
+                >
+                  <ExternalLink className="w-4 h-4" />
+                  <span>Join Community</span>
+                </Link>
+              </div>
             </div>
           </motion.div>
         </div>

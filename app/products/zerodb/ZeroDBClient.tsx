@@ -213,7 +213,7 @@ export default function ZeroDBClient() {
                 size="lg"
                 className="border-white/20 hover:bg-white/5 text-lg px-8"
               >
-                <Link href="/docs/zerodb">View Documentation</Link>
+                <Link href="/design-system-showcase">View Documentation</Link>
               </Button>
             </div>
 
@@ -515,7 +515,7 @@ export default function ZeroDBClient() {
               size="lg"
               className="border-white/20 hover:bg-white/5"
             >
-              <Link href="/docs/zerodb">Read the Docs</Link>
+              <Link href="/design-system-showcase">Read the Docs</Link>
             </Button>
           </div>
         </motion.div>

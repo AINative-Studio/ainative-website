@@ -20,10 +20,6 @@ import {
   Smartphone,
   PlayCircle,
 } from 'lucide-react';
-import { Card, CardContent, CardHeader } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Badge } from '@/components/ui/badge';
 
 interface Example {
   id: string;
@@ -340,9 +336,9 @@ const useCases = [
 ];
 
 const getDifficultyColor = (difficulty: number) => {
-  if (difficulty <= 2) return 'text-green-500';
-  if (difficulty <= 3) return 'text-yellow-500';
-  return 'text-red-500';
+  if (difficulty <= 2) return 'text-green-400';
+  if (difficulty <= 3) return 'text-yellow-400';
+  return 'text-red-400';
 };
 
 const getDifficultyLabel = (difficulty: number) => {
@@ -354,13 +350,13 @@ const getDifficultyLabel = (difficulty: number) => {
 const getCategoryBadgeClass = (category: string) => {
   switch (category) {
     case 'beginner':
-      return 'bg-green-500/20 text-green-400 border-green-500/30';
+      return 'bg-green-500/20 text-green-400 border border-green-500/30';
     case 'intermediate':
-      return 'bg-yellow-500/20 text-yellow-400 border-yellow-500/30';
+      return 'bg-yellow-500/20 text-yellow-400 border border-yellow-500/30';
     case 'advanced':
-      return 'bg-red-500/20 text-red-400 border-red-500/30';
+      return 'bg-red-500/20 text-red-400 border border-red-500/30';
     default:
-      return '';
+      return 'bg-white/5 text-gray-400 border border-white/10';
   }
 };
 
@@ -394,7 +390,7 @@ export default function ExamplesClient() {
   });
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-blue-50 dark:from-gray-900 dark:via-gray-900 dark:to-gray-900">
+    <div className="min-h-screen bg-[#0D1117]">
       {/* Hero Section */}
       <section className="relative pt-20 pb-16 px-4 mt-16">
         <div className="max-w-7xl mx-auto text-center">
@@ -403,24 +399,24 @@ export default function ExamplesClient() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5 }}
           >
-            <div className="inline-flex items-center justify-center px-4 py-2 rounded-full bg-primary/10 text-primary text-sm font-medium mb-4">
+            <div className="inline-flex items-center justify-center px-4 py-2 rounded-full bg-[#4B6FED]/10 border border-[#4B6FED]/20 text-[#4B6FED] text-sm font-medium mb-4">
               <Code className="h-4 w-4 mr-2" />
               Production-Ready Examples
             </div>
-            <h1 className="text-4xl md:text-5xl font-extrabold tracking-tight mb-4 bg-clip-text text-transparent bg-gradient-to-r from-primary to-purple-600">
+            <h1 className="text-4xl md:text-5xl font-extrabold tracking-tight mb-4 bg-clip-text text-transparent bg-gradient-to-r from-[#4B6FED] to-[#8A63F4]">
               Code Examples Gallery
             </h1>
-            <p className="text-xl text-muted-foreground max-w-3xl mx-auto mb-8">
+            <p className="text-xl text-gray-400 max-w-3xl mx-auto mb-8">
               Explore production-ready examples and learn how to build amazing AI applications with
               AINative
             </p>
-            <div className="flex flex-wrap justify-center gap-4 text-sm text-muted-foreground">
+            <div className="flex flex-wrap justify-center gap-4 text-sm text-gray-500">
               <span>Production-ready code</span>
-              <span className="hidden md:inline">|</span>
+              <span className="hidden md:inline text-gray-600">|</span>
               <span>Cross-platform examples</span>
-              <span className="hidden md:inline">|</span>
+              <span className="hidden md:inline text-gray-600">|</span>
               <span>Multiple frameworks</span>
-              <span className="hidden md:inline">|</span>
+              <span className="hidden md:inline text-gray-600">|</span>
               <span>Step-by-step guides</span>
             </div>
           </motion.div>
@@ -430,17 +426,17 @@ export default function ExamplesClient() {
       {/* Search and Filters */}
       <section className="px-4 pb-8">
         <div className="max-w-7xl mx-auto">
-          <Card className="p-6">
+          <div className="bg-[#161B22] border border-white/5 rounded-xl p-6">
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
               {/* Search Bar */}
               <div className="relative">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-5 w-5" />
-                <Input
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 h-5 w-5" />
+                <input
                   type="text"
                   placeholder="Search examples..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="pl-10"
+                  className="w-full pl-10 pr-4 py-2 bg-[#0D1117] border border-white/5 rounded-lg text-sm text-white placeholder-gray-500 focus:outline-none focus:border-[#4B6FED]/50 focus:ring-1 focus:ring-[#4B6FED]/30 transition-colors"
                 />
               </div>
 
@@ -448,10 +444,10 @@ export default function ExamplesClient() {
               <select
                 value={selectedCategory}
                 onChange={(e) => setSelectedCategory(e.target.value)}
-                className="px-4 py-2 bg-background border border-input rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-ring"
+                className="px-4 py-2 bg-[#0D1117] border border-white/5 rounded-lg text-sm text-gray-300 focus:outline-none focus:border-[#4B6FED]/50 focus:ring-1 focus:ring-[#4B6FED]/30 transition-colors"
               >
                 {categories.map((cat) => (
-                  <option key={cat.id} value={cat.id}>
+                  <option key={cat.id} value={cat.id} className="bg-[#161B22] text-gray-300">
                     {cat.label}
                   </option>
                 ))}
@@ -461,10 +457,10 @@ export default function ExamplesClient() {
               <select
                 value={selectedLanguage}
                 onChange={(e) => setSelectedLanguage(e.target.value)}
-                className="px-4 py-2 bg-background border border-input rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-ring"
+                className="px-4 py-2 bg-[#0D1117] border border-white/5 rounded-lg text-sm text-gray-300 focus:outline-none focus:border-[#4B6FED]/50 focus:ring-1 focus:ring-[#4B6FED]/30 transition-colors"
               >
                 {languages.map((lang) => (
-                  <option key={lang.id} value={lang.id}>
+                  <option key={lang.id} value={lang.id} className="bg-[#161B22] text-gray-300">
                     {lang.label}
                   </option>
                 ))}
@@ -474,115 +470,117 @@ export default function ExamplesClient() {
               <select
                 value={selectedUseCase}
                 onChange={(e) => setSelectedUseCase(e.target.value)}
-                className="px-4 py-2 bg-background border border-input rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-ring"
+                className="px-4 py-2 bg-[#0D1117] border border-white/5 rounded-lg text-sm text-gray-300 focus:outline-none focus:border-[#4B6FED]/50 focus:ring-1 focus:ring-[#4B6FED]/30 transition-colors"
               >
                 {useCases.map((useCase) => (
-                  <option key={useCase.id} value={useCase.id}>
+                  <option key={useCase.id} value={useCase.id} className="bg-[#161B22] text-gray-300">
                     {useCase.label}
                   </option>
                 ))}
               </select>
             </div>
 
-            <div className="mt-4 text-sm text-muted-foreground">
+            <div className="mt-4 text-sm text-gray-500">
               Found {filteredExamples.length} example{filteredExamples.length !== 1 ? 's' : ''}
             </div>
-          </Card>
+          </div>
         </div>
       </section>
 
       {/* Examples Grid */}
       <section className="px-4 pb-16">
         <div className="max-w-7xl mx-auto">
-          <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-8">
+          <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6">
             {filteredExamples.map((example, index) => (
               <motion.div
                 key={example.id}
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.3, delay: index * 0.05 }}
+                className="group"
               >
-                <Card className="h-full hover:shadow-lg transition-all duration-200 flex flex-col">
+                <div className="h-full bg-[#161B22] border border-white/5 rounded-xl hover:border-[#4B6FED]/30 transition-all duration-200 hover:shadow-lg hover:shadow-[#4B6FED]/5 flex flex-col">
                   {/* Header */}
-                  <CardHeader className="pb-4">
+                  <div className="p-6 pb-4">
                     <div className="flex items-start justify-between mb-4">
                       <div className="flex items-center space-x-3">
-                        <div className="p-2 bg-gradient-to-r from-primary/20 to-purple-500/20 rounded-lg text-primary">
+                        <div className="p-2 bg-gradient-to-r from-[#4B6FED]/20 to-[#8A63F4]/20 rounded-lg text-[#4B6FED]">
                           {example.icon}
                         </div>
                         <div>
-                          <h3 className="text-lg font-semibold">{example.title}</h3>
-                          <div className="flex items-center space-x-2 text-sm text-muted-foreground">
+                          <h3 className="text-base font-semibold text-white">{example.title}</h3>
+                          <div className="flex items-center space-x-2 text-sm text-gray-500">
                             <span>{example.language}</span>
                             {example.framework && (
                               <>
-                                <span>|</span>
+                                <span className="text-gray-600">|</span>
                                 <span>{example.framework}</span>
                               </>
                             )}
                           </div>
                         </div>
                       </div>
-                      <Badge className={getCategoryBadgeClass(example.category)}>
+                      <span className={`text-xs font-medium px-2.5 py-1 rounded-full capitalize ${getCategoryBadgeClass(example.category)}`}>
                         {example.category}
-                      </Badge>
+                      </span>
                     </div>
 
-                    <p className="text-muted-foreground text-sm mb-4">{example.description}</p>
+                    <p className="text-gray-400 text-sm mb-4 leading-relaxed">{example.description}</p>
 
                     {/* Stats */}
-                    <div className="flex items-center justify-between text-sm text-muted-foreground mb-4">
+                    <div className="flex items-center justify-between text-sm text-gray-500 mb-4">
                       <div className="flex items-center space-x-4">
                         <div className="flex items-center space-x-1">
-                          <Star className="w-4 h-4" />
+                          <Star className="w-3.5 h-3.5" />
                           <span>{example.stars}</span>
                         </div>
                         <div className="flex items-center space-x-1">
-                          <Eye className="w-4 h-4" />
+                          <Eye className="w-3.5 h-3.5" />
                           <span>{example.views.toLocaleString()}</span>
                         </div>
                         <div className="flex items-center space-x-1">
-                          <Clock className="w-4 h-4" />
+                          <Clock className="w-3.5 h-3.5" />
                           <span>{example.estimatedTime}</span>
                         </div>
                       </div>
-                      <div className={`flex items-center space-x-1 ${getDifficultyColor(example.difficulty)}`}>
-                        <span className="text-xs font-medium">
-                          {getDifficultyLabel(example.difficulty)}
-                        </span>
-                      </div>
+                      <span className={`text-xs font-medium ${getDifficultyColor(example.difficulty)}`}>
+                        {getDifficultyLabel(example.difficulty)}
+                      </span>
                     </div>
 
                     {/* Features */}
                     <div className="flex flex-wrap gap-2">
                       {example.features.map((feature) => (
-                        <Badge key={feature} variant="secondary" className="text-xs">
+                        <span
+                          key={feature}
+                          className="text-xs px-2.5 py-1 bg-white/5 border border-white/5 rounded-full text-gray-400"
+                        >
                           {feature}
-                        </Badge>
+                        </span>
                       ))}
                     </div>
-                  </CardHeader>
+                  </div>
 
                   {/* Code Preview */}
                   {example.preview && (
-                    <div className="border-t flex-1">
+                    <div className="border-t border-white/5 flex-1">
                       <div className="p-4">
                         <div className="flex items-center justify-between mb-2">
-                          <span className="text-sm text-muted-foreground">Preview</span>
+                          <span className="text-xs font-medium text-gray-500 uppercase tracking-wider">Preview</span>
                           <button
                             onClick={() => copyToClipboard(example.preview!, example.id)}
-                            className="flex items-center space-x-1 text-primary hover:text-primary/80 transition-colors text-sm"
+                            className="flex items-center space-x-1 text-[#4B6FED] hover:text-[#6B88F0] transition-colors text-sm"
                           >
                             {copiedCode === example.id ? (
-                              <Check className="w-4 h-4" />
+                              <Check className="w-3.5 h-3.5" />
                             ) : (
-                              <Copy className="w-4 h-4" />
+                              <Copy className="w-3.5 h-3.5" />
                             )}
-                            <span>{copiedCode === example.id ? 'Copied!' : 'Copy'}</span>
+                            <span className="text-xs">{copiedCode === example.id ? 'Copied!' : 'Copy'}</span>
                           </button>
                         </div>
-                        <div className="bg-muted rounded p-3 overflow-x-auto">
-                          <pre className="text-xs text-muted-foreground font-mono">
+                        <div className="bg-[#0D1117] border border-white/5 rounded-lg p-3 overflow-x-auto">
+                          <pre className="text-xs text-gray-400 font-mono leading-relaxed">
                             <code>{example.preview.substring(0, 300)}...</code>
                           </pre>
                         </div>
@@ -591,49 +589,57 @@ export default function ExamplesClient() {
                   )}
 
                   {/* Actions */}
-                  <CardContent className="pt-4 border-t mt-auto">
+                  <div className="p-4 pt-3 border-t border-white/5 mt-auto">
                     <div className="flex space-x-3">
                       {example.codeUrl && (
-                        <Button variant="outline" size="sm" asChild className="flex-1">
-                          <a href={example.codeUrl} target="_blank" rel="noopener noreferrer">
-                            <Code className="w-4 h-4 mr-1" />
-                            View Code
-                          </a>
-                        </Button>
+                        <a
+                          href={example.codeUrl}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="flex-1 flex items-center justify-center gap-1.5 px-4 py-2 text-sm font-medium text-gray-300 bg-white/5 border border-white/10 rounded-lg hover:bg-white/10 hover:border-white/20 hover:text-white transition-all duration-150"
+                        >
+                          <Code className="w-4 h-4" />
+                          View Code
+                        </a>
                       )}
                       {example.demoUrl && (
-                        <Button size="sm" asChild className="flex-1">
-                          <a href={example.demoUrl} target="_blank" rel="noopener noreferrer">
-                            <PlayCircle className="w-4 h-4 mr-1" />
-                            Live Demo
-                          </a>
-                        </Button>
+                        <a
+                          href={example.demoUrl}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="flex-1 flex items-center justify-center gap-1.5 px-4 py-2 text-sm font-medium text-white bg-[#4B6FED] rounded-lg hover:bg-[#3A56D3] transition-all duration-150"
+                        >
+                          <PlayCircle className="w-4 h-4" />
+                          Live Demo
+                        </a>
                       )}
                     </div>
-                  </CardContent>
-                </Card>
+                  </div>
+                </div>
               </motion.div>
             ))}
           </div>
 
           {filteredExamples.length === 0 && (
-            <div className="text-center py-12">
-              <Search className="h-12 w-12 mx-auto mb-4 text-muted-foreground" />
-              <h3 className="text-lg font-medium mb-2">No examples found</h3>
-              <p className="text-muted-foreground mb-4">
+            <div className="text-center py-16">
+              <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-[#161B22] border border-white/5 mb-4">
+                <Search className="h-7 w-7 text-gray-500" />
+              </div>
+              <h3 className="text-lg font-medium text-white mb-2">No examples found</h3>
+              <p className="text-gray-400 mb-6">
                 No examples found matching your criteria.
               </p>
-              <Button
-                variant="outline"
+              <button
                 onClick={() => {
                   setSearchQuery('');
                   setSelectedCategory('all');
                   setSelectedLanguage('all');
                   setSelectedUseCase('all');
                 }}
+                className="inline-flex items-center px-5 py-2.5 text-sm font-medium text-gray-300 bg-white/5 border border-white/10 rounded-lg hover:bg-white/10 hover:border-white/20 hover:text-white transition-all duration-150"
               >
                 Clear Filters
-              </Button>
+              </button>
             </div>
           )}
         </div>
@@ -647,32 +653,34 @@ export default function ExamplesClient() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5 }}
           >
-            <Card className="p-8 md:p-12 text-center bg-gradient-to-r from-primary/10 to-purple-500/10">
-              <h2 className="text-3xl font-bold mb-4">Don&apos;t See What You&apos;re Looking For?</h2>
-              <p className="text-lg text-muted-foreground mb-8">
-                Request an example or contribute your own to help the community
-              </p>
-              <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                <Button size="lg" asChild>
+            <div className="bg-[#161B22] border border-white/5 rounded-xl p-8 md:p-12 text-center relative overflow-hidden">
+              {/* Subtle gradient accent */}
+              <div className="absolute inset-0 bg-gradient-to-br from-[#4B6FED]/5 via-transparent to-[#8A63F4]/5 pointer-events-none" />
+              <div className="relative z-10">
+                <h2 className="text-3xl font-bold text-white mb-4">Don&apos;t See What You&apos;re Looking For?</h2>
+                <p className="text-lg text-gray-400 mb-8">
+                  Request an example or contribute your own to help the community
+                </p>
+                <div className="flex flex-col sm:flex-row gap-4 justify-center">
                   <a
                     href="https://github.com/ainative/examples/issues/new"
                     target="_blank"
                     rel="noopener noreferrer"
+                    className="inline-flex items-center justify-center px-6 py-3 text-sm font-medium text-white bg-[#4B6FED] rounded-lg hover:bg-[#3A56D3] transition-all duration-150"
                   >
                     Request Example
                   </a>
-                </Button>
-                <Button variant="outline" size="lg" asChild>
                   <a
                     href="https://github.com/ainative/examples"
                     target="_blank"
                     rel="noopener noreferrer"
+                    className="inline-flex items-center justify-center px-6 py-3 text-sm font-medium text-gray-300 bg-white/5 border border-white/10 rounded-lg hover:bg-white/10 hover:border-white/20 hover:text-white transition-all duration-150"
                   >
                     Contribute Example
                   </a>
-                </Button>
+                </div>
               </div>
-            </Card>
+            </div>
           </motion.div>
         </div>
       </section>

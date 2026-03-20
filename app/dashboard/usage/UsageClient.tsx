@@ -406,7 +406,7 @@ export default function UsageClient() {
                           )}
                         </span>
                       </div>
-                      <Link href="/purchase-credits">
+                      <Link href="/pricing">
                         <Button size="sm" className="bg-[#4B6FED] hover:bg-[#4B6FED]/80 gap-1">
                           Purchase Credits
                           <ArrowUpRight className="h-3 w-3" />
@@ -444,7 +444,7 @@ export default function UsageClient() {
                       View Plans
                     </Button>
                   </Link>
-                  <Link href="/purchase-credits">
+                  <Link href="/pricing">
                     <Button className="bg-[#4B6FED] hover:bg-[#4B6FED]/80">
                       Purchase Credits
                     </Button>
