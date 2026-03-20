@@ -8,6 +8,10 @@ export const metadata: Metadata = {
     'MCP server hosting', 'Model Context Protocol', 'OpenClaw strategy',
     'AI agent tools', 'MCP deployment', 'NemoClaw', 'agentic AI',
     'ADE agent deployment expert', 'deploy MCP server', 'AI agent platform',
+    'MCP model context protocol hosting', 'AI tool calling platform',
+    'n8n AI automation alternative', 'AI workflow automation platform',
+    'conversational AI infrastructure', 'AI voice agent hosting',
+    'AI chatbot hosting', 'agent orchestration platform',
   ],
   openGraph: {
     title: 'MCP Server Hosting | AI Native Studio',

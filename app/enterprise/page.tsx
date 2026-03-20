@@ -53,6 +53,17 @@ export const metadata: Metadata = {
     'AI automation engineer consulting',
     'AI phone system implementation',
     'medical practice AI',
+    // Batch 5-8: 5+ Upwork jobs now explicitly search "OpenClaw"
+    'OpenClaw.ai expert',
+    'OpenClaw implementation consulting',
+    'AI readiness assessment consultant',
+    'forward deployed AI engineer',
+    'principal AI architect',
+    'AI insurance automation',
+    'AI-powered CRM integration',
+    'agentic GTM systems',
+    'Claude AI enterprise setup',
+    'n8n AI workflow automation',
   ],
   openGraph: {
     title: 'Every Enterprise Needs an OpenClaw Strategy | AINative Studio',
