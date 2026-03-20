@@ -213,7 +213,7 @@ export default function ZeroDBClient() {
                 size="lg"
                 className="border-white/20 hover:bg-white/5 text-lg px-8"
               >
-                <Link href="/design-system-showcase">View Documentation</Link>
+                <a href="https://docs.ainative.studio/" target="_blank" rel="noopener noreferrer">View Documentation</a>
               </Button>
             </div>
 
@@ -515,7 +515,7 @@ export default function ZeroDBClient() {
               size="lg"
               className="border-white/20 hover:bg-white/5"
             >
-              <Link href="/design-system-showcase">Read the Docs</Link>
+              <a href="https://docs.ainative.studio/" target="_blank" rel="noopener noreferrer">Read the Docs</a>
             </Button>
           </div>
         </motion.div>
