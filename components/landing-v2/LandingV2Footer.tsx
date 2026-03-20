@@ -78,7 +78,7 @@ export default function LandingV2Footer() {
             <AINativeLogo className="h-[37px] w-auto" />
           </Link>
           <p className="text-[13px] text-v2-body-gray leading-[1.6] max-w-[280px] mb-5">
-            Build the future with AI-native development tools powered by quantum neural networks.
+            Build the future with AI-native development tools powered by ZeroDB.
           </p>
           <div className="flex gap-4">
             <a

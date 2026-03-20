@@ -5,6 +5,7 @@ import React from "react";
 import { useCallback, useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
+import Image from 'next/image';
 import { motion } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -15,12 +16,15 @@ import {
   User,
   RefreshCcw,
   Brain,
-  Code2,
   Zap,
   Activity,
   TrendingUp,
-  CircleHelp
+  CircleHelp,
+  CreditCard,
+  DollarSign
 } from 'lucide-react';
+import { usageService, type UsageMetrics } from '@/services/usageService';
+import { creditService, type CreditBalance } from '@/services/creditService';
 
 /**
  * Generates a default avatar URL using Gravatar's identicon service
@@ -72,33 +76,53 @@ interface DashboardUser {
   is_active?: boolean;
 }
 
-interface AIMetrics {
-  codeGeneration: {
-    totalProjects: number;
-    linesGenerated: number;
-    componentsCreated: number;
-    lastGeneration: string;
-  };
-  modelUsage: {
-    gpt4: number;
-    claude: number;
-    llama: number;
-    custom: number;
-  };
-  apiIntegrations: {
-    activeProviders: string[];
-    totalRequests: number;
-    avgResponseTime: number;
-  };
-  aiAssistance: {
-    codeReviews: number;
-    bugsFixed: number;
-    optimizations: number;
-    refactorings: number;
-  };
-}
+// Agent team members with real names and photos
+const agentTeam = [
+  {
+    name: 'Cody Jackson',
+    role: 'Team Leader & CTO',
+    photo: '/team/cody-jackson.png',
+    specialty: 'Architecture & Code Quality',
+    status: 'online' as const,
+  },
+  {
+    name: 'Forrest Kinkade',
+    role: 'DevOps & SRE',
+    photo: '/team/forrest-kinkade.png',
+    specialty: 'Infrastructure & Reliability',
+    status: 'online' as const,
+  },
+  {
+    name: 'Peter Roan',
+    role: 'Backend Engineer',
+    photo: '/team/peter-roan.png',
+    specialty: 'APIs & Data Systems',
+    status: 'online' as const,
+  },
+  {
+    name: 'Pixel Rose',
+    role: 'Design & Frontend',
+    photo: '/team/pixel-rose.png',
+    specialty: 'UI/UX & Components',
+    status: 'online' as const,
+  },
+  {
+    name: 'Sage Ward',
+    role: 'Strategy & Research',
+    photo: '/team/sage-ward.png',
+    specialty: 'Market Analysis & Planning',
+    status: 'idle' as const,
+  },
+  {
+    name: 'Keystone Hale',
+    role: 'Product Manager',
+    photo: '/team/keystone-hale.png',
+    specialty: 'Roadmap & Prioritization',
+    status: 'idle' as const,
+  },
+];
 
-// Mock data for demo/development
+// Demo user fallback
 const mockUser: DashboardUser = {
   login: 'demo_user',
   name: 'Demo User',
@@ -112,43 +136,20 @@ const mockUser: DashboardUser = {
   is_active: true
 };
 
-const mockAiMetrics: AIMetrics = {
-  codeGeneration: {
-    totalProjects: 12,
-    linesGenerated: 45230,
-    componentsCreated: 89,
-    lastGeneration: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString()
-  },
-  modelUsage: {
-    gpt4: 45,
-    claude: 35,
-    llama: 15,
-    custom: 5
-  },
-  apiIntegrations: {
-    activeProviders: ['OpenAI', 'Anthropic', 'Meta'],
-    totalRequests: 1247,
-    avgResponseTime: 1.2
-  },
-  aiAssistance: {
-    codeReviews: 34,
-    bugsFixed: 18,
-    optimizations: 12,
-    refactorings: 7
-  }
-};
-
 export default function AccountClient() {
   const [user, setUser] = useState<DashboardUser | null>(null);
-  const [aiMetrics, setAiMetrics] = useState<AIMetrics | null>(null);
-  const [subscriptionPlan, setSubscriptionPlan] = useState<string>('Free');
+  const [usageData, setUsageData] = useState<UsageMetrics | null>(null);
+  const [creditBalance, setCreditBalance] = useState<CreditBalance | null>(null);
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [isDemo, setIsDemo] = useState(false);
+  const [dataErrors, setDataErrors] = useState<string[]>([]);
   const router = useRouter();
 
   const fetchAccountData = useCallback(async () => {
     try {
       setIsRefreshing(true);
+      setDataErrors([]);
+      const errors: string[] = [];
 
       // Check for auth token
       const token = typeof window !== 'undefined' ? (
@@ -158,15 +159,12 @@ export default function AccountClient() {
       ) : null;
 
       if (!token) {
-        // Use demo data when no auth
         setUser(mockUser);
-        setAiMetrics(mockAiMetrics);
-        setSubscriptionPlan('Free');
         setIsDemo(true);
         return;
       }
 
-      // Try to fetch real data from API
+      // Load user from localStorage
       try {
         const userStr = localStorage.getItem('user');
         if (userStr) {
@@ -193,14 +191,31 @@ export default function AccountClient() {
         setIsDemo(true);
       }
 
-      // Use mock metrics for now (real API integration would go here)
-      setAiMetrics(mockAiMetrics);
+      // Fetch real usage metrics from API
+      const [usageResult, creditResult] = await Promise.allSettled([
+        usageService.getUsageMetrics('30d'),
+        creditService.getCreditBalance(),
+      ]);
+
+      if (usageResult.status === 'fulfilled' && usageResult.value) {
+        setUsageData(usageResult.value);
+      } else {
+        errors.push('Usage metrics unavailable');
+      }
+
+      if (creditResult.status === 'fulfilled' && creditResult.value) {
+        setCreditBalance(creditResult.value);
+      } else {
+        errors.push('Credit balance unavailable');
+      }
+
+      if (errors.length > 0) {
+        setDataErrors(errors);
+      }
 
     } catch (err) {
       console.error('Account data load failed:', err);
-      // Fallback to demo data
       setUser(mockUser);
-      setAiMetrics(mockAiMetrics);
       setIsDemo(true);
     } finally {
       setIsRefreshing(false);
@@ -222,6 +237,11 @@ export default function AccountClient() {
       </div>
     );
   }
+
+  const planName = creditBalance?.plan || 'Free';
+  const usagePercent = creditBalance
+    ? creditService.calculateUsagePercentage(creditBalance)
+    : 0;
 
   return (
     <div className="min-h-screen text-white">
@@ -260,98 +280,205 @@ export default function AccountClient() {
             </Button>
           </div>
 
-          {/* Demo Mode Notification */}
           {isDemo && (
             <div className="mt-4 p-3 bg-yellow-500/10 border border-yellow-500/20 rounded-md">
               <div className="flex items-center gap-2">
                 <CircleHelp className="h-5 w-5 text-yellow-500" />
-                <p className="text-sm text-yellow-200">Demo mode - showing sample data</p>
+                <p className="text-sm text-yellow-200">Demo mode - sign in to see your real usage data</p>
+              </div>
+            </div>
+          )}
+
+          {dataErrors.length > 0 && !isDemo && (
+            <div className="mt-4 p-3 bg-orange-500/10 border border-orange-500/20 rounded-md">
+              <div className="flex items-center gap-2">
+                <Activity className="h-5 w-5 text-orange-400" />
+                <p className="text-sm text-orange-200">
+                  Some data is loading from API: {dataErrors.join(', ')}
+                </p>
               </div>
             </div>
           )}
         </motion.div>
 
-        {/* AI Native Metrics Section */}
         <motion.div variants={stagger}>
+          {/* Credits & Usage Overview - REAL DATA */}
           <motion.div variants={fadeUp}>
             <Card className="mb-6 border-none bg-[#161B22] shadow-lg overflow-hidden">
               <CardHeader className="border-b border-gray-800">
                 <CardTitle className="text-xl flex items-center gap-2">
-                  <Brain className="h-5 w-5 text-[#4B6FED]" />
-                  AI Native Metrics
-                  {isDemo && (
-                    <span className="text-xs bg-yellow-500/20 text-yellow-300 px-2 py-1 rounded">
-                      Sample Data
+                  <DollarSign className="h-5 w-5 text-[#4B6FED]" />
+                  Credits & Usage
+                  {creditBalance && (
+                    <span className="text-xs bg-green-500/20 text-green-400 px-2 py-1 rounded ml-2">
+                      Live
+                    </span>
+                  )}
+                  {!creditBalance && !isDemo && (
+                    <span className="text-xs bg-gray-500/20 text-gray-400 px-2 py-1 rounded ml-2">
+                      Loading...
                     </span>
                   )}
                 </CardTitle>
               </CardHeader>
               <CardContent className="pt-6">
-                {!aiMetrics ? (
-                  <div className="text-center py-8">
-                    <p className="text-gray-400 mb-4">Unable to load AI metrics</p>
-                    <Button
-                      onClick={handleRefresh}
-                      variant="secondary"
-                      className="bg-gray-800 hover:bg-gray-700"
-                    >
-                      <RefreshCcw className="h-4 w-4 mr-2" />
-                      Retry
-                    </Button>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+                  {/* Credit Balance */}
+                  <div className="p-5 bg-[#1C2128] rounded-lg border border-gray-800">
+                    <div className="flex items-center gap-2 mb-3">
+                      <CreditCard className="h-4 w-4 text-[#4B6FED]" />
+                      <span className="text-sm font-medium text-gray-300">Credit Balance</span>
+                    </div>
+                    {creditBalance ? (
+                      <>
+                        <p className="text-3xl font-bold text-white mb-1">
+                          {creditService.formatCreditAmount(creditBalance.remaining_credits)}
+                        </p>
+                        <p className="text-xs text-gray-400">
+                          of {creditService.formatCreditAmount(creditBalance.total_credits)} total
+                        </p>
+                        <div className="mt-3 h-2 bg-gray-700 rounded-full overflow-hidden">
+                          <div
+                            className={`h-full rounded-full transition-all ${
+                              usagePercent >= 90 ? 'bg-red-500' :
+                              usagePercent >= 75 ? 'bg-yellow-500' : 'bg-green-500'
+                            }`}
+                            style={{ width: `${Math.min(usagePercent, 100)}%` }}
+                          />
+                        </div>
+                        <p className="text-xs text-gray-500 mt-1">{usagePercent}% used</p>
+                      </>
+                    ) : (
+                      <p className="text-2xl font-bold text-gray-500">--</p>
+                    )}
                   </div>
-                ) : (
-                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-                    {/* Code Generation Stats */}
-                    <div className="p-4 bg-[#1C2128] rounded-md border border-gray-800">
-                      <div className="flex items-center gap-2 mb-2">
-                        <Code2 className="h-4 w-4 text-[#4B6FED]" />
-                        <span className="text-sm font-medium text-gray-300">Code Generation</span>
-                      </div>
-                      <div className="space-y-1">
-                        <p className="text-xs text-gray-400">Projects: <span className="text-white font-medium">{aiMetrics.codeGeneration.totalProjects}</span></p>
-                        <p className="text-xs text-gray-400">Lines: <span className="text-white font-medium">{aiMetrics.codeGeneration.linesGenerated.toLocaleString()}</span></p>
-                        <p className="text-xs text-gray-400">Components: <span className="text-white font-medium">{aiMetrics.codeGeneration.componentsCreated}</span></p>
-                      </div>
-                    </div>
 
-                    {/* Model Usage */}
-                    <div className="p-4 bg-[#1C2128] rounded-md border border-gray-800">
-                      <div className="flex items-center gap-2 mb-2">
-                        <Zap className="h-4 w-4 text-[#4B6FED]" />
-                        <span className="text-sm font-medium text-gray-300">Model Usage</span>
-                      </div>
-                      <div className="space-y-1">
-                        <p className="text-xs text-gray-400">GPT-4: <span className="text-white font-medium">{aiMetrics.modelUsage.gpt4}%</span></p>
-                        <p className="text-xs text-gray-400">Claude: <span className="text-white font-medium">{aiMetrics.modelUsage.claude}%</span></p>
-                        <p className="text-xs text-gray-400">Llama: <span className="text-white font-medium">{aiMetrics.modelUsage.llama}%</span></p>
-                      </div>
+                  {/* API Requests */}
+                  <div className="p-5 bg-[#1C2128] rounded-lg border border-gray-800">
+                    <div className="flex items-center gap-2 mb-3">
+                      <Activity className="h-4 w-4 text-[#4B6FED]" />
+                      <span className="text-sm font-medium text-gray-300">API Requests</span>
                     </div>
+                    {usageData ? (
+                      <>
+                        <p className="text-3xl font-bold text-white mb-1">
+                          {usageData.total_requests.toLocaleString()}
+                        </p>
+                        <p className="text-xs text-gray-400">
+                          last 30 days
+                        </p>
+                        {usageData.usage?.api_credits && (
+                          <>
+                            <div className="mt-3 h-2 bg-gray-700 rounded-full overflow-hidden">
+                              <div
+                                className={`h-full rounded-full transition-all ${
+                                  usageData.usage.api_credits.percentage >= 90 ? 'bg-red-500' :
+                                  usageData.usage.api_credits.percentage >= 75 ? 'bg-yellow-500' : 'bg-[#4B6FED]'
+                                }`}
+                                style={{ width: `${Math.min(usageData.usage.api_credits.percentage, 100)}%` }}
+                              />
+                            </div>
+                            <p className="text-xs text-gray-500 mt-1">
+                              {usageData.usage.api_credits.used.toLocaleString()} / {usageData.usage.api_credits.limit.toLocaleString()} credits
+                            </p>
+                          </>
+                        )}
+                      </>
+                    ) : (
+                      <p className="text-2xl font-bold text-gray-500">--</p>
+                    )}
+                  </div>
 
-                    {/* API Integrations */}
-                    <div className="p-4 bg-[#1C2128] rounded-md border border-gray-800">
-                      <div className="flex items-center gap-2 mb-2">
-                        <Activity className="h-4 w-4 text-[#4B6FED]" />
-                        <span className="text-sm font-medium text-gray-300">API Performance</span>
-                      </div>
-                      <div className="space-y-1">
-                        <p className="text-xs text-gray-400">Total Requests: <span className="text-white font-medium">{aiMetrics.apiIntegrations.totalRequests.toLocaleString()}</span></p>
-                        <p className="text-xs text-gray-400">Avg Response: <span className="text-white font-medium">{aiMetrics.apiIntegrations.avgResponseTime}s</span></p>
-                        <p className="text-xs text-gray-400">Providers: <span className="text-white font-medium">{aiMetrics.apiIntegrations.activeProviders.length}</span></p>
-                      </div>
+                  {/* Token Usage */}
+                  <div className="p-5 bg-[#1C2128] rounded-lg border border-gray-800">
+                    <div className="flex items-center gap-2 mb-3">
+                      <Zap className="h-4 w-4 text-[#4B6FED]" />
+                      <span className="text-sm font-medium text-gray-300">Tokens Used</span>
                     </div>
+                    {usageData ? (
+                      <>
+                        <p className="text-3xl font-bold text-white mb-1">
+                          {usageService.formatCredits(usageData.total_tokens)}
+                        </p>
+                        <p className="text-xs text-gray-400">
+                          last 30 days
+                        </p>
+                        {usageData.usage?.llm_tokens && (
+                          <>
+                            <div className="mt-3 h-2 bg-gray-700 rounded-full overflow-hidden">
+                              <div
+                                className={`h-full rounded-full transition-all ${
+                                  usageData.usage.llm_tokens.percentage >= 90 ? 'bg-red-500' :
+                                  usageData.usage.llm_tokens.percentage >= 75 ? 'bg-yellow-500' : 'bg-purple-500'
+                                }`}
+                                style={{ width: `${Math.min(usageData.usage.llm_tokens.percentage, 100)}%` }}
+                              />
+                            </div>
+                            <p className="text-xs text-gray-500 mt-1">
+                              {usageData.usage.llm_tokens.status}
+                            </p>
+                          </>
+                        )}
+                      </>
+                    ) : (
+                      <p className="text-2xl font-bold text-gray-500">--</p>
+                    )}
+                  </div>
+                </div>
 
-                    {/* AI Assistance */}
-                    <div className="p-4 bg-[#1C2128] rounded-md border border-gray-800">
+                {/* Usage Breakdown */}
+                {usageData?.usage && (
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+                    <div className="p-4 bg-[#1C2128] rounded-lg border border-gray-800">
                       <div className="flex items-center gap-2 mb-2">
-                        <TrendingUp className="h-4 w-4 text-[#4B6FED]" />
-                        <span className="text-sm font-medium text-gray-300">AI Assistance</span>
+                        <Brain className="h-4 w-4 text-purple-400" />
+                        <span className="text-sm font-medium text-gray-300">Storage</span>
                       </div>
-                      <div className="space-y-1">
-                        <p className="text-xs text-gray-400">Code Reviews: <span className="text-white font-medium">{aiMetrics.aiAssistance.codeReviews}</span></p>
-                        <p className="text-xs text-gray-400">Bugs Fixed: <span className="text-white font-medium">{aiMetrics.aiAssistance.bugsFixed}</span></p>
-                        <p className="text-xs text-gray-400">Optimizations: <span className="text-white font-medium">{aiMetrics.aiAssistance.optimizations}</span></p>
+                      <div className="flex items-baseline gap-2">
+                        <span className="text-xl font-bold text-white">
+                          {usageData.usage.storage_gb?.used?.toFixed(2) ?? '0'} GB
+                        </span>
+                        <span className="text-xs text-gray-500">
+                          of {usageData.usage.storage_gb?.limit ?? 0} GB
+                        </span>
                       </div>
                     </div>
+                    <div className="p-4 bg-[#1C2128] rounded-lg border border-gray-800">
+                      <div className="flex items-center gap-2 mb-2">
+                        <TrendingUp className="h-4 w-4 text-green-400" />
+                        <span className="text-sm font-medium text-gray-300">MCP Server Hours</span>
+                      </div>
+                      <div className="flex items-baseline gap-2">
+                        <span className="text-xl font-bold text-white">
+                          {usageData.usage.mcp_hours?.used?.toFixed(1) ?? '0'} hrs
+                        </span>
+                        <span className="text-xs text-gray-500">
+                          of {usageData.usage.mcp_hours?.limit ?? 0} hrs
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                {/* Plan info */}
+                {usageData?.plan && (
+                  <div className="flex items-center justify-between p-4 bg-[#1C2128] rounded-lg border border-gray-800">
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 rounded-full bg-[#4B6FED]/20 flex items-center justify-center">
+                        <Zap className="h-5 w-5 text-[#4B6FED]" />
+                      </div>
+                      <div>
+                        <p className="font-semibold text-white">{usageData.plan.name} Plan</p>
+                        <p className="text-xs text-gray-400">
+                          Status: <span className={usageData.plan.status === 'active' ? 'text-green-400' : 'text-yellow-400'}>{usageData.plan.status}</span>
+                        </p>
+                      </div>
+                    </div>
+                    <Link href="/pricing">
+                      <Button size="sm" variant="outline" className="border-[#4B6FED] text-[#4B6FED] hover:bg-[#4B6FED]/10">
+                        Upgrade
+                      </Button>
+                    </Link>
                   </div>
                 )}
 
@@ -359,10 +486,18 @@ export default function AccountClient() {
                   <Button
                     variant="outline"
                     className="border-gray-700 hover:bg-gray-800 text-white flex items-center gap-2"
-                    onClick={() => router.push('/analytics')}
+                    onClick={() => router.push('/dashboard/usage')}
                   >
                     <BarChart2 className="h-4 w-4" />
-                    View Detailed Analytics
+                    Detailed Analytics
+                  </Button>
+                  <Button
+                    variant="outline"
+                    className="border-gray-700 hover:bg-gray-800 text-white flex items-center gap-2"
+                    onClick={() => router.push('/dashboard/credits')}
+                  >
+                    <CreditCard className="h-4 w-4" />
+                    Credit History
                   </Button>
                   <Button
                     variant="outline"
@@ -370,8 +505,50 @@ export default function AccountClient() {
                     onClick={() => router.push('/dashboard/api-keys')}
                   >
                     <Settings className="h-4 w-4" />
-                    Manage API Keys
+                    API Keys
                   </Button>
+                </div>
+              </CardContent>
+            </Card>
+          </motion.div>
+
+          {/* Your AI Team */}
+          <motion.div variants={fadeUp}>
+            <Card className="mb-6 border-none bg-[#161B22] shadow-lg overflow-hidden">
+              <CardHeader className="border-b border-gray-800">
+                <CardTitle className="text-xl flex items-center gap-2">
+                  <Brain className="h-5 w-5 text-[#4B6FED]" />
+                  Your AI Team
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="pt-6">
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                  {agentTeam.map((agent) => (
+                    <div
+                      key={agent.name}
+                      className="flex items-center gap-4 p-4 bg-[#1C2128] rounded-lg border border-gray-800 hover:border-gray-700 transition-colors"
+                    >
+                      <div className="relative flex-shrink-0">
+                        <Image
+                          src={agent.photo}
+                          alt={agent.name}
+                          width={56}
+                          height={56}
+                          className="rounded-full object-cover w-14 h-14"
+                        />
+                        <span
+                          className={`absolute bottom-0 right-0 w-3.5 h-3.5 rounded-full border-2 border-[#1C2128] ${
+                            agent.status === 'online' ? 'bg-green-400' : 'bg-yellow-400'
+                          }`}
+                        />
+                      </div>
+                      <div className="min-w-0">
+                        <p className="font-semibold text-white text-sm truncate">{agent.name}</p>
+                        <p className="text-xs text-[#4B6FED] truncate">{agent.role}</p>
+                        <p className="text-xs text-gray-500 truncate">{agent.specialty}</p>
+                      </div>
+                    </div>
+                  ))}
                 </div>
               </CardContent>
             </Card>
@@ -422,23 +599,20 @@ export default function AccountClient() {
                     </p>
                   </div>
                   <div className="p-4 bg-[#1C2128] rounded-md">
-                    <p className="text-sm text-gray-400 mb-1">GitHub Repos</p>
-                    <p className="font-medium">{user.public_repos || 0}</p>
+                    <p className="text-sm text-gray-400 mb-1">Subscription</p>
+                    <p className="font-medium">{planName}</p>
                   </div>
                   <div className="p-4 bg-[#1C2128] rounded-md flex items-center justify-between">
                     <div>
-                      <p className="text-sm text-gray-400 mb-1">Subscription Plan</p>
-                      <p className="font-medium">{subscriptionPlan}</p>
+                      <p className="text-sm text-gray-400 mb-1">Member Since</p>
+                      <p className="font-medium">
+                        {new Date(user.created_at).toLocaleDateString('en-US', {
+                          year: 'numeric',
+                          month: 'long',
+                          day: 'numeric'
+                        })}
+                      </p>
                     </div>
-                    <Link href="/pricing">
-                      <Button
-                        size="sm"
-                        variant="outline"
-                        className="border-[#4B6FED] text-[#4B6FED] hover:bg-[#4B6FED]/10"
-                      >
-                        Upgrade
-                      </Button>
-                    </Link>
                   </div>
                 </div>
               </CardContent>

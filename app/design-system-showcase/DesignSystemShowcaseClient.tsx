@@ -29,6 +29,12 @@ import {
   TestTube2,
   Workflow,
   Shield,
+  Package,
+  Server,
+  Layers,
+  Video,
+  Wrench,
+  BookOpen,
 } from 'lucide-react';
 import {
   CardAdvanced,
@@ -73,91 +79,209 @@ import { HoverCard, HoverCardTrigger, HoverCardContent } from '@/components/ui/h
 import { Popover, PopoverTrigger, PopoverContent } from '@/components/ui/popover';
 import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem } from '@/components/ui/dropdown-menu';
 
-// Real AI Kit packages - matching AIKitPage.tsx
+// All published NPM packages under ainative-studio profile
 const AI_KIT_PACKAGES = [
+  // SDKs
   {
-    name: '@ainative-studio/aikit-core',
-    description: 'Core utilities and shared types for AI Kit ecosystem',
+    name: '@ainative/sdk',
+    description: 'Official TypeScript/JavaScript SDK for AINative Studio APIs',
+    icon: Package,
+    category: 'SDK',
+  },
+  {
+    name: '@ainative/react-sdk',
+    description: 'Official React SDK - hooks for chat completions and credit management',
+    icon: Code2,
+    category: 'SDK',
+  },
+  {
+    name: '@ainative/next-sdk',
+    description: 'Official Next.js SDK - server and client utilities for App Router and Pages Router',
+    icon: Globe,
+    category: 'SDK',
+  },
+  {
+    name: '@ainative/vue-sdk',
+    description: 'Official Vue SDK - composables for chat completions and credit management',
+    icon: Code2,
+    category: 'SDK',
+  },
+  {
+    name: '@ainative/svelte-sdk',
+    description: 'Official Svelte SDK - stores and actions for chat completions and credit management',
+    icon: Code2,
+    category: 'SDK',
+  },
+  // MCP Servers
+  {
+    name: 'ainative-zerodb-mcp-server',
+    description: '69 operations for vector search, free embeddings, quantum compression, NoSQL, PostgreSQL, files, events, RLHF, and persistent memory for AI agents',
+    icon: Server,
+    category: 'MCP',
+  },
+  {
+    name: 'ainative-zerodb-memory-mcp',
+    description: '6 optimized tools for agent memory with smart context management, semantic search, and automatic pruning. 92% smaller than monolithic server',
+    icon: Server,
+    category: 'MCP',
+  },
+  {
+    name: 'ainative-strapi-mcp-server',
+    description: 'MCP server for Strapi CMS - AI-powered content management with natural language. Create, manage, and publish blog posts through AI agents',
+    icon: Server,
+    category: 'MCP',
+  },
+  {
+    name: 'ainative-design-system-mcp-server',
+    description: 'AINative Design System MCP Server for Claude Code - extract design tokens, analyze components, and generate themes',
+    icon: Server,
+    category: 'MCP',
+  },
+  // AI Kit Core
+  {
+    name: '@ainative/ai-kit-core',
+    description: 'Framework-agnostic core for AI Kit - streaming, agents, state management, and LLM primitives',
     icon: Cpu,
     category: 'Core',
   },
   {
-    name: '@ainative/ai-kit-auth',
-    description: 'Authentication and authorization utilities for AI applications',
-    icon: Lock,
-    category: 'Security',
+    name: '@ainative-studio/aikit-core',
+    description: 'Core AI agent orchestration framework with tool calling and streaming support',
+    icon: Cpu,
+    category: 'Core',
   },
   {
+    name: '@ainative/ai-kit-tools',
+    description: 'Built-in tools for agents including web search, calculator, code interpreter, and more',
+    icon: Box,
+    category: 'Core',
+  },
+  // AI Kit Frameworks
+  {
     name: '@ainative/ai-kit',
-    description: 'React hooks and components for AI-powered applications',
+    description: 'AI Kit - React hooks and components for building AI-powered applications',
+    icon: Code2,
+    category: 'Framework',
+  },
+  {
+    name: '@ainative/aikit-react',
+    description: 'React components for AI-powered streaming interfaces',
     icon: Code2,
     category: 'Framework',
   },
   {
     name: '@ainative/ai-kit-vue',
-    description: 'Vue composables and components for AI integration',
+    description: 'Vue 3 composables for building AI-powered applications',
     icon: Code2,
     category: 'Framework',
   },
   {
     name: '@ainative/ai-kit-svelte',
-    description: 'Svelte stores and components for AI applications',
+    description: 'Svelte stores and actions for building AI-powered applications',
     icon: Code2,
     category: 'Framework',
   },
   {
     name: '@ainative/ai-kit-nextjs',
-    description: 'Next.js utilities and middleware for AI integration',
+    description: 'Next.js utilities and helpers for AI-powered applications',
     icon: Globe,
     category: 'Framework',
   },
+  // UI/UX
   {
     name: '@ainative/ai-kit-design-system',
-    description: 'Pre-built UI components and design tokens for AI interfaces',
+    description: 'AI Kit - Design System MCP integration with pre-built UI components and design tokens',
     icon: Palette,
     category: 'UI/UX',
   },
+  // Data
   {
     name: '@ainative/ai-kit-zerodb',
-    description: 'ZeroDB client SDK for vector search and AI-native storage',
+    description: 'AI Kit - AINative ZeroDB integration for vector storage and memory',
     icon: Database,
     category: 'Data',
   },
   {
+    name: '@ainative/zerodb-mcp-client',
+    description: 'Production-ready TypeScript/JavaScript client for ZeroDB MCP Bridge',
+    icon: Database,
+    category: 'Data',
+  },
+  // Security
+  {
+    name: '@ainative/ai-kit-auth',
+    description: 'AINative authentication integration for AI applications',
+    icon: Lock,
+    category: 'Security',
+  },
+  {
+    name: '@ainative/ai-kit-safety',
+    description: 'Safety features: prompt injection detection, PII filtering, content moderation',
+    icon: Shield,
+    category: 'Security',
+  },
+  // DevTools
+  {
     name: '@ainative/ai-kit-cli',
-    description: 'Command-line tools for AI Kit development and deployment',
+    description: 'CLI tool for scaffolding and managing AI-powered applications',
     icon: Terminal,
     category: 'DevTools',
   },
   {
     name: '@ainative/ai-kit-testing',
-    description: 'Testing utilities and mocks for AI applications',
+    description: 'Testing utilities and fixtures for AI applications',
     icon: TestTube2,
     category: 'DevTools',
   },
   {
     name: '@ainative/ai-kit-observability',
-    description: 'Monitoring, logging, and observability tools for AI systems',
+    description: 'Usage tracking, monitoring, cost alerts, and observability for LLM applications',
     icon: Eye,
     category: 'DevTools',
   },
   {
-    name: '@ainative/ai-kit-safety',
-    description: 'Safety guardrails and content moderation utilities',
-    icon: Shield,
-    category: 'Security',
+    name: '@ainative/ai-kit-video',
+    description: 'Video processing utilities including recording and transcription',
+    icon: Video,
+    category: 'DevTools',
   },
+  // ML
   {
     name: '@ainative/ai-kit-rlhf',
-    description: 'Reinforcement Learning from Human Feedback utilities',
+    description: 'AINative RLHF (Reinforcement Learning from Human Feedback) integration',
     icon: Workflow,
     category: 'ML',
   },
+  // Skills
   {
-    name: '@ainative/ai-kit-tools',
-    description: 'Function calling and tool integration utilities',
-    icon: Box,
-    category: 'Core',
+    name: '@ainative/skill-mcp-development',
+    description: 'MCP server development patterns extending Anthropic\'s mcp-builder with AINative-specific conventions for building tool-based AI systems',
+    icon: BookOpen,
+    category: 'Skills',
+  },
+  {
+    name: '@ainative/skill-testing-patterns',
+    description: 'TDD/BDD workflows for FastAPI + React stack with pytest, vitest, and integration testing',
+    icon: TestTube2,
+    category: 'Skills',
+  },
+  {
+    name: '@ainative/skill-railway-deployment',
+    description: 'Railway deployment workflows, nixpacks configuration, environment management, and production troubleshooting',
+    icon: Rocket,
+    category: 'Skills',
+  },
+  {
+    name: '@ainative/skill-api-design',
+    description: 'FastAPI best practices, Pydantic models, RESTful endpoint design, error handling, and authentication patterns',
+    icon: Wrench,
+    category: 'Skills',
+  },
+  {
+    name: '@ainative/skill-zerodb-workflows',
+    description: 'ZeroDB vector database best practices, semantic search patterns, RLHF workflows, and memory management',
+    icon: Layers,
+    category: 'Skills',
   },
 ];
 
@@ -216,11 +340,40 @@ export default function DesignSystemShowcaseClient() {
     setTimeout(() => setCopiedIndex(null), 2000);
   };
 
-  // Real categories from AI Kit packages
-  const categories = ['All', 'Core', 'Security', 'Framework', 'UI/UX', 'Data', 'DevTools', 'ML'];
+  // All categories from published NPM packages
+  // All categories from published NPM packages
+  const categories = ['All', 'SDK', 'MCP', 'Core', 'Framework', 'UI/UX', 'Data', 'Security', 'DevTools', 'ML', 'Skills'];
   const filteredPackages = selectedCategory === 'All'
     ? AI_KIT_PACKAGES
     : AI_KIT_PACKAGES.filter(pkg => pkg.category === selectedCategory);
+
+  const getGitHubUrl = (pkgName: string) => {
+    if (pkgName.startsWith('ainative-zerodb-mcp-server') || pkgName === 'ainative-zerodb-memory-mcp') {
+      return 'https://github.com/AINative-Studio/zerodb-mcp-server';
+    }
+    if (pkgName === 'ainative-strapi-mcp-server') {
+      return 'https://github.com/AINative-Studio/strapi-mcp-server';
+    }
+    if (pkgName === 'ainative-design-system-mcp-server') {
+      return 'https://github.com/AINative-Studio/design-system-mcp';
+    }
+    if (pkgName.startsWith('@ainative/sdk') || pkgName.startsWith('@ainative/react-sdk') || pkgName.startsWith('@ainative/next-sdk') || pkgName.startsWith('@ainative/vue-sdk') || pkgName.startsWith('@ainative/svelte-sdk')) {
+      return 'https://github.com/AINative-Studio/ainative-sdk';
+    }
+    if (pkgName.startsWith('@ainative/zerodb-mcp-client')) {
+      return 'https://github.com/AINative-Studio/zerodb-mcp-client';
+    }
+    if (pkgName.startsWith('@ainative/skill-')) {
+      const slug = pkgName.replace('@ainative/skill-', '');
+      return `https://github.com/AINative-Studio/skills/tree/main/${slug}`;
+    }
+    if (pkgName.startsWith('@ainative/aikit-react') || pkgName === '@ainative-studio/aikit-core') {
+      return 'https://github.com/AINative-Studio/aikit-react';
+    }
+    // Default: ai-kit monorepo
+    const slug = pkgName.includes('/') ? pkgName.split('/')[1] : pkgName;
+    return `https://github.com/AINative-Studio/ai-kit/tree/main/packages/${slug}`;
+  };
 
   return (
     <div className="min-h-screen bg-vite-bg">
@@ -349,10 +502,10 @@ export default function DesignSystemShowcaseClient() {
         <div className="container mx-auto px-6">
           <div className="text-center space-y-4 mb-12">
             <GradientText variant="secondary" size="display-3" as="h2" className="font-bold">
-              AI Kit - 14 Production-Ready Packages
+              32 Production-Ready NPM Packages
             </GradientText>
             <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
-              Framework-agnostic components for React, Vue, Svelte, and Next.js
+              SDKs, MCP servers, AI Kit frameworks for React, Vue, Svelte, Next.js, and developer skill packs
             </p>
           </div>
 
@@ -391,7 +544,7 @@ export default function DesignSystemShowcaseClient() {
                         <div className="bg-[#5867EF]/10 p-2 rounded-lg">
                           <Icon className="w-5 h-5 text-[#5867EF]" />
                         </div>
-                        <Badge className="bg-[#161B22] text-muted-foreground text-xs">
+                        <Badge className="bg-[#0D1117] border border-white/10 text-muted-foreground text-xs">
                           {pkg.category}
                         </Badge>
                       </div>
@@ -419,7 +572,7 @@ export default function DesignSystemShowcaseClient() {
                           </Button>
                         </a>
                         <a
-                          href={`https://github.com/AINative-Studio/ai-kit/tree/main/packages/${pkg.name.split('/')[1]}`}
+                          href={getGitHubUrl(pkg.name)}
                           target="_blank"
                           rel="noopener noreferrer"
                           className="flex-1"
@@ -470,7 +623,7 @@ export default function DesignSystemShowcaseClient() {
               <TabsContent value="forms" className="space-y-8">
                 <div className="grid md:grid-cols-2 gap-6">
                   {/* Input */}
-                  <Card className="bg-vite-surface border-vite-border">
+                  <Card className="bg-[#161B22] border border-white/5 shadow-sm shadow-black/20 hover:border-[#4B6FED]/30 transition-all rounded-xl">
                     <CardHeader>
                       <CardTitle className="text-foreground">Input & Input Branded</CardTitle>
                       <CardDescription>Text input fields with variants</CardDescription>
@@ -488,7 +641,7 @@ export default function DesignSystemShowcaseClient() {
                   </Card>
 
                   {/* Textarea */}
-                  <Card className="bg-vite-surface border-vite-border">
+                  <Card className="bg-[#161B22] border border-white/5 shadow-sm shadow-black/20 hover:border-[#4B6FED]/30 transition-all rounded-xl">
                     <CardHeader>
                       <CardTitle className="text-foreground">Textarea & Textarea Branded</CardTitle>
                       <CardDescription>Multi-line text input areas</CardDescription>
@@ -506,7 +659,7 @@ export default function DesignSystemShowcaseClient() {
                   </Card>
 
                   {/* Select */}
-                  <Card className="bg-vite-surface border-vite-border">
+                  <Card className="bg-[#161B22] border border-white/5 shadow-sm shadow-black/20 hover:border-[#4B6FED]/30 transition-all rounded-xl">
                     <CardHeader>
                       <CardTitle className="text-foreground">Select Dropdown</CardTitle>
                       <CardDescription>Dropdown selection component</CardDescription>
@@ -528,7 +681,7 @@ export default function DesignSystemShowcaseClient() {
                   </Card>
 
                   {/* Switch & Slider */}
-                  <Card className="bg-vite-surface border-vite-border">
+                  <Card className="bg-[#161B22] border border-white/5 shadow-sm shadow-black/20 hover:border-[#4B6FED]/30 transition-all rounded-xl">
                     <CardHeader>
                       <CardTitle className="text-foreground">Switch & Slider</CardTitle>
                       <CardDescription>Toggle and range inputs</CardDescription>
@@ -560,7 +713,7 @@ export default function DesignSystemShowcaseClient() {
               <TabsContent value="feedback" className="space-y-8">
                 <div className="grid md:grid-cols-2 gap-6">
                   {/* Alerts */}
-                  <Card className="bg-vite-surface border-vite-border">
+                  <Card className="bg-[#161B22] border border-white/5 shadow-sm shadow-black/20 hover:border-[#4B6FED]/30 transition-all rounded-xl">
                     <CardHeader>
                       <CardTitle className="text-foreground">Alert</CardTitle>
                       <CardDescription>Contextual alert messages</CardDescription>
@@ -584,7 +737,7 @@ export default function DesignSystemShowcaseClient() {
                   </Card>
 
                   {/* Progress */}
-                  <Card className="bg-vite-surface border-vite-border">
+                  <Card className="bg-[#161B22] border border-white/5 shadow-sm shadow-black/20 hover:border-[#4B6FED]/30 transition-all rounded-xl">
                     <CardHeader>
                       <CardTitle className="text-foreground">Progress</CardTitle>
                       <CardDescription>Progress bar indicators</CardDescription>
@@ -601,7 +754,7 @@ export default function DesignSystemShowcaseClient() {
                   </Card>
 
                   {/* Spinners */}
-                  <Card className="bg-vite-surface border-vite-border">
+                  <Card className="bg-[#161B22] border border-white/5 shadow-sm shadow-black/20 hover:border-[#4B6FED]/30 transition-all rounded-xl">
                     <CardHeader>
                       <CardTitle className="text-foreground">Spinner Variants</CardTitle>
                       <CardDescription>Loading state indicators</CardDescription>
@@ -625,7 +778,7 @@ export default function DesignSystemShowcaseClient() {
                   </Card>
 
                   {/* Skeletons */}
-                  <Card className="bg-vite-surface border-vite-border">
+                  <Card className="bg-[#161B22] border border-white/5 shadow-sm shadow-black/20 hover:border-[#4B6FED]/30 transition-all rounded-xl">
                     <CardHeader>
                       <CardTitle className="text-foreground">Skeleton Loaders</CardTitle>
                       <CardDescription>Content loading placeholders</CardDescription>
@@ -638,7 +791,7 @@ export default function DesignSystemShowcaseClient() {
                 </div>
 
                 {/* RLHF Feedback Component */}
-                <Card className="bg-vite-surface border-vite-border">
+                <Card className="bg-[#161B22] border border-white/5 shadow-sm shadow-black/20 hover:border-[#4B6FED]/30 transition-all rounded-xl">
                   <CardHeader>
                     <CardTitle className="text-foreground">RLHF Feedback Component</CardTitle>
                     <CardDescription>Reinforcement Learning from Human Feedback UI</CardDescription>
@@ -666,7 +819,7 @@ export default function DesignSystemShowcaseClient() {
               {/* LAYOUT TAB */}
               <TabsContent value="layout" className="space-y-8">
                 <div className="grid md:grid-cols-2 gap-6">
-                  <Card className="bg-vite-surface border-vite-border">
+                  <Card className="bg-[#161B22] border border-white/5 shadow-sm shadow-black/20 hover:border-[#4B6FED]/30 transition-all rounded-xl">
                     <CardHeader>
                       <CardTitle className="text-foreground">Accordion</CardTitle>
                       <CardDescription>Collapsible content sections</CardDescription>
@@ -693,7 +846,7 @@ export default function DesignSystemShowcaseClient() {
                     </CardContent>
                   </Card>
 
-                  <Card className="bg-vite-surface border-vite-border">
+                  <Card className="bg-[#161B22] border border-white/5 shadow-sm shadow-black/20 hover:border-[#4B6FED]/30 transition-all rounded-xl">
                     <CardHeader>
                       <CardTitle className="text-foreground">Separator</CardTitle>
                       <CardDescription>Divider lines for content sections</CardDescription>
@@ -710,7 +863,7 @@ export default function DesignSystemShowcaseClient() {
               {/* DATA TAB */}
               <TabsContent value="data" className="space-y-8">
                 <div className="grid md:grid-cols-2 gap-6">
-                  <Card className="bg-vite-surface border-vite-border">
+                  <Card className="bg-[#161B22] border border-white/5 shadow-sm shadow-black/20 hover:border-[#4B6FED]/30 transition-all rounded-xl">
                     <CardHeader>
                       <CardTitle className="text-foreground">Badge</CardTitle>
                       <CardDescription>Labels and status indicators</CardDescription>
@@ -726,7 +879,7 @@ export default function DesignSystemShowcaseClient() {
                     </CardContent>
                   </Card>
 
-                  <Card className="bg-vite-surface border-vite-border">
+                  <Card className="bg-[#161B22] border border-white/5 shadow-sm shadow-black/20 hover:border-[#4B6FED]/30 transition-all rounded-xl">
                     <CardHeader>
                       <CardTitle className="text-foreground">Avatar</CardTitle>
                       <CardDescription>User profile images with fallbacks</CardDescription>
@@ -747,7 +900,7 @@ export default function DesignSystemShowcaseClient() {
                     </CardContent>
                   </Card>
 
-                  <Card className="bg-[#1C2128] border-gray-800 md:col-span-2">
+                  <Card className="bg-[#161B22] border border-white/5 shadow-sm shadow-black/20 hover:border-[#4B6FED]/30 transition-all rounded-xl md:col-span-2">
                     <CardHeader>
                       <CardTitle className="text-foreground">Table</CardTitle>
                       <CardDescription>Data tables with styling</CardDescription>
@@ -788,7 +941,7 @@ export default function DesignSystemShowcaseClient() {
               {/* NAVIGATION TAB */}
               <TabsContent value="navigation" className="space-y-8">
                 <div className="grid md:grid-cols-2 gap-6">
-                  <Card className="bg-vite-surface border-vite-border">
+                  <Card className="bg-[#161B22] border border-white/5 shadow-sm shadow-black/20 hover:border-[#4B6FED]/30 transition-all rounded-xl">
                     <CardHeader>
                       <CardTitle className="text-foreground">Breadcrumb</CardTitle>
                       <CardDescription>Navigation hierarchy indicator</CardDescription>
@@ -807,7 +960,7 @@ export default function DesignSystemShowcaseClient() {
                     </CardContent>
                   </Card>
 
-                  <Card className="bg-vite-surface border-vite-border">
+                  <Card className="bg-[#161B22] border border-white/5 shadow-sm shadow-black/20 hover:border-[#4B6FED]/30 transition-all rounded-xl">
                     <CardHeader>
                       <CardTitle className="text-foreground">Button</CardTitle>
                       <CardDescription>Interactive button components</CardDescription>
@@ -828,7 +981,7 @@ export default function DesignSystemShowcaseClient() {
               {/* OVERLAY TAB */}
               <TabsContent value="overlay" className="space-y-8">
                 <div className="grid md:grid-cols-2 gap-6">
-                  <Card className="bg-vite-surface border-vite-border">
+                  <Card className="bg-[#161B22] border border-white/5 shadow-sm shadow-black/20 hover:border-[#4B6FED]/30 transition-all rounded-xl">
                     <CardHeader>
                       <CardTitle className="text-foreground">Tooltip</CardTitle>
                       <CardDescription>Hover information popups</CardDescription>
@@ -847,7 +1000,7 @@ export default function DesignSystemShowcaseClient() {
                     </CardContent>
                   </Card>
 
-                  <Card className="bg-vite-surface border-vite-border">
+                  <Card className="bg-[#161B22] border border-white/5 shadow-sm shadow-black/20 hover:border-[#4B6FED]/30 transition-all rounded-xl">
                     <CardHeader>
                       <CardTitle className="text-foreground">Dropdown Menu</CardTitle>
                       <CardDescription>Contextual action menus</CardDescription>
@@ -875,7 +1028,7 @@ export default function DesignSystemShowcaseClient() {
 
               {/* BRANDED TAB */}
               <TabsContent value="branded" className="space-y-8">
-                <Card className="bg-vite-surface border-vite-border">
+                <Card className="bg-[#161B22] border border-white/5 shadow-sm shadow-black/20 hover:border-[#4B6FED]/30 transition-all rounded-xl">
                   <CardHeader>
                     <CardTitle className="text-foreground">Gradient Text</CardTitle>
                     <CardDescription>Animated gradient text effects</CardDescription>
@@ -887,7 +1040,7 @@ export default function DesignSystemShowcaseClient() {
                   </CardContent>
                 </Card>
 
-                <Card className="bg-vite-surface border-vite-border">
+                <Card className="bg-[#161B22] border border-white/5 shadow-sm shadow-black/20 hover:border-[#4B6FED]/30 transition-all rounded-xl">
                   <CardHeader>
                     <CardTitle className="text-foreground">CardAdvanced Variants</CardTitle>
                     <CardDescription>All card styles and hover effects</CardDescription>

@@ -3,6 +3,7 @@
 import React from "react";
 
 import { useState, useEffect } from 'react';
+import Image from 'next/image';
 import { motion } from 'framer-motion';
 import { Check, Loader2, Crown } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -11,6 +12,28 @@ import { pricingService, type PricingPlan } from '@/services/pricingService';
 import { getPriceIdForPlan } from '@/config/pricing';
 import apiClient from '@/lib/api-client';
 import { appConfig } from '@/lib/config/app';
+
+// Agent identity map — real names and photos for Digital Employee plans
+const agentIdentities: Record<string, { name: string; fullName: string; role: string; photo: string }> = {
+  cody: {
+    name: 'Cody',
+    fullName: 'Cody Jackson',
+    role: 'Team Leader & CTO',
+    photo: '/team/cody-jackson.png',
+  },
+  sre: {
+    name: 'Forrest',
+    fullName: 'Forrest Kinkade',
+    role: 'DevOps & SRE Agent',
+    photo: '/team/forrest-kinkade.png',
+  },
+  swarm: {
+    name: 'Agent Swarm',
+    fullName: 'Full Engineering Team',
+    role: 'Multi-Agent Dev Team',
+    photo: '/team/agent-team.png',
+  },
+};
 
 export default function PlanManagementClient() {
   const [plans, setPlans] = useState<PricingPlan[]>([]);
@@ -107,6 +130,7 @@ export default function PlanManagementClient() {
   const renderPlanCard = (plan: PricingPlan, index: number, highlightIds: string[] = []) => {
     const isCurrent = isCurrentPlan(plan);
     const isHighlighted = highlightIds.includes(plan.id);
+    const agentInfo = agentIdentities[plan.id];
 
     return (
       <motion.div
@@ -133,10 +157,28 @@ export default function PlanManagementClient() {
           </div>
         )}
 
-        <div className="mb-4">
-          <h3 className="text-lg font-semibold text-white">{plan.name}</h3>
-          <p className="text-sm text-gray-400 mt-1">{plan.description}</p>
-        </div>
+        {/* Agent photo + identity for Digital Employee plans */}
+        {agentInfo ? (
+          <div className="flex items-center gap-4 mb-4">
+            <Image
+              src={agentInfo.photo}
+              alt={agentInfo.fullName}
+              width={56}
+              height={56}
+              className="rounded-full object-cover w-14 h-14 border-2 border-[#4B6FED]/30"
+            />
+            <div>
+              <h3 className="text-lg font-semibold text-white">{agentInfo.fullName}</h3>
+              <p className="text-xs text-[#4B6FED]">{agentInfo.role}</p>
+              <p className="text-sm text-gray-400 mt-0.5">{plan.description}</p>
+            </div>
+          </div>
+        ) : (
+          <div className="mb-4">
+            <h3 className="text-lg font-semibold text-white">{plan.name}</h3>
+            <p className="text-sm text-gray-400 mt-1">{plan.description}</p>
+          </div>
+        )}
 
         <div className="mb-6">
           <span className="text-3xl font-bold text-white">

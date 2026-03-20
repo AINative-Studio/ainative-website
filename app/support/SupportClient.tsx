@@ -113,18 +113,18 @@ export default function SupportClient() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-white to-gray-50 dark:from-gray-900 dark:to-gray-800/50">
+    <div className="min-h-screen bg-[#0D1117]">
       <div className="container mx-auto px-4 py-16">
         <div className="max-w-5xl mx-auto">
           {/* Hero Section */}
           <div className="text-center mb-12">
-            <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-primary/10 mb-6">
+            <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-[#4B6FED]/10 mb-6">
               <HelpCircle className="h-8 w-8 text-primary" />
             </div>
-            <h1 className="text-4xl font-bold text-gray-800 dark:text-white mb-4">
+            <h1 className="text-4xl font-bold text-white mb-4">
               Support Center
             </h1>
-            <p className="text-lg text-gray-600 dark:text-gray-300 max-w-2xl mx-auto">
+            <p className="text-lg text-gray-300 max-w-2xl mx-auto">
               How can we help you today? Choose a support channel below or submit a request.
             </p>
           </div>
@@ -134,12 +134,12 @@ export default function SupportClient() {
             {supportStats.map((stat, index) => (
               <div
                 key={index}
-                className="flex items-center justify-center gap-3 p-4 bg-white dark:bg-gray-800 rounded-lg shadow-sm"
+                className="flex items-center justify-center gap-3 p-4 bg-[#161B22] border border-[#2D333B] rounded-lg"
               >
                 <span className="text-primary">{stat.icon}</span>
                 <div>
-                  <p className="text-sm text-gray-500 dark:text-gray-400">{stat.label}</p>
-                  <p className="font-semibold text-gray-800 dark:text-white">{stat.value}</p>
+                  <p className="text-sm text-gray-400">{stat.label}</p>
+                  <p className="font-semibold text-white">{stat.value}</p>
                 </div>
               </div>
             ))}
@@ -150,10 +150,10 @@ export default function SupportClient() {
             {supportChannels.map((channel, index) => (
               <Card
                 key={index}
-                className={`overflow-hidden transition-all hover:shadow-lg ${
+                className={`overflow-hidden transition-colors ${
                   channel.highlight
-                    ? 'border-primary/50 bg-primary/5 dark:bg-primary/10'
-                    : 'border-gray-200 dark:border-gray-700'
+                    ? 'border-primary/50 bg-primary/5'
+                    : 'bg-[#161B22] border border-[#2D333B] hover:border-[#4B6FED]/40'
                 }`}
               >
                 <CardHeader>
@@ -162,7 +162,7 @@ export default function SupportClient() {
                       className={`p-2 rounded-lg ${
                         channel.highlight
                           ? 'bg-primary text-white'
-                          : 'bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300'
+                          : 'bg-[#1C2128] text-gray-300'
                       }`}
                     >
                       {channel.icon}
@@ -194,7 +194,7 @@ export default function SupportClient() {
           </div>
 
           {/* Contact Form */}
-          <Card className="max-w-2xl mx-auto">
+          <Card className="max-w-2xl mx-auto bg-[#161B22] border border-[#2D333B]">
             <CardHeader>
               <CardTitle>Submit a Support Request</CardTitle>
               <CardDescription>
@@ -204,13 +204,13 @@ export default function SupportClient() {
             <CardContent>
               {isSubmitted ? (
                 <div className="text-center py-8">
-                  <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-green-100 dark:bg-green-900/30 mb-4">
-                    <CheckCircle className="h-8 w-8 text-green-600 dark:text-green-400" />
+                  <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-green-900/30 mb-4">
+                    <CheckCircle className="h-8 w-8 text-green-400" />
                   </div>
-                  <h3 className="text-xl font-semibold text-gray-800 dark:text-white mb-2">
+                  <h3 className="text-xl font-semibold text-white mb-2">
                     Request Submitted!
                   </h3>
-                  <p className="text-gray-600 dark:text-gray-300 mb-4">
+                  <p className="text-gray-300 mb-4">
                     We&apos;ve received your support request. Our team will respond within 24 hours.
                   </p>
                   <Button onClick={() => setIsSubmitted(false)} variant="outline">
@@ -221,7 +221,7 @@ export default function SupportClient() {
                 <form onSubmit={handleSubmit} className="space-y-6">
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div className="space-y-2">
-                      <label htmlFor="name" className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                      <label htmlFor="name" className="text-sm font-medium text-gray-300">
                         Name
                       </label>
                       <input
@@ -232,11 +232,11 @@ export default function SupportClient() {
                         value={formData.name}
                         onChange={handleChange}
                         placeholder="Your name"
-                        className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-800 text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
+                        className="w-full px-3 py-2 border border-[#2D333B] focus:border-[#4B6FED] rounded-md bg-[#1C2128] text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#4B6FED] focus:ring-offset-0"
                       />
                     </div>
                     <div className="space-y-2">
-                      <label htmlFor="email" className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                      <label htmlFor="email" className="text-sm font-medium text-gray-300">
                         Email
                       </label>
                       <input
@@ -247,12 +247,12 @@ export default function SupportClient() {
                         value={formData.email}
                         onChange={handleChange}
                         placeholder="your@email.com"
-                        className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-800 text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
+                        className="w-full px-3 py-2 border border-[#2D333B] focus:border-[#4B6FED] rounded-md bg-[#1C2128] text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#4B6FED] focus:ring-offset-0"
                       />
                     </div>
                   </div>
                   <div className="space-y-2">
-                    <label htmlFor="subject" className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                    <label htmlFor="subject" className="text-sm font-medium text-gray-300">
                       Subject
                     </label>
                     <input
@@ -263,11 +263,11 @@ export default function SupportClient() {
                       value={formData.subject}
                       onChange={handleChange}
                       placeholder="Brief description of your issue"
-                      className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-800 text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
+                      className="w-full px-3 py-2 border border-[#2D333B] focus:border-[#4B6FED] rounded-md bg-[#1C2128] text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#4B6FED] focus:ring-offset-0"
                     />
                   </div>
                   <div className="space-y-2">
-                    <label htmlFor="message" className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                    <label htmlFor="message" className="text-sm font-medium text-gray-300">
                       Message
                     </label>
                     <textarea
@@ -278,7 +278,7 @@ export default function SupportClient() {
                       onChange={handleChange}
                       placeholder="Please describe your issue in detail"
                       rows={5}
-                      className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-800 text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent resize-none"
+                      className="w-full px-3 py-2 border border-[#2D333B] focus:border-[#4B6FED] rounded-md bg-[#1C2128] text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#4B6FED] focus:ring-offset-0 resize-none"
                     />
                   </div>
                   <Button type="submit" className="w-full" disabled={isSubmitting}>

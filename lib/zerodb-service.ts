@@ -191,8 +191,17 @@ class ZeroDBService {
     try {
       const response = await apiClient.get<NamespacesListResponse>('/api/v1/zerodb/namespaces');
       return response.data;
-    } catch {
-      // Endpoint may not be available - return empty list gracefully
+    } catch (err: unknown) {
+      // Log the real error so it shows up in the browser console for diagnosis
+      const status =
+        err && typeof err === 'object' && 'response' in err
+          ? (err as { response?: { status?: number } }).response?.status
+          : undefined;
+      console.error(
+        '[ZeroDB] listNamespaces failed' + (status ? ` (HTTP ${status})` : '') + ':',
+        err
+      );
+      // Return empty list so the dashboard renders rather than crashing
       return { namespaces: [], total: 0 };
     }
   }

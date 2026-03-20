@@ -19,7 +19,7 @@ const Footer = () => {
               </span>
             </Link>
             <p className="text-gray-400 text-sm mb-6 max-w-md">
-              Build the future with AI-native development tools powered by quantum neural networks.
+              Build the future with AI-native development tools powered by ZeroDB.
             </p>
             <div className="flex space-x-4">
               <a

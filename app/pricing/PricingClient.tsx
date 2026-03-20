@@ -3,12 +3,20 @@
 import React from "react";
 
 import { useState, useEffect } from 'react';
+import Image from 'next/image';
 import { motion, Variants } from 'framer-motion';
 import { Cpu, Shield, Users, Zap, Check } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { ButtonCustom } from '@/components/ui/button-custom';
 import { pricingService, type PricingPlan } from '@/services/pricingService';
 import { appConfig } from '@/lib/config/app';
+
+// Agent identity map for Digital Employee plan cards
+const agentIdentities: Record<string, { fullName: string; role: string; photo: string }> = {
+  cody: { fullName: 'Cody Jackson', role: 'Team Leader & CTO', photo: '/team/cody-jackson.png' },
+  sre: { fullName: 'Forrest Kinkade', role: 'DevOps & SRE Agent', photo: '/team/forrest-kinkade.png' },
+  swarm: { fullName: 'Full Engineering Team', role: 'Multi-Agent Dev Team', photo: '/team/agent-team.png' },
+};
 
 // Types
 type PlanLevel = 'start' | 'pro' | 'teams' | 'enterprise' | 'free' | 'scale' | 'individual' | 'hobbyist' | 'zerodb_free' | 'zerodb_pro' | 'zerodb_scale' | 'cody' | 'swarm';
@@ -318,8 +326,28 @@ export default function PricingClient() {
                     POPULAR
                   </div>
                 )}
-                <plan.icon className="h-6 w-6 text-[#4B6FED] mb-4" />
-                <h3 className="text-xl font-bold text-white mb-2">{plan.name}</h3>
+
+                {/* Agent photo for Digital Employee plans */}
+                {agentIdentities[plan.id] ? (
+                  <div className="flex items-center gap-3 mb-4">
+                    <Image
+                      src={agentIdentities[plan.id].photo}
+                      alt={agentIdentities[plan.id].fullName}
+                      width={48}
+                      height={48}
+                      className="rounded-full object-cover w-12 h-12 border-2 border-[#4B6FED]/30"
+                    />
+                    <div>
+                      <h3 className="text-xl font-bold text-white">{agentIdentities[plan.id].fullName}</h3>
+                      <p className="text-xs text-[#4B6FED]">{agentIdentities[plan.id].role}</p>
+                    </div>
+                  </div>
+                ) : (
+                  <>
+                    <plan.icon className="h-6 w-6 text-[#4B6FED] mb-4" />
+                    <h3 className="text-xl font-bold text-white mb-2">{plan.name}</h3>
+                  </>
+                )}
                 <p className="text-gray-400 mb-4 h-12">{plan.description}</p>
 
                 <div className="mb-6">
