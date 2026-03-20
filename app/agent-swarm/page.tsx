@@ -35,6 +35,16 @@ export const metadata: Metadata = {
     'cascade AI alternative',
     'semantic memory agents',
     'ZeroDB agent memory',
+    // Market demand keywords (from Upwork analysis)
+    'autonomous AI agents retail',
+    'AI ecosystem architect',
+    'AI workflow automation',
+    'AI-driven solutions implementation',
+    'production-ready AI systems',
+    'LLM agent frameworks',
+    'AI venture studio platform',
+    'healthcare AI agents',
+    'end-to-end automation pipeline',
   ],
   openGraph: {
     title: 'Agent Swarm - Your OpenClaw Agentic AI Strategy | AINative Studio',

@@ -39,7 +39,28 @@ export const metadata: Metadata = {
     // Product keywords
     'ZeroDB vector database',
     'AI Kit NPM packages',
-    'quantum-enhanced IDE',
+    'MCP server hosting',
+    // Workflow & automation keywords (from market demand)
+    'AI workflow automation',
+    'AI-driven solutions',
+    'production-ready AI systems',
+    'end-to-end automation pipelines',
+    'AI integration engineer',
+    'business process automation AI',
+    // Industry vertical keywords
+    'healthcare AI platform',
+    'retail AI agents',
+    'AI-powered SaaS platform',
+    // Role-based keywords (buyer intent)
+    'AI solutions architect',
+    'AI ecosystem architect',
+    'AI systems architect',
+    'ETL data pipeline AI',
+    'chatbot development platform',
+    // Consulting & services keywords
+    'AI consulting services',
+    'AI venture studio',
+    'forward deployed AI engineers',
     // Free/pricing keywords
     'free AI code editor',
     'AI IDE free tier',
