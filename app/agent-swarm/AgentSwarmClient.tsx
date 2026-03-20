@@ -145,11 +145,11 @@ export default function AgentSwarmClient() {
               animate="show"
               className="text-4xl md:text-6xl lg:text-7xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-white to-gray-400 mb-6 leading-tight"
             >
-              Upload Your PRD.
+              Build Like a Team of 10.
               <br />
               <span className="relative inline-block">
                 <span className="relative z-10 text-transparent bg-clip-text bg-gradient-to-r from-[#8AB4FF] to-[#4B6FED]">
-                  Let Agent Swarms Build It.
+                  Pay for 1.
                 </span>
               </span>
             </motion.h1>
@@ -161,7 +161,7 @@ export default function AgentSwarmClient() {
               transition={{ delay: 0.2 }}
               className="text-xl md:text-2xl text-gray-300 max-w-3xl mx-auto mb-10 leading-relaxed"
             >
-              Specialized AI agents collaborate in isolated microcontainers to transform your requirements into production-ready applications. From architecture to deployment, fully automated.
+              Your AI-native development strategy starts here. Deploy specialized agents — led by Cody Jackson (CTO) and Forrest Kinkade (SRE) — implementing the OpenClaw strategy with ZeroDB memory and enterprise isolation.
             </motion.p>
 
             <motion.div
@@ -180,14 +180,23 @@ export default function AgentSwarmClient() {
                 <span className="relative z-10">Subscribe to Agent Swarm</span>
                 <span className="absolute inset-0 bg-gradient-to-r from-white/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></span>
               </Button>
-              <Link href="/api-reference" className="w-full sm:w-auto">
+              <Link href="/pricing" className="w-full sm:w-auto">
                 <Button
                   variant="outline"
                   size="lg"
                   className="w-full group border-2 border-[#2D3748] hover:border-[#4B6FED]/40 bg-transparent hover:bg-[#4B6FED]/5 text-white transition-all duration-300"
                 >
-                  <FileCode className="mr-2 h-4 w-4" />
-                  <span>View API Docs</span>
+                  <span>View Pricing</span>
+                  <ArrowRight className="ml-2 h-4 w-4 transition-transform duration-300 group-hover:translate-x-1" />
+                </Button>
+              </Link>
+              <Link href="/contact" className="w-full sm:w-auto">
+                <Button
+                  variant="outline"
+                  size="lg"
+                  className="w-full group border-2 border-[#2D3748] hover:border-[#4B6FED]/40 bg-transparent hover:bg-[#4B6FED]/5 text-white transition-all duration-300"
+                >
+                  <span>Schedule a Demo</span>
                   <ArrowRight className="ml-2 h-4 w-4 transition-transform duration-300 group-hover:translate-x-1" />
                 </Button>
               </Link>
@@ -550,7 +559,7 @@ export default function AgentSwarmClient() {
               </span>
             </h2>
             <p className="text-xl text-gray-300 mb-8 max-w-2xl mx-auto">
-              Subscribe today and start uploading PRDs. Watch specialized AI agents transform your vision into reality.
+              Every company needs an agentic strategy. Deploy your AI development team today — from architecture to production, fully autonomous.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Button
@@ -560,21 +569,32 @@ export default function AgentSwarmClient() {
               >
                 <span className="relative z-10 flex items-center justify-center">
                   <Users className="mr-2 h-5 w-5" />
-                  Subscribe to Agent Swarm - $1,199/mo
+                  Subscribe — $1,199/mo
                   <ArrowRight className="ml-2 h-5 w-5 transition-transform duration-300 group-hover:translate-x-2" />
                 </span>
               </Button>
-              <Link href="/api-reference">
+              <Link href="/contact">
                 <Button
                   variant="outline"
                   size="lg"
                   className="border-2 border-[#4B6FED]/40 hover:border-[#4B6FED] bg-transparent hover:bg-[#4B6FED]/10 text-white text-lg px-10 py-6 transition-all duration-300"
                 >
-                  <FileCode className="mr-2 h-5 w-5" />
-                  View Documentation
+                  Schedule a Demo
+                </Button>
+              </Link>
+              <Link href="/pricing">
+                <Button
+                  variant="outline"
+                  size="lg"
+                  className="border-2 border-[#2D3748] hover:border-[#4B6FED]/40 bg-transparent hover:bg-[#4B6FED]/5 text-white text-lg px-10 py-6 transition-all duration-300"
+                >
+                  Compare Plans
                 </Button>
               </Link>
             </div>
+            <p className="text-sm text-gray-500 mt-6">
+              Need custom agents or enterprise features? <Link href="/contact" className="text-[#4B6FED] hover:underline">Talk to our team</Link>
+            </p>
           </motion.div>
         </div>
       </section>

@@ -4,15 +4,25 @@ import type { Metadata } from 'next';
 import AgentSwarmClient from './AgentSwarmClient';
 
 export const metadata: Metadata = {
-  title: 'Agent Swarm - Agentic AI Development Teams',
-  description: 'The first agentic IDE with multi-agent AI teams. Upload your PRD and watch specialized agents handle architecture, coding, testing, and deployment automatically.',
+  title: 'Agent Swarm - Your OpenClaw Agentic AI Development Team',
+  description: 'Deploy autonomous AI agent teams that implement your OpenClaw strategy. From PRD to production — Cody Jackson (CTO), Forrest Kinkade (SRE), and specialized agents handle architecture, coding, testing, and deployment with ZeroDB memory.',
   keywords: [
+    // Strategic positioning
+    'OpenClaw strategy',
+    'agent deployment expert',
+    'ADE platform',
+    'agentic AI platform',
+    'NemoClaw enterprise',
+    'forward deployed engineers',
     // Competitive agentic keywords
     'agentic IDE',
     'AI agent swarm',
     'multi-agent AI',
     'AI development team',
     'automated coding agents',
+    'cursor alternative',
+    'windsurf alternative',
+    'copilot alternative',
     // Action keywords
     'PRD to production',
     'prompt to code',
@@ -23,10 +33,12 @@ export const metadata: Metadata = {
     'intelligent microcontainers',
     'agent orchestration',
     'cascade AI alternative',
+    'semantic memory agents',
+    'ZeroDB agent memory',
   ],
   openGraph: {
-    title: 'Agent Swarm - Multi-Agent Development Teams | AI Native Studio',
-    description: 'Upload your PRD and let our specialized AI agent teams handle the rest. From architecture to deployment, orchestrated by intelligent microcontainers.',
+    title: 'Agent Swarm - Your OpenClaw Agentic AI Strategy | AINative Studio',
+    description: 'Deploy autonomous AI agent teams with ZeroDB memory. Cody Jackson (CTO), Forrest Kinkade (SRE), and specialized agents handle architecture to deployment.',
     type: 'website',
     url: 'https://www.ainative.studio/agent-swarm',
     images: [

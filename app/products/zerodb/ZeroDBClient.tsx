@@ -99,48 +99,59 @@ const results = await db.vectors.query({
 
 const pricingTiers = [
   {
-    name: 'Free',
+    name: 'ZeroDB – Free',
     price: '$0',
-    description: 'For hobbyists and experimentation',
+    period: '/month',
+    description: 'Free AI data layer for MVPs',
     features: [
-      '100K embeddings',
-      '1M queries/month',
-      'Community support',
+      '2GB total storage (1GB object + 1GB table)',
       '1 project',
+      '500,000 vectors',
+      '50,000 events/month',
+      '/table, /vector, /memory, /events API access',
+      'Community support',
     ],
     cta: 'Start Free',
     highlight: false,
+    href: '/signup',
   },
   {
-    name: 'Pro',
+    name: 'ZeroDB – Pro',
     price: '$29',
     period: '/month',
-    description: 'For growing applications',
+    description: 'Production-ready AI data layer',
     features: [
-      '10M embeddings',
-      'Unlimited queries',
-      'Priority support',
-      '10 projects',
-      'Real-time sync',
+      '30GB total storage (25GB object + 5GB table)',
+      '5 projects',
+      '5 million vectors',
+      '1 million events/month',
+      '/table, /vector, /memory, /events API access',
+      'Quantum Vector Compression enabled',
+      'Scoped access control (multi-tenant ready)',
+      'Priority community support',
     ],
-    cta: 'Start Pro Trial',
+    cta: 'Choose Pro',
     highlight: true,
+    href: '/pricing',
   },
   {
-    name: 'Scale',
-    price: '$199',
+    name: 'ZeroDB – Scale',
+    price: '$99',
     period: '/month',
-    description: 'For production workloads',
+    description: 'AI-Native SaaS at scale',
     features: [
-      '100M embeddings',
-      'Unlimited queries',
-      'Dedicated support',
-      'Unlimited projects',
-      'Custom SLA',
-      'SSO & RBAC',
+      '125GB total storage (100GB object + 25GB table)',
+      '15 projects',
+      '25 million vectors',
+      '10 million events/month',
+      'Quantum Vector Compression (priority)',
+      'Priority Slack support',
+      'Advanced analytics dashboard',
+      'High-performance streaming',
     ],
-    cta: 'Contact Sales',
+    cta: 'Choose Scale',
     highlight: false,
+    href: '/pricing',
   },
 ];
 
@@ -289,19 +300,59 @@ export default function ZeroDBClient() {
               variants={fadeIn}
             >
               <h2 className="text-3xl md:text-4xl font-bold mb-6">
-                Developer-First SDK
+                Get Started in 30 Seconds
               </h2>
               <p className="text-gray-400 text-lg mb-6">
-                Get started in minutes with our intuitive TypeScript SDK. Store
-                embeddings and query with semantic search in just a few lines of
-                code.
+                Install our SDK and start building AI-native apps immediately.
+                TypeScript and Python — pick your language, ship your product.
               </p>
+
+              {/* Install commands */}
+              <div className="space-y-4 mb-6">
+                <div>
+                  <p className="text-xs text-gray-500 uppercase tracking-wider mb-2 flex items-center gap-2">
+                    <Terminal className="h-3 w-3" /> TypeScript / Node.js
+                  </p>
+                  <div className="bg-[#0A0D14] border border-white/10 rounded-lg px-4 py-3 font-mono text-sm text-gray-200 flex items-center justify-between">
+                    <code>npm install @ainative/sdk</code>
+                    <button
+                      onClick={() => {
+                        navigator.clipboard.writeText('npm install @ainative/sdk');
+                        setCopied(true);
+                        setTimeout(() => setCopied(false), 2000);
+                      }}
+                      className="text-gray-500 hover:text-white transition-colors ml-4"
+                    >
+                      <Copy className="h-4 w-4" />
+                    </button>
+                  </div>
+                </div>
+                <div>
+                  <p className="text-xs text-gray-500 uppercase tracking-wider mb-2 flex items-center gap-2">
+                    <Terminal className="h-3 w-3" /> Python
+                  </p>
+                  <div className="bg-[#0A0D14] border border-white/10 rounded-lg px-4 py-3 font-mono text-sm text-gray-200 flex items-center justify-between">
+                    <code>pip install ainative</code>
+                    <button
+                      onClick={() => {
+                        navigator.clipboard.writeText('pip install ainative');
+                        setCopied(true);
+                        setTimeout(() => setCopied(false), 2000);
+                      }}
+                      className="text-gray-500 hover:text-white transition-colors ml-4"
+                    >
+                      <Copy className="h-4 w-4" />
+                    </button>
+                  </div>
+                </div>
+              </div>
+
               <ul className="space-y-3">
                 {[
                   'TypeScript-first with full type safety',
+                  'Python SDK with async support',
                   'Auto-batching for bulk operations',
                   'Built-in retry and error handling',
-                  'Streaming support for large responses',
                 ].map((item) => (
                   <li key={item} className="flex items-center gap-3">
                     <Check className="h-5 w-5 text-[#4B6FED]" />
@@ -309,18 +360,6 @@ export default function ZeroDBClient() {
                   </li>
                 ))}
               </ul>
-              <div className="mt-8">
-                <Button
-                  asChild
-                  variant="outline"
-                  className="border-[#4B6FED] text-[#4B6FED] hover:bg-[#4B6FED]/10"
-                >
-                  <Link href="/docs/zerodb/sdk">
-                    <Terminal className="mr-2 h-4 w-4" />
-                    SDK Documentation
-                  </Link>
-                </Button>
-              </div>
             </motion.div>
 
             <motion.div
@@ -433,7 +472,7 @@ export default function ZeroDBClient() {
                       : 'bg-white/10 hover:bg-white/20 text-white'
                   }`}
                 >
-                  <Link href={tier.name === 'Scale' ? '/contact' : '/signup'}>
+                  <Link href={tier.href}>
                     {tier.cta}
                   </Link>
                 </Button>
