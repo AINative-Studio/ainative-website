@@ -42,6 +42,17 @@ export const metadata: Metadata = {
     'multi-agent AI architecture',
     'RAG implementation consulting',
     'MLOps consulting',
+    // Batch 3: validated OpenClaw demand (3 Upwork jobs search this exact term)
+    'implement OpenClaw',
+    'OpenClaw integration',
+    'OpenClaw AI architecture',
+    'AI tech lead consulting',
+    'AI discovery calls',
+    'enterprise AI workflow automation',
+    'AI systems project architect',
+    'AI automation engineer consulting',
+    'AI phone system implementation',
+    'medical practice AI',
   ],
   openGraph: {
     title: 'Every Enterprise Needs an OpenClaw Strategy | AINative Studio',
