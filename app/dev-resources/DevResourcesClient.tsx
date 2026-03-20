@@ -1030,12 +1030,7 @@ export default function DevResourcesClient() {
                         </Badge>
                       </CardHeader>
                       <CardContent className="flex-1 flex flex-col">
-                        <p className="text-gray-400 mb-4 flex-1">{tool.description}</p>
-                        <Link href={tool.link} target="_blank" rel="noopener noreferrer">
-                          <Button variant="outline" className="w-full mt-auto border-[#2D333B] text-white hover:bg-[#1C2128]">
-                            Learn more <ArrowRight className="ml-2 h-4 w-4" />
-                          </Button>
-                        </Link>
+                        <p className="text-gray-400 flex-1">{tool.description}</p>
                       </CardContent>
                     </Card>
                   );

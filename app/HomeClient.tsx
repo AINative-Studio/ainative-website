@@ -7,13 +7,15 @@ import { motion, useScroll, useTransform, Variants, AnimatePresence } from 'fram
 import {
   Cpu,
   ArrowRight,
-  Sparkles
+  Sparkles,
+  Bot,
+  Calendar,
 } from 'lucide-react';
 import {
   DatabaseIcon,
-  UsersIcon,
   CodeIcon,
-  ChevronRightIcon
+  ChevronRightIcon,
+  ServerIcon,
 } from '@/components/icons';
 import { Button } from '@/components/ui/button';
 import { useRef, useEffect, useState, startTransition } from 'react';
@@ -198,7 +200,7 @@ export default function HomeClient() {
               transition={{ delay: 0.2 }}
               className="text-xl md:text-2xl text-gray-300 max-w-3xl mx-auto mb-10 leading-relaxed"
             >
-              Empower your team with memory-powered agents, blazing-fast infrastructure, and a quantum-accelerated IDE experience.
+              Ship 10x faster with AI agents that understand your codebase. Free forever.
             </motion.p>
 
             <motion.div
@@ -239,6 +241,16 @@ export default function HomeClient() {
                   <ChevronRightIcon className="ml-2 h-4 w-4 transition-transform duration-300 group-hover:translate-x-1" />
                 </Button>
               </Link>
+              <a href="https://calendly.com/seedlingstudio/" target="_blank" rel="noopener noreferrer" className="w-full sm:w-auto">
+                <Button
+                  variant="outline"
+                  size="lg"
+                  className="w-full group border-2 border-[#4B6FED]/50 hover:border-[#4B6FED] bg-transparent hover:bg-[#4B6FED]/10 text-white transition-all duration-300"
+                >
+                  <Calendar className="mr-2 h-4 w-4" />
+                  <span className="relative z-10">Schedule a Demo</span>
+                </Button>
+              </a>
             </motion.div>
 
           </motion.div>
@@ -270,7 +282,7 @@ export default function HomeClient() {
             </p>
           </motion.div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6">
             {[
               {
                 icon: Cpu,
@@ -295,10 +307,17 @@ export default function HomeClient() {
                 isLucideIcon: false,
               },
               {
-                icon: UsersIcon,
-                title: 'Community',
-                desc: 'Tutorials, showcases, events, and resources from AI developers worldwide',
-                link: '/community',
+                icon: Bot,
+                title: 'Agent Swarm',
+                desc: 'Autonomous AI agents for PRD-to-production development with ZeroDB memory',
+                link: '/agent-swarm',
+                isLucideIcon: true,
+              },
+              {
+                icon: ServerIcon,
+                title: 'MCP Server Hosting',
+                desc: 'Deploy Model Context Protocol servers with auto-scaling and credit-based billing',
+                link: '/products/mcp',
                 isLucideIcon: false,
               },
             ].map(({ icon: Icon, title, desc, link, external }, i) => {
@@ -329,6 +348,32 @@ export default function HomeClient() {
                 </Link>
               );
             })}
+          </div>
+        </div>
+      </section>
+
+      {/* Stats Section */}
+      <section className="full-width-section-sm bg-[#0D1117] border-y border-[#2D333B]/40">
+        <div className="container-custom max-w-6xl">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
+            {[
+              { value: '5,000+', label: 'Developers' },
+              { value: '310+', label: 'API Requests/day' },
+              { value: '32', label: 'NPM Packages' },
+              { value: '99.9%', label: 'Uptime' },
+            ].map(({ value, label }, i) => (
+              <motion.div
+                key={label}
+                custom={i}
+                variants={fadeUp}
+                initial="hidden"
+                whileInView="show"
+                viewport={{ once: true, margin: '-80px' }}
+              >
+                <p className="text-3xl md:text-4xl font-bold text-white mb-1">{value}</p>
+                <p className="text-sm text-gray-400 uppercase tracking-wide">{label}</p>
+              </motion.div>
+            ))}
           </div>
         </div>
       </section>
