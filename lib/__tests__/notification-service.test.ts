@@ -137,7 +137,7 @@ describe('NotificationService', () => {
 
       const result = await notificationService.markAsRead('1');
 
-      expect(mockApiClient.put).toHaveBeenCalledWith('/api/v1/notifications/1/read');
+      expect(mockApiClient.put).toHaveBeenCalledWith('/api/v1/notifications/1', { read: true });
       expect(result.read).toBe(true);
       expect(result.readAt).toBeDefined();
     });

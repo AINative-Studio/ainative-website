@@ -190,9 +190,15 @@ const notificationService = {
    */
   async getNotifications(filter?: 'all' | 'unread' | 'read'): Promise<Notification[]> {
     try {
-      const params = filter ? `?filter=${filter}` : '';
+      // Backend accepts unread_only=true for unread filter; no direct "read-only" filter exists
+      const params = filter === 'unread' ? '?unread_only=true' : '';
       const response = await apiClient.get(`/api/v1/notifications${params}`);
-      return response.data.notifications || [];
+      const notifications: Notification[] = response.data.notifications || [];
+      // Apply read filter client-side since the backend has no "read-only" query param
+      if (filter === 'read') {
+        return notifications.filter(n => n.read);
+      }
+      return notifications;
     } catch (error) {
       // Only use mock data in development mode when API is disabled
       if (isDevMockEnabled()) {
@@ -252,7 +258,8 @@ const notificationService = {
    */
   async markAsRead(id: string): Promise<Notification> {
     try {
-      const response = await apiClient.put(`/api/v1/notifications/${id}/read`);
+      // Backend uses PUT /{id} with body {read: true}, not PUT /{id}/read
+      const response = await apiClient.put(`/api/v1/notifications/${id}`, { read: true });
       return response.data;
     } catch (error) {
       // Only use mock data in development mode when API is disabled
@@ -286,7 +293,8 @@ const notificationService = {
    */
   async markAsUnread(id: string): Promise<Notification> {
     try {
-      const response = await apiClient.put(`/api/v1/notifications/${id}/unread`);
+      // Backend uses PUT /{id} with body {read: false}, not PUT /{id}/unread
+      const response = await apiClient.put(`/api/v1/notifications/${id}`, { read: false });
       return response.data;
     } catch (error) {
       // Only use mock data in development mode when API is disabled
@@ -342,7 +350,8 @@ const notificationService = {
    */
   async markAllAsRead(): Promise<{ success: boolean; count: number }> {
     try {
-      const response = await apiClient.put<{ success: boolean; count: number }>('/api/v1/notifications/mark-all-read');
+      // Backend uses POST /mark-all-read, not PUT
+      const response = await apiClient.post<{ success: boolean; count: number }>('/api/v1/notifications/mark-all-read');
       return response.data;
     } catch (error) {
       // Only use mock data in development mode when API is disabled

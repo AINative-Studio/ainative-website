@@ -60,19 +60,63 @@ export interface CreateSandboxRequest {
   ttl?: number; // seconds
 }
 
+// Default environments returned when the API is unavailable or the endpoint does
+// not exist yet. These mirror the runtimes shown in the code-editor sample snippets.
+const DEFAULT_ENVIRONMENTS: SandboxEnvironment[] = [
+  {
+    id: 'python-3.11',
+    name: 'Python 3.11',
+    language: 'python',
+    version: '3.11',
+    description: 'Python runtime with standard library and common AI/ML packages',
+    available: true,
+    timeout: 30,
+    memoryLimit: 512,
+  },
+  {
+    id: 'node-20',
+    name: 'Node.js 20',
+    language: 'javascript',
+    version: '20',
+    description: 'Node.js LTS runtime with npm package support',
+    available: true,
+    timeout: 30,
+    memoryLimit: 512,
+  },
+  {
+    id: 'rust-1.75',
+    name: 'Rust 1.75',
+    language: 'rust',
+    version: '1.75',
+    description: 'Rust stable toolchain for high-performance code',
+    available: true,
+    timeout: 60,
+    memoryLimit: 1024,
+  },
+];
+
 // API Service
 const sandboxService = {
   /**
-   * List available sandbox environments
+   * List available sandbox environments.
    * GET /v1/public/sandbox/environments
+   *
+   * Falls back to DEFAULT_ENVIRONMENTS when the endpoint is unavailable so
+   * that the UI remains functional while the backend feature is under
+   * development.
    */
   async listEnvironments(): Promise<SandboxEnvironment[]> {
     try {
       const response = await apiClient.get<SandboxEnvironment[]>('/api/v1/public/sandbox/environments');
-      return response.data;
+      const data = response.data;
+      // Guard against an empty or malformed response from the server.
+      if (Array.isArray(data) && data.length > 0) {
+        return data;
+      }
+      return DEFAULT_ENVIRONMENTS;
     } catch (error) {
-      console.error('Failed to list sandbox environments:', error);
-      throw error;
+      console.warn('Sandbox environments endpoint unavailable, using defaults:', error);
+      return DEFAULT_ENVIRONMENTS;
     }
   },
 

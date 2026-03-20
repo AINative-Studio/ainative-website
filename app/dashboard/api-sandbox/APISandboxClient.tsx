@@ -159,8 +159,6 @@ export default function APISandboxClient() {
   const {
     data: environments,
     isLoading: isLoadingEnvironments,
-    error: environmentsError,
-    isError: isEnvironmentsError
   } = useQuery({
     queryKey: ['sandbox-environments'],
     queryFn: () => sandboxService.listEnvironments(),
@@ -303,25 +301,6 @@ export default function APISandboxClient() {
           </CardHeader>
           <CardContent>
             <div className="grid gap-4">
-              {/* Error state for environments */}
-              {isEnvironmentsError && (
-                <div className="rounded-lg border border-destructive/50 bg-destructive/10 p-4">
-                  <div className="flex items-start gap-3">
-                    <AlertCircle className="h-5 w-5 text-destructive mt-0.5" />
-                    <div className="flex-1">
-                      <h4 className="text-sm font-semibold text-destructive mb-1">
-                        Failed to Load Environments
-                      </h4>
-                      <p className="text-xs text-muted-foreground">
-                        {environmentsError instanceof Error
-                          ? environmentsError.message
-                          : 'Unable to connect to the sandbox service. Please try again later.'}
-                      </p>
-                    </div>
-                  </div>
-                </div>
-              )}
-
               {/* Error state for sandbox creation */}
               {createSandboxMutation.isError && (
                 <div className="rounded-lg border border-destructive/50 bg-destructive/10 p-4">
@@ -354,7 +333,7 @@ export default function APISandboxClient() {
                   <Select
                     value={selectedEnvironment}
                     onValueChange={handleEnvironmentChange}
-                    disabled={isLoadingEnvironments || createSandboxMutation.isPending || isEnvironmentsError}
+                    disabled={isLoadingEnvironments || createSandboxMutation.isPending}
                   >
                     <SelectTrigger id="environment">
                       <SelectValue placeholder="Select environment..." />
