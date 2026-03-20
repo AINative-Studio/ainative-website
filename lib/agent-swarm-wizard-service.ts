@@ -668,9 +668,17 @@ export class GitHubOnboardingService {
                     : undefined,
             };
         } catch (error) {
+            const rawMessage = error instanceof Error ? error.message : String(error);
+            // Map low-level fetch errors to user-friendly messages
+            let userMessage = 'Failed to validate token. Please try again.';
+            if (rawMessage.includes('Failed to fetch') || rawMessage.includes('NetworkError') || rawMessage.includes('network')) {
+                userMessage = 'Unable to reach GitHub. Please check your internet connection and try again.';
+            } else if (rawMessage.trim().length > 0) {
+                userMessage = rawMessage;
+            }
             return {
                 is_valid: false,
-                error_message: error instanceof Error ? error.message : 'Failed to validate token',
+                error_message: userMessage,
             };
         }
     }

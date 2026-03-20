@@ -75,7 +75,7 @@ export default function TermsClient() {
               Terms of Service
             </h1>
             <p className="text-gray-400 max-w-3xl mx-auto text-lg">
-              Last updated: <span className="text-[#4B6FED]">January 1, 2025</span> - Version 2.0.1
+              Last updated: <span className="text-[#4B6FED]">January 1, 2026</span> - Version 2.0.1
             </p>
           </motion.div>
 

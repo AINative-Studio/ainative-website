@@ -234,37 +234,6 @@ export default function DownloadClient() {
           </div>
         </motion.section>
 
-        {/* Plugin Availability */}
-        <section className="space-y-12">
-          <div className="text-center max-w-3xl mx-auto">
-            <h2 className="text-4xl md:text-5xl font-extrabold mb-6 bg-gradient-to-r from-[#5867EF] via-[#6B8FFF] to-[#5867EF] bg-clip-text text-transparent">
-              IDE Plugins
-            </h2>
-            <p className="text-2xl md:text-3xl font-bold text-white mb-4">
-              Coming Soon
-            </p>
-            <p className="text-lg text-gray-400 mb-8">
-              Native extensions for your favorite development environments
-            </p>
-            <div className="flex justify-center">
-              <ul className="text-base text-gray-300 space-y-2 text-left">
-                <li className="flex items-center gap-2">
-                  <span className="text-[#5867EF]">-</span> VS Code Extension
-                </li>
-                <li className="flex items-center gap-2">
-                  <span className="text-[#5867EF]">-</span> JetBrains IDEs
-                </li>
-                <li className="flex items-center gap-2">
-                  <span className="text-[#5867EF]">-</span> Vim/NeoVim
-                </li>
-                <li className="flex items-center gap-2">
-                  <span className="text-[#5867EF]">-</span> Sublime Text
-                </li>
-              </ul>
-            </div>
-          </div>
-        </section>
-
         {/* Feature Cards - "What's Inside" */}
         <section className="space-y-12">
           <h2 className="text-3xl font-bold text-center text-white">What&apos;s Inside</h2>

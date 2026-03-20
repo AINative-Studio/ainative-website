@@ -140,14 +140,17 @@ class StorageService {
 
   /**
    * List all storage buckets
-   * NOTE: The old endpoint /v1/public/zerodb/storage/buckets is deprecated
-   * Using canonical path: /v1/projects/{project_id}/database/files
-   * Refs #729
+   * Buckets map to project-scoped file listings via /api/v1/projects/{project_id}/files
+   * Refs #687
    */
   async listBuckets(): Promise<BucketsListResponse> {
     try {
+      const projectId = this.defaultProjectId;
+      if (!this.isValidUUID(projectId)) {
+        return { buckets: [], total: 0 };
+      }
       const response = await apiClient.get<BucketsListResponse>(
-        `/api/v1/projects/${this.defaultProjectId}/database/files`
+        `/api/v1/projects/${projectId}/files`
       );
       return response.data;
     } catch (error) {
@@ -185,7 +188,7 @@ class StorageService {
       queryParams.set('page_size', String(params.page_size));
     }
 
-    const endpoint = `/api/v1/zerodb/${projectId}/files${
+    const endpoint = `/api/v1/projects/${projectId}/files${
       queryParams.toString() ? '?' + queryParams.toString() : ''
     }`;
 
@@ -215,7 +218,7 @@ class StorageService {
     }
 
     const response = await apiClient.post<FileUploadResponse>(
-      `/api/v1/zerodb/${this.defaultProjectId}/files/upload`,
+      `/api/v1/projects/${this.defaultProjectId}/files/upload`,
       formData,
       {
         headers: {
@@ -247,7 +250,7 @@ class StorageService {
 
     try {
       const response = await apiClient.get<FileStatsResponse>(
-        `/api/v1/zerodb/${projectId}/files/stats/summary`
+        `/api/v1/projects/${projectId}/files/stats/summary`
       );
       return response.data;
     } catch (error) {
@@ -271,7 +274,7 @@ class StorageService {
     metadata: Record<string, unknown>
   ): Promise<FileMetadataResponse> {
     const response = await apiClient.post<FileMetadataResponse>(
-      `/api/v1/zerodb/${this.defaultProjectId}/files/metadata`,
+      `/api/v1/projects/${this.defaultProjectId}/files/metadata`,
       {
         file_id: fileId,
         metadata,
@@ -285,7 +288,7 @@ class StorageService {
    */
   async getFile(fileId: string): Promise<StorageFile> {
     const response = await apiClient.get<StorageFile>(
-      `/api/v1/zerodb/${this.defaultProjectId}/files/${fileId}`
+      `/api/v1/projects/${this.defaultProjectId}/files/${fileId}`
     );
     return response.data;
   }
@@ -295,7 +298,7 @@ class StorageService {
    */
   async deleteFile(fileId: string): Promise<DeleteFileResponse> {
     const response = await apiClient.delete<DeleteFileResponse>(
-      `/api/v1/zerodb/${this.defaultProjectId}/files/${fileId}`
+      `/api/v1/projects/${this.defaultProjectId}/files/${fileId}`
     );
     return response.data;
   }
@@ -305,7 +308,7 @@ class StorageService {
    */
   async getFileContent(fileId: string): Promise<string> {
     const response = await apiClient.get<Blob>(
-      `/api/v1/zerodb/${this.defaultProjectId}/files/${fileId}/content`,
+      `/api/v1/projects/${this.defaultProjectId}/files/${fileId}/content`,
       {
         headers: {
           Accept: '*/*',
@@ -320,7 +323,7 @@ class StorageService {
    */
   async downloadFile(fileId: string, filename?: string): Promise<void> {
     const response = await apiClient.get<Blob>(
-      `/api/v1/zerodb/${this.defaultProjectId}/files/${fileId}/download`,
+      `/api/v1/projects/${this.defaultProjectId}/files/${fileId}/download`,
       {
         headers: {
           Accept: '*/*',

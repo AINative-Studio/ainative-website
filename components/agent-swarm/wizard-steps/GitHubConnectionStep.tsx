@@ -57,7 +57,9 @@ export default function GitHubConnectionStep({
       const data = await gitHubOnboardingService.checkConnectionStatus();
       setConnectionStatus(data);
     } catch (err) {
+      // Non-fatal: a missing or failed status check just means we show the "not connected" UI
       console.error('Failed to check connection status:', err);
+      setConnectionStatus(null);
     }
   };
 
@@ -114,7 +116,18 @@ export default function GitHubConnectionStep({
       setConnectionStatus(newStatus);
       onComplete(newStatus);
     } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : 'Failed to store token. Please try again.';
+      let errorMessage = err instanceof Error ? err.message.trim() : '';
+      if (!errorMessage) {
+        errorMessage = 'Failed to store token. Please try again.';
+      } else if (errorMessage.startsWith('Request failed with status 401') || errorMessage.startsWith('HTTP 401')) {
+        errorMessage = 'Authentication failed. Please log in again before connecting GitHub.';
+      } else if (errorMessage.startsWith('Request failed with status 403') || errorMessage.startsWith('HTTP 403')) {
+        errorMessage = 'Permission denied. You do not have access to store a GitHub token.';
+      } else if (errorMessage.startsWith('Request failed with status 422') || errorMessage.startsWith('HTTP 422')) {
+        errorMessage = 'Invalid token format. Please ensure your token starts with ghp_, gho_, ghu_, ghs_, or ghr_.';
+      } else if (errorMessage.includes('Failed to fetch') || errorMessage.includes('NetworkError')) {
+        errorMessage = 'Unable to reach the server. Please check your connection and try again.';
+      }
       setError(errorMessage);
       console.error('Store error:', err);
     } finally {

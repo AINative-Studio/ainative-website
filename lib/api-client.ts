@@ -232,6 +232,11 @@ class ApiClient {
         // See issue #578: ZeroDB getStats error handling
         let errorMessage: string;
 
+        // Build a meaningful HTTP status fallback — statusText is empty in HTTP/2
+        const httpStatusFallback = response.statusText?.trim()
+          ? `HTTP ${response.status}: ${response.statusText}`
+          : `Request failed with status ${response.status}`;
+
         // Try to extract message from data.message (if it's a string)
         if (typeof data === 'object' && data !== null && 'message' in data) {
           if (typeof data.message === 'string' && data.message.trim().length > 0) {
@@ -239,9 +244,9 @@ class ApiClient {
           } else if (typeof data.message === 'object' && data.message !== null) {
             // Handle nested object - try to extract meaningful text
             // e.g., { message: { code: "ERR", text: "..." } }
-            errorMessage = this.extractErrorFromObject(data.message) || `HTTP ${response.status}: ${response.statusText}`;
+            errorMessage = this.extractErrorFromObject(data.message) || httpStatusFallback;
           } else {
-            errorMessage = `HTTP ${response.status}: ${response.statusText}`;
+            errorMessage = httpStatusFallback;
           }
         }
         // Try data.detail (FastAPI/Pydantic validation errors)
@@ -256,9 +261,9 @@ class ApiClient {
             }).join(', ');
             errorMessage = `Validation error: ${errors}`;
           } else if (typeof data.detail === 'object' && data.detail !== null) {
-            errorMessage = this.extractErrorFromObject(data.detail) || `HTTP ${response.status}: ${response.statusText}`;
+            errorMessage = this.extractErrorFromObject(data.detail) || httpStatusFallback;
           } else {
-            errorMessage = `HTTP ${response.status}: ${response.statusText}`;
+            errorMessage = httpStatusFallback;
           }
         }
         // Plain string response
@@ -267,7 +272,7 @@ class ApiClient {
         }
         // Fallback to HTTP status
         else {
-          errorMessage = `HTTP ${response.status}: ${response.statusText}`;
+          errorMessage = httpStatusFallback;
         }
 
         // Log the extracted error for debugging

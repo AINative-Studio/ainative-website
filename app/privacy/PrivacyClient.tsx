@@ -77,7 +77,7 @@ export default function PrivacyClient() {
               Privacy Policy
             </h1>
             <p className="text-gray-400 max-w-3xl mx-auto text-lg">
-              Last updated: <span className="text-primary">January 1, 2025</span> - Version 2.2.1
+              Last updated: <span className="text-primary">January 1, 2026</span> - Version 2.3.0
             </p>
           </motion.div>
 

@@ -155,14 +155,14 @@ class SessionService {
         }, {} as Record<string, string>)
       );
       const endpoint = queryParams.toString()
-        ? `/api/v1/public/sessions?${queryParams.toString()}`
-        : '/api/v1/public/sessions';
+        ? `/api/v1/auth/sessions?${queryParams.toString()}`
+        : '/api/v1/auth/sessions';
       const response = await apiClient.get<SessionsListResponse>(endpoint);
       return response.data;
     } catch (error) {
       // Handle 404 gracefully - this endpoint may not be available yet
       if (error instanceof Error && error.message.includes('Not Found')) {
-        console.warn('[Sessions] Endpoint /v1/public/sessions is not available on this backend deployment');
+        console.warn('[Sessions] Endpoint /v1/auth/sessions is not available on this backend deployment');
         return {
           sessions: [],
           total: 0,
@@ -179,7 +179,7 @@ class SessionService {
    * Get session details by ID
    */
   async getSession(sessionId: string): Promise<SessionDetail> {
-    const response = await apiClient.get(`/api/v1/public/sessions/${sessionId}`);
+    const response = await apiClient.get(`/api/v1/auth/sessions/${sessionId}`);
     return response.data;
   }
 
@@ -187,7 +187,7 @@ class SessionService {
    * Delete a session
    */
   async deleteSession(sessionId: string): Promise<DeleteSessionResponse> {
-    const response = await apiClient.delete(`/api/v1/public/sessions/${sessionId}`);
+    const response = await apiClient.delete(`/api/v1/auth/sessions/${sessionId}`);
     return response.data;
   }
 
