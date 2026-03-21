@@ -1,6 +1,17 @@
 import apiClient from '@/lib/api-client';
 import { appConfig } from '@/lib/config/app';
 
+export interface ZeroDBLimits {
+  max_projects?: number;
+  max_vectors?: number;
+  max_tables?: number;
+  max_events_per_month?: number;
+  max_storage_gb?: number;
+  chat_credits_per_month?: number;
+  max_embeddings_per_month?: number;
+  rate_limit_per_minute?: number;
+}
+
 export interface PricingPlan {
   id: string;
   name: string;
@@ -19,6 +30,7 @@ export interface PricingPlan {
   is_active: boolean;
   sort_order: number;
   metadata?: Record<string, unknown>;
+  zerodb_limits?: ZeroDBLimits;
 }
 
 export interface ApiResponse<T> {

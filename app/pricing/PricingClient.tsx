@@ -159,34 +159,55 @@ export default function PricingClient() {
     try {
       const pricingPlans = await pricingService.getPricingPlansWithFallback();
 
-      // Show exactly 7 plans: 5 dev plans + 2 paid ZeroDB subscriptions (Pro and Scale)
-      // Exclude: zerodb_free and zerodb_enterprise
+      // Show all plans except zerodb_enterprise (contact sales)
       const filteredPlans = pricingPlans.filter((plan: PricingPlan) => {
         const planId = plan.id.toLowerCase();
-        // Exclude ZeroDB Free and Enterprise - only show Pro and Scale
-        if (planId === 'zerodb_free' || planId === 'zerodb_enterprise') {
-          return false;
-        }
+        if (planId === 'zerodb_enterprise') return false;
         return true;
       });
 
-      // Map API response to Plan format
-      const apiPlans: Plan[] = filteredPlans.map((plan: PricingPlan) => ({
-        id: plan.id,
-        name: plan.name,
-        icon: getIconForPlan(plan.name),
-        price: plan.price === 0 ? 'Free' : plan.price === null ? 'Custom' : `$${plan.price}`,
-        sub: plan.billing_period ? `/${plan.billing_period}` : '',
-        buttonText: plan.button_text,
-        description: plan.description,
-        subtitle: plan.subtitle,
-        features: plan.features || [],
-        use_cases: plan.use_cases,
-        level: plan.level,
-        highlight: plan.highlighted,
-        priceId: plan.stripe_price_id,
-        url: plan.url,
-      }));
+      // Map API response to Plan format, enriching ZeroDB plans with limits
+      const apiPlans: Plan[] = filteredPlans.map((plan: PricingPlan) => {
+        let features = plan.features || [];
+
+        // Inject ZeroDB tier limits into features if available (Issue #1406)
+        const limits = (plan as any).zerodb_limits;
+        if (limits) {
+          const limitFeatures: string[] = [];
+          if (limits.max_vectors && limits.max_vectors > 0)
+            limitFeatures.push(`${limits.max_vectors.toLocaleString()} vectors`);
+          if (limits.max_storage_gb && limits.max_storage_gb > 0)
+            limitFeatures.push(`${limits.max_storage_gb}GB storage`);
+          if (limits.chat_credits_per_month && limits.chat_credits_per_month > 0)
+            limitFeatures.push(`${limits.chat_credits_per_month.toLocaleString()} AI credits/month`);
+          if (limits.max_embeddings_per_month && limits.max_embeddings_per_month > 0)
+            limitFeatures.push(`${limits.max_embeddings_per_month.toLocaleString()} embeddings/month (FREE)`);
+          if (limits.max_projects && limits.max_projects > 0)
+            limitFeatures.push(`${limits.max_projects} projects`);
+          if (limits.rate_limit_per_minute && limits.rate_limit_per_minute > 0)
+            limitFeatures.push(`${limits.rate_limit_per_minute} req/min rate limit`);
+          if (limitFeatures.length > 0) {
+            features = [...limitFeatures, ...features];
+          }
+        }
+
+        return {
+          id: plan.id,
+          name: plan.name,
+          icon: getIconForPlan(plan.name),
+          price: plan.price === 0 ? 'Free' : plan.price === null ? 'Custom' : `$${plan.price}`,
+          sub: plan.billing_period ? `/${plan.billing_period}` : '',
+          buttonText: plan.button_text,
+          description: plan.description,
+          subtitle: plan.subtitle,
+          features,
+          use_cases: plan.use_cases,
+          level: plan.level,
+          highlight: plan.highlighted,
+          priceId: plan.stripe_price_id,
+          url: plan.url,
+        };
+      });
 
       setPlans(apiPlans);
     } catch (error) {
