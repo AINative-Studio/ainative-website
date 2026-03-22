@@ -6,26 +6,33 @@ import { motion } from 'framer-motion';
 import Link from 'next/link';
 import {
   ArrowRight,
-  Workflow,
-  Zap,
   Rocket,
-  CheckCircle2 as CheckCircle,
-  GitBranch as GitBranchIcon,
-  Code as CodeIcon,
-  Search as SearchIcon,
-  Bug as BugIcon,
+  Database,
+  Package,
+  Bot,
+  Server,
+  Terminal,
+  Cpu,
+  Search,
+  FileText,
+  Sparkles,
   LucideIcon,
 } from 'lucide-react';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { appConfig } from '@/lib/config/app';
 
-interface Feature {
+interface Product {
   title: string;
+  tagline: string;
   description: string;
   icon: LucideIcon;
   gradient: string;
-  completed: boolean;
+  borderGradient: string;
+  href: string;
+  cta: string;
+  installCmd?: string;
+  stats: { label: string; value: string }[];
 }
 
 const fadeIn = {
@@ -41,61 +48,79 @@ const fadeIn = {
   }),
 };
 
-const features: Feature[] = [
+const products: Product[] = [
   {
-    title: 'Code Search',
+    title: 'ZeroDB',
+    tagline: 'The persistent knowledge layer for AI agents',
     description:
-      'Semantic search powered by quantum-enhanced neural networks that understands your intent, not just syntax.',
-    icon: SearchIcon,
-    gradient: 'from-blue-500 to-cyan-500',
-    completed: true,
+      'Memory, semantic search, vector storage, file storage, and free embeddings — one API, zero setup. The database your agents actually remember with.',
+    icon: Database,
+    gradient: 'from-purple-500 to-indigo-600',
+    borderGradient: 'border-purple-500/20 hover:border-purple-500/50',
+    href: '/products/zerodb',
+    cta: 'Explore ZeroDB',
+    installCmd: 'npx zerodb-cli init',
+    stats: [
+      { label: 'Vectors', value: '500K free' },
+      { label: 'Latency', value: '<1ms' },
+      { label: 'Uptime', value: '99.99%' },
+    ],
   },
   {
-    title: 'Refactoring',
+    title: 'AI Kit',
+    tagline: '32 production-ready NPM packages',
     description:
-      'Intelligent code restructuring with deep context awareness and dependency mapping.',
-    icon: GitBranchIcon,
-    gradient: 'from-purple-500 to-pink-500',
-    completed: true,
+      'Drop-in React components, hooks, and utilities for AI-native apps. Authentication, dashboards, agent UIs, and more — all typed, tested, and tree-shakeable.',
+    icon: Package,
+    gradient: 'from-orange-500 to-amber-500',
+    borderGradient: 'border-orange-500/20 hover:border-orange-500/50',
+    href: 'https://aikit.ainative.studio',
+    cta: 'Browse Packages',
+    installCmd: 'npm i @ainative/ai-kit',
+    stats: [
+      { label: 'Packages', value: '32' },
+      { label: 'Components', value: '100+' },
+      { label: 'Bundle', value: 'Tree-shake' },
+    ],
   },
   {
-    title: 'Debugging',
+    title: 'Agent Swarm',
+    tagline: 'Multi-agent orchestration platform',
     description:
-      'Advanced error detection, root cause analysis, and automated fixes powered by AI.',
-    icon: BugIcon,
-    gradient: 'from-rose-500 to-pink-500',
-    completed: true,
-  },
-  {
-    title: 'Repo Understanding',
-    description:
-      'Deep codebase analysis, documentation, and visualization of complex architectures.',
-    icon: CodeIcon,
+      'Deploy agent teams that collaborate on complex tasks. Stage-based workflows, tool calling, memory sharing, and real-time monitoring out of the box.',
+    icon: Bot,
     gradient: 'from-emerald-500 to-teal-500',
-    completed: true,
+    borderGradient: 'border-emerald-500/20 hover:border-emerald-500/50',
+    href: '/agent-swarm',
+    cta: 'Try Agent Swarm',
+    stats: [
+      { label: 'Stages', value: '9' },
+      { label: 'Tools', value: '50+' },
+      { label: 'Agents', value: 'Unlimited' },
+    ],
   },
   {
-    title: 'Checkpoints',
+    title: 'MCP Server Hosting',
+    tagline: 'Deploy AI agent tools in under 60 seconds',
     description:
-      'Automated versioning, rollback, and experiment tracking for your development workflow.',
-    icon: CheckCircle,
-    gradient: 'from-amber-500 to-orange-500',
-    completed: true,
-  },
-  {
-    title: 'CI/CD Integration',
-    description:
-      'Seamless integration with your deployment pipeline for automated testing and deployment.',
-    icon: Workflow,
-    gradient: 'from-indigo-500 to-blue-500',
-    completed: true,
+      'Host Model Context Protocol servers with zero config. 14+ pre-built servers (GitHub, Slack, PostgreSQL, and more) with auto-scaling and health monitoring.',
+    icon: Server,
+    gradient: 'from-cyan-500 to-blue-500',
+    borderGradient: 'border-cyan-500/20 hover:border-cyan-500/50',
+    href: '/products/mcp',
+    cta: 'Deploy a Server',
+    stats: [
+      { label: 'Servers', value: '14+' },
+      { label: 'Deploy', value: '<60s' },
+      { label: 'Uptime', value: '99.9%' },
+    ],
   },
 ];
 
-const stats = [
-  { value: '10x', label: 'Faster Development', description: 'Accelerate your coding workflow' },
-  { value: '99.9%', label: 'Accuracy', description: 'Precise code suggestions' },
-  { value: '24/7', label: 'AI Assistance', description: 'Always available to help' },
+const platformStats = [
+  { value: '5,000+', label: 'Developers', description: 'Building with AINative' },
+  { value: '32', label: 'NPM Packages', description: 'Production-ready components' },
+  { value: '99.9%', label: 'Uptime', description: 'Enterprise-grade reliability' },
 ];
 
 export default function ProductsClient() {
@@ -116,13 +141,13 @@ export default function ProductsClient() {
           transition={{ duration: 0.8 }}
         >
           <motion.div
-            className="inline-flex items-center px-4 py-1.5 rounded-full text-sm font-medium bg-blue-500/10 text-blue-400 mb-6"
+            className="inline-flex items-center px-4 py-1.5 rounded-full text-sm font-medium bg-purple-500/10 text-purple-400 mb-6"
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.2, duration: 0.5 }}
           >
-            <Zap className="h-4 w-4 mr-2" />
-            Introducing AI-Powered Development Tools
+            <Sparkles className="h-4 w-4 mr-2" />
+            Infrastructure for the Agentic Era
           </motion.div>
 
           <motion.h1
@@ -131,7 +156,7 @@ export default function ProductsClient() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.3, duration: 0.5 }}
           >
-            Supercharge Your Development Workflow
+            The AI-Native Developer Platform
           </motion.h1>
 
           <motion.p
@@ -140,30 +165,40 @@ export default function ProductsClient() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.4, duration: 0.5 }}
           >
-            Harness the power of AI to write better code, faster. Our suite of developer tools
-            helps you focus on what matters most - building amazing products.
+            Ship agents that remember, search, and learn. From persistent memory to multi-agent orchestration — everything you need to build production AI.
           </motion.p>
 
           <motion.div
-            className="flex justify-center"
+            className="flex flex-col sm:flex-row gap-4 justify-center"
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.5, duration: 0.5 }}
           >
             <Link href="/signup" className="relative inline-flex items-center justify-center group">
               <Button
-                className="relative z-10 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white text-lg px-8 py-6 rounded-xl font-medium transition-all duration-300 transform group-hover:scale-105 shadow-lg group-hover:shadow-blue-500/30"
+                className="relative z-10 bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 text-white text-lg px-8 py-6 rounded-xl font-medium transition-all duration-300 transform group-hover:scale-105 shadow-lg group-hover:shadow-purple-500/30"
                 size="lg"
               >
                 <span className="flex items-center">
-                  Get Started for Free
+                  Start Free
                   <ArrowRight
                     className="ml-2 h-5 w-5 transition-transform duration-300 group-hover:translate-x-1"
                     aria-hidden="true"
                   />
                 </span>
               </Button>
-              <span className="absolute inset-0 bg-white/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-xl -z-10"></span>
+            </Link>
+            <Link href="https://docs.ainative.studio" className="relative inline-flex items-center justify-center group">
+              <Button
+                variant="outline"
+                className="text-white text-lg px-8 py-6 rounded-xl border-white/20 hover:bg-white/5 hover:border-white/30 transition-all duration-300"
+                size="lg"
+              >
+                <span className="flex items-center">
+                  Read the Docs
+                  <FileText className="ml-2 h-5 w-5" aria-hidden="true" />
+                </span>
+              </Button>
             </Link>
           </motion.div>
         </motion.div>
@@ -176,15 +211,15 @@ export default function ProductsClient() {
           viewport={{ once: true, margin: '-100px' }}
           variants={fadeIn}
         >
-          {stats.map((stat, index) => (
+          {platformStats.map((stat, index) => (
             <motion.div
               key={stat.label}
-              className="bg-gradient-to-br from-[#1C2128] to-[#0F1319] p-8 rounded-2xl border border-gray-800/50 hover:border-blue-500/30 transition-all duration-300 hover:shadow-lg hover:shadow-blue-500/10 group"
+              className="bg-gradient-to-br from-[#1C2128] to-[#0F1319] p-8 rounded-2xl border border-gray-800/50 hover:border-purple-500/30 transition-all duration-300 hover:shadow-lg hover:shadow-purple-500/10 group"
               variants={fadeIn}
               custom={index}
               whileHover={{ y: -5 }}
             >
-              <div className="text-5xl font-bold mb-3 bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-cyan-400">
+              <div className="text-5xl font-bold mb-3 bg-clip-text text-transparent bg-gradient-to-r from-purple-400 to-indigo-400">
                 {stat.value}
               </div>
               <h3 className="text-xl font-semibold text-white mb-2">{stat.label}</h3>
@@ -193,7 +228,7 @@ export default function ProductsClient() {
           ))}
         </motion.div>
 
-        {/* Features Grid */}
+        {/* Product Cards */}
         <div className="space-y-16">
           <motion.div
             className="text-center"
@@ -203,17 +238,17 @@ export default function ProductsClient() {
             transition={{ duration: 0.6 }}
           >
             <h2 className="text-3xl md:text-4xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-white to-gray-400 mb-4">
-              Powerful Features for Modern Developers
+              Four Products. One Platform.
             </h2>
             <p className="text-xl text-gray-400 max-w-3xl mx-auto">
-              Everything you need to build, test, and deploy better software, faster.
+              Everything your AI agents need — from persistent memory to production deployment.
             </p>
           </motion.div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {features.map((feature, index) => (
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            {products.map((product, index) => (
               <motion.div
-                key={feature.title}
+                key={product.title}
                 className="group relative h-full"
                 initial="hidden"
                 whileInView="show"
@@ -221,34 +256,50 @@ export default function ProductsClient() {
                 variants={fadeIn}
                 custom={index}
               >
-                <div
-                  className={`absolute inset-0 bg-gradient-to-br ${feature.gradient} opacity-0 group-hover:opacity-10 rounded-2xl transition-opacity duration-300`}
-                />
-                <Card className="h-full bg-[#1C2128]/70 backdrop-blur-sm border border-gray-800/50 group-hover:border-blue-500/30 transition-all duration-300 overflow-hidden hover:shadow-lg hover:shadow-blue-500/10">
-                  <CardHeader className="pb-3">
-                    <div
-                      className={`w-12 h-12 rounded-lg flex items-center justify-center mb-4 bg-gradient-to-br ${feature.gradient} bg-opacity-10`}
-                    >
-                      <feature.icon className="h-6 w-6 text-white" aria-hidden="true" />
-                    </div>
-                    <CardTitle className="text-xl text-white">{feature.title}</CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <p className="text-gray-400">{feature.description}</p>
-                    {feature.completed && (
-                      <div className="mt-4 flex items-center text-sm text-green-400">
-                        <CheckCircle className="h-4 w-4 mr-1.5" />
-                        Available Now
+                <Link href={product.href} className="block h-full">
+                  <Card className={`h-full bg-[#1C2128]/70 backdrop-blur-sm border ${product.borderGradient} transition-all duration-300 overflow-hidden hover:shadow-lg hover:shadow-purple-500/5`}>
+                    <CardHeader className="pb-3">
+                      <div className="flex items-center justify-between mb-4">
+                        <div
+                          className={`w-12 h-12 rounded-lg flex items-center justify-center bg-gradient-to-br ${product.gradient}`}
+                        >
+                          <product.icon className="h-6 w-6 text-white" aria-hidden="true" />
+                        </div>
+                        <ArrowRight className="h-5 w-5 text-gray-600 group-hover:text-white group-hover:translate-x-1 transition-all duration-300" />
                       </div>
-                    )}
-                  </CardContent>
-                </Card>
+                      <CardTitle className="text-2xl text-white mb-1">{product.title}</CardTitle>
+                      <p className={`text-sm font-medium bg-clip-text text-transparent bg-gradient-to-r ${product.gradient}`}>
+                        {product.tagline}
+                      </p>
+                    </CardHeader>
+                    <CardContent className="space-y-5">
+                      <p className="text-gray-400 leading-relaxed">{product.description}</p>
+
+                      {/* Install command */}
+                      {product.installCmd && (
+                        <div className="bg-[#0D1117] rounded-lg px-4 py-3 font-mono text-sm text-gray-300 border border-gray-800/50">
+                          <span className="text-gray-500">$ </span>{product.installCmd}
+                        </div>
+                      )}
+
+                      {/* Stats row */}
+                      <div className="grid grid-cols-3 gap-4 pt-2">
+                        {product.stats.map((stat) => (
+                          <div key={stat.label} className="text-center">
+                            <div className="text-lg font-bold text-white">{stat.value}</div>
+                            <div className="text-xs text-gray-500">{stat.label}</div>
+                          </div>
+                        ))}
+                      </div>
+                    </CardContent>
+                  </Card>
+                </Link>
               </motion.div>
             ))}
           </div>
         </div>
 
-        {/* Product Links Section */}
+        {/* Agent-First / API Section */}
         <motion.div
           className="space-y-8"
           initial={{ opacity: 0, y: 20 }}
@@ -258,51 +309,65 @@ export default function ProductsClient() {
         >
           <div className="text-center">
             <h2 className="text-3xl md:text-4xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-white to-gray-400 mb-4">
-              Explore Our Products
+              Built for Agents First
             </h2>
             <p className="text-xl text-gray-400 max-w-3xl mx-auto">
-              Dive deeper into our specialized AI-powered solutions.
+              Every product exposes a clean API. Your agents can provision databases, deploy servers, and manage memory programmatically.
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <Link href="/products/zerodb">
-              <Card className="h-full bg-gradient-to-br from-purple-900/20 to-indigo-900/20 border border-purple-500/20 hover:border-purple-500/40 transition-all duration-300 cursor-pointer group">
-                <CardHeader>
-                  <CardTitle className="text-2xl text-white group-hover:text-purple-300 transition-colors">
-                    ZeroDB
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <p className="text-gray-400 mb-4">
-                    AI-native vector database with semantic search, embeddings storage, and
-                    real-time similarity queries.
-                  </p>
-                  <span className="text-purple-400 flex items-center">
-                    Learn more <ArrowRight className="ml-2 h-4 w-4" />
-                  </span>
-                </CardContent>
-              </Card>
-            </Link>
+          <div className="max-w-3xl mx-auto">
+            <div className="bg-[#0D1117] rounded-2xl border border-gray-800/50 overflow-hidden">
+              <div className="flex items-center gap-2 px-4 py-3 border-b border-gray-800/50">
+                <Terminal className="h-4 w-4 text-gray-500" />
+                <span className="text-sm text-gray-500">Instant database — no signup required</span>
+              </div>
+              <div className="p-6 font-mono text-sm space-y-4">
+                <div>
+                  <span className="text-gray-500"># Provision a database in one request</span>
+                </div>
+                <div className="text-green-400">
+                  curl -X POST https://api.ainative.studio/api/v1/public/instant-db
+                </div>
+                <div className="text-gray-500 mt-4"># Response:</div>
+                <div className="text-amber-300/80">
+                  {`{`}
+                </div>
+                <div className="text-amber-300/80 pl-4">
+                  {`"project_id": "proj_abc123",`}
+                </div>
+                <div className="text-amber-300/80 pl-4">
+                  {`"api_key": "zdb_live_...",`}
+                </div>
+                <div className="text-amber-300/80 pl-4">
+                  {`"expires": "72h",`}
+                </div>
+                <div className="text-amber-300/80 pl-4">
+                  {`"endpoints": { "vectors": "/v1/vectors", "memory": "/v1/memory", "files": "/v1/files" }`}
+                </div>
+                <div className="text-amber-300/80">
+                  {`}`}
+                </div>
+              </div>
+            </div>
+          </div>
 
-            <Link href="/products/qnn">
-              <Card className="h-full bg-gradient-to-br from-cyan-900/20 to-blue-900/20 border border-cyan-500/20 hover:border-cyan-500/40 transition-all duration-300 cursor-pointer group">
-                <CardHeader>
-                  <CardTitle className="text-2xl text-white group-hover:text-cyan-300 transition-colors">
-                    Quantum Neural Networks
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <p className="text-gray-400 mb-4">
-                    ML acceleration platform leveraging quantum-inspired algorithms for faster
-                    model training and inference.
-                  </p>
-                  <span className="text-cyan-400 flex items-center">
-                    Learn more <ArrowRight className="ml-2 h-4 w-4" />
-                  </span>
-                </CardContent>
-              </Card>
-            </Link>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-4xl mx-auto">
+            <div className="bg-[#1C2128]/70 rounded-xl p-6 border border-gray-800/50 text-center">
+              <Cpu className="h-8 w-8 text-purple-400 mx-auto mb-3" />
+              <h3 className="font-semibold text-white mb-2">RESTful APIs</h3>
+              <p className="text-sm text-gray-400">Every feature accessible via clean REST endpoints with OpenAPI specs</p>
+            </div>
+            <div className="bg-[#1C2128]/70 rounded-xl p-6 border border-gray-800/50 text-center">
+              <Search className="h-8 w-8 text-emerald-400 mx-auto mb-3" />
+              <h3 className="font-semibold text-white mb-2">LLM Discoverable</h3>
+              <p className="text-sm text-gray-400">Structured metadata and llms.txt for AI agents to find and use your tools</p>
+            </div>
+            <div className="bg-[#1C2128]/70 rounded-xl p-6 border border-gray-800/50 text-center">
+              <Package className="h-8 w-8 text-orange-400 mx-auto mb-3" />
+              <h3 className="font-semibold text-white mb-2">SDK Support</h3>
+              <p className="text-sm text-gray-400">Python, TypeScript, Go, LangChain, and LlamaIndex integrations</p>
+            </div>
           </div>
         </motion.div>
 
@@ -314,16 +379,16 @@ export default function ProductsClient() {
           viewport={{ once: true }}
           transition={{ duration: 0.6 }}
         >
-          <div className="absolute inset-0 bg-gradient-to-r from-blue-600/10 to-indigo-600/10" />
-          <div className="absolute -right-20 -top-20 w-64 h-64 rounded-full bg-blue-500/10 blur-3xl" />
+          <div className="absolute inset-0 bg-gradient-to-r from-purple-600/10 to-indigo-600/10" />
+          <div className="absolute -right-20 -top-20 w-64 h-64 rounded-full bg-purple-500/10 blur-3xl" />
           <div className="absolute -left-20 -bottom-20 w-64 h-64 rounded-full bg-indigo-500/10 blur-3xl" />
 
           <div className="relative z-10">
             <h2 className="text-3xl md:text-4xl font-bold mb-6">
-              Ready to Transform Your Development Workflow?
+              Ready to Build?
             </h2>
             <p className="text-xl text-gray-300 max-w-2xl mx-auto mb-8">
-              Join thousands of developers who are building the future with AINative Studio.
+              Start with a free ZeroDB instance. No credit card, no signup wall — just an API call.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Button

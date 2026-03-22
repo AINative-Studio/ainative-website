@@ -7,12 +7,17 @@ import ProductsClient from './ProductsClient';
 export const revalidate = 1800; // 30 minutes
 
 export const metadata: Metadata = {
-  title: 'Products | AINative Studio - AI-Powered Developer Tools',
-  description: 'Discover AINative Studio\'s suite of AI-powered developer tools. Code search, refactoring, debugging, repo understanding, checkpoints, and CI/CD integration.',
-  keywords: ['developer tools', 'AI coding', 'code search', 'refactoring', 'debugging', 'CI/CD', 'AINative Studio'],
+  title: 'Products | AINative Studio - The AI-Native Developer Platform',
+  description: 'ZeroDB persistent memory, AI Kit components, Agent Swarm orchestration, and MCP Server Hosting. Infrastructure for building production AI agents.',
+  keywords: [
+    'AI agent infrastructure', 'ZeroDB', 'vector database', 'AI Kit', 'NPM packages',
+    'Agent Swarm', 'multi-agent orchestration', 'MCP server hosting',
+    'Model Context Protocol', 'AI developer tools', 'semantic search',
+    'agent memory', 'LangChain integration', 'LlamaIndex integration',
+  ],
   openGraph: {
     title: 'Products | AINative Studio',
-    description: 'AI-powered developer tools to supercharge your development workflow. 10x faster development with 99.9% accuracy.',
+    description: 'Ship agents that remember, search, and learn. ZeroDB, AI Kit, Agent Swarm, and MCP Server Hosting.',
     url: 'https://www.ainative.studio/products',
     siteName: 'AINative Studio',
     type: 'website',
@@ -28,7 +33,7 @@ export const metadata: Metadata = {
   twitter: {
     card: 'summary_large_image',
     title: 'Products | AINative Studio',
-    description: 'AI-powered developer tools for 10x faster development.',
+    description: 'Infrastructure for the agentic era. ZeroDB, AI Kit, Agent Swarm, MCP Hosting.',
     images: ['https://www.ainative.studio/og-products.png'],
   },
   alternates: {
@@ -41,18 +46,20 @@ const jsonLd = {
   '@context': 'https://schema.org',
   '@type': 'ItemList',
   name: 'AINative Studio Products',
-  description: 'AI-powered developer tools suite',
+  description: 'AI-native developer platform: persistent memory, components, orchestration, and hosting for AI agents',
   url: 'https://www.ainative.studio/products',
-  numberOfItems: 6,
+  numberOfItems: 4,
   itemListElement: [
     {
       '@type': 'ListItem',
       position: 1,
       item: {
         '@type': 'SoftwareApplication',
-        name: 'Code Search',
-        description: 'Semantic search powered by quantum-enhanced neural networks',
+        name: 'ZeroDB',
+        description: 'The persistent knowledge layer for AI agents. Memory, semantic search, vector storage, file storage, and free embeddings.',
         applicationCategory: 'DeveloperApplication',
+        url: 'https://www.ainative.studio/products/zerodb',
+        offers: { '@type': 'Offer', price: '0', priceCurrency: 'USD', description: 'Free tier: 500K vectors, 2GB storage' },
       },
     },
     {
@@ -60,9 +67,10 @@ const jsonLd = {
       position: 2,
       item: {
         '@type': 'SoftwareApplication',
-        name: 'Refactoring',
-        description: 'Intelligent code restructuring with deep context awareness',
+        name: 'AI Kit',
+        description: '32 production-ready NPM packages for AI-native applications. React components, hooks, and utilities.',
         applicationCategory: 'DeveloperApplication',
+        url: 'https://aikit.ainative.studio',
       },
     },
     {
@@ -70,9 +78,10 @@ const jsonLd = {
       position: 3,
       item: {
         '@type': 'SoftwareApplication',
-        name: 'Debugging',
-        description: 'Advanced error detection and automated fixes',
+        name: 'Agent Swarm',
+        description: 'Multi-agent orchestration platform with stage-based workflows, tool calling, and memory sharing.',
         applicationCategory: 'DeveloperApplication',
+        url: 'https://www.ainative.studio/agent-swarm',
       },
     },
     {
@@ -80,29 +89,11 @@ const jsonLd = {
       position: 4,
       item: {
         '@type': 'SoftwareApplication',
-        name: 'Repo Understanding',
-        description: 'Deep codebase analysis and visualization',
+        name: 'MCP Server Hosting',
+        description: 'Deploy Model Context Protocol servers in under 60 seconds. 14+ pre-built servers with auto-scaling.',
         applicationCategory: 'DeveloperApplication',
-      },
-    },
-    {
-      '@type': 'ListItem',
-      position: 5,
-      item: {
-        '@type': 'SoftwareApplication',
-        name: 'Checkpoints',
-        description: 'Automated versioning and rollback',
-        applicationCategory: 'DeveloperApplication',
-      },
-    },
-    {
-      '@type': 'ListItem',
-      position: 6,
-      item: {
-        '@type': 'SoftwareApplication',
-        name: 'CI/CD Integration',
-        description: 'Seamless deployment pipeline integration',
-        applicationCategory: 'DeveloperApplication',
+        url: 'https://www.ainative.studio/products/mcp',
+        offers: { '@type': 'Offer', price: '0', priceCurrency: 'USD', description: 'Credit-based billing starting at 1 credit/hour' },
       },
     },
   ],

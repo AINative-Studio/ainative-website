@@ -60,28 +60,28 @@ const Footer = () => {
             <h3 className="text-sm font-semibold text-white uppercase tracking-wider mb-4">PRODUCT</h3>
             <ul className="space-y-3">
               <li>
-                <Link href="/products" className="text-gray-400 hover:text-white text-sm transition-colors">
-                  AI Native Studio IDE
-                </Link>
-              </li>
-              <li>
-                <Link href="/products/qnn" className="text-gray-400 hover:text-white text-sm transition-colors">
-                  Quantum Neural Network
-                </Link>
-              </li>
-              <li>
-                <a href="https://zerodb.ainative.studio" target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-white text-sm transition-colors">
+                <Link href="/products/zerodb" className="text-gray-400 hover:text-white text-sm transition-colors">
                   ZeroDB
-                </a>
+                </Link>
               </li>
               <li>
                 <a href="https://aikit.ainative.studio" target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-white text-sm transition-colors">
-                  AI-Kit
+                  AI Kit
                 </a>
               </li>
               <li>
                 <Link href="/agent-swarm" className="text-gray-400 hover:text-white text-sm transition-colors">
                   Agent Swarm
+                </Link>
+              </li>
+              <li>
+                <Link href="/products/mcp" className="text-gray-400 hover:text-white text-sm transition-colors">
+                  MCP Server Hosting
+                </Link>
+              </li>
+              <li>
+                <Link href="/products/qnn" className="text-gray-400 hover:text-white text-sm transition-colors">
+                  Quantum Neural Networks
                 </Link>
               </li>
               <li>
@@ -162,6 +162,11 @@ const Footer = () => {
                 <Link href="/contact" className="text-gray-400 hover:text-white text-sm transition-colors">
                   Contact
                 </Link>
+              </li>
+              <li>
+                <a href="https://agency.ainative.studio" target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-white text-sm transition-colors">
+                  Agency
+                </a>
               </li>
             </ul>
           </div>
