@@ -31,6 +31,32 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       changeFrequency: 'monthly',
       priority: 0.7,
     },
+    // Agent discovery files
+    {
+      url: `https://api.ainative.studio/llms.txt`,
+      lastModified: currentDate,
+      changeFrequency: 'weekly',
+      priority: 0.8,
+    },
+    {
+      url: `https://api.ainative.studio/agents.txt`,
+      lastModified: currentDate,
+      changeFrequency: 'weekly',
+      priority: 0.8,
+    },
+    // ZeroDB comparison pages
+    {
+      url: `${BASE_URL}/compare/zerodb-vs-mem0`,
+      lastModified: currentDate,
+      changeFrequency: 'monthly',
+      priority: 0.7,
+    },
+    {
+      url: `${BASE_URL}/compare/zerodb-vs-letta`,
+      lastModified: currentDate,
+      changeFrequency: 'monthly',
+      priority: 0.7,
+    },
     {
       url: `${BASE_URL}/contact`,
       lastModified: currentDate,

@@ -361,7 +361,7 @@ export default function ProductsClient() {
             <div className="bg-[#1C2128]/70 rounded-xl p-6 border border-gray-800/50 text-center">
               <Search className="h-8 w-8 text-emerald-400 mx-auto mb-3" />
               <h3 className="font-semibold text-white mb-2">LLM Discoverable</h3>
-              <p className="text-sm text-gray-400">Structured metadata and llms.txt for AI agents to find and use your tools</p>
+              <p className="text-sm text-gray-400">Structured metadata and llms.txt for AI agents to find and use our tools</p>
             </div>
             <div className="bg-[#1C2128]/70 rounded-xl p-6 border border-gray-800/50 text-center">
               <Package className="h-8 w-8 text-orange-400 mx-auto mb-3" />

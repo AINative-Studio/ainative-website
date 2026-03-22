@@ -41,6 +41,18 @@ export const metadata: Metadata = {
     'knowledge management ai',
     'ai native database',
     'serverless vector database',
+    // ZeroMemory keywords
+    'zeromemory',
+    'memory hierarchy',
+    'working memory episodic memory semantic memory',
+    'memory scoring decay',
+    'knowledge graph ai',
+    'agent reflection',
+    'auto memory extraction',
+    'memory profiles',
+    'cognitive memory agents',
+    'persistent agent memory',
+    'memory consolidation',
     'multi tenant vector db',
   ],
   openGraph: {

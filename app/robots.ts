@@ -9,7 +9,6 @@ export default function robots(): MetadataRoute.Robots {
         userAgent: '*',
         allow: '/',
         disallow: [
-          '/api/',
           '/dashboard/',
           '/account/',
           '/billing/',
@@ -22,13 +21,23 @@ export default function robots(): MetadataRoute.Robots {
         ],
       },
       {
-        userAgent: ['GPTBot', 'anthropic-ai', 'Claude-Web', 'CCBot', 'Google-Extended'],
-        allow: '/',
+        // AI crawlers get explicit access to discovery files and product pages
+        userAgent: ['GPTBot', 'anthropic-ai', 'Claude-Web', 'CCBot', 'Google-Extended', 'PerplexityBot', 'Bytespider'],
+        allow: [
+          '/',
+          '/products/',
+          '/pricing',
+          '/llms.txt',
+          '/agents.txt',
+          '/.well-known/',
+          '/compare/',
+          '/showcases/',
+          '/blog/',
+        ],
         disallow: [
           '/dashboard/',
           '/account/',
           '/billing/',
-          '/api/',
         ],
       },
     ],
