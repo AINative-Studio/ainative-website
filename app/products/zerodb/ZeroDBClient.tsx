@@ -71,31 +71,43 @@ const features = [
   },
 ];
 
-const codeExample = `import { ZeroDB } from '@ainative/zerodb';
+const codeExample = `# Get a database instantly (no signup required)
+curl -X POST https://api.ainative.studio/api/v1/public/instant-db
 
-const db = new ZeroDB({
-  apiKey: process.env.ZERODB_API_KEY,
-});
+# Or use the CLI
+npx zerodb-cli init
 
-// Store embeddings
-await db.vectors.upsert({
-  namespace: 'documents',
-  vectors: [
-    {
-      id: 'doc-1',
-      values: embedding, // 1536-dim vector
-      metadata: { title: 'Getting Started' },
-    },
-  ],
-});
+# Python — LangChain integration
+from langchain_zerodb import ZeroDBVectorStore
 
-// Semantic search
-const results = await db.vectors.query({
-  namespace: 'documents',
-  vector: queryEmbedding,
-  topK: 10,
-  includeMetadata: true,
-});`;
+store = ZeroDBVectorStore(
+    api_key="your-api-key",
+    project_id="your-project-id",
+)
+
+# Add documents (embeddings generated FREE)
+store.add_texts(["ZeroDB is fast", "Semantic search"])
+
+# Search by meaning
+results = store.similarity_search("fast database", k=5)
+
+# LlamaIndex integration
+from llama_index_zerodb import ZeroDBVectorStore
+from llama_index.core import VectorStoreIndex
+
+index = VectorStoreIndex.from_vector_store(store)
+response = index.as_query_engine().query("What is ZeroDB?")`;
+
+const instantDbExample = `# Zero-auth — get a working database in one request
+curl -X POST https://api.ainative.studio/api/v1/public/instant-db
+
+# Response:
+{
+  "api_key": "tmp_xxx...",
+  "project_id": "uuid",
+  "base_url": "https://api.ainative.studio",
+  "expires_at": "72 hours from now"
+}`;
 
 const pricingTiers = [
   {
@@ -200,10 +212,10 @@ export default function ZeroDBClient() {
             <div className="flex flex-col sm:flex-row gap-3 justify-center items-center mb-10">
               <div className="bg-[#0A0D14] border border-white/10 rounded-lg px-5 py-3 font-mono text-sm text-gray-200 flex items-center gap-3">
                 <Terminal className="h-4 w-4 text-[#4B6FED] flex-shrink-0" />
-                <code>npm i ainative-zerodb-memory-mcp</code>
+                <code>npx zerodb-cli init</code>
                 <button
                   onClick={() => {
-                    navigator.clipboard.writeText('npm i ainative-zerodb-memory-mcp');
+                    navigator.clipboard.writeText('npx zerodb-cli init');
                     setCopied(true);
                     setTimeout(() => setCopied(false), 2000);
                   }}
@@ -321,21 +333,21 @@ export default function ZeroDBClient() {
                 Get Started in 30 Seconds
               </h2>
               <p className="text-gray-400 text-lg mb-6">
-                Install our SDK and start building AI-native apps immediately.
-                TypeScript and Python — pick your language, ship your product.
+                Get a working database in one command. No signup required.
+                Python, Node.js, LangChain, LlamaIndex — pick your stack.
               </p>
 
               {/* Install commands */}
-              <div className="space-y-4 mb-6">
+              <div className="space-y-3 mb-6">
                 <div>
                   <p className="text-xs text-gray-500 uppercase tracking-wider mb-2 flex items-center gap-2">
-                    <Terminal className="h-3 w-3" /> TypeScript / Node.js
+                    <Terminal className="h-3 w-3" /> Instant Setup (no signup)
                   </p>
                   <div className="bg-[#0A0D14] border border-white/10 rounded-lg px-4 py-3 font-mono text-sm text-gray-200 flex items-center justify-between">
-                    <code>npm install @ainative/sdk</code>
+                    <code>npx zerodb-cli init</code>
                     <button
                       onClick={() => {
-                        navigator.clipboard.writeText('npm install @ainative/sdk');
+                        navigator.clipboard.writeText('npx zerodb-cli init');
                         setCopied(true);
                         setTimeout(() => setCopied(false), 2000);
                       }}
@@ -347,13 +359,67 @@ export default function ZeroDBClient() {
                 </div>
                 <div>
                   <p className="text-xs text-gray-500 uppercase tracking-wider mb-2 flex items-center gap-2">
-                    <Terminal className="h-3 w-3" /> Python
+                    <Terminal className="h-3 w-3" /> Python SDK
                   </p>
                   <div className="bg-[#0A0D14] border border-white/10 rounded-lg px-4 py-3 font-mono text-sm text-gray-200 flex items-center justify-between">
-                    <code>pip install ainative</code>
+                    <code>pip install zerodb-mcp</code>
                     <button
                       onClick={() => {
-                        navigator.clipboard.writeText('pip install ainative');
+                        navigator.clipboard.writeText('pip install zerodb-mcp');
+                        setCopied(true);
+                        setTimeout(() => setCopied(false), 2000);
+                      }}
+                      className="text-gray-500 hover:text-white transition-colors ml-4"
+                    >
+                      <Copy className="h-4 w-4" />
+                    </button>
+                  </div>
+                </div>
+                <div>
+                  <p className="text-xs text-gray-500 uppercase tracking-wider mb-2 flex items-center gap-2">
+                    <Terminal className="h-3 w-3" /> LangChain
+                  </p>
+                  <div className="bg-[#0A0D14] border border-white/10 rounded-lg px-4 py-3 font-mono text-sm text-gray-200 flex items-center justify-between">
+                    <code>pip install langchain-zerodb</code>
+                    <button
+                      onClick={() => {
+                        navigator.clipboard.writeText('pip install langchain-zerodb');
+                        setCopied(true);
+                        setTimeout(() => setCopied(false), 2000);
+                      }}
+                      className="text-gray-500 hover:text-white transition-colors ml-4"
+                    >
+                      <Copy className="h-4 w-4" />
+                    </button>
+                  </div>
+                </div>
+                <div>
+                  <p className="text-xs text-gray-500 uppercase tracking-wider mb-2 flex items-center gap-2">
+                    <Terminal className="h-3 w-3" /> LlamaIndex
+                  </p>
+                  <div className="bg-[#0A0D14] border border-white/10 rounded-lg px-4 py-3 font-mono text-sm text-gray-200 flex items-center justify-between">
+                    <code>pip install llama-index-vector-stores-zerodb</code>
+                    <button
+                      onClick={() => {
+                        navigator.clipboard.writeText('pip install llama-index-vector-stores-zerodb');
+                        setCopied(true);
+                        setTimeout(() => setCopied(false), 2000);
+                      }}
+                      className="text-gray-500 hover:text-white transition-colors ml-4"
+                    >
+                      <Copy className="h-4 w-4" />
+                    </button>
+                  </div>
+                </div>
+                <div>
+                  <p className="text-xs text-gray-500 uppercase tracking-wider mb-2 flex items-center gap-2">
+                    <Terminal className="h-3 w-3" /> MCP Server (Agent Memory)
+                  </p>
+                  <div className="bg-[#0A0D14] border border-white/10 rounded-lg px-4 py-3 font-mono text-sm text-gray-200 flex items-center justify-between">
+                    <code>npm i ainative-zerodb-memory-mcp</code>
+                    <button
+                      onClick={() => {
+                        navigator.clipboard.writeText('npm i ainative-zerodb-memory-mcp');
                         setCopied(true);
                         setTimeout(() => setCopied(false), 2000);
                       }}
@@ -367,10 +433,11 @@ export default function ZeroDBClient() {
 
               <ul className="space-y-3">
                 {[
-                  'TypeScript-first with full type safety',
-                  'Python SDK with async support',
-                  'Auto-batching for bulk operations',
-                  'Built-in retry and error handling',
+                  'Zero-auth instant database (72hr trial, no signup)',
+                  'Free embeddings — BAAI/bge models, no OpenAI costs',
+                  'Sub-millisecond search with HNSW indexes',
+                  'MCP servers for Claude Code, Cursor, VS Code, Windsurf',
+                  'LangChain + LlamaIndex integrations',
                 ].map((item) => (
                   <li key={item} className="flex items-center gap-3">
                     <Check className="h-5 w-5 text-[#4B6FED]" />
