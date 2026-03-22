@@ -146,19 +146,19 @@ describe('Bug #484: Navbar Spacing Issue', () => {
       // Check for heading presence - use more specific selector to avoid duplicates
       const heading = container.querySelector('h1');
       expect(heading).toBeTruthy();
-      expect(heading?.textContent).toMatch(/AI Native/i);
+      expect(heading?.textContent).toMatch(/Ship Agents That/i);
     });
 
     it('should render CTA buttons in hero section', () => {
       const { container } = render(<HomeClient />);
 
-      // Should have primary CTA
-      const downloadLink = container.querySelector('a[href="/download"]');
-      expect(downloadLink).toBeTruthy();
+      // Should have primary CTA (Start Free / signup)
+      const signupLink = container.querySelector('a[href="/signup"]');
+      expect(signupLink).toBeTruthy();
 
-      // Should have secondary CTA (GitHub)
-      const githubLinks = container.querySelectorAll('a[target="_blank"][rel="noopener noreferrer"]');
-      expect(githubLinks.length).toBeGreaterThan(0);
+      // Should have secondary CTA (Explore Products)
+      const productsLink = container.querySelector('a[href="/products"]');
+      expect(productsLink).toBeTruthy();
     });
   });
 

@@ -3,67 +3,21 @@
 import React from "react";
 
 import Link from 'next/link';
-import { motion, useScroll, useTransform, Variants, AnimatePresence } from 'framer-motion';
+import { motion, Variants, AnimatePresence } from 'framer-motion';
 import {
-  Cpu,
   ArrowRight,
   Sparkles,
   Bot,
-  Calendar,
+  Database,
+  Package,
+  Server,
+  Terminal,
 } from 'lucide-react';
 import {
-  DatabaseIcon,
-  CodeIcon,
   ChevronRightIcon,
-  ServerIcon,
 } from '@/components/icons';
 import { Button } from '@/components/ui/button';
 import { useRef, useEffect, useState, startTransition } from 'react';
-
-// Animated text cycling component
-const AnimatedTargetText = () => {
-  const [currentIndex, setCurrentIndex] = useState(0);
-  const targets = ['Founders', 'Developers', 'Builders', 'Data Scientists', 'Vibe Coders'];
-
-  useEffect(() => {
-    let intervalId: NodeJS.Timeout;
-
-    // Start animation after initial delay
-    const timeoutId = setTimeout(() => {
-      intervalId = setInterval(() => {
-        setCurrentIndex((prevIndex) => (prevIndex + 1) % targets.length);
-      }, 2500);
-    }, 2000);
-
-    // Cleanup function
-    return () => {
-      clearTimeout(timeoutId);
-      if (intervalId) {
-        clearInterval(intervalId);
-      }
-    };
-  }, []);
-
-  return (
-    <span className="inline-block" style={{ width: '320px', minHeight: '1em' }}>
-      <AnimatePresence mode="wait">
-        <motion.span
-          key={targets[currentIndex]}
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          exit={{ opacity: 0, y: -20 }}
-          transition={{
-            duration: 0.5,
-            ease: [0.16, 1, 0.3, 1]
-          }}
-          className="inline-block text-[#4B6FED] font-bold whitespace-nowrap"
-        >
-          {targets[currentIndex]}
-        </motion.span>
-      </AnimatePresence>
-    </span>
-  );
-};
 
 // Animation variants
 const fadeUp: Variants = {
@@ -79,68 +33,68 @@ const fadeUp: Variants = {
   }),
 };
 
+const products = [
+  {
+    icon: Database,
+    title: 'ZeroDB',
+    desc: 'Persistent memory, semantic search, vector storage, and free embeddings for AI agents',
+    link: '/products/zerodb',
+    gradient: 'from-purple-500 to-indigo-600',
+    cmd: 'npx zerodb-cli init',
+  },
+  {
+    icon: Package,
+    title: 'AI Kit',
+    desc: '32 production-ready NPM packages — React components, hooks, and utilities for AI-native apps',
+    link: '/ai-kit',
+    gradient: 'from-orange-500 to-amber-500',
+    cmd: 'npm i @ainative/ai-kit',
+  },
+  {
+    icon: Bot,
+    title: 'Agent Swarm',
+    desc: 'Multi-agent orchestration with stage-based workflows, tool calling, and shared memory',
+    link: '/agent-swarm',
+    gradient: 'from-emerald-500 to-teal-500',
+  },
+  {
+    icon: Server,
+    title: 'MCP Server Hosting',
+    desc: '14+ pre-built Model Context Protocol servers. Deploy in under 60 seconds with auto-scaling',
+    link: '/products/mcp',
+    gradient: 'from-cyan-500 to-blue-500',
+  },
+];
+
 export default function HomeClient() {
   const targetRef = useRef<HTMLDivElement>(null);
   const [isMounted, setIsMounted] = useState(false);
 
-  // Ensure client-side only scroll animations
   useEffect(() => {
     startTransition(() => {
       setIsMounted(true);
     });
   }, []);
 
-  const { scrollYProgress } = useScroll({
-    target: isMounted ? targetRef : undefined,
-    offset: ["start start", "end start"]
-  });
-
-  // Using scrollYProgress for animations - only when mounted
-  const y = useTransform(scrollYProgress, [0, 1], [0, 100]);
-
   return (
     <div ref={targetRef} className="relative flex flex-col min-h-screen bg-vite-bg text-white overflow-hidden pt-24 md:pt-32">
-      {/* Enhanced Animated Background */}
-      <motion.div
-        className="fixed top-0 left-0 w-full h-full -z-10 overflow-hidden"
-        style={{ y: isMounted ? y : 0 }}
-      >
-        {/* Base Gradient */}
+      {/* Background */}
+      <div className="fixed top-0 left-0 w-full h-full -z-10 overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-br from-[#0D1117] via-[#0D1117] to-[#1A1B2E]" />
-
-        {/* Simple Background */}
         <div className="absolute inset-0 overflow-hidden" style={{ zIndex: -1 }}>
-          {/* Grid Pattern */}
           <div className="absolute inset-0 opacity-5" style={{
             backgroundImage: 'linear-gradient(rgba(255, 255, 255, 0.3) 1px, transparent 1px), linear-gradient(90deg, rgba(255, 255, 255, 0.3) 1px, transparent 1px)',
             backgroundSize: '40px 40px',
           }} />
-
-          {/* Subtle Accent */}
           <div className="absolute w-64 h-64 rounded-full bg-[#4B6FED]/5 blur-3xl -left-32 -top-32" />
           <div className="absolute w-96 h-96 rounded-full bg-[#4B6FED]/5 blur-3xl -right-48 -bottom-48" />
         </div>
-
-        {/* CSS Animation Keyframes */}
-        <style dangerouslySetInnerHTML={{
-          __html: `
-            @keyframes pulse {
-              0% { opacity: 0.3; transform: scale(1); }
-              100% { opacity: 0.6; transform: scale(1.1); }
-            }
-            @keyframes float {
-              0%, 100% { transform: translateY(0); }
-              50% { transform: translateY(-20px); }
-            }
-          `
-        }} />
-      </motion.div>
+      </div>
 
       {/* Hero Section */}
       <section className="full-width-section relative min-h-[70vh] flex items-center justify-center pb-12 z-10">
         <div className="absolute inset-0 -z-10">
           <div className="absolute inset-0 bg-gradient-to-b from-[#0D1117]/80 via-[#0D1117]/90 to-[#0D1117]/80"></div>
-          {/* Center glow effect - matching Vite design */}
           <div className="absolute inset-0 opacity-30" style={{
             backgroundImage: 'radial-gradient(circle at 50% 40%, rgba(75, 111, 237, 0.4) 0%, transparent 40%), radial-gradient(circle at 80% 70%, rgba(138, 99, 244, 0.3) 0%, transparent 30%)',
           }} />
@@ -160,7 +114,7 @@ export default function HomeClient() {
               transition={{ delay: 0.2, duration: 0.6 }}
             >
               <Sparkles className="w-4 h-4 mr-2" />
-              <span>AI Native Development Platform</span>
+              <span>Infrastructure for the Agentic Era</span>
             </motion.div>
 
             <motion.h1
@@ -169,27 +123,9 @@ export default function HomeClient() {
               animate="show"
               className="text-4xl md:text-6xl lg:text-7xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-white to-gray-400 mb-6 leading-tight"
             >
-              The <span className="relative inline-block">
-                <span className="relative z-10 text-transparent bg-clip-text bg-gradient-to-r from-[#8AB4FF] to-[#4B6FED]">
-                  AI Native
-                </span>
-                <motion.span
-                  className="absolute bottom-0 left-0 w-full h-1 bg-[#4B6FED] rounded-full"
-                  initial={{ scaleX: 0, opacity: 0.7 }}
-                  animate={{
-                    scaleX: 1,
-                    opacity: 0.7,
-                    transition: {
-                      duration: 0.8,
-                      delay: 0.3,
-                      ease: [0.16, 1, 0.3, 1]
-                    }
-                  }}
-                />
-              </span> Studio
-              <br />
-              <span className="text-3xl md:text-5xl lg:text-6xl">
-                For <AnimatedTargetText />
+              Ship Agents That{' '}
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#8AB4FF] to-[#4B6FED]">
+                Remember
               </span>
             </motion.h1>
 
@@ -200,7 +136,7 @@ export default function HomeClient() {
               transition={{ delay: 0.2 }}
               className="text-xl md:text-2xl text-gray-300 max-w-3xl mx-auto mb-10 leading-relaxed"
             >
-              Ship 10x faster with AI agents that understand your codebase. Free forever.
+              Persistent memory, semantic search, multi-agent orchestration, and MCP hosting — everything you need to build production AI. One platform, zero setup.
             </motion.p>
 
             <motion.div
@@ -210,61 +146,80 @@ export default function HomeClient() {
               animate="show"
               transition={{ delay: 0.35 }}
             >
-              <Link href="/download" className="w-full sm:w-auto">
+              <Link href="/signup" className="w-full sm:w-auto">
                 <Button
                   size="lg"
-                  className="w-full group relative overflow-hidden bg-[#4B6FED] hover:bg-[#3A56D3] text-white shadow-lg hover:shadow-xl hover:shadow-[#4B6FED]/20 transition-all duration-300 transform hover:-translate-y-0.5"
+                  className="w-full group relative overflow-hidden bg-[#4B6FED] hover:bg-[#3A56D3] text-white shadow-lg hover:shadow-xl hover:shadow-[#4B6FED]/20 transition-all duration-300 transform hover:-translate-y-0.5 px-8 py-6 text-lg"
                 >
-                  <span className="relative z-10">Download AI Native IDE</span>
-                  <span className="absolute inset-0 bg-gradient-to-r from-white/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></span>
+                  <span className="relative z-10">Start Free</span>
+                  <ArrowRight className="ml-2 h-5 w-5 inline-block transition-transform duration-300 group-hover:translate-x-1" />
                 </Button>
               </Link>
-              <Link href="/ai-kit" className="w-full sm:w-auto">
+              <Link href="/products" className="w-full sm:w-auto">
                 <Button
                   variant="outline"
                   size="lg"
-                  className="w-full group border-2 border-[#2D3748] hover:border-[#4B6FED]/40 bg-transparent hover:bg-[#4B6FED]/5 text-white transition-all duration-300"
+                  className="w-full group border-2 border-[#2D3748] hover:border-[#4B6FED]/40 bg-transparent hover:bg-[#4B6FED]/5 text-white transition-all duration-300 px-8 py-6 text-lg"
                 >
-                  <CodeIcon className="mr-2 h-4 w-4" />
-                  <span className="relative z-10">View AI-Kit Features</span>
+                  <span className="relative z-10">Explore Products</span>
                   <ChevronRightIcon className="ml-2 h-4 w-4 transition-transform duration-300 group-hover:translate-x-1" />
                 </Button>
               </Link>
-              <Link href="/pricing" className="w-full sm:w-auto">
-                <Button
-                  variant="outline"
-                  size="lg"
-                  className="w-full group border-2 border-[#2D3748] hover:border-[#8A63F4]/40 bg-transparent hover:bg-[#8A63F4]/5 text-white transition-all duration-300"
-                >
-                  <Sparkles className="mr-2 h-4 w-4" />
-                  <span className="relative z-10">View Pricing</span>
-                  <ChevronRightIcon className="ml-2 h-4 w-4 transition-transform duration-300 group-hover:translate-x-1" />
-                </Button>
-              </Link>
-              <a href="https://calendly.com/seedlingstudio/" target="_blank" rel="noopener noreferrer" className="w-full sm:w-auto">
-                <Button
-                  variant="outline"
-                  size="lg"
-                  className="w-full group border-2 border-[#4B6FED]/50 hover:border-[#4B6FED] bg-transparent hover:bg-[#4B6FED]/10 text-white transition-all duration-300"
-                >
-                  <Calendar className="mr-2 h-4 w-4" />
-                  <span className="relative z-10">Schedule a Demo</span>
-                </Button>
-              </a>
             </motion.div>
-
           </motion.div>
-        </div>
-
-        {/* Animated Grid Background */}
-        <div className="absolute inset-0 -z-20 overflow-hidden">
-          <div className="absolute inset-0 [mask-image:radial-gradient(ellipse_at_center,transparent_10%,black)]">
-            <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPjxkZWZzPjxwYXR0ZXJuIGlkPSJwYXR0ZXJuIiB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHBhdHRlcm5Vbml0cz0idXNlclNwYWNlT25Vc2UiIHBhdHRlcm5UcmFuc2Zvcm09InJvdGF0ZSgzMCkiPjxyZWN0IHdpZHRoPSIxMDAlIiBoZWlnaHQ9IjEwMCUiIGZpbGw9IiNmZmZmZmYwMyI+PC9yZWN0PjxwYXRoIGQ9Ik0yMCAxMGMwLTUuNTIzIDQuNDc3LTEwIDEwLTEwczEwIDQuNDc3IDEwIDEwLTQuNDc3IDEwLTEwIDEwLTEwLTQuNDc3LTEwLTEweiIgZmlsbD0iIzRCN0ZFOCI+PC9wYXRoPjwvcGF0dGVybj48L2RlZnM+PHJlY3Qgd2lkdGg9IjEwMCUiIGhlaWdodD0iMTAwJSIgZmlsbD0idXJsKCNwYXR0ZXJuKSI+PC9yZWN0Pjwvc3ZnPg==')] opacity-[0.03]"></div>
-          </div>
         </div>
       </section>
 
-      {/* Value Proposition Section - Clean & Simple */}
+      {/* Instant Try Section */}
+      <section className="full-width-section-md bg-vite-bg">
+        <div className="container-custom max-w-3xl">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6 }}
+          >
+            <div className="text-center mb-8">
+              <h2 className="text-2xl md:text-3xl font-bold text-white mb-3">
+                Try it now — no signup required
+              </h2>
+              <p className="text-gray-400">
+                Provision a ZeroDB instance with a single API call. 72-hour free trial, instant access.
+              </p>
+            </div>
+
+            <div className="bg-[#0D1117] rounded-2xl border border-[#2D333B]/50 overflow-hidden">
+              <div className="flex items-center gap-2 px-4 py-3 border-b border-[#2D333B]/50">
+                <Terminal className="h-4 w-4 text-gray-500" />
+                <span className="text-sm text-gray-500">Zero-auth instant database</span>
+              </div>
+              <div className="p-6 font-mono text-sm space-y-3">
+                <div className="text-green-400">
+                  curl -X POST https://api.ainative.studio/api/v1/public/instant-db
+                </div>
+                <div className="text-gray-500 mt-3"># Response:</div>
+                <div className="text-amber-300/80">
+                  {`{`}
+                </div>
+                <div className="text-amber-300/80 pl-4">
+                  {`"project_id": "proj_abc123",`}
+                </div>
+                <div className="text-amber-300/80 pl-4">
+                  {`"api_key": "zdb_live_...",`}
+                </div>
+                <div className="text-amber-300/80 pl-4">
+                  {`"endpoints": { "vectors": "/v1/vectors", "memory": "/v1/memory", "files": "/v1/files" }`}
+                </div>
+                <div className="text-amber-300/80">
+                  {`}`}
+                </div>
+              </div>
+            </div>
+          </motion.div>
+        </div>
+      </section>
+
+      {/* Products Section */}
       <section className="full-width-section-md bg-vite-bg">
         <div className="container-custom max-w-6xl">
           <motion.div
@@ -275,79 +230,40 @@ export default function HomeClient() {
             transition={{ duration: 0.6 }}
           >
             <h2 className="text-3xl md:text-4xl font-bold mb-4 text-white">
-              Everything you need to build AI-powered applications
+              Four products. One platform.
             </h2>
             <p className="text-lg text-gray-400 max-w-2xl mx-auto">
-              Production-ready tools and infrastructure for modern AI development
+              Everything your AI agents need — from persistent memory to production deployment.
             </p>
           </motion.div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6">
-            {[
-              {
-                icon: Cpu,
-                title: 'AI Native IDE',
-                desc: 'Context-aware code editor with intelligent suggestions and real-time refactoring',
-                link: '/download',
-                isLucideIcon: true,
-              },
-              {
-                icon: DatabaseIcon,
-                title: 'Vector Database',
-                desc: 'Store and search embeddings with semantic similarity at scale',
-                link: 'https://zerodb.ainative.studio',
-                isLucideIcon: false,
-                external: true,
-              },
-              {
-                icon: CodeIcon,
-                title: 'AI Kit Packages',
-                desc: '14 NPM packages for React, Vue, Svelte, and framework-agnostic development',
-                link: '/ai-kit',
-                isLucideIcon: false,
-              },
-              {
-                icon: Bot,
-                title: 'Agent Swarm',
-                desc: 'Autonomous AI agents for PRD-to-production development with ZeroDB memory',
-                link: '/agent-swarm',
-                isLucideIcon: true,
-              },
-              {
-                icon: ServerIcon,
-                title: 'MCP Server Hosting',
-                desc: 'Deploy Model Context Protocol servers with auto-scaling and credit-based billing',
-                link: '/products/mcp',
-                isLucideIcon: false,
-              },
-            ].map(({ icon: Icon, title, desc, link, external }, i) => {
-              const CardContent = (
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {products.map(({ icon: Icon, title, desc, link, gradient, cmd }, i) => (
+              <Link href={link} key={title}>
                 <motion.div
                   custom={i}
                   variants={fadeUp}
                   initial="hidden"
                   whileInView="show"
                   viewport={{ once: true, margin: "-100px" }}
-                  className="bg-[#161B22] rounded-xl p-6 border border-[#2D333B]/50 hover:border-[#4B6FED]/30 transition-all duration-300 cursor-pointer h-full"
+                  className="bg-[#161B22] rounded-xl p-6 border border-[#2D333B]/50 hover:border-[#4B6FED]/30 transition-all duration-300 cursor-pointer h-full group"
                 >
-                  <div className="mb-4">
-                    <Icon className="h-8 w-8 text-[#4B6FED]" />
+                  <div className="flex items-center justify-between mb-4">
+                    <div className={`w-10 h-10 rounded-lg flex items-center justify-center bg-gradient-to-br ${gradient}`}>
+                      <Icon className="h-5 w-5 text-white" />
+                    </div>
+                    <ArrowRight className="h-4 w-4 text-gray-600 group-hover:text-white group-hover:translate-x-1 transition-all duration-300" />
                   </div>
-                  <h3 className="text-lg font-semibold mb-2 text-white">{title}</h3>
-                  <p className="text-sm text-gray-400 leading-relaxed">{desc}</p>
+                  <h3 className="text-xl font-semibold mb-2 text-white">{title}</h3>
+                  <p className="text-sm text-gray-400 leading-relaxed mb-4">{desc}</p>
+                  {cmd && (
+                    <div className="bg-[#0D1117] rounded-lg px-3 py-2 font-mono text-xs text-gray-400 border border-[#2D333B]/50 inline-block">
+                      <span className="text-gray-600">$ </span>{cmd}
+                    </div>
+                  )}
                 </motion.div>
-              );
-
-              return external ? (
-                <a href={link} key={title} target="_blank" rel="noopener noreferrer">
-                  {CardContent}
-                </a>
-              ) : (
-                <Link href={link} key={title}>
-                  {CardContent}
-                </Link>
-              );
-            })}
+              </Link>
+            ))}
           </div>
         </div>
       </section>
@@ -355,10 +271,9 @@ export default function HomeClient() {
       {/* Stats Section */}
       <section className="full-width-section-sm bg-[#0D1117] border-y border-[#2D333B]/40">
         <div className="container-custom max-w-6xl">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
+          <div className="grid grid-cols-3 gap-8 text-center">
             {[
               { value: '5,000+', label: 'Developers' },
-              { value: '310+', label: 'API Requests/day' },
               { value: '32', label: 'NPM Packages' },
               { value: '99.9%', label: 'Uptime' },
             ].map(({ value, label }, i) => (
@@ -378,7 +293,7 @@ export default function HomeClient() {
         </div>
       </section>
 
-      {/* Simple CTA Section */}
+      {/* CTA Section */}
       <section className="full-width-section-sm bg-gradient-to-b from-[#0D1117] to-[#161B22]">
         <div className="container-custom max-w-4xl text-center">
           <motion.div
@@ -388,21 +303,31 @@ export default function HomeClient() {
             transition={{ duration: 0.6 }}
           >
             <h2 className="text-3xl md:text-4xl font-bold mb-4 text-white">
-              Ready to get started?
+              Ready to build?
             </h2>
             <p className="text-lg text-gray-400 mb-8 max-w-2xl mx-auto">
-              Join developers building the next generation of AI applications
+              Start with a free ZeroDB instance. No credit card, no signup wall — just an API call.
             </p>
-            <Link href="/signup">
-              <Button
-                size="lg"
-                className="group relative overflow-hidden bg-[#4B6FED] hover:bg-[#3A56D3] text-white shadow-lg hover:shadow-xl hover:shadow-[#4B6FED]/20 transition-all duration-300 px-8 py-6 text-lg"
-              >
-                <span className="relative z-10">Get Started</span>
-                <ArrowRight className="ml-2 h-5 w-5 inline-block transition-transform duration-300 group-hover:translate-x-1" />
-                <span className="absolute inset-0 bg-gradient-to-r from-white/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></span>
-              </Button>
-            </Link>
+            <div className="flex flex-col sm:flex-row gap-4 justify-center">
+              <Link href="/signup">
+                <Button
+                  size="lg"
+                  className="group relative overflow-hidden bg-[#4B6FED] hover:bg-[#3A56D3] text-white shadow-lg hover:shadow-xl hover:shadow-[#4B6FED]/20 transition-all duration-300 px-8 py-6 text-lg"
+                >
+                  <span className="relative z-10">Get Started Free</span>
+                  <ArrowRight className="ml-2 h-5 w-5 inline-block transition-transform duration-300 group-hover:translate-x-1" />
+                </Button>
+              </Link>
+              <Link href="https://docs.ainative.studio" target="_blank" rel="noopener noreferrer">
+                <Button
+                  variant="outline"
+                  size="lg"
+                  className="group border-2 border-[#2D3748] hover:border-[#4B6FED]/40 bg-transparent hover:bg-[#4B6FED]/5 text-white transition-all duration-300 px-8 py-6 text-lg"
+                >
+                  <span className="relative z-10">Read the Docs</span>
+                </Button>
+              </Link>
+            </div>
           </motion.div>
         </div>
       </section>

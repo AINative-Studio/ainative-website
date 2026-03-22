@@ -9,7 +9,7 @@ const Footer = () => {
   return (
     <footer className="bg-[#0B0F1A] py-12">
       <div className="container-custom">
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-8">
           {/* Brand Section */}
           <div>
             <Link href="/" className="flex items-center gap-3 mb-4">
@@ -57,7 +57,7 @@ const Footer = () => {
 
           {/* PRODUCT Section */}
           <div>
-            <h3 className="text-sm font-semibold text-white uppercase tracking-wider mb-4">PRODUCT</h3>
+            <h3 className="text-sm font-semibold text-white uppercase tracking-wider mb-4">PRODUCTS</h3>
             <ul className="space-y-3">
               <li>
                 <Link href="/products/zerodb" className="text-gray-400 hover:text-white text-sm transition-colors">
@@ -80,9 +80,9 @@ const Footer = () => {
                 </Link>
               </li>
               <li>
-                <Link href="/products/qnn" className="text-gray-400 hover:text-white text-sm transition-colors">
-                  Quantum Neural Networks
-                </Link>
+                <a href="https://agency.ainative.studio" target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-white text-sm transition-colors">
+                  Agency
+                </a>
               </li>
               <li>
                 <Link href="/pricing" className="text-gray-400 hover:text-white text-sm transition-colors">
@@ -117,8 +117,8 @@ const Footer = () => {
                 </Link>
               </li>
               <li>
-                <Link href="/webinars" className="text-gray-400 hover:text-white text-sm transition-colors">
-                  Webinars
+                <Link href="/blog" className="text-gray-400 hover:text-white text-sm transition-colors">
+                  Blog
                 </Link>
               </li>
               <li>
@@ -127,16 +127,31 @@ const Footer = () => {
                 </Link>
               </li>
               <li>
-                <Link href="/blog" className="text-gray-400 hover:text-white text-sm transition-colors">
-                  Blog
-                </Link>
-              </li>
-              <li>
                 <Link href="/download" className="text-gray-400 hover:text-white text-sm transition-colors">
                   Download
                 </Link>
               </li>
             </ul>
+          </div>
+
+          {/* MOONSHOT LABS Section */}
+          <div>
+            <h3 className="text-sm font-semibold text-white uppercase tracking-wider mb-4">MOONSHOT LABS</h3>
+            <ul className="space-y-3">
+              <li>
+                <Link href="/labs/a2ui" className="text-gray-400 hover:text-white text-sm transition-colors">
+                  A2UI Protocol
+                </Link>
+              </li>
+              <li>
+                <Link href="/products/qnn" className="text-gray-400 hover:text-white text-sm transition-colors">
+                  Quantum Neural Networks
+                </Link>
+              </li>
+            </ul>
+            <p className="text-gray-600 text-xs mt-4">
+              Experimental projects from AINative Labs
+            </p>
           </div>
 
           {/* COMPANY Section */}
@@ -162,11 +177,6 @@ const Footer = () => {
                 <Link href="/contact" className="text-gray-400 hover:text-white text-sm transition-colors">
                   Contact
                 </Link>
-              </li>
-              <li>
-                <a href="https://agency.ainative.studio" target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-white text-sm transition-colors">
-                  Agency
-                </a>
               </li>
             </ul>
           </div>
